@@ -114,10 +114,11 @@ function derive(){
   d.systemicSym = d.VMS||d.sleep||d.mood||d.cog||d.msk;
   d.libido = sym.includes('libido'); d.bleedSel = sym.includes('bleeding');
   d.heavyCyclesFlag = S.cycles==='heavier';
+  const bleedGate = d.bleedSel||d.heavyCyclesFlag;
   const b = S.b1||[];
-  d.redFlagBleeding = b.includes('pmb')||b.includes('imb')||b.includes('pcb')|| (S.safety||[]).includes('unexbleed');
-  d.heavyAUB = b.includes('heavy');
-  d.hsddPositive = S.a1==='yes' && (S.a2||[]).includes('noneA');
+  d.redFlagBleeding = (bleedGate&&(b.includes('pmb')||b.includes('imb')||b.includes('pcb')))|| (S.safety||[]).includes('unexbleed');
+  d.heavyAUB = bleedGate&&b.includes('heavy');
+  d.hsddPositive = d.libido && S.a1==='yes' && (S.a2||[]).includes('noneA');
   const sf = S.safety||[];
   d.ciBreast=sf.includes('breastca'); d.ciGyn=sf.includes('gynca'); d.hxVte=sf.includes('vte');
   d.thromb=sf.includes('thromb'); d.ciCv=sf.includes('stroke')||sf.includes('mi'); d.ciLiver=sf.includes('liver');
@@ -149,12 +150,12 @@ const screens = [
  {id:'age', stage:'שלב 1 · איפה את בתהליך', show:()=>true, render(){ h(head('בת כמה את?')+`
    <input type="number" id="age" min="18" max="100" inputmode="numeric" value="${S.age||''}" placeholder="גיל">`+nav(()=>{
      const v=+document.getElementById('age').value; if(!v) return false; S.age=v; 
-     if(v<40){ h(`<div style="padding-top:48px"><h2>השאלון הזה מיועד לנשים מגיל 40 ומעלה</h2><p class="sub" style="margin-top:12px">תסמינים הורמונליים בגיל צעיר יותר דורשים בירור רפואי — מומלץ לפנות לרופא/ה שלך.</p></div>`); return 'stop'; }
+     if(v<40){ h(`<div style="padding-top:48px"><h2>השאלון הזה מיועד לנשים מגיל 40 ומעלה</h2><p class="sub" style="margin-top:12px">תסמינים הורמונליים בגיל צעיר יותר דורשים בירור רפואי — מומלץ לפנות לרופא/ה שלך.</p><div class="nav"><button class="btn ghost" onclick="screens[idx].render()">חזרה לתיקון הגיל</button></div></div>`); return 'stop'; }
      return true; })); }},
 
  {id:'surgery', stage:'שלב 1 · איפה את בתהליך', show:()=>true, render(){ h(head('האם עברת ניתוח להסרת הרחם או השחלות?')+
    radios('surgery',[['none','לא'],['hyst','הוסר הרחם בלבד (כריתת רחם)'],['oo','הוסרו שתי השחלות'],['unsure','לא בטוחה']],S.surgery)+
-   nav(()=>{ const v=selVals('surgery')[0]; if(!v)return false; S.surgery=v; return true;})); }},
+   nav(()=>{ const v=selVals('surgery')[0]; if(!v)return false; S.surgery=v; if(v!=='oo') delete S.oo_uterus; if(v==='oo'){delete S.lmp;delete S.yearsSince;delete S.cycles;} return true;})); }},
 
  {id:'oo_uterus', stage:'שלב 1', show:()=>S.surgery==='oo', render(){ h(head('האם באותו ניתוח הוסר גם הרחם?')+
    radios('oo_uterus',[['removed','כן, הוסר גם הרחם'],['kept','לא, הרחם נשאר'],['unsure2','לא בטוחה']],S.oo_uterus)+
@@ -162,7 +163,7 @@ const screens = [
 
  {id:'lmp', stage:'שלב 1 · איפה את בתהליך', show:()=>S.surgery!=='oo', render(){ h(head('מתי הייתה הווסת האחרונה שלך?')+
    radios('lmp',[['recent','בחודשים האחרונים'],['m3_12','לפני 3–12 חודשים'],['gt12','לפני יותר משנה'],['masked','אין לי וסת בגלל התקן/טיפול הורמונלי'],['unknown','לא זוכרת']],S.lmp)+
-   nav(()=>{const v=selVals('lmp')[0]; if(!v)return false; S.lmp=v; return true;})); }},
+   nav(()=>{const v=selVals('lmp')[0]; if(!v)return false; S.lmp=v; if(v!=='gt12') delete S.yearsSince; if(!(v==='recent'||v==='m3_12')) delete S.cycles; return true;})); }},
 
  {id:'years', stage:'שלב 1', show:()=>S.lmp==='gt12', render(){ h(head('לפני כמה שנים בערך?')+
    `<input type="number" id="ys" min="1" max="40" inputmode="numeric" value="${S.yearsSince||''}" placeholder="מספר שנים">`+
@@ -174,11 +175,11 @@ const screens = [
 
  {id:'symptoms', stage:'שלב 2 · מה מפריע לך', show:()=>true, render(){ h(head('מה מפריע לך בתקופה האחרונה?','אפשר לסמן כמה תשובות.')+
    multis('symptoms',[['hot','גלי חום'],['sweats','הזעות לילה'],['sleep','שינה לא טובה'],['dry','יובש, גירוי או צריבה באזור הנרתיק'],['dyspareunia','כאב ביחסי מין'],['urinary','תסמינים בדרכי השתן (צריבה, דחיפות, דלקות חוזרות)'],['libido','ירידה בחשק המיני'],['mood','שינויים במצב הרוח (עצב, עצבנות, חרדה)'],['cog','קושי בריכוז / "ערפל מוחי"'],['msk','כאבי מפרקים ושרירים'],['bleeding','דימום לא סדיר או כבד'],['none','אין לי תסמינים — אני רוצה מידע כללי']],S.symptoms,'none')+
-   nav(()=>{const v=selVals('symptoms'); if(!v.length)return false; S.symptoms=v; return true;})); }},
+   nav(()=>{const v=selVals('symptoms'); if(!v.length)return false; S.symptoms=v; if(!v.includes('libido')){delete S.a1;delete S.a2;} if(!v.includes('bleeding')&&S.cycles!=='heavier'){delete S.b1;} return true;})); }},
 
  {id:'a1', stage:'שלב 2 · חשק מיני', show:()=>derive().libido, render(){ h(head('האם הירידה בחשק גורמת לך מצוקה או מפריעה לך או לזוגיות שלך?')+
    radios('a1',[['yes','כן'],['no','לא ממש']],S.a1)+
-   nav(()=>{const v=selVals('a1')[0]; if(!v)return false; S.a1=v; return true;})); }},
+   nav(()=>{const v=selVals('a1')[0]; if(!v)return false; S.a1=v; if(v==='no') delete S.a2; return true;})); }},
 
  {id:'a2', stage:'שלב 2 · חשק מיני', show:()=>S.a1==='yes', render(){ h(head('האם אחד מהדברים הבאים רלוונטי?','אפשר לסמן כמה תשובות.')+
    multis('a2',[['gsmA','יובש או כאב ביחסי מין'],['ssri','אני נוטלת תרופות נוגדות דיכאון (SSRI/SNRI)'],['rel','מתח או קשיים בזוגיות'],['fatigue','עייפות קשה / דיכאון'],['noneA','אף אחד מאלה']],S.a2,'noneA')+
@@ -215,13 +216,13 @@ const screens = [
    nav(()=>{const v=selVals('safety'); if(!v.length)return false; S.safety=v; return true;})); }},
 
  {id:'hw', stage:'שלב 5 · בריאות כללית', show:()=>true, render(){ h(head('גובה ומשקל')+
-   `<div class="row2"><div><label class="f">גובה (ס"מ)</label><input type="number" id="ht" inputmode="numeric" value="${S.height||''}"></div>
-   <div><label class="f">משקל (ק"ג)</label><input type="number" id="wt" inputmode="numeric" value="${S.weight||''}"></div></div>`+
-   nav(()=>{const ht=+document.getElementById('ht').value, wt=+document.getElementById('wt').value; if(!ht||!wt)return false; S.height=ht;S.weight=wt; return true;})); }},
+   `<div class="row2"><div><label class="f">גובה (ס"מ)</label><input type="number" id="ht" min="120" max="220" inputmode="numeric" value="${S.height||''}"></div>
+   <div><label class="f">משקל (ק"ג)</label><input type="number" id="wt" min="30" max="250" inputmode="numeric" value="${S.weight||''}"></div></div>`+
+   nav(()=>{const ht=+document.getElementById('ht').value, wt=+document.getElementById('wt').value; if(!ht||!wt||ht<120||ht>220||wt<30||wt>250){alert('נא להזין גובה בס"מ (למשל 165) ומשקל בק"ג');return false;} S.height=ht;S.weight=wt; return true;})); }},
 
  {id:'conditions', stage:'שלב 5 · בריאות כללית', show:()=>true, render(){ h(head('האם יש לך אחד מהמצבים הבאים?','אפשר לסמן כמה תשובות.')+
    multis('conditions',[['htn','יתר לחץ דם'],['dm','סוכרת'],['migA','מיגרנה עם אאורה (הפרעות ראייה/תחושה לפני הכאב)'],['mig','מיגרנה בלי אאורה'],['tg','שומני דם גבוהים (טריגליצרידים)'],['sle','זאבת (SLE)'],['gall','אבנים בכיס המרה'],['osteo','אוסטאופורוזיס או שבר בעבר'],['noneC','אף אחד מאלה']],S.conditions,'noneC')+
-   nav(()=>{const v=selVals('conditions'); if(!v.length)return false; S.conditions=v; return true;})); }},
+   nav(()=>{const v=selVals('conditions'); if(!v.length)return false; S.conditions=v; if(!v.includes('htn')) delete S.htnCtrl; return true;})); }},
 
  {id:'htnCtrl', stage:'שלב 5', show:()=>(S.conditions||[]).includes('htn'), render(){ h(head('האם לחץ הדם מאוזן עם טיפול?')+
    radios('htnCtrl',[['yes','כן'],['no','לא'],['unsure','לא בטוחה']],S.htnCtrl)+
@@ -419,7 +420,8 @@ function renderSummary(){
     if(!d.ciBreast&&!d.ciCv){
       brParts.push('<b>בקנה מידה מוחשי:</b> אצל נשים המתחילות טיפול בחלון ההזדמנויות, תוספות הסיכון שנמדדו במחקרים (קרישי דם, שבץ, סרטן שד עם טיפול משולב) הן נדירות — פחות מ־10 מקרים נוספים לכל 10,000 נשים בשנה, ומנגד נצפו פחות שברים ופחות מקרי סוכרת.');
     }
-    if(d.transdermal) brParts.push('<b>אצלך ספציפית:</b> בגלל הגורמים שציינת ('+ (mods.length? mods.join(', '):'ראי למעלה') +(d.thromb?', נטייה לקרישה':'')+(d.fhxVte?', קרישי דם במשפחה':'')+') — אם יוחלט על אסטרוגן סיסטמי, יש היגיון לשאול על מתן דרך העור (מדבקה/ג\'ל), שבמחקרים כמעט אינו קשור לעליית סיכון לקרישים, ובמינון סטנדרטי לא נקשר לעליית סיכון לשבץ.');
+    if(d.transdermal){ const tdR=[...mods]; if(d.thromb) tdR.push('נטייה לקרישה'); if(d.fhxVte) tdR.push('קרישי דם במשפחה'); if(S.age>=60) tdR.push('גיל 60 ומעלה');
+      brParts.push('<b>אצלך ספציפית:</b> בגלל הגורמים שציינת ('+ (tdR.join(', ')||'ראי למעלה') +') — אם יוחלט על אסטרוגן סיסטמי, יש היגיון לשאול על מתן דרך העור (מדבקה/ג\'ל), שבמחקרים כמעט אינו קשור לעליית סיכון לקרישים, ובמינון סטנדרטי לא נקשר לעליית סיכון לשבץ.'); }
     if(d.uterus&&!d.ciBreast) brParts.push('<b>רירית הרחם:</b> מאחר שיש לך רחם, אסטרוגן סיסטמי יינתן תמיד עם הגנה על הרירית (פרוגסטוגן, או התקן מירנה) — כך הסיכון לסרטן רירית הרחם אינו עולה.');
     if(d.brca||d.fhxBreast) brParts.push('<b>שד:</b> על פי הנתונים הקיימים, טיפול הורמונלי אינו מוסיף סיכון מעבר לסיכון הבסיסי אצל נשים עם היסטוריה משפחתית — אבל הסיכון הבסיסי שלך עצמו גבוה יותר, ולכן הערכת סיכון אישית (ולעיתים ייעוץ גנטי) חשובה לפני החלטה.');
     if(d.GSM&&!d.systemicSym) brParts.push('<b>אצלך ספציפית:</b> מאחר שהתסמינים בעיקר מקומיים — טיפול מקומי נרתיקי נותן את רוב התועלת כמעט ללא סיכונים סיסטמיים, וזה כנראה המקום להתחיל בו את השיחה.');
@@ -430,10 +432,10 @@ function renderSummary(){
   /* physician summary (Hebrew) */
   const statusHe = d.surgicalPost?'מנופאוזה כירורגית': d.masked?'סטטוס מוסווה (התקן/טיפול הורמונלי או לא ידוע)': d.post?'פוסט־מנופאוזה':'פרי־מנופאוזה';
   const P=[];
-  P.push(`גיל ${S.age} · ${statusHe}${d.years?` · כ־${d.years} שנים מהווסת האחרונה`:''} · רחם: ${d.uterus?'קיים':'הוסר'}${S.surgery==='unsure'?' (לא מאומת)':''}`);
+  P.push(`גיל ${S.age}${d.bmi?` · BMI ${d.bmi}`:''} · ${statusHe}${d.years?` · כ־${d.years} שנים מהווסת האחרונה`:''} · רחם: ${d.uterus?'קיים':'הוסר'}${S.surgery==='unsure'?' (לא מאומת)':''}`);
   if(!d.infoMode){
     const symNames={hot:'גלי חום',sweats:'הזעות לילה',sleep:'הפרעת שינה',dry:'יובש נרתיקי',dyspareunia:'דיספראוניה',urinary:'תסמיני שתן',libido:'ירידה בחשק',mood:'שינויי מצב רוח',cog:'תסמינים קוגניטיביים',msk:'כאבי מפרקים/שרירים',bleeding:'דימום לא סדיר'};
-    P.push('תסמינים: '+(S.symptoms||[]).filter(s=>symNames[s]).map(s=>symNames[s]).join(', ')+(S.severity!=null?` · חומרה כללית ${S.severity}/10`:''));
+    P.push('תסמינים: '+(S.symptoms||[]).filter(s=>symNames[s]).map(s=>symNames[s]).join(', ')+(S.severity!=null&&d.systemicSym?` · חומרה כללית ${S.severity}/10`:''));
     if(d.GSM&&S.gsmSev) P.push('חומרת GSM: '+({mild:'קלה',mod:'בינונית',sev:'קשה'})[S.gsmSev]);
     if(d.libido) P.push('סקר HSDD: '+(d.hsddPositive?'חיובי — לשקול הערכה מלאה; נקודת דיון: טסטוסטרון במינון פיזיולוגי (off-label) לפי נייר העמדה העולמי':(S.a1==='yes'?'מצוקה קיימת עם גורמים תורמים: '+(S.a2||[]).filter(x=>x!=='noneA').map(x=>({gsmA:'GSM/כאב',ssri:'SSRI/SNRI',rel:'גורם זוגי',fatigue:'עייפות/דיכאון'})[x]).join(', '):'שלילי (ללא מצוקה)')));
     if((S.tried||[]).includes('mht')) P.push('טיפול הורמונלי בעבר — הופסק בגלל: "'+(S.mhtWhy||'לא צוין')+'"');
@@ -448,7 +450,7 @@ function renderSummary(){
   if(d.safetyNone) P.push('לא דווחו הוראות נגד מרכזיות לטיפול הורמונלי סיסטמי');
   if((S.surgery==='hyst'||(S.surgery==='oo'&&S.oo_uterus==='removed'))) P.push('ס/פ כריתת רחם — לוודא היעדר שארית רירית/רקע אנדומטריוזיס לפני אסטרוגן ללא פרוגסטוגן');
   const rm=[];
-  if(d.bmi) rm.push('BMI '+d.bmi); if(d.smoker) rm.push('מעשנת'); if(S.smoke==='past') rm.push('מעשנת בעבר');
+  if(d.bmi>=30) rm.push('BMI '+d.bmi); if(d.smoker) rm.push('מעשנת'); if(S.smoke==='past') rm.push('מעשנת בעבר');
   if(d.htn) rm.push('יל"ד'+(d.htnUncontrolled?' (לא מאוזן/לא ידוע)':' (מאוזן)')); if(d.dm) rm.push('סוכרת');
   if(d.migA) rm.push('מיגרנה עם אאורה'); if(d.mig) rm.push('מיגרנה ללא אאורה'); if(d.tg) rm.push('היפרטריגליצרידמיה');
   if(d.sle) rm.push('זאבת — לבדוק APLA לפני טיפול סיסטמי'); if(d.gall) rm.push('אבני מרה'); if(d.osteo) rm.push('אוסטאופורוזיס/שבר');
@@ -482,6 +484,13 @@ function renderSummary(){
   <div class="phys" id="phys">${esc(physText)}</div>
   <button class="btn primary copybtn" onclick="navigator.clipboard.writeText(document.getElementById('phys').textContent).then(()=>{this.textContent='הועתק ✓'})">העתקת הסיכום לרופא/ה</button>
   <div class="nav"><button class="btn ghost" style="flex:1" onclick="idx=0;Object.keys(S).forEach(k=>delete S[k]);screens[0].render()">התחלה מחדש</button></div>
+  <h2 style="margin:28px 0 10px;font-size:20px">על מה מבוסס הכלי</h2>
+  <div class="card" style="font-size:14.5px">
+    <p style="margin-bottom:10px">השאלון, הלוגיקה והמידע בסיכום מבוססים על ניירות העמדה העדכניים:</p>
+    <p style="margin-bottom:10px">📄 <a href="https://ima-contentfiles.s3.amazonaws.com/Ne174_TreatmentofaMenopausalWoman.pdf" target="_blank" rel="noopener" style="color:var(--primary);font-weight:500">הטיפול באישה בגיל המעבר — נייר עמדה מס' 102</a><br><span style="color:var(--muted)">החברה הישראלית לגיל המעבר, האיגוד הישראלי למיילדות וגינקולוגיה ואיגוד רופאי המשפחה, מהדורה שלישית, 2021 (PDF)</span></p>
+    <p style="margin-bottom:10px">📄 <a href="https://menopause.org/wp-content/uploads/professional/nams-2022-hormone-therapy-position-statement.pdf" target="_blank" rel="noopener" style="color:var(--primary);font-weight:500">The 2022 Hormone Therapy Position Statement</a><br><span style="color:var(--muted)">The North American Menopause Society (NAMS), Menopause 2022 (PDF, אנגלית)</span></p>
+    <p style="margin-bottom:0">📄 <a href="https://doi.org/10.1210/jc.2019-01603" target="_blank" rel="noopener" style="color:var(--primary);font-weight:500">Global Consensus Position Statement on the Use of Testosterone Therapy for Women</a><br><span style="color:var(--muted)">Davis SR et al., J Clin Endocrinol Metab 2019 (אנגלית)</span></p>
+  </div>
   <p class="small">כלי זה נועד להכנה לביקור בלבד ואינו תחליף לייעוץ רפואי. התשובות אינן נשמרות.</p>`);
 }
 
