@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHT — כלי החלטה לרופא/ה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#22302D;--muted:#5E6E6A;--bg:#F1F4F2;--card:#fff;--primary:#0F5C52;--primary-soft:#DEEDE9;
+--line:#D7E0DC;--warn-bg:#FBF3E2;--warn-ink:#8A6420;--stop-bg:#FBEDEA;--stop-ink:#8C3A2E;--go-bg:#E6F2E9;--go-ink:#2F6A44;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Heebo',system-ui,sans-serif;font-size:15px;line-height:1.55}
+header{background:var(--primary);color:#fff;padding:14px 18px}
+header h1{font-family:'Frank Ruhl Libre',serif;font-size:21px;font-weight:700}
+header p{font-size:13px;opacity:.85}
+.layout{max-width:1150px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(340px,430px) 1fr;gap:16px;align-items:start}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px}
+legend{font-weight:700;font-size:14px;color:var(--primary);padding:0 6px}
+label.chk{display:flex;gap:8px;align-items:flex-start;padding:4px 2px;cursor:pointer;font-size:14.5px}
+label.chk input{margin-top:3px;accent-color:var(--primary)}
+.inline{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.inline label.chk{padding:2px 0}
+input[type=number]{width:76px;font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px}
+.fld{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:14.5px}
+.sub{font-size:12.5px;color:var(--muted)}
+.panel{position:sticky;top:12px}
+@media(max-width:900px){.panel{position:static}}
+.rec{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.rec h2{font-family:'Frank Ruhl Libre',serif;font-size:17px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.rec ul{padding-inline-start:18px}
+.rec li{margin-bottom:7px;font-size:14.5px}
+.badge{display:inline-block;border-radius:8px;padding:2px 10px;font-size:13px;font-weight:700}
+.b-go{background:var(--go-bg);color:var(--go-ink)}.b-warn{background:var(--warn-bg);color:var(--warn-ink)}.b-stop{background:var(--stop-bg);color:var(--stop-ink)}
+.box-go{border-inline-start:4px solid #4E8F63}.box-warn{border-inline-start:4px solid #C99A2E}.box-stop{border-inline-start:4px solid #C05B49}
+a.cite{display:inline-block;background:var(--primary-soft);color:var(--primary);border-radius:6px;padding:0 6px;font-size:11.5px;font-weight:700;text-decoration:none;margin-inline-start:4px;white-space:nowrap;vertical-align:1px}
+a.cite:hover{background:var(--primary);color:#fff}
+.drug{color:#3D4C86;font-weight:500}
+.note{font-size:12.5px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px}
+button.reset{font:inherit;border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:6px 14px;cursor:pointer;margin-top:2px}
+hr.thin{border:none;border-top:1px solid var(--line);margin:8px 0}
+details.gloss{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-top:12px;overflow:hidden}
+details.gloss summary{padding:11px 14px;cursor:pointer;font-weight:700;font-size:14px;color:var(--primary);list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.gloss summary::-webkit-details-marker{display:none}
+details.gloss summary::after{content:"+";font-size:18px;color:var(--muted)}
+details.gloss[open] summary::after{content:"–"}
+.gwrap{padding:0 14px 12px;max-height:340px;overflow-y:auto}
+.gwrap dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13.5px}
+.gwrap dt{font-weight:700;color:var(--primary);direction:ltr;text-align:right;white-space:nowrap}
+.gwrap dd{color:var(--ink)}
+</style>
+</head>
+<body>
+<header><h1>טיפול הורמונלי בגיל המעבר — תמיכה בהחלטה</h1>
+<p>כלי לרופא/ה · ההמלצה מתעדכנת תוך כדי מילוי · כל שורה מקושרת למקור</p><a href="doctors.html" style="display:inline-block;margin-top:6px;font-size:12.5px;color:#fff;opacity:.8;text-decoration:none">→ לכל הכלים</a>
+</header>
+
+<div class="layout">
+<form id="f" oninput="calc()" onchange="calc()">
+
+<fieldset><legend>סטטוס</legend>
+  <div class="fld">גיל: <input type="number" id="age" min="30" max="90"></div>
+  <div class="inline">
+    <label class="chk"><input type="radio" name="st" value="peri">פרי־מנופאוזה (וסת ב־12 החודשים האחרונים)</label>
+    <label class="chk"><input type="radio" name="st" value="post">פוסט־מנופאוזה</label>
+    <label class="chk"><input type="radio" name="st" value="surg">מנופאוזה כירורגית (BSO)</label>
+  </div>
+  <div class="fld" id="yrsRow" style="display:none">שנים מ־LMP / מהניתוח: <input type="number" id="yrs" min="0" max="40"></div>
+</fieldset>
+
+<fieldset><legend>רחם</legend>
+  <div class="inline">
+    <label class="chk"><input type="radio" name="ut" value="yes" checked>רחם קיים</label>
+    <label class="chk"><input type="radio" name="ut" value="no">ס/פ כריתה מלאה</label>
+    <label class="chk"><input type="radio" name="ut" value="partial">כריתה חלקית / שארית רירית / אנדומטריוזיס</label>
+  </div>
+</fieldset>
+
+<fieldset><legend>תסמינים / התוויה</legend>
+  <div class="inline">
+    <label class="chk"><input type="checkbox" id="vms">VMS מטרידים</label>
+    <label class="chk"><input type="checkbox" id="gsm">GSM</label>
+    <label class="chk"><input type="checkbox" id="sleep">הפרעת שינה</label>
+    <label class="chk"><input type="checkbox" id="dep">דיכאון/מצב רוח</label>
+    <label class="chk"><input type="checkbox" id="hsdd">HSDD (לאחר הערכה ביו־פסיכו־סוציאלית)</label>
+    <label class="chk"><input type="checkbox" id="bone">מניעת איבוד עצם / סיכון לשברים</label>
+    <label class="chk"><input type="checkbox" id="contraNeed">נדרש אמצעי מניעה</label>
+  </div>
+</fieldset>
+
+<fieldset><legend>הוראות נגד לטיפול סיסטמי</legend>
+  <label class="chk"><input type="checkbox" class="ci" id="unexbleed">דמם וגינלי שלא בורר</label>
+  <label class="chk"><input type="checkbox" class="ci" id="brca_hx">סרטן שד בעבר</label>
+  <label class="chk"><input type="checkbox" class="ci" id="endoAdv">סרטן רירית רחם שלב III–IV / סרקומה של הרחם</label>
+  <label class="chk"><input type="checkbox" class="ci" id="ovC">סרטן שחלה אנדומטריואידי / low-grade serous</label>
+  <label class="chk"><input type="checkbox" class="ci" id="estCa">סרטן תלוי־אסטרוגן אחר בעבר</label>
+  <label class="chk"><input type="checkbox" class="ci" id="vte">VTE בעבר / טרומבופיליה ידועה</label>
+  <label class="chk"><input type="checkbox" class="ci" id="art">מחלה עורקית טרומבואמבולית פעילה/לאחרונה (MI / angina)</label>
+  <label class="chk"><input type="checkbox" class="ci" id="cva">שבץ / TIA בעבר</label>
+  <label class="chk"><input type="checkbox" class="ci" id="liver">מחלת כבד פעילה/משמעותית</label>
+  <label class="chk"><input type="checkbox" class="ci" id="porph">Porphyria cutanea tarda</label>
+  <label class="chk" style="margin-top:4px"><input type="checkbox" id="ai">המטופלת תחת מעכבי ארומטאז</label>
+  <label class="chk"><input type="checkbox" id="endoEarly">סרטן רירית רחם מוקדם (Stage I, low-grade) לאחר כריתה</label>
+</fieldset>
+
+<fieldset><legend>גורמי סיכון (בחירת דרך מתן)</legend>
+  <div class="inline">
+    <div class="fld">BMI: <input type="number" id="bmi" min="14" max="70" step="0.1"></div>
+    <label class="chk"><input type="checkbox" class="rf" id="smoke">עישון</label>
+    <label class="chk"><input type="checkbox" class="rf" id="htn">יל"ד</label>
+    <label class="chk"><input type="checkbox" id="htnUn">יל"ד לא מאוזן</label>
+    <label class="chk"><input type="checkbox" class="rf" id="dm">סוכרת</label>
+    <label class="chk"><input type="checkbox" class="rf" id="migA">מיגרנה עם אאורה</label>
+    <label class="chk"><input type="checkbox" class="rf" id="mig">מיגרנה ללא אאורה</label>
+    <label class="chk"><input type="checkbox" class="rf" id="tg">היפר־TG</label>
+    <label class="chk"><input type="checkbox" class="rf" id="sle">SLE (לבדוק APLA)</label>
+    <label class="chk"><input type="checkbox" class="rf" id="gall">אבני מרה</label>
+    <label class="chk"><input type="checkbox" class="rf" id="fhxVte">VTE במשפחה</label>
+    <label class="chk"><input type="checkbox" id="fhxBr">סרטן שד במשפחה (דרגה 1) / BRCA</label>
+    <label class="chk"><input type="checkbox" id="progInt">אי־סבילות לפרוגסטוגן</label>
+  </div>
+</fieldset>
+<button type="button" class="reset" onclick="document.getElementById('f').reset();document.getElementById('yrsRow').style.display='none';calc()">איפוס</button>
+
+<details class="gloss">
+  <summary>מקרא ראשי תיבות</summary>
+  <div class="gwrap">
+    <dl>
+      <dt>MHT / HT</dt><dd>Menopausal Hormone Therapy — טיפול הורמונלי לגיל המעבר</dd>
+      <dt>ET / EPT</dt><dd>Estrogen Therapy / Estrogen-Progestogen Therapy — אסטרוגן בלבד / אסטרוגן + פרוגסטוגן</dd>
+      <dt>VMS</dt><dd>Vasomotor Symptoms — גלי חום והזעות לילה</dd>
+      <dt>GSM</dt><dd>Genitourinary Syndrome of Menopause — תסמונת אורוגניטלית של גיל המעבר</dd>
+      <dt>VVA</dt><dd>Vulvovaginal Atrophy — אטרופיה וולבו־וגינלית</dd>
+      <dt>HSDD</dt><dd>Hypoactive Sexual Desire Disorder — הפרעת חשק מיני עם מצוקה</dd>
+      <dt>LMP</dt><dd>Last Menstrual Period — וסת אחרונה</dd>
+      <dt>POI</dt><dd>Primary Ovarian Insufficiency — אי־ספיקה שחלתית ראשונית (לפני גיל 40)</dd>
+      <dt>BSO</dt><dd>Bilateral Salpingo-Oophorectomy — כריתת שחלות וחצוצרות דו־צדדית</dd>
+      <dt>AUB</dt><dd>Abnormal Uterine Bleeding — דימום רחמי חריג</dd>
+      <dt>PMB</dt><dd>Postmenopausal Bleeding — דימום לאחר המנופאוזה</dd>
+      <dt>VTE</dt><dd>Venous Thromboembolism — פקקת ורידית / תסחיף ריאתי</dd>
+      <dt>CHD / CVD</dt><dd>Coronary Heart Disease / Cardiovascular Disease — מחלת לב כלילית / מחלה קרדיווסקולרית</dd>
+      <dt>MI</dt><dd>Myocardial Infarction — אוטם שריר הלב</dd>
+      <dt>TIA</dt><dd>Transient Ischemic Attack — אירוע מוחי חולף</dd>
+      <dt>HTN</dt><dd>Hypertension — יתר לחץ דם</dd>
+      <dt>DM</dt><dd>Diabetes Mellitus — סוכרת</dd>
+      <dt>TG</dt><dd>Triglycerides — טריגליצרידים</dd>
+      <dt>BMI</dt><dd>Body Mass Index — מדד מסת גוף</dd>
+      <dt>SLE</dt><dd>Systemic Lupus Erythematosus — זאבת אדמנתית מערכתית</dd>
+      <dt>APLA</dt><dd>Antiphospholipid Antibodies — נוגדנים אנטי־פוספוליפידיים</dd>
+      <dt>OSA</dt><dd>Obstructive Sleep Apnea — דום נשימה חסימתי בשינה</dd>
+      <dt>FHx</dt><dd>Family History — היסטוריה משפחתית</dd>
+      <dt>BRCA1/2</dt><dd>גנים שמוטציה בהם מעלה סיכון לסרטן שד/שחלה</dd>
+      <dt>AI</dt><dd>Aromatase Inhibitor — מעכב ארומטאז (למשל אנסטרוזול, לטרוזול)</dd>
+      <dt>MP</dt><dd>Micronized Progesterone — פרוגסטרון מיקרוני (Utrogestan)</dd>
+      <dt>MPA</dt><dd>Medroxyprogesterone Acetate — פרוגסטין סינתטי (ב־WHI)</dd>
+      <dt>NETA</dt><dd>Norethindrone Acetate — פרוגסטין סינתטי</dd>
+      <dt>CEE</dt><dd>Conjugated Equine Estrogens — אסטרוגנים מצומדים (ב־WHI)</dd>
+      <dt>LNG-IUS</dt><dd>Levonorgestrel Intrauterine System — התקן תוך־רחמי משחרר לבונורגסטרל (Mirena)</dd>
+      <dt>SERM</dt><dd>Selective Estrogen Receptor Modulator — מאפנן סלקטיבי של קולטן אסטרוגן</dd>
+      <dt>TSEC</dt><dd>Tissue-Selective Estrogen Complex — שילוב CEE + bazedoxifene (ללא צורך בפרוגסטוגן)</dd>
+      <dt>DHEA</dt><dd>Dehydroepiandrosterone — פרסטרון; תכשיר וגינלי (Intrarosa)</dd>
+      <dt>SHBG</dt><dd>Sex Hormone-Binding Globulin — עולה עם אסטרוגן פומי ומפחית טסטוסטרון חופשי</dd>
+      <dt>COC</dt><dd>Combined Oral Contraceptive — גלולה משולבת</dd>
+      <dt>SSRI / SNRI</dt><dd>נוגדי דיכאון מעכבי ספיגה חוזרת של סרוטונין (± נוראדרנלין)</dd>
+      <dt>CBT</dt><dd>Cognitive Behavioral Therapy — טיפול קוגניטיבי־התנהגותי</dd>
+      <dt>NK3</dt><dd>Neurokinin-3 receptor antagonist — מנגנון הפעולה של fezolinetant</dd>
+      <dt>BMD</dt><dd>Bone Mineral Density — צפיפות מינרלים בעצם</dd>
+      <dt>WHI</dt><dd>Women's Health Initiative — המחקר האקראי הגדול שעליו נשענים חלק מהנתונים</dd>
+      <dt>RCT</dt><dd>Randomized Controlled Trial — מחקר אקראי מבוקר</dd>
+      <dt>NAMS</dt><dd>The North American Menopause Society</dd>
+      <dt>first-pass</dt><dd>מטבוליזם ראשוני בכבד — נעקף במתן טרנסדרמלי</dd>
+    </dl>
+  </div>
+</details>
+</form>
+
+<div class="panel" id="out"></div>
+</div>
+
+<script>
+"use strict";
+/* ---- sources ---- */
+const IL='https://ima-contentfiles.s3.amazonaws.com/Ne174_TreatmentofaMenopausalWoman.pdf';
+const NA='https://menopause.org/wp-content/uploads/professional/nams-2022-hormone-therapy-position-statement.pdf';
+const TT='https://doi.org/10.1210/jc.2019-01603';
+/* NAMS: pdf page = article page - 766 */
+const c=(label,url,pg)=>`<a class="cite" target="_blank" rel="noopener" href="${url}${pg?'#page='+pg:''}">${label}</a>`;
+const cIL=p=>c("נייר 102 · עמ' "+p, IL, p);
+const cNA=p=>c('NAMS · עמ\' '+p, NA, p-766);
+const cTT=()=>c('Global Consensus 2019', TT);
+
+const $=id=>document.getElementById(id);
+const on=id=>$(id).checked;
+function radio(name){const r=document.querySelector(`input[name=${name}]:checked`);return r?r.value:null;}
+
+function calc(){
+  const age=+$('age').value||null, st=radio('st'), ut=radio('ut');
+  $('yrsRow').style.display=(st==='post'||st==='surg')?'flex':'none';
+  const yrs=(st==='post'||st==='surg')? (+$('yrs').value||0):0;
+  const out=$('out');
+  if(!age||!st){ out.innerHTML=`<div class="rec"><h2>ממתין לנתונים</h2><p class="sub">יש להזין גיל וסטטוס מנופאוזלי — ההמלצה תופיע כאן ותתעדכן תוך כדי מילוי.</p></div>`; return; }
+
+  const uterusLike = ut==='yes'||ut==='partial';
+  const anyCI=['unexbleed','brca_hx','endoAdv','ovC','estCa','vte','art','cva','liver','porph'].some(on);
+  const bmi=+$('bmi').value||null;
+  const tdReasons=[];
+  if(bmi>=30) tdReasons.push('BMI≥30'); if(on('smoke'))tdReasons.push('עישון'); if(on('htn'))tdReasons.push('יל"ד');
+  if(on('dm'))tdReasons.push('סוכרת'); if(on('migA'))tdReasons.push('מיגרנה+אאורה'); if(on('mig'))tdReasons.push('מיגרנה');
+  if(on('tg'))tdReasons.push('היפר־TG'); if(on('sle'))tdReasons.push('SLE'); if(on('gall'))tdReasons.push('אבני מרה');
+  if(on('fhxVte'))tdReasons.push('VTE משפחתי'); if(age>=60||yrs>10)tdReasons.push('גיל/זמן מ־LMP');
+  const transdermal=tdReasons.length>0;
+  const poi=age<40, early=age>=40&&age<45;
+  const windowOK=age<60&&yrs<=10&&!poi;
+
+  /* ---------- A. eligibility ---------- */
+  let eligibility='', eClass='', eBadge='';
+  const eItems=[];
+  if(anyCI){
+    eClass='box-stop'; eBadge='<span class="badge b-stop">הוראת נגד לטיפול סיסטמי</span>';
+    eItems.push('סומנה הוראת נגד לטיפול הורמונלי סיסטמי לפי רשימת נייר העמדה הישראלי '+cIL(5)+' וההתוויות ב־NAMS '+cNA(770)+'.');
+    if(on('vte')) eItems.push('VTE/טרומבופיליה: אסטרוגן פומי אינו מתאים; במקרים נבחרים ניתן לשקול אסטרדיול טרנסדרמלי לאחר הערכה (± המטולוגיה) — עדויות תצפיתיות בלבד '+cNA(779)+'.');
+    if(on('brca_hx')) eItems.push('לאחר סרטן שד: סיסטמי בד"כ לא; ב־VMS קשים ועמידים — shared decision עם האונקולוג/ית בלבד '+cNA(781)+'.');
+    if(on('endoEarly')) eItems.push('לעומת זאת, בסרטן רירית רחם מוקדם (Stage I, low-grade) לאחר ניתוח — טיפול הורמונלי אפשרי בתיאום אונקולוג/ית כשאין מענה לא־הורמונלי '+cNA(782)+'.');
+    eItems.push('נייר 102: כשסבל המטופלת גבוה — שיקול דעת פרטני עם רופא יועץ מהתחום הרלוונטי '+cIL(5)+'.');
+  } else if(poi){
+    eClass='box-go'; eBadge='<span class="badge b-go">POI — התוויה לטיפול</span>';
+    eItems.push('אי־ספיקה שחלתית לפני גיל 40: מומלץ טיפול הורמונלי (או COC בצעירות בריאות) לפחות עד הגיל הממוצע של המנופאוזה (~52) — גם ללא תסמינים, להגנה על עצם, לב וקוגניציה '+cNA(774)+'.');
+    eItems.push('ייתכן צורך במינונים גבוהים מהסטנדרט לצעירות '+cNA(774)+'.');
+  } else if(windowOK){
+    eClass='box-go'; eBadge='<span class="badge b-go">חלון הזדמנויות</span>';
+    eItems.push('גיל <60 ועד 10 שנים מ־LMP, ללא הוראות נגד: התועלת עולה על הסיכונים לטיפול ב־VMS ולמניעת איבוד עצם '+cIL(4)+' '+cNA(785)+'.');
+    if(early) eItems.push('מנופאוזה מוקדמת (40–45): מומלץ טיפול לפחות עד ~גיל 52 '+cNA(774)+'.');
+    if(!on('vms')&&!on('gsm')&&!on('bone')&&!on('dep')&&!on('sleep')) eItems.push('שימו לב: לא סומנה התוויה תסמינית — HT אינו ניתן כמניעה כללית של מחלות כרוניות '+cNA(785)+'.');
+  } else {
+    eClass='box-warn'; eBadge='<span class="badge b-warn">התחלה מאוחרת — שיקול פרטני</span>';
+    eItems.push('גיל ≥60 או >10 שנים מ־LMP: מאזן תועלת־סיכון פחות נוח (CHD, שבץ, VTE, דמנציה); התחלה דורשת שקילה פרטנית וייעוץ '+cNA(784)+' '+cIL(4)+'.');
+    eItems.push('VMS חדשים בגיל מבוגר — לשלול קודם סיבות אחרות (OSA, היפרתירואידיזם, קרצינואיד, לימפומה, תרופות) '+cNA(784)+'.');
+    eItems.push('אם בכל זאת מטפלים: מינון נמוך, עדיפות לדרך טרנסדרמלית '+cNA(784)+'.');
+  }
+  const secA=`<div class="rec ${eClass}"><h2>הערכת זכאות ${eBadge}</h2><ul>${eItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`;
+
+  /* ---------- B. regimen ---------- */
+  const rItems=[];
+  if(!anyCI&&(on('vms')||on('sleep')||on('bone')||poi||early||on('dep'))){
+    if(!uterusLike){
+      rItems.push('<b>אסטרוגן בלבד</b> (ללא רחם): <span class="drug">Estrofem 1mg</span> פומי, או טרנסדרמלי (ר\' דרך מתן). אין צורך בפרוגסטוגן '+cIL(4)+'; פרופיל שד נוח יותר ומשך טיפול ארוך יותר סביר '+cNA(781)+'.');
+    } else {
+      if(ut==='partial') rItems.push('כריתה חלקית / שארית רירית / אנדומטריוזיס — להתייחס כרחם קיים ולהוסיף פרוגסטוגן '+cIL(4)+'.');
+      if(st==='peri'||yrs<2){
+        rItems.push('<b>משטר מחזורי (sequential)</b> בפרי־מנופאוזה / שנתיים ראשונות: <span class="drug">Femoston 1/10</span>, או אסטרוגן + <span class="drug">Utrogestan 200mg</span> ×12–14 ימים/חודש (בלילה) '+cNA(769)+'.');
+      } else {
+        rItems.push('<b>משטר רציף (continuous combined)</b> — ללא דימום חודשי: <span class="drug">Activelle</span> / <span class="drug">Angeliq</span> / <span class="drug">Femoston Conti</span>, או אסטרוגן + <span class="drug">Utrogestan 100mg</span> כל לילה '+cNA(769)+'.');
+      }
+      rItems.push('חלופה להגנת רירית: <span class="drug">Mirena</span> (off-label להגנה אנדומטריאלית; נתוני RCT מוגבלים) '+cNA(769)+'.');
+      if(on('progInt')) rItems.push('אי־סבילות לפרוגסטוגן: TSEC (CEE+bazedoxifene) — חלופה ללא פרוגסטוגן '+cIL(4)+' '+cNA(769)+'.');
+      if(on('contraNeed')&&st==='peri') rItems.push('נדרשת מניעה: HT אינו אמצעי מניעה — <span class="drug">Mirena</span> + אסטרוגן פותר מניעה + הגנת רירית + דימום '+cNA(769)+'.');
+    }
+    rItems.push('עיקרון מינון: המינון היעיל הנמוך המתאים למטרות הטיפול, עם הערכה תקופתית '+cNA(769)+'.');
+    if(on('sleep')&&uterusLike) rItems.push('הפרעת שינה: יתרון ל־<span class="drug">Utrogestan</span> בלילה (אפקט GABA־ערגי, משפר הירדמות) '+cNA(772)+'.');
+    if(on('dep')) rItems.push('דיכאון: בפרי־מנופאוזה לאסטרוגן אפקט אנטי־דכאוני בסדר גודל של SSRI; בפוסט־מנופאוזה — לא יעיל כטיפול בדיכאון. טיפול קו ראשון לדיכאון חוזר: תרופתי/פסיכותרפיה '+cNA(778)+'.');
+    if(on('bone')) rItems.push('עצם: HT מונע איבוד עצם ומפחית שברים (מניעה — לא טיפול באוסטאופורוזיס קיימת) '+cNA(775)+'.');
+  }
+  if(!rItems.length&&!anyCI) rItems.push('לא סומנה התוויה סיסטמית — ר\' סעיפי GSM / לא־הורמונלי לפי הצורך.');
+  const secB = rItems.length? `<div class="rec"><h2>💊 משטר</h2><ul>${rItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`:'';
+
+  /* ---------- C. route ---------- */
+  const cItems=[];
+  if(!anyCI&&(on('vms')||on('sleep')||on('bone')||poi||early)){
+    if(transdermal){
+      cItems.push('<b>עדיפות לטרנסדרמלי</b> ('+tdReasons.join(', ')+'): עוקף first-pass; תצפיתית — פחות VTE, שבץ (במינון סטנדרטי) ואבני מרה '+cNA(769)+' '+cNA(779)+'.');
+      cItems.push('תכשירים: <span class="drug">Estradot</span> (מדבקה 25–50mcg ×2/שבוע) · <span class="drug">Divigel</span> 0.5–1mg ג\'ל · <span class="drug">Lenzetto</span> תרסיס.');
+    } else {
+      cItems.push('ללא גורמי סיכון מיוחדים: פומי או טרנסדרמלי — יעילות דומה ל־VMS; לפי העדפת המטופלת '+cNA(769)+'.');
+    }
+    if(on('hsdd')) cItems.push('ב־HSDD יתרון לטרנסדרמלי — פחות עליית SHBG ופגיעה בטסטוסטרון חופשי '+cNA(773)+'.');
+    if(on('htnUn')) cItems.push('יל"ד לא מאוזן: לאזן במקביל — חלק מהערכת ההתאמה.');
+    if(on('sle')) cItems.push('SLE: להשלים APLA לפני התחלה; חיובי — נגד סיסטמי.');
+  }
+  const secC = cItems.length? `<div class="rec"><h2>🧴 דרך מתן</h2><ul>${cItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`:'';
+
+  /* ---------- D. GSM ---------- */
+  const gItems=[];
+  if(on('gsm')){
+    gItems.push('קו ראשון ל־GSM בלבד: אסטרוגן וגינלי במינון נמוך — <span class="drug">Vagifem 10mcg</span> ×2/שבוע (לאחר טעינה) או <span class="drug">Ovestin</span> קרם; ספיגה מזערית, ללא צורך בפרוגסטוגן, בטוח לשימוש ממושך '+cNA(772)+' '+cIL(4)+'.');
+    gItems.push('חלופה: <span class="drug">Intrarosa</span> (DHEA וגינלי) — בסל לפי נייר 102 '+cIL(4)+'.');
+    gItems.push('אין הוראות נגד לטיפול וגינלי — למעט סרטן שד תחת מעכבי ארומטאז: בתיאום אונקולוג/ית '+cIL(5)+' '+cNA(772)+'.');
+    if(on('brca_hx')&&!on('ai')) gItems.push('לאחר סרטן שד: קודם לא־הורמונלי (סיכה/לחות); בהיעדר מענה — וגינלי במינון נמוך בשיתוף האונקולוג/ית '+cNA(781)+'.');
+    if(on('ai')) gItems.push('תחת מעכבי ארומטאז — זהירות מוגברת גם עם וגינלי; החלטה אונקולוגית '+cNA(772)+'.');
+    gItems.push('דגש: GSM מחמיר ללא טיפול; בהפסקת טיפול סיסטמי — להציע המשך מקומי '+cNA(784)+'.');
+  }
+  const secD = gItems.length? `<div class="rec"><h2>🌸 GSM</h2><ul>${gItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`:'';
+
+  /* ---------- E. non-hormonal ---------- */
+  const nItems=[];
+  if(on('vms')&&(anyCI||!windowOK)){
+    nItems.push('SSRI/SNRI (בסל): venlafaxine, escitalopram — יעילים ל־VMS; להימנע מ־paroxetine תחת tamoxifen '+cIL(4)+'.');
+    nItems.push('CBT (בסל) וטכניקות הרפיה '+cIL(4)+'; gabapentin — אופציה נוספת.');
+    nItems.push('Fezolinetant (<span class="drug">Veoza</span>, אנטגוניסט NK3) — אושר אחרי פרסום ניירות העמדה; מעבר למקורות הכלי, לבדוק זמינות/סל.');
+    nItems.push('לא מומלץ: הורמונים "ביו־אידנטיים" ברוקחות מרקחת — ללא בקרה וללא נתוני בטיחות '+cIL(4)+' '+cNA(771)+'.');
+  }
+  const secE = nItems.length? `<div class="rec"><h2>🚫 חלופות לא־הורמונליות ל־VMS</h2><ul>${nItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`:'';
+
+  /* ---------- F. testosterone ---------- */
+  const tItems=[];
+  if(on('hsdd')){
+    tItems.push('ההתוויה היחידה מבוססת־ראיות: HSDD בפוסט־מנופאוזה, לאחר הערכה ביו־פסיכו־סוציאלית מלאה '+cTT()+'.');
+    tItems.push('מינון פיזיולוגי נשי בלבד — תכשיר גברי בהתאמה (למשל <span class="drug">Testogel</span> ~1/10 שקית ≈ 0.5g/יום). לא פלטים/הזרקות (רמות סופרא־פיזיולוגיות) '+cTT()+'.');
+    tItems.push('ניטור: Total T בסיס, חזרה אחרי 3–6 שבועות, ואחת ל־6 חודשים; אין benefit תוך 6 חודשים — להפסיק '+cTT()+'.');
+    tItems.push('אין להשתמש לרווחה/מצב רוח/קוגניציה/עצם — אין ראיות '+cTT()+'. זהירות בסרטן שד הורמונלי־רגיש. אינו בסל בהתוויה זו '+cIL(4)+'.');
+  }
+  const secF = tItems.length? `<div class="rec"><h2>💬 טסטוסטרון (HSDD)</h2><ul>${tItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`:'';
+
+  /* ---------- G. follow-up ---------- */
+  const fItems=[];
+  if(!anyCI&&(on('vms')||on('gsm')||on('bone')||on('sleep')||poi||early)){
+    fItems.push('ביקורת להערכת תגובה לאחר ההתחלה; דיון שנתי על המשך, מינון והתוויות נגד — כולל בדיקת שד '+cIL(5)+'.');
+    fItems.push('נייר 102: מעקב US על עובי רירית תחת טיפול סיסטמי '+cIL(5)+'. הערה: NAMS אינו ממליץ על surveillance שגרתי — אלא בירור דימום לא מתוזמן >6 חודשים מההתחלה '+cNA(769)+'. (פער בין המקורות — לפעול לפי ההנחיה המקומית.)');
+    fItems.push('אין גיל עצירה שרירותי; המשך אחרי 60/65 סביר עם הערכה תקופתית, מינון נמוך ועדיפות טרנסדרמלית '+cNA(784)+' '+cIL(5)+'.');
+    fItems.push('בהפסקה: ~50% הישנות VMS; אפשר הפסקה הדרגתית; הגנת העצם נעלמת מהר '+cNA(784)+'.');
+    if(on('fhxBr')) fItems.push('FHx שד / BRCA: תצפיתית — HT אינו מוסיף סיכון יחסי מעבר לבסיסי, אך הסיכון הבסיסי גבוה; לשקול הערכת סיכון/ייעוץ גנטי והקפדה על סקר '+cNA(781)+'.');
+  }
+  const secG = fItems.length? `<div class="rec"><h2>📋 מעקב</h2><ul>${fItems.map(i=>'<li>'+i+'</li>').join('')}</ul></div>`:'';
+
+  out.innerHTML = secA+secB+secC+secD+secE+secF+secG+
+  `<div class="note">שמות התכשירים והזמינות בסל הם מעבר לתוכן ניירות העמדה — לאימות מול המאגר העדכני. הכלי תומך החלטה ואינו מחליף שיקול דעת קליני.<br>מקורות: <a href="${IL}" target="_blank">נייר עמדה 102 (2021)</a> · <a href="${NA}" target="_blank">NAMS 2022</a> · <a href="${TT}" target="_blank">Global Consensus Testosterone 2019</a></div>`;
+}
+calc();
+</script>
+</body>
+</html>
