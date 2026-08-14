@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>יתר לחץ דם — כלי החלטה לרופא/ה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#20302E;--muted:#5C6B68;--bg:#F0F3F2;--card:#fff;--primary:#0D4F63;--primary-soft:#DFEBF0;
+--line:#D5DEDC;--warn-bg:#FBF3E2;--warn-ink:#8A6420;--stop-bg:#FBEDEA;--stop-ink:#8C3A2E;--go-bg:#E6F2E9;--go-ink:#2F6A44;
+--info-bg:#EDF0FA;--info-ink:#3D4C86;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Heebo',system-ui,sans-serif;font-size:15px;line-height:1.55}
+header{background:var(--primary);color:#fff;padding:13px 18px}
+header h1{font-family:'Frank Ruhl Libre',serif;font-size:21px}
+header p{font-size:12.5px;opacity:.85}
+.layout{max-width:1240px;margin:0 auto;padding:14px;display:grid;grid-template-columns:minmax(320px,400px) 1fr;gap:14px;align-items:start}
+@media(max-width:920px){.layout{grid-template-columns:1fr}}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:10px 13px;margin-bottom:10px}
+legend{font-weight:700;font-size:13.5px;color:var(--primary);padding:0 6px}
+label.chk{display:flex;gap:7px;align-items:flex-start;padding:3px 2px;cursor:pointer;font-size:14px}
+label.chk input{margin-top:3px;accent-color:var(--primary);flex:0 0 auto}
+.inline{display:flex;flex-wrap:wrap;gap:2px 14px}
+.inline label.chk{padding:2px 0}
+input[type=number],input[type=text],select{font:inherit;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:#fff}
+input[type=number]{width:72px}
+.fld{display:flex;align-items:center;gap:7px;margin:5px 0;font-size:14px;flex-wrap:wrap}
+.bp{direction:ltr;display:inline-flex;align-items:center;gap:6px}
+.bp .sep{color:var(--muted);font-weight:700}
+.sub{font-size:12.5px;color:var(--muted)}
+.panel{position:sticky;top:12px}
+@media(max-width:920px){.panel{position:static}}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.tab{font:inherit;font-weight:500;font-size:14px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);border-radius:9px;padding:7px 13px;cursor:pointer}
+.tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.rec{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;margin-bottom:11px}
+.rec h2{font-family:'Frank Ruhl Libre',serif;font-size:17px;margin-bottom:7px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.rec ul{padding-inline-start:18px}
+.rec li{margin-bottom:6px;font-size:14.5px}
+.badge{display:inline-block;border-radius:8px;padding:2px 10px;font-size:12.5px;font-weight:700}
+.b-go{background:var(--go-bg);color:var(--go-ink)}.b-warn{background:var(--warn-bg);color:var(--warn-ink)}
+.b-stop{background:var(--stop-bg);color:var(--stop-ink)}.b-info{background:var(--info-bg);color:var(--info-ink)}
+.box-go{border-inline-start:4px solid #4E8F63}.box-warn{border-inline-start:4px solid #C99A2E}
+.box-stop{border-inline-start:4px solid #C05B49}.box-info{border-inline-start:4px solid #6B7BB8}
+a.cite,span.cite{display:inline-block;background:var(--primary-soft);color:var(--primary);border-radius:6px;padding:0 6px;font-size:11px;font-weight:700;text-decoration:none;margin-inline-start:4px;white-space:nowrap;vertical-align:1px}
+a.cite:hover{background:var(--primary);color:#fff}
+.drug{color:var(--info-ink);font-weight:500}
+.note{font-size:12.5px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);padding:10px 12px;margin-bottom:11px}
+
+.soapwrap textarea{width:100%;font:inherit;font-size:13.5px;line-height:1.6;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;background:#fff;resize:vertical}
+#soapOut{min-height:360px;background:var(--bg,#F1F4F2);font-family:ui-monospace,'IBM Plex Mono',monospace;font-size:12.6px;direction:rtl}
+#peBox{min-height:120px}
+.soapwrap label.lbl{display:block;font-weight:700;font-size:13.5px;color:var(--primary);margin:13px 0 5px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{font:inherit;font-weight:500;border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 16px;cursor:pointer;font-size:14px}
+.btn.pri{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+button.reset{font:inherit;border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:6px 14px;cursor:pointer}
+table.dt{width:100%;border-collapse:collapse;font-size:13.5px}
+table.dt th,table.dt td{border-bottom:1px solid var(--line);padding:6px 7px;text-align:right;vertical-align:top}
+table.dt th{background:var(--primary-soft);color:var(--primary);font-size:12.5px;position:sticky;top:0}
+.scroll{max-height:560px;overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+details.gloss{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-top:10px;overflow:hidden}
+details.gloss summary{padding:10px 13px;cursor:pointer;font-weight:700;font-size:13.5px;color:var(--primary);list-style:none;display:flex;justify-content:space-between}
+details.gloss summary::-webkit-details-marker{display:none}
+details.gloss summary::after{content:"+";color:var(--muted)}
+details.gloss[open] summary::after{content:"–"}
+.gwrap{padding:0 13px 12px;max-height:320px;overflow-y:auto}
+.gwrap dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px}
+.gwrap dt{font-weight:700;color:var(--primary);direction:ltr;text-align:right;white-space:nowrap}
+</style>
+</head>
+<body>
+<header>
+<h1>יתר לחץ דם — תמיכה בהחלטה קלינית</h1>
+<p>מבוסס על ההנחיות הקליניות הישראליות 2026 (מהדורה שנייה) · פרקים 1, 2 ו-8 · מבוגרים בלבד</p>
+<a href="doctors.html" style="display:inline-block;margin-top:6px;font-size:12.5px;color:#fff;opacity:.8;text-decoration:none">→ לכל הכלים</a>
+</header>
+
+<div class="layout">
+<form id="f" oninput="calc()" onchange="calc()">
+
+<fieldset><legend>מדידות לחץ דם</legend>
+  <div class="fld">מרפאה:
+    <span class="bp"><input type="number" id="sbp" min="70" max="280" placeholder="סיסטולי"><span class="sep">/</span><input type="number" id="dbp" min="40" max="160" placeholder="דיאסטולי"></span> ממ״כ</div>
+  <div class="fld">גיל: <input type="number" id="age" min="18" max="110">
+    מין: <select id="sex"><option value="f">אישה</option><option value="m">גבר</option></select>
+    <label class="chk"><input type="checkbox" id="frail">שברירי/ת</label></div>
+  <label class="chk"><input type="checkbox" id="treated">נמצא/ת כבר תחת טיפול תרופתי ליל״ד</label>
+  <div class="fld">מדידות מחוץ למרפאה:
+    <select id="oom"><option value="none">לא בוצעו</option><option value="hbpm">HBPM (ביתי)</option><option value="abpm">ABPM (ניטור 24ש׳)</option></select></div>
+  <div class="fld" id="oomVals" style="display:none">ערך ממוצע:
+    <span class="bp"><input type="number" id="osbp" min="70" max="280" placeholder="סיסטולי"><span class="sep">/</span><input type="number" id="odbp" min="40" max="160" placeholder="דיאסטולי"></span></div>
+  <div class="fld" id="nightRow" style="display:none">ממוצע לילי:
+    <span class="bp"><input type="number" id="nsbp" min="70" max="280" placeholder="סיסטולי"><span class="sep">/</span><input type="number" id="ndbp" min="40" max="160" placeholder="דיאסטולי"></span></div>
+</fieldset>
+
+<fieldset><legend>טיפול נוכחי (לקביעת שלב באלגוריתם)</legend>
+  <div class="inline">
+    <label class="chk"><input type="checkbox" class="rx" id="rxRAS">ACEi / ARB</label>
+    <label class="chk"><input type="checkbox" class="rx" id="rxCCB">CCB דיהידרופירידיני</label>
+    <label class="chk"><input type="checkbox" class="rx" id="rxDiur">משתן תיאזידי/דמוי-תיאזיד</label>
+    <label class="chk"><input type="checkbox" class="rx" id="rxMRA">MRA (ספירונולקטון/אפלרנון)</label>
+    <label class="chk"><input type="checkbox" class="rx" id="rxBB">חוסם בטא</label>
+    <label class="chk"><input type="checkbox" class="rx" id="rxAlpha">חוסם אלפא</label>
+    <label class="chk"><input type="checkbox" class="rx" id="rxOther">אחר</label>
+  </div>
+  <label class="chk"><input type="checkbox" id="maxDose">כל התרופות במינון מרבי נסבל, ≥3 חודשים</label>
+  <label class="chk"><input type="checkbox" id="adherence">חשד לאי-היענות</label>
+</fieldset>
+
+<fieldset><legend>מחלות נלוות</legend>
+  <div class="inline">
+    <label class="chk"><input type="checkbox" class="cm" id="asthma">אסתמה</label>
+    <label class="chk"><input type="checkbox" class="cm" id="tachy">דופק מהיר</label>
+    <label class="chk"><input type="checkbox" class="cm" id="af">פרפור פרוזדורים</label>
+    <label class="chk"><input type="checkbox" class="cm" id="angina">תסמונת תעוקתית</label>
+    <label class="chk"><input type="checkbox" class="cm" id="hfref">אי-ספיקת לב HFrEF</label>
+    <label class="chk"><input type="checkbox" class="cm" id="hfpef">אי-ספיקת לב HFpEF</label>
+    <label class="chk"><input type="checkbox" class="cm" id="mi">אוטם שריר הלב קודם</label>
+    <label class="chk"><input type="checkbox" class="cm" id="stroke">אירוע מוחי קודם</label>
+    <label class="chk"><input type="checkbox" class="cm" id="dm">סוכרת</label>
+    <label class="chk"><input type="checkbox" class="cm" id="ckd">CKD</label>
+    <label class="chk"><input type="checkbox" class="cm" id="prot">פרוטאינוריה / אלבומינוריה</label>
+    <label class="chk"><input type="checkbox" class="cm" id="mets">תסמונת מטבולית</label>
+    <label class="chk"><input type="checkbox" class="cm" id="pad">מחלת כלי דם היקפית</label>
+    <label class="chk"><input type="checkbox" class="cm" id="gout">שיגדון (גאוט)</label>
+    <label class="chk"><input type="checkbox" class="cm" id="cad">מחלת לב כלילית ידועה</label>
+  </div>
+</fieldset>
+
+<fieldset><legend>נזק לאברי מטרה (HMOD)</legend>
+  <div class="inline">
+    <label class="chk"><input type="checkbox" class="hm" id="hLVH">LVH</label>
+    <label class="chk"><input type="checkbox" class="hm" id="hAlb">אלבומינוריה</label>
+    <label class="chk"><input type="checkbox" class="hm" id="hRet">רטינופתיה דרגה 3-4</label>
+    <label class="chk"><input type="checkbox" class="hm" id="hGFR">eGFR &lt; 60</label>
+  </div>
+</fieldset>
+
+<fieldset><legend>רמזים ליל״ד שניוני</legend>
+  <div class="inline">
+    <label class="chk"><input type="checkbox" class="sec" id="sHypoK">אשלגן נמוך / בגבול תחתון (3.5-4.6)</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sNoct">נוקטוריה</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sSnore">נחירות / ישנוניות ביום / היקף צוואר &gt;42</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sBruit">אוושה בטנית / היצרויות עורקיות</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sPulmEd">בצקות ריאות חוזרות עם תפקוד סיסטולי שמור</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sCrRise">החמרת תפקוד כליות לאחר ACEi/ARB</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sParox">התקפי דופק מהיר, הזעה, רעד, חיוורון</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sCush">השמנה מרכזית, פני ירח, סטריאות אדומות, עור דק</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sWeak">חולשת שרירים</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sUTI">זיהומי שתן חוזרים / משקע פתולוגי / סיפור משפחתי כלייתי</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sThyr">תסמיני תריס</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sCoarc">ל״ד גבוה בגפה עליונה מול תחתונה / דפקים פמורלים חלשים</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sSudden">הופעה פתאומית של דרגה 3 או החמרה חדה</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sNoDip">ל״ד לילי / היעדר ירידה לילית</label>
+    <label class="chk"><input type="checkbox" class="sec" id="sFamAldo">סיפור משפחתי של היפראלדוסטרוניזם / פאוכרומוציטומה</label>
+  </div>
+</fieldset>
+
+<fieldset><legend>תרופות/חומרים שעלולים להעלות ל״ד</legend>
+  <div class="inline">
+    <label class="chk"><input type="checkbox" class="dg" id="dNSAID">NSAIDs</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dSter">סטרואידים (כולל משחות/טיפות)</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dOCP">גלולות / טיפול הורמונלי</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dSNRI">SNRI</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dEPO">אריתרופויאטין</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dCNI">ציקלוספורין / טקרולימוס</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dOnc">אונקולוגיות / נוגדי VEGF</label>
+    <label class="chk"><input type="checkbox" class="dg" id="dDrug">קוקאין / סמים</label>
+  </div>
+</fieldset>
+
+<fieldset><legend>מעבדה (אופציונלי)</legend>
+  <div class="fld">אשלגן: <input type="number" id="labK" step="0.1" min="2" max="8"> mEq/L</div>
+  <div class="fld">eGFR: <input type="number" id="labGFR" min="3" max="150"> מ״ל/דק׳</div>
+  <div class="fld">נתרן: <input type="number" id="labNa" min="110" max="160"> mEq/L</div>
+</fieldset>
+
+<button type="button" class="reset" onclick="resetAll()">איפוס</button>
+
+<details class="gloss"><summary>מקרא ראשי תיבות</summary><div class="gwrap"><dl>
+<dt>יל״ד</dt><dd>יתר לחץ דם</dd>
+<dt>ל״ד</dt><dd>לחץ דם</dd>
+<dt>HBPM</dt><dd>Home BP Monitoring — מדידות ביתיות</dd>
+<dt>ABPM</dt><dd>Ambulatory BP Monitoring — ניטור 24 שעות</dd>
+<dt>AOBP</dt><dd>Automated Office BP — מדידה אוטומטית ללא צוות (לא מומלצת בישראל)</dd>
+<dt>HMOD</dt><dd>Hypertension Mediated Organ Damage — נזק לאברי מטרה מיל״ד</dd>
+<dt>LVH</dt><dd>Left Ventricular Hypertrophy — היפרטרופיה של חדר שמאל</dd>
+<dt>ISH / IDH</dt><dd>יל״ד סיסטולי מבודד / דיאסטולי מבודד</dd>
+<dt>ACEi</dt><dd>Angiotensin Converting Enzyme inhibitor</dd>
+<dt>ARB</dt><dd>Angiotensin Receptor Blocker</dd>
+<dt>ARNI</dt><dd>Angiotensin Receptor-Neprilysin Inhibitor</dd>
+<dt>RAAS / RAS</dt><dd>מערכת רנין-אנגיוטנסין-אלדוסטרון</dd>
+<dt>CCB</dt><dd>Calcium Channel Blocker</dd>
+<dt>DHP / NDHP</dt><dd>דיהידרופירידיני / שאינו דיהידרופירידיני</dd>
+<dt>MRA</dt><dd>Mineralocorticoid Receptor Antagonist</dd>
+<dt>ASI</dt><dd>Aldosterone Synthase Inhibitor (baxdrostat)</dd>
+<dt>SGLT2i</dt><dd>Sodium-Glucose Cotransporter 2 inhibitor</dd>
+<dt>GLP1RA</dt><dd>GLP-1 Receptor Agonist</dd>
+<dt>HFrEF / HFpEF</dt><dd>אי-ספיקת לב עם מקטע פליטה ירוד / שמור</dd>
+<dt>CKD</dt><dd>Chronic Kidney Disease — מחלת כליות כרונית</dd>
+<dt>eGFR</dt><dd>קצב סינון גלומרולרי מוערך</dd>
+<dt>ARR</dt><dd>Aldosterone-Renin Ratio</dd>
+<dt>PA</dt><dd>Primary Aldosteronism — היפראלדוסטרוניזם ראשוני</dd>
+<dt>PSV</dt><dd>Peak Systolic Velocity — בדופלר עורקי כליה</dd>
+<dt>OSA</dt><dd>Obstructive Sleep Apnea — דום נשימה חסימתי בשינה</dd>
+<dt>DST</dt><dd>Dexamethasone Suppression Test</dd>
+<dt>MAP</dt><dd>Mean Arterial Pressure</dd>
+<dt>MEN</dt><dd>Multiple Endocrine Neoplasia</dd>
+<dt>RAS (bilateral)</dt><dd>Renal Artery Stenosis — היצרות עורקי כליה</dd>
+</dl></div></details>
+</form>
+
+<div class="panel">
+  <div class="tabs">
+    <button type="button" class="tab on" data-t="dx" onclick="setTab('dx')">אבחנה ובירור</button>
+    <button type="button" class="tab" data-t="tx" onclick="setTab('tx')">טיפול</button>
+    <button type="button" class="tab" data-t="ae" onclick="setTab('ae')">תופעות לוואי</button>
+    <button type="button" class="tab" data-t="rx" onclick="setTab('rx')">מאגר תרופות</button>
+    <button type="button" class="tab" data-t="soap" onclick="setTab('soap')">סיכום לתיק</button>
+  </div>
+  <div id="out"></div>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ===== source config =====
+   PDF_URL: הנתיב לקובץ ההנחיות. אם הקובץ יועלה לצד הכלי בשם htn-guidelines.pdf,
+   הקישורים בציטוטים ייפתחו ישירות בעמוד הרלוונטי. אם ריק — הציטוט יוצג כטקסט בלבד. */
+const PDF_URL = 'htn-guidelines.pdf';
+const IMA_PAGE = 'https://www.ima.org.il/Main/EditClinicalInstruction.aspx?ClinicalInstructionId=2694';
+function cite(ch,pg){
+  const label = 'פרק '+ch+' · עמ\u05F3 '+pg;
+  return PDF_URL ? `<a class="cite" target="_blank" rel="noopener" href="${PDF_URL}#page=${pg}">${label}</a>`
+                 : `<span class="cite">${label}</span>`;
+}
+const c1=p=>cite(1,p), c2=p=>cite(2,p), c6=p=>cite(6,p), c8=p=>cite(8,p), c9=p=>cite(9,p);
+
+const $=id=>document.getElementById(id);
+const on=id=>$(id).checked;
+const num=id=>{const v=+$(id).value; return v||null;};
+let TAB='dx';
+function setTab(t){TAB=t;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));calc();}
+function resetAll(){$('f').reset();$('oomVals').style.display='none';$('nightRow').style.display='none';calc();}
+
+/* ===== Israeli drug table (פרק 8, טבלה 3) ===== */
+const DRUGS=[
+ {cls:'ACEi',gen:'אנלפריל (Enalapril)',brand:'אנלדקס, אנלפרי — 5/10/20 מ״ג',dose:'5-40 מ״ג',freq:'1-2',clr:'כבדי למטבוליט פעיל, כלייתי',note:'אין לשלב עם ARB · אסור בהריון · שיעול 10-15%'},
+ {cls:'ACEi',gen:'סילזפריל (Cilazapril)',brand:'סילריל — 1/2.5/5 מ״ג',dose:'1-10 מ״ג',freq:'1',clr:'כלייתי',note:'אסור בהריון · היפרקלמיה ב-CKD'},
+ {cls:'ACEi',gen:'רמיפריל (Ramipril)',brand:'טריטייס, רמיטנס, רמיפריל טבע — 1.25/2.5/5 מ״ג',dose:'1.25-10 מ״ג',freq:'1',clr:'כלייתי',note:'אי-ספיקת כליות חדה בהיצרות דו״צ של עורקי כליה'},
+ {cls:'ACEi',gen:'קפטופריל (Captopril)',brand:'אסריל — 12.5/25/50 מ״ג',dose:'25-150 מ״ג',freq:'2-3',clr:'כבדי, כלייתי',note:'מתן תכוף — פחות מתאים לטיפול כרוני'},
+ {cls:'ARB',gen:'לוסרטן (Losartan)',brand:'אוקסאאר, לוסרטה, לוסרדקס, לוטן — 12.5/25/50/100 מ״ג',dose:'12.5-100 מ״ג',freq:'1-2',clr:'כבדי (CYP2C9), כלייתי',note:'אוריקוסורי — יתרון בשיגדון · אסור בהריון'},
+ {cls:'ARB',gen:'קנדסרטן (Candesartan)',brand:'אטקנד, קנדור — 8/16 מ״ג',dose:'8-32 מ״ג',freq:'1',clr:'מרתי וכלייתי',note:'אנגיואדמה נדירה · היפרקלמיה ב-CKD'},
+ {cls:'ARB',gen:'ולסרטן (Valsartan)',brand:'דיובן, וקטור, ואלסרטן דקסל/מדו — 40/80/160 מ״ג',dose:'80-320 מ״ג',freq:'1',clr:'מרתי',note:'אסור בהריון'},
+ {cls:'משתן',gen:'הידרוכלורותיאזיד (HCTZ)',brand:'דיזותיאזיד — 25 מ״ג',dose:'12.5-50 מ״ג',freq:'1',clr:'כלייתי',note:'מעקב Na-K-Ca-U.A וקריאטינין · להימנע בשיגדון לא מטופל'},
+ {cls:'משתן',gen:'אינדפמיד (Indapamide)',brand:'פמיד — 2.5 מ״ג',dose:'1.25-2.5 מ״ג',freq:'1',clr:'כלייתי וכבדי',note:'זמן מחצית חיים ארוך ואפקט חזק יותר מ-HCTZ'},
+ {cls:'משתן לולאה',gen:'פורוסמיד (Furosemide)',brand:'פוזיד, פורוסמיד אינובמד — 40 מ״ג',dose:'20-80 מ״ג',freq:'2',clr:'כלייתי',note:'מועדף ב-eGFR<30, אי-ספיקת לב, היפרקלצמיה/היפונתרמיה מתיאזיד'},
+ {cls:'CCB (DHP)',gen:'אמלודיפין (Amlodipine)',brand:'נורבסק, אמלו, אמלודי, אמלודיפין טבע — 5/10 מ״ג',dose:'2.5-10 מ״ג',freq:'1',clr:'כבדי (CYP3A4)',note:'בצקת ברגליים תלוית מינון, שכיחה יותר בנשים'},
+ {cls:'CCB (DHP)',gen:'לבאמלודיפין (Levamlodipine)',brand:'קונג׳ופרי — 2.5/5 מ״ג',dose:'1.25-5 מ״ג',freq:'1',clr:'כבדי (CYP3A4)',note:'פחות בצקת פריפרית בהשוואה לאמלודיפין'},
+ {cls:'CCB (DHP)',gen:'לרקנידיפין (Lercanidipine)',brand:'וזודיפ, לרקפרס — 10/20 מ״ג',dose:'10-20 מ״ג',freq:'1',clr:'כבדי (CYP3A4)',note:'שיעור בצקות נמוך יחסית — חלופה לאמלודיפין'},
+ {cls:'CCB (DHP)',gen:'ניפדיפין (Nifedipine)',brand:'טנסיפין MR 10/20; ניפדילונג 30/60 מ״ג',dose:'20-90 מ״ג',freq:'1-2',clr:'כבדי (CYP3A4)',note:'מועדף לטיפול ביל״ד בהריון (שחרור מושהה)'},
+ {cls:'MRA',gen:'ספירונולקטון (Spironolactone)',brand:'אלדקטון — 25/100 מ״ג',dose:'12.5-25 מ״ג',freq:'1',clr:'כבדי, כלייתי',note:'קו רביעי · מעקב K וקריאטינין · גינקומסטיה · אסור בהריון'},
+ {cls:'MRA',gen:'אפלרנון (Eplerenone)',brand:'אינספרה — 25/50 מ״ג',dose:'25-50 מ״ג',freq:'1-2',clr:'כבדי (CYP3A4)',note:'חלופה כשיש תופעות אנטי-אנדרוגניות מספירונולקטון'},
+ {cls:'חוסם בטא',gen:'ביסופרולול (Bisoprolol)',brand:'קונקור, קרדילוק — 1.25/2.5/5/10 מ״ג',dose:'1.25-10 מ״ג',freq:'1',clr:'כבדי וכלייתי',note:'סלקטיבי — מועדף אם נדרש חוסם בטא באסתמה'},
+ {cls:'חוסם בטא',gen:'מטופרולול (Metoprolol tartrate)',brand:'ניאובלוק 100; לופרסור דיויטבס 200 מ״ג',dose:'100-200 מ״ג',freq:'1-2',clr:'כבדי (CYP2D6)',note:'להימנע מהפסקה פתאומית'},
+ {cls:'חוסם בטא',gen:'פרופרנולול (Propranolol)',brand:'פרולול 10/40; בטא-פרוגרן† 80/160 מ״ג',dose:'80-160 מ״ג',freq:'1-2',clr:'כבדי',note:'לא סלקטיבי — להימנע באסתמה'},
+ {cls:'חוסם בטא',gen:'אטנולול (Atenolol)',brand:'נורמלול, נורמיטן — 25/50/100 מ״ג',dose:'25-100 מ״ג',freq:'1',clr:'כלייתי',note:'סלקטיבי'},
+ {cls:'חוסם אלפא+בטא',gen:'קרבדילול (Carvedilol)',brand:'קרבדקסון, קרוודילול טבע — 6.25/12.5 מ״ג',dose:'6.25-50 מ״ג',freq:'2',clr:'כבדי (CYP2D6), מרתי',note:'מועדף ב-HFrEF'},
+ {cls:'חוסם אלפא+בטא',gen:'לבטלול (Labetalol)',brand:'טרנדייט — 100/200 מ״ג',dose:'200-1200 מ״ג',freq:'2-4',clr:'כבדי',note:'מועדף בהריון'},
+ {cls:'CCB (NDHP)',gen:'ורפמיל (Verapamil)',brand:'ורפרס SR 240; קורדמיל 40/80 מ״ג',dose:'120-360 מ״ג',freq:'1-4',clr:'כבדי (CYP3A4)',note:'לא קו ראשון · אין לשלב עם חוסם בטא · עצירות'},
+ {cls:'CCB (NDHP)',gen:'דילטיאזם (Diltiazem)',brand:'דילטאם SR 120; אדיזם SR 120/180/240 מ״ג',dose:'120-360 מ״ג',freq:'1-2',clr:'כבדי (CYP3A4)',note:'לא קו ראשון · אינטראקציות CYP3A4/P-gp'},
+ {cls:'חוסם אלפא',gen:'דוקסזוסין (Doxazosin)',brand:'קדקס — 1/2/4 מ״ג',dose:'1-16 מ״ג',freq:'1',clr:'כבדי (CYP3A4)',note:'לא כמונותרפיה · אורתוסטטיזם — זהירות בקשישים'},
+ {cls:'אגוניסט אלפא מרכזי',gen:'קלונידין (Clonidine)',brand:'נורמופרסאן — 150 מק״ג',dose:'150-900 מק״ג',freq:'2-3',clr:'כבדי וכלייתי',note:'רק ביל״ד עמיד לא מאוזן · הפסקה פתאומית מסוכנת · יובש בפה'},
+ {cls:'מרחיב כלי דם',gen:'מינוקסידיל (Minoxidil)',brand:'מינוקסידיל† — 5 מ״ג',dose:'5-40 מ״ג',freq:'1-2',clr:'כבדי',note:'רק ביל״ד עמיד · חייב שילוב עם חוסם בטא ופורוסמיד · הירסוטיזם'},
+ {cls:'מרחיב כלי דם',gen:'הידרלזין (Hydralazine)',brand:'הידרלזין†, אלפאפרס†, אפרסולין† — 10/50 מ״ג',dose:'30-150 מ״ג',freq:'2-3',clr:'כבדי',note:'רק ביל״ד עמיד · תסמינים דמויי לופוס במינון גבוה'},
+ {cls:'השפעה מרכזית',gen:'מתילדופה (Methyldopa)',brand:'אלדומין†, מתיל-דופה† — 250 מ״ג',dose:'250-1000 מ״ג',freq:'2-3',clr:'כבדי',note:'מועדף בהריון · הפרעה בתפקודי כבד'}
+];
+const COMBOS=[
+ {t:'ACEi + משתן',d:'רמיפריל+HCTZ — רמיפריל פלוס / טריטיס קומפ (2.5/12.5, 5/25) · סילזפריל+HCTZ — סילריל פלוס 5/12.5'},
+ {t:'ARB + משתן',d:'לוסרטן 50+HCTZ 12.5 — אוקסאאר פלוס, לוטן פלוס, לוסרטה פלוס, לוסרדקס פלוס · קנדסרטן 16+HCTZ 12.5 — אטקנד פלוס, קנדור פלוס · ולסרטן+HCTZ — קו-דיובאן, וקטור פלוס (80/12.5, 160/12.5, 160/25)'},
+ {t:'CCB + ACEi',d:'אנלפריל+לרקנידיפין — וזודיפ קומבו, לרקאנפריל טבע (10/10, 10/20)'},
+ {t:'CCB + ARB',d:'אמלודיפין+ולסרטן — אקספורג׳, דופלקס, אמלוואל (80/5, 160/5, 160/10)'},
+ {t:'משתן + משתן שומר אשלגן',d:'HCTZ 50 + אמילוריד 5 — קלוריל'}
+];
+/* ===== adverse effects (פרק 8, טבלה 2) ===== */
+const AE=[
+ {cls:'כלל התרופות',eff:'נפילות / אורתוסטטיזם',act:'התחלת מינון נמוך וטיטרציה איטית, הדרכה למעבר הדרגתי משכיבה לעמידה, הימנעות מתרופות הגורמות לתת-ל״ד תנוחתי',note:'סיכון גבוה בעיקר בהתחלת טיפול ובעליית מינון; במבוגר מאוד — ניטור הדוק'},
+ {cls:'תיאזידים ודמויי-תיאזיד',eff:'היפונתרמיה',act:'הגבלת שתייה, הפסקת התרופה',note:'מעקב Na-K תקופתי · פורוסמיד כחלופה — היפונתרמיה נדירה יותר'},
+ {cls:'תיאזידים ודמויי-תיאזיד',eff:'היפוקלמיה',act:'תזונה עתירת אשלגן, תוספת ACEi/ARB או ספירונולקטון',act2:'',note:'לשקול שילוב עם אמילוריד · בהיפוקלמיה חמורה — השהיית טיפול'},
+ {cls:'תיאזידים ודמויי-תיאזיד',eff:'היפרקלצמיה',act:'מתן פורוסמיד',note:'לברר היפרפאראתירואידיזם ראשוני סמוי'},
+ {cls:'תיאזידים ודמויי-תיאזיד',eff:'היפראוריצמיה',act:'הקטנת מינון התרופה',note:'בשגדון פעיל ללא אלופורינול — הפסקת הטיפול · לשקול לוסרטן או אמלודיפין (אוריקוסוריים)'},
+ {cls:'CCB דיהידרופירידיני',eff:'בצקת ברגליים',act:'הפחתת מינון, שילוב חוסם רנין-אנגיוטנסין',note:'מעבר לחוסם סידן עם שיעור בצקת נמוך יותר, כמו לרקנידיפין'},
+ {cls:'CCB דיהידרופירידיני',eff:'התעבות חניכיים',act:'הפסקת טיפול, המלצה על היגיינת פה',note:'בדיקת רופא/ת שיניים ושיננית · מעקב לאחר 4-8 שבועות'},
+ {cls:'ACEi',eff:'שיעול',act:'הפסקת טיפול',note:'מעבר ל-ARB'},
+ {cls:'ACEi',eff:'אנגיואדמה',act:'הפסקת טיפול',note:'מעבר ל-ARB שישה שבועות לאחר התופעה (אנגיואדמה נדירה ב-ARB)'},
+ {cls:'ACEi / ARB',eff:'היפרקלמיה',act:'תוספת משתנים, דיאטה דלת אשלגן, קושרי אשלגן',note:'היפרקלמיה עיקשת או חמורה — יש להפסיק טיפול'},
+ {cls:'ACEi / ARB',eff:'עליית קריאטינין מעל 30%',act:'הפסקת טיפול',note:'לשלול היצרות דו-צדדית של עורקי הכליה · הגבלת שילוב עם NSAIDs'},
+ {cls:'ACEi / ARB',eff:'עליית קריאטינין פחות מ-30%',act:'מעקב — אין צורך בהפסקת טיפול',note:'עלייה צפויה בהתחלת הטיפול; התייצבות צפויה לאחר 2-4 שבועות · ב-CKD ניטור תכוף יותר'},
+ {cls:'חוסם בטא',eff:'דופק איטי / עייפות',act:'התאמת מינון',note:'ברדיקרדיה עקשנית או פגיעה באיכות החיים — להפסיק'},
+ {cls:'חוסם בטא',eff:'החמרת אסתמה',act:'הפסקת טיפול',note:'אם נדרש חוסם בטא — לבחור תכשיר סלקטיבי (ביסופרולול, אטנולול, מטופרולול)'}
+];
+
+/* ===== derive ===== */
+function derive(){
+  const d={};
+  d.sbp=num('sbp'); d.dbp=num('dbp'); d.age=num('age');
+  d.treated=on('treated'); d.frail=on('frail'); d.sex=$('sex').value;
+  d.oom=$('oom').value; d.osbp=num('osbp'); d.odbp=num('odbp'); d.nsbp=num('nsbp'); d.ndbp=num('ndbp');
+  $('oomVals').style.display = d.oom==='none'?'none':'flex';
+  $('nightRow').style.display = d.oom==='abpm'?'flex':'none';
+  // office category (פרק 1 טבלה 1)
+  d.cat=null;
+  if(d.sbp&&d.dbp){
+    const s=d.sbp,p=d.dbp;
+    if(s>=180||p>=110) d.cat={n:'יל״ד דרגה III',g:3,cls:'b-stop'};
+    else if(s>=160||p>=100) d.cat={n:'יל״ד דרגה II',g:2,cls:'b-stop'};
+    else if(s>=140||p>=90) d.cat={n:'יל״ד דרגה I',g:1,cls:'b-warn'};
+    else if(s>=130||p>=85) d.cat={n:'לחץ דם מוגבר',g:0.5,cls:'b-warn'};
+    else if(s>=120||p>=80) d.cat={n:'לחץ דם תקין',g:0,cls:'b-go'};
+    else d.cat={n:'לחץ דם מיטבי',g:0,cls:'b-go'};
+  }
+  d.officeHTN = d.sbp>=140||d.dbp>=90;
+  d.officeAtTarget = d.sbp&&d.dbp&&d.sbp<130&&d.dbp<80;
+  // out-of-office threshold
+  d.oomHigh=null;
+  if(d.oom==='hbpm'&&d.osbp&&d.odbp) d.oomHigh = d.osbp>=135||d.odbp>=85;
+  if(d.oom==='abpm'&&d.osbp&&d.odbp) d.oomHigh = d.osbp>=130||d.odbp>=80;
+  d.nightHigh = (d.nsbp&&d.ndbp)? (d.nsbp>=120||d.ndbp>=70) : null;
+  // phenotypes
+  d.pheno=[];
+  if(d.oomHigh!==null){
+    if(!d.treated){
+      if(d.officeHTN&&d.oomHigh===false) d.pheno.push({n:'יל״ד של חלוק לבן',t:'ל״ד גבוה במרפאה, תקין מחוץ למרפאה, ללא טיפול. שכיחות 10-15%. סיכון נמוך מיל״ד מתמשך אך גבוה מל״ד תקין; 5-10% לשנה מתקדמים ליל״ד מתמשך.',p:9});
+      if(!d.officeHTN&&d.oomHigh===true) d.pheno.push({n:'יל״ד ממוסך',t:'ל״ד תקין במרפאה, גבוה מחוץ למרפאה. שכיחות 10-17%; סיכון קרדיווסקולרי דומה ליל״ד מתמשך ולעיתים קרובות אינו מזוהה. קשור לעישון, אלכוהול, סטרס, OSA ויל״ד שניוני.',p:9});
+      if(d.officeHTN&&d.oomHigh===true) d.pheno.push({n:'יל״ד מתמשך',t:'ל״ד גבוה במרפאה וגם מחוץ למרפאה — האבחנה מאוששת.',p:6});
+    } else {
+      if(!d.officeAtTarget&&d.oomHigh===false) d.pheno.push({n:'יל״ד לא מאוזן של חלוק לבן',t:'תחת טיפול: ל״ד במרפאה מעל היעד אך מחוץ למרפאה ביעד. הניהול מתמקד במעקב HBPM והימנעות מהגברת טיפול על סמך מדידות מרפאה בלבד.',p:9});
+      if(d.officeAtTarget&&d.oomHigh===true) d.pheno.push({n:'יל״ד ממוסך לא מאוזן',t:'תחת טיפול: ל״ד במרפאה ביעד אך מחוץ למרפאה מעל היעד. מחייב הגברת טיפול, התאמת מועד נטילת התרופות ושקילת מתן ערב.',p:9});
+    }
+  }
+  if(d.sbp>=140&&d.dbp<90) d.pheno.push({n:'יל״ד סיסטולי מבודד (ISH)',t: d.age>=60? 'במבוגרים נובע מנוקשות עורקית וקשור בסיכון קרדיווסקולרי גבוה. יעד: סיסטולי מתחת ל-130 ממ״כ; לשקול 130-139 אם הדיאסטולי נמוך מאוד.' : 'בצעירים לעיתים קרובות קשור לתפוקת לב מוגברת. לשקול מדידת ל״ד מרכזי — אם תקין: שינוי אורחות חיים ומעקב; אם גבוה או יש HMOD: לשקול טיפול תרופתי.',p:7});
+  if(d.sbp&&d.sbp<140&&d.dbp>=90) d.pheno.push({n:'יל״ד דיאסטולי מבודד (IDH)',t:'שכיח יותר מתחת לגיל 50, קשור להשמנה ולטונוס סימפתטי מוגבר. דרגה 1 (90-99): שינוי אורחות חיים + הערכת סיכון + טיפול תרופתי; דרגה 2 (≥100): טיפול תרופתי.',p:7});
+  if(d.nightHigh===true) d.pheno.push({n:'יל״ד לילי',t:'ממוצע לילי ≥120/70 ב-ABPM. לזהות גורם (OSA, CKD, תפקוד אוטונומי לקוי), לשקול מתן תרופות בערב/לפני השינה ולטפל במצבים הבסיסיים.',p:10});
+  // drug count / algorithm step
+  d.rx=['rxRAS','rxCCB','rxDiur','rxMRA','rxBB','rxAlpha','rxOther'].filter(on);
+  d.nRx=d.rx.length;
+  d.hasDiur=on('rxDiur'); d.hasRAS=on('rxRAS'); d.hasCCB=on('rxCCB'); d.hasMRA=on('rxMRA');
+  d.resistantCriteria = d.nRx>=3 && d.hasDiur && d.hasRAS && d.hasCCB && on('maxDose') && !d.officeAtTarget;
+  d.refractory = d.nRx>=5 && d.hasDiur && d.hasMRA && on('maxDose') && !d.officeAtTarget;
+  // comorbidity
+  ['asthma','tachy','af','angina','hfref','hfpef','mi','stroke','dm','ckd','prot','mets','pad','gout','cad'].forEach(k=>d[k]=on(k));
+  d.hmod=['hLVH','hAlb','hRet','hGFR'].filter(on);
+  d.sec=['sHypoK','sNoct','sSnore','sBruit','sPulmEd','sCrRise','sParox','sCush','sWeak','sUTI','sThyr','sCoarc','sSudden','sNoDip','sFamAldo'].filter(on);
+  d.drugs=['dNSAID','dSter','dOCP','dSNRI','dEPO','dCNI','dOnc','dDrug'].filter(on);
+  d.K=num('labK'); d.GFR=num('labGFR'); d.Na=num('labNa');
+  // CV risk (clinical, per פרק 2 — no calculator)
+  d.highRisk = d.dm||d.ckd||d.cad||d.mi||d.stroke||d.pad||d.hfref||d.hfpef||d.hmod.length>0;
+  return d;
+}
+
+const ul=a=>'<ul>'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+const box=(cls,title,badge,items)=> items.length? `<div class="rec ${cls}"><h2>${title}${badge||''}</h2>${ul(items)}</div>`:'';
+
+/* ===== TAB: diagnosis ===== */
+function tabDx(d){
+  let h='';
+  if(!d.sbp||!d.dbp){ return `<div class="rec"><h2>ממתין לנתונים</h2><p class="sub">יש להזין ערכי לחץ דם במרפאה. ההמלצות יתעדכנו תוך כדי מילוי.</p></div>`; }
+
+  /* classification */
+  const cls=[];
+  cls.push(`סיווג המדידה במרפאה: <b>${d.cat.n}</b> (${d.sbp}/${d.dbp} ממ״כ) ${c1(5)}`);
+  if(d.cat.g>=1&&!d.treated) cls.push('אבחנת יל״ד דורשת מדידות חוזרות במרפאה (≥140 סיסטולי ו/או ≥90 דיאסטולי) '+c1(6));
+  cls.push('טכניקה: 3 מדידות בהפרש 1-2 דקות, ממוצע השנייה והשלישית; בביקור ראשון בשתי הזרועות; 5 דקות מנוחה, ללא קפאין/עישון/פעילות 30 דקות לפני '+c1(10));
+  if(d.age&&d.age<50) cls.push('מתחת לגיל 50 — למדוד ל״ד גם ברגל לשלילת קוארקטציה, במיוחד אם נשמעות אוושות או שהדפקים הפמורלים חלשים '+c2(16));
+  h+=box('box-info','סיווג ומדידה','',cls);
+
+  /* out-of-office */
+  const oo=[];
+  if(d.oom==='none'){
+    oo.push('<b>אישור האבחנה מחוץ למרפאה מומלץ בחוזקה</b> ומהווה מרכיב מהותי בתהליך האבחנה '+c1(6));
+    if(d.sbp>=140&&d.sbp<=159) oo.push('בטווח 140-159/90-99 הדגש חזק במיוחד — כדי להפחית אבחון-יתר וטיפול-יתר '+c1(11));
+    oo.push('ספי אבחנה: HBPM ≥135/85 · ABPM 24ש׳ ≥130/80 · ניטור יום ≥135/85 · ניטור לילה ≥120/70 '+c1(6));
+    oo.push('פרוטוקול HBPM: מכשיר זרוע מאושר; בוקר — 2 מדידות בהפרש דקה בתוך שעה מהתעוררות, לפני תרופות; ערב — 2 מדידות לפני השינה; 4-7 ימים רצופים '+c1(11));
+    const ind=[];
+    if(d.cat.g===1) ind.push('חשד לחלוק לבן (דרגה 1 במרפאה)');
+    if(!d.officeHTN&&(d.hmod.length||d.highRisk)) ind.push('חשד ליל״ד ממוסך (ל״ד גבוה-תקין עם HMOD/סיכון גבוה)');
+    if(d.resistantCriteria) ind.push('יל״ד עמיד');
+    if(ind.length) oo.push('התוויה ספציפית ל-ABPM אצל מטופל/ת זה: '+ind.join(' · ')+' '+c1(12));
+  } else {
+    const lbl=d.oom==='hbpm'?'HBPM':'ABPM';
+    if(d.osbp&&d.odbp) oo.push(`${lbl}: ${d.osbp}/${d.odbp} ממ״כ — ${d.oomHigh?'<b>מעל סף האבחנה</b>':'<b>מתחת לסף</b>'} `+c1(6));
+    else oo.push('נבחרה שיטת מדידה מחוץ למרפאה — יש להזין ערכים לקבלת פענוח.');
+    if(d.oom==='abpm'&&d.nsbp&&d.ndbp) oo.push(`ממוצע לילי ${d.nsbp}/${d.ndbp} — ${d.nightHigh?'יל״ד לילי (≥120/70)':'תקין'} `+c1(9));
+  }
+  h+=box('box-info','אישור מחוץ למרפאה','',oo);
+
+  /* phenotypes */
+  if(d.pheno.length){
+    h+=`<div class="rec box-warn"><h2>פנוטיפ מזוהה</h2>${d.pheno.map(p=>`<p style="margin-bottom:8px"><b>${p.n}</b> — ${p.t} ${c1(p.p)}</p>`).join('')}</div>`;
+  }
+  if(d.resistantCriteria||d.refractory){
+    const r=[];
+    if(d.refractory) r.push('<b>יל״ד עיקש (Refractory)</b>: ל״ד לא מאוזן למרות ≥5 תרופות כולל משתן דמוי-תיאזיד ארוך טווח ו-MRA, במינונים מרביים, ≥6 חודשים. פנוטיפ חמור (10-15% מיל״ד עמיד), מתווך פעילות סימפתטית מוגברת '+c1(8));
+    else r.push('<b>יל״ד עמיד (Resistant)</b>: ל״ד מעל היעד למרות ≥3 תרופות במינון מרבי נסבל הכולל משתן מתאים, חוסם RAAS ו-CCB '+c1(8));
+    r.push('לפני קביעת האבחנה <b>חובה לשלול עמידות מדומה</b>: היענות לקויה, אפקט חלוק לבן, טכניקת מדידה לא נאותה '+c1(8));
+    r.push('יש לאשר באמצעות ABPM או HBPM המדגימים ל״ד לא מאוזן גם מחוץ למרפאה '+c1(8));
+    r.push('סקירה יסודית לגורמים שניוניים — ראו להלן '+c2(18));
+    h+=box('box-stop','יל״ד עמיד / עיקש','',r);
+  }
+
+  /* mandatory workup */
+  const wk=[];
+  wk.push('<b>מעבדה:</b> תפקודי כליה וכבד כולל חלבוני דם, נתרן, אשלגן, חומצה אורית, סידן, זרחן, גלוקוז בצום, ספירת דם (המטוקריט והמוגלובין), TSH, שתן כללית, שתן למיקרוסקופיה, יחס אלבומין/קריאטינין בשתן, פרופיל שומנים, HbA1c '+c2(17));
+  wk.push('<b>אק״ג:</b> הערכת מחלה כלילית, LVH והגדלת עליות '+c2(17));
+  wk.push('<b>להערכה תזונתית מלאה:</b> איסוף שתן 24 שעות לנפח, קריאטינין, נתרן ואשלגן '+c2(17));
+  wk.push('<b>סקירה לכל מטופל/ת עם יל״ד מוכח:</b> רנין, אלדוסטרון ואשלגן באותו יום — אם לא בוצע קודם '+c2(17));
+  wk.push('אין צורך לחזור על כלל הבדיקות במעקב '+c2(17));
+  h+=box('box-go','בירור מחייב בעיבוד ראשוני','',wk);
+
+  /* physical exam */
+  const px=[];
+  px.push('ל״ד בשתי הזרועות; בשכיבה ובעמידה (אחרי דקה ואחרי 3 דקות) '+c2(16));
+  px.push('גובה, משקל, מראה כללי, חלוקת שומן והיקף מותניים '+c2(16));
+  px.push('<b>עיניים</b> — בלט עין, פונדוס (אינו שגרתי ביל״ד קל) · <b>עור</b> — Café-au-lait, סטריאה, שיעור יתר · <b>צוואר</b> — אוושות קרוטידיות, גודש ורידי '+c2(16));
+  px.push('<b>לב</b> — קול IV, אוושות · <b>ריאות</b> — סימני אי-ספיקת לב שמאלית '+c2(16));
+  px.push('<b>בטן</b> — אוושות מעל עורקי הכליה משני צידי הטבור (סגוליות נמוכה, רגישות גבוהה לרנווסקולרי), מסות כלייתיות, ותין פועם · <b>גפיים</b> — דופק פמורלי ופריפרי, בצקת, אופי השיעור '+c2(16));
+  if(d.age&&d.age>=65) px.push('בקשיש/ה — לחפש תת-ל״ד אורתוסטטי בכל ביקור '+c1(10));
+  h+=box('box-info','בדיקה גופנית ממוקדת','',px);
+
+  /* additional tests */
+  const add=[];
+  if(d.hmod.length||d.highRisk||d.cat.g>=2) add.push('<b>אקו לב</b> — מסת שריר הלב מתוקננת, עובי דפנות, אי-ספיקה, הפרעה מקומית בהתכווצות, תפקוד דיאסטולי '+c2(17));
+  if(d.sec.includes('sUTI')||d.sec.includes('sBruit')||d.ckd||d.hmod.includes('hGFR')) add.push('<b>US בטן</b> — גודל ומבנה כליות, גושי אדרנל, מרקם כבד, אבי העורקים. יכולת ה-US לזהות גושים באדרנל מוגבלת — לרוב יידרש CT בפרוטוקול אדרנל '+c2(17));
+  if(d.sec.includes('sBruit')||d.sec.includes('sPulmEd')||d.sec.includes('sCrRise')) add.push('<b>דופלר עורקי כליה</b> '+c2(17));
+  if(d.sec.includes('sSnore')||d.sec.includes('sNoDip')||d.sec.includes('sNoct')) add.push('<b>בדיקה במעבדת שינה</b> '+c2(17));
+  if(d.age&&d.age<50&&d.sbp>=140&&d.dbp<90) add.push('<b>ל״ד מרכזי (pulse wave analysis)</b> — רק במקרים חריגים של צעירים/ספורטאים עם ISH דרגה I וחשד ל-spurious systolic hypertension of the young '+c2(17));
+  add.push('בדיקות כמו IMT, ABI, סידן כלילי ב-CT ו-PWV — אין להן מקום בהערכה שגרתית, אלא רק כשיש התלבטות באשר להערכת הסיכון '+c2(17));
+  h+=box('box-info','בדיקות עזר נוספות (לפי אינדיקציה)','',add);
+
+  /* secondary HTN */
+  const trig=[];
+  if(d.cat.g===3&&!d.treated) trig.push('הופעה של יל״ד דרגה 3 (≥180/110)');
+  if(d.sec.includes('sSudden')) trig.push('הופעה פתאומית / החמרה של יל״ד שהיה מאוזן');
+  if(d.resistantCriteria||d.refractory) trig.push('יל״ד עמיד לטיפול תרופתי');
+  if(d.hmod.length>=2) trig.push('פגיעה משמעותית באברי מטרה');
+  if(d.sec.includes('sNoDip')) trig.push('יל״ד לילי / היעדר ירידה לילית תקינה');
+  if(d.age&&d.age<30) trig.push('גיל מתחת ל-30 ללא סיפור משפחתי מדרגה ראשונה');
+  const scr=[];
+  if(d.sec.includes('sHypoK')||d.sec.includes('sNoct')||d.af||d.sec.includes('sFamAldo')||d.sec.includes('sWeak')||(d.K&&d.K<=4.6)||d.resistantCriteria)
+    scr.push('<b>היפראלדוסטרוניזם ראשוני</b> — רנין, אלדוסטרון ואשלגן יחדיו, <u>ללא הפסקת תרופות וללא תיקון אשלגן</u>. הסקירה חיובית אם: רנין ≤8.2 מיקרויח׳/מ״ל, אלדוסטרון ≥10 נ״ג/ד״ל, ו-ARR &gt;2.5 '+c2(19));
+  if(d.sec.includes('sBruit')||d.sec.includes('sPulmEd')||d.sec.includes('sCrRise'))
+    scr.push('<b>הצרות עורק כליה</b> — דופלר עורקי הכליות (בצום בוקר מלא, ללא שתייה, במרכז מיומן ב-direct ו-indirect). המדד החשוב ביותר: PSV גבוה באזור ההיצרות '+c2(19));
+  if(d.sec.includes('sUTI')||d.ckd||d.hmod.includes('hGFR')||d.prot)
+    scr.push('<b>פגיעה כלייתית פרנכימטית</b> — קריאטינין ואוריאה, שתן כללית ומיקרוסקופיה, סונר כליות, יחס אלבומין/קריאטינין ויחס חלבון/קריאטינין בשתן בוקר '+c2(19));
+  if(d.sec.includes('sSnore')) scr.push('<b>דום נשימה חסימתי</b> — בדיקה במעבדת שינה '+c2(19));
+  if(d.sec.includes('sParox')||d.sec.includes('sFamAldo'))
+    scr.push('<b>פאוכרומוציטומה</b> (נדירה — רק בחשד אבחנתי) — איסוף שתן 24ש׳ לקטכולאמינים, מטהנפרינים ונורמטהנפרינים, או מטהנפרינים חופשיים בפלסמה תחת דיאטה מתאימה '+c2(19));
+  if(d.sec.includes('sThyr')) scr.push('<b>הפרעה בתפקודי תריס</b> — TSH. פעילות יתר מעלה סיסטולי ולחץ דופק; תת-פעילות מעלה בעיקר דיאסטולי '+c2(19));
+  if(d.sec.includes('sCush')) scr.push('<b>Cushing</b> — קורטיזול חופשי באיסוף שתן 24ש׳, קורטיזול לאחר 1mg DST, או קורטיזול ברוק בחצות '+c2(19));
+  if(d.sec.includes('sCoarc')||(d.age&&d.age<30)) scr.push('<b>Coarctation of aorta</b> — אקו קרדיוגרפיה או MRI לב מכוונת לאבי העורקים '+c2(19));
+  if(d.drugs.length) scr.push('<b>יל״ד מושרה תרופות</b> — סומן: '+d.drugs.map(k=>({dNSAID:'NSAIDs',dSter:'סטרואידים',dOCP:'הורמונלי/גלולות',dSNRI:'SNRI',dEPO:'אריתרופויאטין',dCNI:'ציקלוספורין/טקרולימוס',dOnc:'אונקולוגיות/נוגדי VEGF',dDrug:'קוקאין'})[k]).join(', ')+'. לשקול הפסקה/החלפה לפני הרחבת הבירור '+c2(14));
+  const secItems=[];
+  if(trig.length) secItems.push('<b>טריגרים לחשד שנמצאו:</b> '+trig.join(' · ')+' '+c2(18));
+  if(scr.length) secItems.push(...scr);
+  if(scr.length||trig.length) secItems.push('אם בדיקת סקר מצביעה על חשד — יש להפנות למרפאה ייעודית להמשך בירור '+c2(19));
+  if(secItems.length) h+=box('box-warn','בירור יל״ד שניוני','<span class="badge b-warn">נדרשת סקירה</span>',secItems);
+  else h+=box('box-go','בירור יל״ד שניוני','',['לא סומנו רמזים ליל״ד שניוני. יש לזכור שסקירה לרנין/אלדוסטרון/אשלגן מומלצת לכל מטופל/ת עם יל״ד מוכח '+c2(17)]);
+
+  /* risk assessment */
+  h+=box('box-info','הערכת סיכון כוללת','',[
+    'בתום ההערכה יש לקבוע דרגת סיכון קרדיווסקולרי הנגזרת מחומרת יל״ד, גורמי סיכון נוספים, סוכרת, פגיעה כלייתית ונזק לאברי מטרה '+c2(17),
+    'ההנחיות הישראליות רואות בכך <b>הערכה קלינית</b> ואינן ממליצות על כלי הערכת סיכון מסוים '+c2(17),
+    d.hmod.length? 'HMOD שסומן: '+d.hmod.map(k=>({hLVH:'LVH',hAlb:'אלבומינוריה',hRet:'רטינופתיה 3-4',hGFR:'eGFR<60'})[k]).join(', ') : 'לא סומן HMOD'
+  ]);
+  return h;
+}
+
+/* ===== TAB: treatment ===== */
+function tabTx(d){
+  if(!d.sbp||!d.dbp) return `<div class="rec"><h2>ממתין לנתונים</h2><p class="sub">יש להזין ערכי לחץ דם במרפאה.</p></div>`;
+  let h='';
+
+  /* when to start */
+  const st=[];
+  let badge='';
+  if(!d.treated){
+    if(d.cat.g===0){ badge='<span class="badge b-go">אין התוויה לטיפול תרופתי</span>'; st.push('ל״ד תקין/מיטבי — שינוי אורחות חיים ומעקב.'); }
+    else if(d.cat.g===0.5){
+      if(d.highRisk){ badge='<span class="badge b-warn">לשקול טיפול תרופתי</span>';
+        st.push('<b>לחץ דם מוגבר (130-139/85-89) בסיכון גבוה</b> — יש הצדקה להתחיל טיפול תרופתי מיד, במקביל לשינוי אורחות חיים, במיוחד עם מחלת לב כלילית '+c8(64)+' '+c6(52)); }
+      else { badge='<span class="badge b-go">אורחות חיים בלבד</span>';
+        st.push('<b>לחץ דם מוגבר בסיכון נמוך-בינוני</b> — אין הצדקה להתחיל טיפול תרופתי; שינוי אורחות חיים בלבד (HOPE-3) '+c6(52)); }
+    }
+    else if(d.cat.g===1){
+      if(d.highRisk||d.hmod.length){ badge='<span class="badge b-warn">להתחיל מיד</span>';
+        st.push('<b>דרגה 1 עם סיכון גבוה / אי-ספיקת כליות / HMOD</b> — להתחיל טיפול תרופתי מיד; ניתן להתחיל בטיפול משולב '+c8(64)); }
+      else { badge='<span class="badge b-info">3-6 חודשי אורחות חיים</span>';
+        st.push('<b>דרגה 1 בסיכון נמוך-בינוני</b> — להתחיל טיפול תרופתי לאחר 3-6 חודשים של שינוי אורחות חיים, אם ל״ד לא מאוזן '+c8(64));
+        st.push('שימו לב: אם המטופל/ת כבר עבר/ה תקופת ניסיון של שינוי אורחות חיים אצל רופא/ה אחר/ת — <b>אין תועלת בהקצבת זמן נוספת שוב ושוב</b> '+c8(64)); }
+    }
+    else if(d.cat.g===2){ badge='<span class="badge b-stop">להתחיל מיד</span>';
+      st.push('<b>דרגה 2 (160-179/100-109)</b> — להתחיל טיפול תרופתי מיד בכל החולים. מטרה: איזון תוך שלושה חודשים. מומלץ להתחיל בטיפול משולב '+c8(64)); }
+    else if(d.cat.g===3){ badge='<span class="badge b-stop">מיד + מעקב תוך שבועיים</span>';
+      st.push('<b>דרגה 3 (≥180/110)</b> — להתחיל טיפול תרופתי מיד. מטרה: איזון תוך שלושה חודשים, בטיפול משולב '+c8(64));
+      st.push('<b>יש לוודא מעקב חוזר של רופא/ה או אח/ות תוך שבועיים לכל היותר</b> אחרי מדידה מעל 180 ו/או 110 '+c8(64)); }
+    if(d.age&&d.age>80) st.push('גיל מעל 80 — לטפל במתינות, עם דגש על מצב כללי (שבריריות), תופעות לוואי ותת-ל״ד תנוחתי '+c8(64));
+  } else {
+    badge = d.officeAtTarget? '<span class="badge b-go">ביעד</span>':'<span class="badge b-warn">מעל היעד</span>';
+    st.push(d.officeAtTarget? 'ל״ד במרפאה מתחת ל-130/80 — ביעד.' : 'ל״ד מעל היעד תחת טיפול — ראו התאמת משטר להלן.');
+  }
+  st.push('בכל החולים יש לשלב שינוי אורחות חיים כחלק מהטיפול '+c8(64));
+  st.push('<b>יעד:</b> ההנחיות מאמצות את גישת ESC 2024 — לשאוף כבר מההתחלה לערך נמוך מ-130/80 ממ״כ; הטווח שהוכח כמיטבי הוא 120-129 סיסטולי ו-70-79 דיאסטולי '+c6(53));
+  h+=box(d.cat.g>=2?'box-stop':(d.cat.g>=1?'box-warn':'box-go'),'התחלת טיפול ויעד',badge,st);
+
+  /* algorithm */
+  const al=[];
+  if(!d.treated||d.nRx===0){
+    const mono = (d.frail||(d.age&&d.age>80)||(d.sbp<150&&!d.highRisk&&d.cat.g<=1));
+    if(mono){
+      al.push('<b>שלב 1 — לשקול מונותרפיה</b>: סיכון נמוך עם SBP 140-150, או גיל מעל 80, או מטופל/ת שברירי/ת '+c8(66));
+    } else {
+      al.push('<b>שלב 1 — טיפול משולב (dual), עדיף בטבלייה אחת</b>: חוסם RAS (ACEi או ARB) + CCB, או חוסם RAS + משתן '+c8(66));
+      al.push('ועדת ההנחיות ממליצה להתחיל משולב בדרגה 1 עם סיכון בינוני/גבוה, וגם כאשר הסיסטולי מעל 150 ממ״כ '+c8(65));
+    }
+    al.push('טיפול משולב במינון נמוך יעיל יותר ממונותרפיה במינון מקסימלי, עם פחות תופעות לוואי '+c8(65));
+  } else if(d.nRx===1){
+    al.push('<b>מונותרפיה נוכחית ולא מאוזן</b> — מעבר מהיר לשילוב שתי תרופות: התרופה הקיימת + תרופה מקבוצה אחרת לפי השילובים המומלצים. בהמשך להגביר מינון לפי הצורך '+c8(66));
+  } else if(d.nRx===2){
+    al.push('<b>שלב 2 — טיפול משולש</b>: חוסם RAS + CCB + משתן, במידת האפשר בטבלייה אחת '+c8(66));
+    al.push('אם ל״ד אינו מאוזן — מומלץ <u>תוך חודש</u> להוסיף תרופה '+c8(77));
+  } else if(d.resistantCriteria||d.refractory){
+    al.push('<b>שלב 3 — יל״ד עמיד</b>: להוסיף ספירונולקטון כתרופה רביעית, תוך התייחסות לתפקוד הכליות ולרמת האשלגן '+c8(66)+' '+c8(77));
+    al.push('אפשרויות אחרות: חוסם בטא או חוסם אלפא, בהתאם לתחלואה נלווית '+c8(77));
+    al.push('לשקול בירור יל״ד שניוני והתייעצות עם מומחה ליל״ד '+c8(66));
+    if(d.refractory) al.push('ביל״ד עיקש המוקד הוא סימפטוליטי: חוסמי אלפא-בטא (קרבדילול, לבטלול), תרופות מרכזיות (קלונידין), ולשקול דנרבציה כלייתית במרכזים מתמחים '+c1(8));
+  } else {
+    al.push('<b>3 תרופות</b> — הטיפול המקובל: CCB + חוסם RAS + משתן. מתן 3 תרופות מעלה את שיעור האיזון לכ-80% '+c8(65));
+    al.push('בשילוב של יותר משתי תרופות <b>יש לכלול משתן</b> מסוג תיאזיד או דמוי-תיאזיד '+c8(65));
+    if(!on('maxDose')) al.push('לפני הגדרת יל״ד עמיד — יש למצות מינונים מרביים נסבלים לאורך 3-6 חודשים '+c1(8));
+  }
+  if(d.hasRAS&&on('rxOther')) al.push('לוודא שאין שילוב ACEi+ARB — אסור בשל סיכון להיפרקלמיה ולאי-ספיקת כליות חדה '+c8(77));
+  if(d.hasCCB&&on('rxBB')) al.push('אזהרת שילוב: חוסם בטא + NDHP-CCB (ורפמיל/דילטיאזם) — סיכון לברדיקרדיה; עם DHP-CCB השילוב אפשרי '+c8(65));
+  al.push('<b>שילובים מומלצים:</b> CCB + ACEi/ARB · תיאזיד + ACEi/ARB. <b>אפשריים:</b> חוסם בטא + DHP-CCB · תיאזיד + משתן שומר אשלגן. <b>לא מומלצים:</b> ACEi+ARB · חוסם בטא + NDHP-CCB '+c8(65));
+  al.push('תכשירים משולבים בכדור אחד משפרים היענות ואיזון — ראו לשונית מאגר תרופות '+c8(65));
+  h+=box('box-info','אלגוריתם טיפולי','',al);
+
+  /* concrete prescription suggestions */
+  h+=rxSuggest(d);
+
+  /* comorbidity-driven choice (טבלה 1) */
+  const T1=[
+    {k:'asthma',n:'אסתמה',rec:'CCB, משתנים',add:'ARB',avoid:'—',ci:'חוסמי בטא',note:'אם נדרש חוסם בטא — תכשיר סלקטיבי ללב (ביסופרולול, אטנולול, מטופרולול)'},
+    {k:'tachy',n:'דופק מהיר',rec:'חוסמי בטא',add:'—',avoid:'—',ci:'—',note:'בעיקר בצעירים'},
+    {k:'af',n:'פרפור פרוזדורים',rec:'חוסמי בטא (rate control), ACEi, ARB',add:'CCB, MRA',avoid:'—',ci:'—',note:'אין לשלב חוסמי בטא עם NDHP-CCB'},
+    {k:'angina',n:'תסמונת תעוקתית',rec:'חוסמי בטא',add:'ACEi/ARB, CCB, משתנים',avoid:'—',ci:'—',note:''},
+    {k:'hfref',n:'אי-ספיקת לב HFrEF',rec:'חוסמי בטא, ACEi/ARB/ARNI, משתנים, MRA, SGLT2i',add:'CCB',avoid:'NDHP-CCB',ci:'—',note:'מעקב צמוד של תפקוד כליות, נתרן ואשלגן · קרבדילול מועדף'},
+    {k:'hfpef',n:'אי-ספיקת לב HFpEF',rec:'ACEi, ARB, SGLT2i, משתנים',add:'CCB, MRA',avoid:'—',ci:'—',note:'מעקב צמוד של תפקוד כליות, נתרן ואשלגן'},
+    {k:'mi',n:'אוטם שריר הלב קודם',rec:'חוסמי בטא, ACEi/ARB',add:'CCB, משתנים, MRA',avoid:'—',ci:'—',note:''},
+    {k:'stroke',n:'אירוע מוחי קודם',rec:'ACEi, ARB, CCB, משתנים',add:'חוסמי בטא',avoid:'—',ci:'—',note:''},
+    {k:'dm',n:'סוכרת',rec:'ACEi/ARB, CCB',add:'משתנים, MRA',avoid:'—',ci:'—',note:''},
+    {k:'mets',n:'תסמונת מטבולית',rec:'ACEi, ARB, GLP1RA',add:'CCB, משתנים',avoid:'חוסמי בטא, תיאזידים (פחות מומלצים)',ci:'—',note:'חוסמי בטא ותיאזידים מעלים סיכון לסוכרת'},
+    {k:'pad',n:'מחלת כלי דם היקפית',rec:'ACEi/ARB',add:'—',avoid:'—',ci:'—',note:''}
+  ];
+  const hits=T1.filter(r=>d[r.k]);
+  // CKD / proteinuria logic
+  if(d.ckd&&d.prot) hits.push({n:'CKD עם פרוטאינוריה',rec:'ACEi, ARB',add:'CCB, משתנים',avoid:'—',ci:'—',note:'MRA כתוספת · מעקב תפקודי כליות, נתרן ואשלגן'});
+  else if(d.ckd) hits.push({n:'CKD ללא פרוטאינוריה',rec:'אין עדיפות לקבוצה מסוימת',add:'—',avoid:'—',ci:'—',note:''});
+  if(d.dm&&d.ckd&&d.prot) hits.push({n:'סוכרת עם CKD ופרוטאינוריה',rec:'ACEi/ARB, SGLT2i, GLP1RA, MRA',add:'CCB, משתנים',avoid:'—',ci:'—',note:'פינרנון מפחית פרוטאינוריה ומאט התקדמות CKD, במיוחד בשילוב SGLT2i '});
+  if(d.prot&&!d.ckd) hits.push({n:'פרוטאינוריה עם תפקוד כלייתי שמור',rec:'ACEi/ARB',add:'CCB, משתנים, MRA',avoid:'—',ci:'—',note:'לא מומלץ מתן DHP-CCB ללא ACEi/ARB'});
+  if(hits.length){
+    let t=`<div class="rec box-info"><h2>בחירת תרופה לפי תחלואה נלווית ${cite(8,70)}</h2><div class="scroll" style="max-height:none"><table class="dt"><tr><th>מצב</th><th>מומלץ</th><th>נוסף</th><th>לא מומלץ / אסור</th><th>הערות</th></tr>`;
+    hits.forEach(r=>{ t+=`<tr><td><b>${r.n}</b></td><td>${r.rec}</td><td>${r.add}</td><td>${[r.avoid,r.ci].filter(x=>x&&x!=='—').join(' / ')||'—'}</td><td>${r.note||''}</td></tr>`; });
+    t+='</table></div></div>'; h+=t;
+  }
+  const spec=[];
+  if(d.gout) spec.push('שיגדון: להימנע מתיאזידים ללא טיפול באלופורינול/פבוקסוסטט; <span class="drug">לוסרטן</span> ו<span class="drug">אמלודיפין</span> אוריקוסוריים — יתרון כאן '+c8(73)+' '+c8(71));
+  if(d.asthma) spec.push('אסתמה: חוסמי בטא אסורים. אם בכל זאת נדרש — תכשיר סלקטיבי: <span class="drug">ביסופרולול</span>, <span class="drug">אטנולול</span> או <span class="drug">מטופרולול</span> '+c8(74));
+  if(d.hfref) spec.push('HFrEF: <span class="drug">קרבדילול</span> מועדף מבין חוסמי הבטא '+c8(74));
+  if(d.K&&d.K>4.5) spec.push('אשלגן '+d.K+' — זהירות לפני התחלת MRA; מעל 5 mEq/L ככלל עדיף להימנע. קושרי אשלגן עשויים לפתור זאת '+c8(63));
+  if(d.GFR&&d.GFR<30) spec.push('eGFR '+d.GFR+' — יעילות תיאזידים יורדת; לשקול החלפה/הוספה של <span class="drug">פורוסמיד</span> '+c8(62));
+  if(d.hasRAS) spec.push('מעכבי RAS: להימנע משילוב עם NSAIDs; בהיצרות דו-צדדית של עורקי כליה — סיכון לאי-ספיקת כליות חדה '+c8(72));
+  if(spec.length) h+=box('box-warn','דגשים ספציפיים למטופל/ת','',spec);
+
+  /* monitoring */
+  const mon=[];
+  mon.push('הערכת תגובה לטיפול או לשינוי תרופתי — <b>2 עד 3 שבועות</b> לאחר המתן/השינוי; בהמשך מעקב חודשי עד השגת איזון '+c8(66));
+  mon.push('התחלת ACEi/ARB ו/או משתנים — <b>קריאטינין ואלקטרוליטים תוך 2-3 שבועות</b>. ירידה ב-GFR של עד 30% צפויה ואין להפסיק בגללה; לעיתים נדרשת הפחתת מינון או בירור לתת-נפח/היצרות עורקי כליה '+c8(66));
+  mon.push('התחלת תיאזידים — <b>מעקב נתרן תוך מספר ימים עד שבועיים</b>, בייחוד בנשים מעל גיל 65 '+c8(66));
+  mon.push('מניעת אינרציה טיפולית: תוכנית מעקב רציף ושינוי/תוספת תרופות תוך פרק זמן קצר '+c8(63));
+  h+=box('box-go','מעקב אחרי התחלה/שינוי','',mon);
+
+  /* adherence + stopping */
+  const adh=[];
+  if(on('adherence')||d.resistantCriteria) adh.push('<b>בדיקת היענות</b>: דיווח מהמטופל/ת, ניטור רכישות מבית המרקחת, או כימות הטבליות שנותרו באריזה '+c8(67));
+  adh.push('שיטות יעילות בטווח הקצר מתמקדות במטופל/ת: פישוט המשטר (polypill, מתן פעם ביום), מעורבות בני משפחה, מסרוני תזכורת ויישומונים, שיטות להפחתת מתח '+c8(67));
+  adh.push('<b>הפסקה פתאומית</b>: קלונידין, מתילדופה וחוסמי בטא עלולים לגרום לסינדרום גמילה (עצבנות, טכיקרדיה, כאב ראש, אגיטציה, בחילה) 36-72 שעות לאחר ההפסקה, ובנדיר משבר יל״ד או איסכמיה לבבית '+c8(67));
+  adh.push('בהפסקת משתנים — סיכון לאצירת נוזלים ואי-ספיקת לב לא מפוצה; לשקול הפחתה הדרגתית '+c8(67));
+  adh.push('<b>לפני ניתוח מתוכנן</b>: ככלל להמשיך את הטיפול הכרוני, בכפוף להמלצות צוות ההרדמה. השהיית ACE/ARB לפני ניתוח שאינו לבבי מפחיתה תת-ל״ד סביב הניתוח, ללא הבדל ברור בפגיעה כלייתית, אוטם, שבץ או הפרעות קצב '+c8(67));
+  h+=box('box-info','היענות והפסקת טיפול','',adh);
+  return h;
+}
+
+/* ===== concrete prescription suggestions (brand names, פרק 8 טבלה 3) ===== */
+const D=t=>`<span class="drug">${t}</span>`;
+function rxSuggest(d){
+  const items=[], why=[];
+
+  /* --- pick preferred agent within each class --- */
+  // RAS blocker
+  let ras, rasAlt;
+  if(d.gout){ ras={n:'לוסרטן (Losartan)',b:'אוקסאאר / לוסרטה / לוטן / לוסרדקס',s:'50 מ״ג ×1 (טווח 12.5-100)'}; why.push('לוסרטן נבחר בשל השיגדון — הוא אוריקוסורי '+c8(71)); }
+  else { ras={n:'רמיפריל (Ramipril)',b:'טריטייס / רמיטנס / רמיפריל טבע',s:'2.5-5 מ״ג ×1 (טווח 1.25-10)'};
+         rasAlt={n:'קנדסרטן (Candesartan)',b:'אטקנד / קנדור',s:'8-16 מ״ג ×1 (טווח 8-32)'}; }
+  if(d.hfref) why.push('ב-HFrEF — לשקול ACEi/ARB או מעבר ל-ARNI כחלק מהטיפול הלבבי '+c8(70));
+  // CCB
+  let ccb;
+  ccb={n:'אמלודיפין (Amlodipine)',b:'נורבסק / אמלו / אמלודי / אמלודיפין טבע',s:'5 מ״ג ×1 (טווח 2.5-10)'};
+  const ccbAlt={n:'לרקנידיפין (Lercanidipine)',b:'וזודיפ / לרקפרס',s:'10-20 מ״ג ×1'};
+  // diuretic
+  let diur;
+  if(d.GFR&&d.GFR<30){ diur={n:'פורוסמיד (Furosemide)',b:'פוזיד / פורוסמיד אינובמד',s:'20-40 מ״ג ×2'};
+    why.push('eGFR '+d.GFR+' — יעילות התיאזידים יורדת מתחת ל-30 מ״ל/דק׳; פורוסמיד מועדף '+c8(62)); }
+  else { diur={n:'אינדפמיד (Indapamide)',b:'פמיד',s:'1.25-2.5 מ״ג ×1'};
+    why.push('אינדפמיד — זמן מחצית חיים ארוך יותר ואפקט חזק יותר מהידרוכלורותיאזיד '+c8(62)); }
+  if(d.gout&&!(d.GFR&&d.GFR<30)) why.push('שימו לב: תיאזיד/דמוי-תיאזיד מעלה חומצה אורית — בשיגדון פעיל ללא אלופורינול/פבוקסוסטט עדיף להימנע '+c8(71));
+
+  const line=(x,extra)=>`${D(x.n)} — ${x.b} · <b>${x.s}</b>${extra?' · '+extra:''}`;
+
+  /* --- untreated / step 1 --- */
+  const mono = (d.frail||(d.age&&d.age>80)||(d.sbp<150&&!d.highRisk&&d.cat.g<=1));
+  if(!d.treated||d.nRx===0){
+    if(mono){
+      items.push('<b>מונותרפיה:</b> '+line(ras));
+      if(rasAlt) items.push('חלופה (או במקרה של שיעול מ-ACEi): '+line(rasAlt));
+      if(d.age&&d.age>=60&&d.sbp>=140&&d.dbp<90) items.push('ב-ISH בגיל מבוגר — חוסם סידן הוא חלופה טובה: '+line(ccb));
+    } else {
+      items.push('<b>שילוב כפול בכדור אחד — RAS + CCB:</b> '+D('אמלודיפין + ולסרטן')+' — אקספורג׳ / דופלקס / אמלוואל · <b>מינונים: 80/5, 160/5, 160/10</b> '+c8(76));
+      items.push('חלופה באותה משפחה: '+D('אנלפריל + לרקנידיפין')+' — וזודיפ קומבו / לרקאנפריל טבע · <b>10/10 או 10/20</b> '+c8(76));
+      if(d.GFR&&d.GFR<30){
+        items.push('<b>שילוב עם משתן:</b> התכשירים המשולבים בישראל מכילים הידרוכלורותיאזיד, שיעילותו יורדת ב-eGFR מתחת ל-30 — לכן כאן עדיף <u>לא</u> להשתמש בהם, אלא לצרף בנפרד '+line(diur)+' '+c8(62));
+      } else {
+        items.push('<b>שילוב כפול בכדור אחד — RAS + משתן:</b> '+
+          (d.gout? D('לוסרטן 50 + HCTZ 12.5')+' — אוקסאאר פלוס / לוטן פלוס / לוסרטה פלוס / לוסרדקס פלוס'
+                 : D('רמיפריל + HCTZ')+' — רמיפריל פלוס / טריטיס קומפ · <b>2.5/12.5 או 5/25</b>')+' '+c8(76));
+        items.push('אפשרויות נוספות באותה קטגוריה: '+D('קנדסרטן 16 + HCTZ 12.5')+' (אטקנד פלוס / קנדור פלוס) · '+D('ולסרטן + HCTZ')+' (קו-דיובאן / וקטור פלוס — 80/12.5, 160/12.5, 160/25) '+c8(76));
+      }
+      items.push('יש המעדיפים לעבור לתכשיר משולב רק לאחר שנמצא המינון הדרוש מכל תרופה בנפרד '+c8(65));
+    }
+  }
+  /* --- on 1 drug --- */
+  else if(d.nRx===1){
+    if(d.hasRAS){
+      items.push('<b>להוסיף CCB:</b> '+line(ccb)+' — או לעבור לכדור משולב: '+D('אקספורג׳ / דופלקס / אמלוואל')+' (אמלודיפין+ולסרטן)');
+      items.push('<b>או להוסיף משתן:</b> '+line(diur)+(d.GFR&&d.GFR<30?' — <b>בכדור משולב אין מקום כאן</b>, שכן התכשירים המשולבים מכילים HCTZ':' — או כדור משולב: '+D('רמיפריל פלוס / טריטיס קומפ')+' · '+D('אטקנד פלוס')+' · '+D('קו-דיובאן')));
+    } else if(d.hasCCB){
+      items.push('<b>להוסיף חוסם RAS:</b> '+line(ras)+(rasAlt?' · חלופה: '+line(rasAlt):''));
+      items.push('או מעבר לכדור משולב: '+D('אקספורג׳ / דופלקס / אמלוואל')+' (אמלודיפין+ולסרטן) · '+D('וזודיפ קומבו')+' (אנלפריל+לרקנידיפין)');
+    } else if(d.hasDiur){
+      items.push('<b>להוסיף חוסם RAS:</b> '+line(ras)+' — או כדור משולב עם משתן: '+D('רמיפריל פלוס')+' / '+D('אוקסאאר פלוס')+' / '+D('אטקנד פלוס'));
+    } else {
+      items.push('<b>להוסיף תרופת קו ראשון:</b> '+line(ras)+' או '+line(ccb));
+      items.push('חוסמי בטא, חוסמי אלפא ותרופות מרכזיות אינם קו ראשון ליל״ד — יש להוסיף עליהם תרופה מקבוצות הקו הראשון '+c8(62));
+    }
+  }
+  /* --- on 2 drugs → triple --- */
+  else if(d.nRx===2){
+    const missing=[];
+    if(!d.hasRAS) missing.push('חוסם RAS: '+line(ras));
+    if(!d.hasCCB) missing.push('CCB: '+line(ccb)+' · חלופה בבצקות: '+line(ccbAlt));
+    if(!d.hasDiur) missing.push('משתן: '+line(diur));
+    items.push('<b>להשלים לשילוב משולש RAS + CCB + משתן</b> — חסר: ');
+    missing.forEach(m=>items.push('&nbsp;&nbsp;• '+m));
+    items.push('<b>אין בטבלת התכשירים בישראל כדור משולש</b>; המבנה המעשי הוא כדור משולב (RAS+CCB או RAS+משתן) בתוספת התרופה השלישית בנפרד '+c8(76));
+  }
+  /* --- 3+ drugs / resistant --- */
+  else {
+    if(!d.hasMRA){
+      items.push('<b>תרופה רביעית — ספירונולקטון:</b> '+line({n:'ספירונולקטון (Spironolactone)',b:'אלדקטון',s:'12.5-25 מ״ג ×1'})+' '+c8(66));
+      items.push('לפני התחלה: אשלגן וקריאטינין. זהירות מיוחדת מעל 4.5 mEq/L; מעל 5 mEq/L ככלל להימנע. קושרי אשלגן עשויים לפתור זאת '+c8(63));
+      items.push('בתופעות אנטי-אנדרוגניות (גינקומסטיה כואבת, הפרעה בזקפה) — מעבר ל'+line({n:'אפלרנון (Eplerenone)',b:'אינספרה',s:'25-50 מ״ג'})+' '+c8(63));
+    } else {
+      items.push('<b>קו חמישי</b> — חוסם בטא או חוסם אלפא, בהתאם לתחלואה נלווית '+c8(77));
+      items.push('חוסם בטא: '+line({n:'ביסופרולול (Bisoprolol)',b:'קונקור / קרדילוק',s:'2.5-10 מ״ג ×1'})+' · חוסם אלפא: '+line({n:'דוקסזוסין (Doxazosin)',b:'קדקס',s:'1-4 מ״ג ×1'})+(d.age>=70||d.frail?' — <b>זהירות: אורתוסטטיזם בקשישים/שבריריים</b>':''));
+      items.push('ביל״ד עיקש — סימפטוליטיים: '+line({n:'קרבדילול (Carvedilol)',b:'קרבדקסון / קרוודילול טבע',s:'6.25-25 מ״ג ×2'})+' · '+line({n:'לבטלול (Labetalol)',b:'טרנדייט',s:'200-400 מ״ג ×2'})+' · '+line({n:'קלונידין (Clonidine)',b:'נורמופרסאן',s:'150 מק״ג ×2-3'})+' '+c1(8));
+      items.push('תרופות נישה ליל״ד עמיד בלבד: '+D('מינוקסידיל')+'† (חייב שילוב עם חוסם בטא ופורוסמיד) · '+D('הידרלזין')+'† '+c8(75));
+    }
+  }
+
+  /* --- comorbidity-specific overrides --- */
+  const ov=[];
+  if(d.asthma) ov.push('אסתמה — חוסמי בטא אסורים. אם בכל זאת נדרש: '+D('ביסופרולול (קונקור)')+' או '+D('אטנולול (נורמלול/נורמיטן)')+' — סלקטיביים ללב '+c8(74));
+  if(d.hfref) ov.push('HFrEF — '+D('קרבדילול (קרבדקסון)')+' מועדף מבין חוסמי הבטא; להוסיף MRA ו-SGLT2i כחלק מהטיפול הלבבי '+c8(70));
+  if(d.af) ov.push('פרפור פרוזדורים — חוסם בטא ל-rate control: '+D('ביסופרולול (קונקור)')+'. אין לשלב עם NDHP-CCB (ורפמיל/דילטיאזם) '+c8(70));
+  if(d.angina||d.mi||d.cad) ov.push('מחלה כלילית / אוטם קודם — לשקול תוספת חוסם בטא בכל שלב: '+D('ביסופרולול (קונקור)')+' או '+D('מטופרולול (ניאובלוק)')+' '+c8(66));
+  if(d.tachy&&d.age&&d.age<50) ov.push('צעיר/ה עם דופק מהיר — חוסם בטא מתאים כאן: '+D('ביסופרולול (קונקור)')+' '+c8(70));
+  if(d.mets) ov.push('תסמונת מטבולית — חוסמי בטא ותיאזידים פחות מומלצים (מעלים סיכון לסוכרת); להעדיף '+D('ACEi/ARB')+' ו-CCB '+c8(70));
+  if(d.prot) ov.push('פרוטאינוריה — '+D('ACEi/ARB')+' הם הבסיס; אין לתת DHP-CCB ללא חוסם RAS '+c8(70));
+  if(d.pad) ov.push('מחלת כלי דם היקפית — '+D('ACEi/ARB')+' מומלצים '+c8(70));
+
+  let out = box('box-go','מרשם מוצע — תכשירים ספציפיים','<span class="badge b-info">שמות מסחריים</span>',items);
+  if(why.length) out += box('box-info','נימוקי בחירת התכשיר','',why);
+  if(ov.length) out += box('box-warn','התאמות לפי תחלואה נלווית','',ov);
+  out += `<div class="note">המינונים המוצעים הם מינוני פתיחה מקובלים בטווח שבטבלה 3; יש לאמת מול העלון לצרכן, תפקוד הכליות והכבד, אינטראקציות והתוויות נגד. † תרופות שאינן רשומות בישראל — יבוא בתקנה 29.</div>`;
+  return out;
+}
+
+/* ===== TAB: adverse effects ===== */
+function tabAe(){
+  let t=`<div class="note">טבלת ניהול תופעות הלוואי הניתנות למניעה ותיקון, לפי פרק 8 טבלה 2. ${cite(8,71)}</div>
+  <div class="rec"><h2>ניהול תופעות לוואי</h2><div class="scroll" style="max-height:none"><table class="dt">
+  <tr><th>קבוצת תרופות</th><th>תופעה</th><th>המלצה</th><th>הערות</th></tr>`;
+  AE.forEach(r=>{ t+=`<tr><td><b>${r.cls}</b></td><td>${r.eff}</td><td>${r.act}</td><td>${r.note}</td></tr>`; });
+  t+='</table></div></div>';
+  return t;
+}
+
+/* ===== TAB: drug reference ===== */
+function tabRx(){
+  const q=(window.__q||'').trim();
+  const f=q? DRUGS.filter(x=>(x.gen+x.brand+x.cls+x.note).includes(q)) : DRUGS;
+  let t=`<div class="rec"><h2>מאגר תרופות בישראל ${cite(8,72)}</h2>
+  <div class="fld"><input type="text" id="q" placeholder="חיפוש: שם גנרי, מסחרי או קבוצה" value="${q.replace(/"/g,'&quot;')}" style="flex:1" oninput="window.__q=this.value;render();setTimeout(()=>{const e=document.getElementById('q');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length);}},0)"></div>
+  <div class="scroll"><table class="dt"><tr><th>קבוצה</th><th>חומר פעיל</th><th>שם מסחרי וחוזק</th><th>טווח מינון</th><th>×ליום</th><th>פינוי</th><th>הערות</th></tr>`;
+  f.forEach(r=>{ t+=`<tr><td>${r.cls}</td><td><b>${r.gen}</b></td><td>${r.brand}</td><td>${r.dose}</td><td>${r.freq}</td><td>${r.clr}</td><td>${r.note}</td></tr>`; });
+  if(!f.length) t+='<tr><td colspan="7">לא נמצאו תוצאות</td></tr>';
+  t+=`</table></div></div>
+  <div class="rec"><h2>תכשירים משולבים ${cite(8,76)}</h2><ul>`;
+  COMBOS.forEach(c=>{ t+=`<li><b>${c.t}:</b> ${c.d}</li>`; });
+  t+=`</ul></div>
+  <div class="note">† תרופות שאינן רשומות במאגר התרופות בישראל — יבוא בתקנה 29. הרשימה משקפת את טבלה 3 בפרק 8; יש לאמת זמינות ומינונים מול העלון והמאגר העדכני.</div>`;
+  return t;
+}
+
+
+/* ===== SOAP ===== */
+const PE_DEFAULT = `מצב כללי: ___ . BMI: ___ .
+ל"ד בשתי הזרועות: ימין ___ / ___ , שמאל ___ / ___ . דופק ___ , סדיר / ___ .
+ל"ד בשכיבה ___ / ___ , בעמידה לאחר דקה ___ / ___ ולאחר 3 דקות ___ / ___ (תת-ל"ד תנוחתי: אין / ___ ).
+צוואר: אוושות קרוטידיות — אין / ___ ; גודש ורידי — אין / ___ . תריס: ___ .
+לב: קולות תקינים / ___ ; אוושה — אין / ___ . ריאות: נקיות / ___ .
+בטן: אוושה מעל עורקי הכליה — אין / ___ ; מסות — אין / ___ ; ותין פועם — אין / ___ .
+גפיים: דופק פמורלי ופריפרי — מלא וסימטרי / ___ ; בצקות — אין / ___ .
+פונדוס (לפי הצורך): ___ .`;
+
+let PE_TEXT=null, SOAP_EDITED=false;
+const peVal=()=>PE_TEXT===null?PE_DEFAULT:PE_TEXT;
+const escT=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function soapSection(d){
+  return `<div class="rec soapwrap"><h2>סיכום לתיק הרפואי — SOAP</h2>
+  <p class="sub">הטקסט נבנה מהנתונים שהוזנו. יש להשלים את הבדיקה הגופנית ולערוך לפי הצורך לפני ההעתקה.</p>
+  <label class="lbl" for="peBox">בדיקה גופנית — להשלמה</label>
+  <textarea id="peBox" oninput="PE_TEXT=this.value;refreshSoap()">${escT(peVal())}</textarea>
+  <div class="btnrow"><button type="button" class="btn" onclick="PE_TEXT=null;SOAP_EDITED=false;render()">איפוס תבנית הבדיקה</button></div>
+  <label class="lbl" for="soapOut">הסיכום המלא</label>
+  <textarea id="soapOut" oninput="SOAP_EDITED=true">${escT(buildSoap(d))}</textarea>
+  <div class="btnrow">
+    <button type="button" class="btn pri" onclick="copySoap(this)">העתקה ללוח</button>
+    <button type="button" class="btn" onclick="SOAP_EDITED=false;render()">בנייה מחדש מהנתונים</button>
+  </div></div>`;
+}
+function refreshSoap(){const o=document.getElementById('soapOut');if(o&&!SOAP_EDITED)o.value=buildSoap(derive());}
+function copySoap(btn){
+  const t=document.getElementById('soapOut');
+  const done=()=>{const o=btn.textContent;btn.textContent='הועתק ✓';setTimeout(()=>btn.textContent=o,1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t.value).then(done).catch(()=>{t.select();try{document.execCommand('copy')}catch(e){}done();});
+  } else {t.select();try{document.execCommand('copy')}catch(e){}done();}
+}
+
+function buildSoap(d){
+  const L=[];
+  L.push('S — אנמנזה');
+  const bn=d.sex==='m'?'בן':'בת';
+  L.push((d.age!=null?bn+' '+d.age+', ':'')+(d.treated?'תחת טיפול תרופתי ליתר לחץ דם':'ללא טיפול תרופתי ליל"ד')+'.');
+  const cm=[];
+  ['asthma','tachy','af','angina','hfref','hfpef','mi','stroke','dm','ckd','prot','mets','pad','gout','cad'].forEach(k=>{
+    if(d[k]) cm.push({asthma:'אסתמה',tachy:'דופק מהיר',af:'פרפור פרוזדורים',angina:'תסמונת תעוקתית',hfref:'אי-ספיקת לב HFrEF',
+      hfpef:'אי-ספיקת לב HFpEF',mi:'אוטם שריר הלב בעבר',stroke:'אירוע מוחי בעבר',dm:'סוכרת',ckd:'CKD',prot:'פרוטאינוריה',
+      mets:'תסמונת מטבולית',pad:'מחלת כלי דם היקפית',gout:'שיגדון',cad:'מחלת לב כלילית'}[k]);
+  });
+  L.push('תחלואה נלווית: '+(cm.length?cm.join(', ')+'.':'לא דווחה.'));
+  if(d.rx.length){
+    const nm={rxRAS:'ACEi/ARB',rxCCB:'CCB',rxDiur:'משתן תיאזידי',rxMRA:'MRA',rxBB:'חוסם בטא',rxAlpha:'חוסם אלפא',rxOther:'אחר'};
+    L.push('טיפול נוכחי: '+d.rx.map(k=>nm[k]).join(', ')+(on('maxDose')?' — במינון מרבי נסבל ≥3 חודשים':'')+'.');
+  } else L.push('טיפול נוכחי: אין.');
+  if(d.drugs.length){
+    const dn={dNSAID:'NSAIDs',dSter:'סטרואידים',dOCP:'הורמונלי/גלולות',dSNRI:'SNRI',dEPO:'אריתרופויאטין',dCNI:'ציקלוספורין/טקרולימוס',dOnc:'אונקולוגיות',dDrug:'קוקאין/סמים'};
+    L.push('חומרים שעלולים להעלות ל"ד: '+d.drugs.map(k=>dn[k]).join(', ')+'.');
+  }
+  if(d.sec.length){
+    const sn={sHypoK:'אשלגן נמוך/גבולי',sNoct:'נוקטוריה',sSnore:'נחירות/ישנוניות',sBruit:'אוושה בטנית',sPulmEd:'בצקות ריאות חוזרות',
+      sCrRise:'החמרת תפקוד כליות אחרי ACEi/ARB',sParox:'התקפי דופק/הזעה/חיוורון',sCush:'מאפיינים קושינגואידיים',sWeak:'חולשת שרירים',
+      sUTI:'זיהומי שתן חוזרים/סיפור כלייתי',sThyr:'תסמיני תריס',sCoarc:'הפרש ל"ד גפיים',sSudden:'הופעה פתאומית/החמרה חדה',
+      sNoDip:'היעדר ירידה לילית',sFamAldo:'סיפור משפחתי אנדוקריני'};
+    L.push('רמזים ליל"ד שניוני: '+d.sec.map(k=>sn[k]).join(', ')+'.');
+  }
+  L.push(''); L.push('O — ממצאים');
+  if(d.sbp&&d.dbp) L.push('ל"ד במרפאה: '+d.sbp+'/'+d.dbp+' ממ"כ — '+d.cat.n+'.');
+  if(d.oom!=='none'&&d.osbp&&d.odbp) L.push((d.oom==='hbpm'?'HBPM':'ABPM')+': '+d.osbp+'/'+d.odbp+' ממ"כ — '+(d.oomHigh?'מעל סף האבחנה':'מתחת לסף')+'.');
+  if(d.nsbp&&d.ndbp) L.push('ממוצע לילי: '+d.nsbp+'/'+d.ndbp+' — '+(d.nightHigh?'יל"ד לילי':'תקין')+'.');
+  const lab=[]; if(d.K!=null)lab.push('אשלגן '+d.K); if(d.GFR!=null)lab.push('eGFR '+d.GFR); if(d.Na!=null)lab.push('נתרן '+d.Na);
+  if(d.bmi!=null)lab.unshift('BMI '+d.bmi);
+  if(lab.length) L.push(lab.join(', ')+'.');
+  if(d.hmod.length) L.push('נזק לאברי מטרה: '+d.hmod.map(k=>({hLVH:'LVH',hAlb:'אלבומינוריה',hRet:'רטינופתיה 3-4',hGFR:'eGFR<60'})[k]).join(', ')+'.');
+  L.push(''); L.push('בדיקה גופנית:'); L.push(peVal());
+  L.push(''); L.push('A — הערכה');
+  if(d.cat) L.push('סיווג: '+d.cat.n+'.');
+  d.pheno.forEach(p=>L.push('פנוטיפ: '+p.n+'.'));
+  if(d.refractory) L.push('יל"ד עיקש (refractory).');
+  else if(d.resistantCriteria) L.push('יל"ד עמיד (resistant) — לאחר שלילת עמידות מדומה.');
+  if(d.highRisk) L.push('סיכון קרדיווסקולרי גבוה.');
+  if(d.timingFlag) L.push('הערה: גיל/משך המחלה מחייבים שקילה פרטנית.');
+  L.push(''); L.push('P — תוכנית');
+  let n=1;
+  if(d.oom==='none') L.push(n+++'. אישוש מחוץ למרפאה: HBPM (סף 135/85) או ABPM (סף 130/80).');
+  L.push(n+++'. בירור מחייב: תפקודי כליה וכבד, אלקטרוליטים, חומצה אורית, סידן, זרחן, גלוקוז בצום, HbA1c, ספירת דם, TSH, שתן כללית ומיקרוסקופיה, יחס אלבומין/קריאטינין, פרופיל שומנים, אק"ג.');
+  L.push(n+++'. סקירה לרנין, אלדוסטרון ואשלגן באותו יום (לכל מטופל/ת עם יל"ד מוכח).');
+  if(d.sec.length) L.push(n+++'. בירור יל"ד שניוני בהתאם לרמזים שנמצאו.');
+  L.push(n+++'. יעד ל"ד: מתחת ל-130/80 ממ"כ (טווח מיטבי 120-129 סיסטולי, 70-79 דיאסטולי).');
+  L.push(n+++'. שינוי אורחות חיים: הפחתת מלח ומשקל, פעילות גופנית, הפסקת עישון, הגבלת אלכוהול.');
+  L.push(n+++'. טיפול תרופתי — ראו המלצות הכלי (משטר ודרך מתן לפי פרופיל הסיכון).');
+  L.push(n+++'. מעקב: הערכת תגובה 2-3 שבועות לאחר התחלה/שינוי; קריאטינין ואלקטרוליטים 2-3 שבועות לאחר ACEi/ARB או משתן; נתרן לאחר תיאזיד.');
+  L.push(''); L.push('— נבנה בעזרת כלי החלטה מבוסס ההנחיות הישראליות ליתר לחץ דם 2026.');
+  return L.join('\n');
+}
+
+/* ===== render ===== */
+function render(){
+  const d=derive();
+  let body='';
+  if(TAB==='dx') body=tabDx(d);
+  else if(TAB==='tx') body=tabTx(d);
+  else if(TAB==='ae') body=tabAe();
+  else if(TAB==='rx') body=tabRx();
+  else body=soapSection(d);
+  $('out').innerHTML = body + `<div class="note">מבוסס על ההנחיות הקליניות הישראליות ליתר לחץ דם, מהדורה שנייה, יוני 2026 — פרקים 1, 2 ו-8 (ובנקודת היעדים גם פרק 6). כלי תומך החלטה בלבד; אינו מחליף שיקול דעת קליני. מבוגרים בלבד — ליל״ד בילדים ובמתבגרים ראו פרק 12, ובהריון פרק 26.<br><a href="${IMA_PAGE}" target="_blank" rel="noopener">דף ההנחיות באתר ההסתדרות הרפואית</a></div>`;
+}
+function calc(){ render(); }
+render();
+</script>
+</body>
+</html>
