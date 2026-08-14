@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16211F">
+<title>כלים קליניים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#F2F4F2;color:#3A4744;font-family:'Heebo',system-ui,sans-serif;font-size:16px;line-height:1.55;
+ min-height:100dvh;display:flex;align-items:center;justify-content:center;
+ padding:24px calc(18px + env(safe-area-inset-right)) 24px calc(18px + env(safe-area-inset-left))}
+.wrap{max-width:440px;width:100%}
+h1{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:900;font-size:31px;color:#16211F;line-height:1.2}
+.sub{margin-top:10px;margin-bottom:26px;color:#6B7975;font-size:15.5px}
+a.opt{display:block;background:#fff;border:1px solid #DDE4E1;border-radius:15px;padding:19px 20px;margin-bottom:12px;
+ text-decoration:none;color:inherit;position:relative;overflow:hidden;transition:transform .14s ease,box-shadow .14s ease,border-color .14s ease}
+a.opt::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:5px;background:var(--a)}
+a.opt:hover{border-color:#C6D2CE;box-shadow:0 3px 14px rgba(22,33,31,.07)}
+a.opt:active{transform:scale(.99)}
+a.opt:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+a.opt strong{display:block;font-family:'Frank Ruhl Libre',serif;font-size:21px;color:#16211F;margin-bottom:4px}
+a.opt span{font-size:14.5px;color:#6B7975}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>כלים קליניים</h1>
+  <p class="sub">בחרו את הכלים המתאימים לכם.</p>
+
+  <a class="opt" href="doctors.html" style="--a:#0D4F63">
+    <strong>לרופאים</strong>
+    <span>עזרי החלטה מבוססי הנחיות — יתר לחץ דם, סוכרת, כבד שומני, גיל המעבר</span>
+  </a>
+
+  <a class="opt" href="patients.html" style="--a:#8C4A5E">
+    <strong>למטופלים</strong>
+    <span>שאלונים קצרים להכנה לביקור אצל הרופא/ה</span>
+  </a>
+</div>
+</body>
+</html>
