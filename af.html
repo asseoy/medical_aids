@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פרפור פרוזדורים ונוגדי קרישה — כלי עזר לרופא</title>
+<style>
+:root{
+  --a900:#172554; --a800:#1E3A8A; --a700:#1D4ED8; --a600:#2563EB;
+  --a100:#dbeafe; --a50:#eff6ff;
+  --ink:#101828; --mut:#64748b; --line:#dfe6f2; --bg:#f8fafd; --card:#fff;
+  --ok:#047857; --ok-bg:#ecfdf5; --warn:#b45309; --warn-bg:#fffbeb;
+  --bad:#b91c1c; --bad-bg:#fef2f2;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
+header{background:linear-gradient(135deg,var(--a900),var(--a600));color:#fff;padding:18px 20px 14px}
+header a.back{color:#bfdbfe;text-decoration:none;font-size:13px}
+header h1{margin:6px 0 2px;font-size:21px}
+header p{margin:0;font-size:13px;color:#bfdbfe}
+nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+  display:flex;gap:2px;overflow-x:auto;padding:0 8px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+nav a{padding:11px 12px;font-size:13px;color:var(--mut);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent}
+nav a.on{color:var(--a800);border-bottom-color:var(--a600);font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px 14px 80px}
+section{scroll-margin-top:56px;margin-bottom:26px}
+h2{font-size:18px;color:var(--a800);border-right:4px solid var(--a600);padding-right:9px;margin:0 0 12px}
+h3{font-size:15px;margin:15px 0 7px;color:var(--a900)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:3px;font-weight:600}
+input[type=number],select{width:100%;padding:8px;border:1px solid var(--line);border-radius:7px;font-size:15px;font-family:inherit;background:#fff}
+input:focus,select:focus{outline:2px solid var(--a600);outline-offset:-1px}
+.chk{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;padding:6px 0;font-weight:400;margin:0;color:var(--ink);border-bottom:1px dashed var(--line)}
+.chk:last-child{border:0}
+.chk input{margin-top:4px;flex:none;width:16px;height:16px;accent-color:var(--a700)}
+.chk .pts{margin-right:auto;font-weight:700;color:var(--a700);white-space:nowrap;font-size:12.5px}
+.res{background:var(--a50);border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:12px}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.scores{grid-template-columns:1fr}}
+.sbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.sbox .lbl{font-size:12.5px;color:var(--mut)}
+.sbox .val{font-size:34px;font-weight:800;color:var(--a800);line-height:1.1}
+.sbox .sub{font-size:12px;color:var(--mut)}
+.ok{background:var(--ok-bg);border:1px solid #a7f3d0;border-right:4px solid var(--ok);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+.warn{background:var(--warn-bg);border:1px solid #fde68a;border-right:4px solid var(--warn);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+.bad{background:var(--bad-bg);border:1px solid #fecaca;border-right:4px solid var(--bad);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+.info{background:var(--a50);border:1px solid #bfdbfe;border-right:4px solid var(--a600);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:right;vertical-align:top}
+th{background:var(--a50);color:var(--a900);font-size:12.5px}
+tr.hit td{background:var(--a50);box-shadow:inset 3px 0 0 var(--a600);font-weight:600}
+.muted{color:var(--mut);font-size:12.5px}
+ul.tight{margin:6px 0;padding-right:20px}ul.tight li{margin:3px 0;font-size:13.5px}
+textarea{width:100%;min-height:150px;padding:10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px;line-height:1.6}
+button{background:var(--a700);color:#fff;border:0;padding:9px 15px;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer;font-weight:600}
+button:hover{background:var(--a800)}
+button.sec{background:#fff;color:var(--a700);border:1px solid #bfdbfe}
+.hint{font-size:12px;color:var(--mut);margin-top:3px}
+details{border:1px solid var(--line);border-radius:8px;padding:8px 11px;margin:8px 0;background:#fff}
+summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--a800)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}
+.day{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 3px;text-align:center}
+.day .d{font-size:11px;color:var(--mut)}
+.day .m{font-size:16px;font-weight:800;color:var(--a800)}
+.day .t{font-size:10.5px;color:var(--mut)}
+.day.hold{background:#fef2f2;border-color:#fecaca}
+.day.hold .m{color:var(--bad)}
+.mod{display:inline-block;background:#fef9c3;color:#854d0e;border-radius:5px;padding:0 6px;font-size:11px;font-weight:700;margin-right:5px}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="doctors.html">← חזרה לכלים לרופא</a>
+  <h1>פרפור פרוזדורים ונוגדי קרישה</h1>
+  <p>CHA₂DS₂-VASc ו-CHA₂DS₂-VA · HAS-BLED · התאמת מינון קומדין לפי INR</p>
+</header>
+
+<nav id="nav">
+  <a href="#sec-pt" class="on">נתוני המטופל</a>
+  <a href="#sec-stroke">סיכון לשבץ</a>
+  <a href="#sec-bleed">סיכון לדימום</a>
+  <a href="#sec-dec">החלטה טיפולית</a>
+  <a href="#sec-warf">התאמת מינון קומדין</a>
+  <a href="#sec-inr">גורמים המשפיעים על INR</a>
+  <a href="#sec-soap">סיכום SOAP</a>
+</nav>
+
+<main>
+
+<!-- ===== PATIENT ===== -->
+<section id="sec-pt">
+  <h2>נתוני המטופל</h2>
+  <div class="card">
+    <div class="grid">
+      <div><label>גיל</label><input type="number" id="age" min="18" max="110"></div>
+      <div><label>מין</label><select id="sex"><option value="">בחר…</option><option value="f">אישה</option><option value="m">גבר</option></select></div>
+      <div><label>סוג הפרפור</label>
+        <select id="afType">
+          <option value="nvaf">פרפור לא-מסתמי (non-valvular)</option>
+          <option value="mech">מסתם מכני</option>
+          <option value="ms">היצרות מיטרלית בינונית-קשה / ראומטית</option>
+          <option value="other">התוויה אחרת לנוגד קרישה</option>
+        </select></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STROKE RISK ===== -->
+<section id="sec-stroke">
+  <h2>סיכון לשבץ</h2>
+
+  <div class="card">
+    <label class="chk"><input type="checkbox" id="chf"><span>אי-ספיקת לב או תפקוד לקוי של חדר שמאל</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="htn"><span>יתר לחץ דם (בהיסטוריה, גם אם מאוזן)</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="ageAuto" disabled><span id="ageLbl">גיל — מחושב אוטומטית מהשדה למעלה</span><span class="pts" id="agePts">0</span></label>
+    <label class="chk"><input type="checkbox" id="dm"><span>סוכרת</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="stroke"><span>שבץ, TIA או תסחיף מערכתי בעבר</span><span class="pts">2</span></label>
+    <label class="chk"><input type="checkbox" id="vasc"><span>מחלת כלי דם — אוטם שריר הלב בעבר, מחלת עורקים היקפית, או רובד באאורטה</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="sexF" disabled><span>מין נקבה — נספר ב-VASc בלבד</span><span class="pts" id="sexPts">0</span></label>
+  </div>
+
+  <div class="scores">
+    <div class="sbox">
+      <div class="lbl">CHA₂DS₂-VASc</div>
+      <div class="val" id="vascVal">—</div>
+      <div class="sub">ACC/AHA 2023 · מקסימום 9</div>
+    </div>
+    <div class="sbox">
+      <div class="lbl">CHA₂DS₂-VA</div>
+      <div class="val" id="vaVal">—</div>
+      <div class="sub">ESC 2024 · מקסימום 8</div>
+    </div>
+  </div>
+
+  <div id="strokeOut"></div>
+
+  <div class="info">
+    <b>למה שני ציונים?</b> ההנחיה האירופאית משנת 2024 החליפה את CHA₂DS₂-VASc ב-CHA₂DS₂-VA והוציאה את המין הנשי כגורם סיכון עצמאי — הוא נחשב כיום מְשַׁנֶּה סיכון ולא גורם עצמאי. ההנחיה האמריקאית משנת 2023 ממשיכה להשתמש ב-VASc. הכלי מציג את שניהם; ההבדל מתבטא כמעט תמיד רק בנשים.
+  </div>
+
+  <details>
+    <summary>ספי הטיפול בשתי ההנחיות</summary>
+    <table>
+      <tr><th>ציון</th><th>ESC 2024 (CHA₂DS₂-VA)</th><th>ACC/AHA 2023 (CHA₂DS₂-VASc)</th></tr>
+      <tr><td>0</td><td>אין המלצה לנוגד קרישה</td><td>גבר 0 / אישה 1 — אפשר להימנע</td></tr>
+      <tr><td>1</td><td>יש לשקול נוגד קרישה (2a)</td><td>גבר 1 / אישה 2 — סביר לשקול (2a)</td></tr>
+      <tr><td>2 ומעלה</td><td>מומלץ נוגד קרישה (1)</td><td>גבר 2 ומעלה / אישה 3 ומעלה — מומלץ (1)</td></tr>
+    </table>
+  </details>
+</section>
+
+<!-- ===== BLEEDING ===== -->
+<section id="sec-bleed">
+  <h2>סיכון לדימום — HAS-BLED</h2>
+
+  <div class="card">
+    <label class="chk"><input type="checkbox" id="hbHtn"><span><b>H</b> — יתר לחץ דם <b>לא מאוזן</b>, סיסטולי מעל 160 <span class="mod">בר-שינוי</span></span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbRenal"><span><b>A</b> — תפקוד כלייתי לקוי: דיאליזה, השתלה, או קריאטינין מעל 2.26 מ"ג/ד"ל</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbLiver"><span><b>A</b> — תפקוד כבדי לקוי: שחמת, או בילירובין פי 2 מהנורמה עם טרנסאמינזות פי 3</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbStroke"><span><b>S</b> — שבץ בעבר</span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbBleed"><span><b>B</b> — דימום משמעותי בעבר או נטייה לדימום (כולל אנמיה) <span class="mod">בר-שינוי</span></span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbLabile"><span><b>L</b> — INR לא יציב: TTR מתחת ל-60% <span class="mod">בר-שינוי</span></span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbElderly" disabled><span><b>E</b> — גיל מעל 65 — מחושב אוטומטית</span><span class="pts" id="hbAgePts">0</span></label>
+    <label class="chk"><input type="checkbox" id="hbDrugs"><span><b>D</b> — תרופות: נוגדי טסיות או NSAIDs <span class="mod">בר-שינוי</span></span><span class="pts">1</span></label>
+    <label class="chk"><input type="checkbox" id="hbAlcohol"><span><b>D</b> — אלכוהול: 8 מנות בשבוע ומעלה <span class="mod">בר-שינוי</span></span><span class="pts">1</span></label>
+  </div>
+
+  <div id="bleedOut"></div>
+</section>
+
+<!-- ===== DECISION ===== -->
+<section id="sec-dec">
+  <h2>החלטה טיפולית</h2>
+  <div id="decOut" class="res"><span class="muted">יש להשלים גיל, מין וגורמי סיכון.</span></div>
+
+  <div class="warn">
+    <b>עיקרון מרכזי:</b> ציון HAS-BLED גבוה <u>אינו</u> סיבה להימנע מנוגד קרישה. תפקידו לזהות גורמי סיכון <b>בני-שינוי</b> ולסמן מטופלים הזקוקים למעקב צמוד יותר. אצל רוב המטופלים עם התוויה, התועלת במניעת שבץ עולה על הסיכון לדימום גם בציון גבוה.
+  </div>
+
+  <div id="agentOut"></div>
+</section>
+
+<!-- ===== WARFARIN ===== -->
+<section id="sec-warf">
+  <h2>התאמת מינון קומדין לפי INR</h2>
+
+  <div class="bad">
+    <b>לפני הכול:</b> בדימום משמעותי או מסכן חיים — הפסקה מיידית, ויטמין K 5–10 מ"ג תוך-ורידי בעירוי איטי, ותרכיז פקטורים (PCC) או פלזמה, בהתאם לזמינות ולחומרה. הפניה דחופה. אין להשתמש בטבלה שלמטה במצב זה.
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div><label>יעד INR</label>
+        <select id="target">
+          <option value="23">2.0–3.0 (פרפור, VTE, רוב ההתוויות)</option>
+          <option value="2535">2.5–3.5 (מסתם מכני מיטרלי, מסתמים ישנים)</option>
+        </select></div>
+      <div><label>INR נוכחי</label><input type="number" id="inr" step="0.1" min="0.8" max="20"></div>
+      <div><label>מינון שבועי נוכחי (מ"ג)</label><input type="number" id="weekly" step="0.5" placeholder="סכום כל השבוע"></div>
+      <div><label>חוזק הטבליה</label>
+        <select id="tab">
+          <option value="5">5 מ"ג</option>
+          <option value="2.5">2.5 מ"ג</option>
+          <option value="1">1 מ"ג</option>
+        </select></div>
+    </div>
+    <div class="cols2" style="margin-top:6px">
+      <label class="chk" style="border:0"><input type="checkbox" id="bleeding"><span>קיים דימום פעיל כלשהו</span></label>
+    </div>
+    <div class="hint">המינון השבועי הוא סכום כל המנות בשבוע. לדוגמה: 5 מ"ג ביום ראשון עד חמישי ו-2.5 מ"ג בשישי ושבת = 30 מ"ג לשבוע.</div>
+  </div>
+
+  <div id="warfOut"></div>
+
+  <h3>הנומוגרמה <span class="muted">(יעד 2–3, ללא דימום)</span></h3>
+  <table id="nomo">
+    <tr><th>INR</th><th>פעולה</th></tr>
+    <tr data-n="lt15"><td>מתחת ל-1.5</td><td>העלאת המינון השבועי ב-10%–20%. אפשר לשקול מנה נוספת חד-פעמית.</td></tr>
+    <tr data-n="15"><td>1.5–1.9</td><td>העלאת המינון השבועי ב-5%–10%.</td></tr>
+    <tr data-n="ther"><td>2.0–3.0</td><td>ללא שינוי.</td></tr>
+    <tr data-n="31"><td>3.1–3.9</td><td>הפחתת המינון השבועי ב-5%–10%.</td></tr>
+    <tr data-n="40"><td>4.0–4.9</td><td>דילוג על מנה אחת, והפחתת המינון השבועי בכ-10%.</td></tr>
+    <tr data-n="50"><td>5.0–8.9</td><td>דילוג על 1–2 מנות, הפחתת המינון השבועי ב-10%–20%, ומעקב INR. <b>ויטמין K אינו מומלץ שגרתית</b> בהיעדר דימום.</td></tr>
+    <tr data-n="90"><td>9.0 ומעלה</td><td>הפסקה, ויטמין K 2.5–5 מ"ג פומי, מעקב INR צמוד, וחידוש במינון מופחת כשה-INR חוזר לטווח.</td></tr>
+  </table>
+  <p class="muted">ההנחיה של ה-ACCP ממליצה <b>נגד</b> מתן ויטמין K שגרתי בטווח INR של 4.5–10 בהיעדר דימום — אין עדות לתועלת בתוצאים חשובים למטופל, ויש חשש לתיקון-יתר ולעמידות לקומדין בחידוש הטיפול. ויטמין K במינון נמוך נשקל בכל זאת כשקיים סיכון דימום גבוה במיוחד או צורך בניתוח דחוף.</p>
+
+  <div class="warn">
+    <b>שלוש טעויות נפוצות:</b>
+    <ul class="tight" style="margin-bottom:0">
+      <li><b>רדיפה אחרי ערך בודד.</b> ערך אחד מחוץ לטווח, בסטייה קטנה ובמטופל יציב, לרוב אינו מצדיק שינוי מינון — עדיף לחזור על הבדיקה.</li>
+      <li><b>בדיקה חוזרת מוקדם מדי.</b> השפעת שינוי מינון מתבטאת במלואה רק לאחר 5–7 ימים. בדיקה אחרי יומיים תיתן תמונה מטעה.</li>
+      <li><b>שינוי מינון בלי לחפש סיבה.</b> לפני כל שינוי — לברר תרופה חדשה, מחלה חריפה, שלשול, שינוי תזונתי או אלכוהול.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== INR FACTORS ===== -->
+<section id="sec-inr">
+  <h2>גורמים המשפיעים על INR</h2>
+  <table>
+    <tr><th>מעלים INR (סיכון לדימום)</th><th>מורידים INR (סיכון לקריש)</th></tr>
+    <tr>
+      <td>
+        <ul class="tight" style="padding-right:16px">
+          <li>אנטיביוטיקה: מטרונידזול, טרימתופרים-סולפמתוקסזול, פלוקונזול, ציפרופלוקסצין, מקרולידים</li>
+          <li>אמיודרון (השפעה ממושכת — עלולה להימשך שבועות)</li>
+          <li>NSAIDs (גם ללא שינוי ב-INR מגבירים סיכון דימום)</li>
+          <li>סטטינים מסוימים, פיברטים</li>
+          <li>מחלה חריפה, חום, אי-ספיקת לב, הידרדרות בתפקוד הכבד</li>
+          <li>שלשול ממושך, ירידה בצריכת מזון</li>
+          <li>ירידה בצריכת ירקות עליים</li>
+          <li>שתייה מרובה של אלכוהול באירוע בודד</li>
+        </ul>
+      </td>
+      <td>
+        <ul class="tight" style="padding-right:16px">
+          <li>עלייה בצריכת מזונות עשירי ויטמין K — ירקות עליים ירוקים, ברוקולי, כרוב</li>
+          <li>ריפמפין, קרבמזפין, פנוברביטל</li>
+          <li>סנט ג'ונס וורט</li>
+          <li>צריכה כרונית של אלכוהול</li>
+          <li>תוספי ויטמין K</li>
+          <li>אי-נטילת מנות</li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+  <div class="info">
+    <b>לגבי ירקות ירוקים:</b> המסר למטופל אינו "להימנע", אלא <b>לשמור על צריכה קבועה</b>. שינוי חד בכמות הוא הבעיה, לא הכמות עצמה.
+  </div>
+</section>
+
+<!-- ===== SOAP ===== -->
+<section id="sec-soap">
+  <h2>סיכום לרשומה הרפואית</h2>
+  <div class="card">
+    <label>בדיקה גופנית — תבנית לעריכה</label>
+    <textarea id="pe" style="min-height:110px"></textarea>
+  </div>
+  <div class="card">
+    <label>סיכום SOAP</label>
+    <textarea id="soap"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button onclick="copySoap()">העתק ללוח</button>
+      <button class="sec" onclick="buildSoap()">בנה מחדש מהנתונים</button>
+    </div>
+    <div id="copyMsg" class="hint"></div>
+  </div>
+</section>
+
+<p class="muted" style="text-align:center;font-size:12px;border-top:1px solid var(--line);padding-top:14px">
+כלי עזר לרופא/ה. אינו מחליף שיקול דעת קליני. הנומוגרמה היא נומוגרמה כללית מקובלת — פרוטוקול מרפאת הקרישה המקומית גובר עליה.
+</p>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v;};
+const chk=id=>$(id).checked;
+
+function scores(){
+  const age=num('age'), sex=$('sex').value;
+  let agePts=0; if(age!==null){ if(age>=75) agePts=2; else if(age>=65) agePts=1; }
+  const base=(chk('chf')?1:0)+(chk('htn')?1:0)+agePts+(chk('dm')?1:0)
+            +(chk('stroke')?2:0)+(chk('vasc')?1:0);
+  const va=base, vasc=base+(sex==='f'?1:0);
+  return {age,sex,agePts,va,vasc};
+}
+
+function hasbled(){
+  const age=num('age');
+  const eld = age!==null&&age>65 ? 1 : 0;
+  const items=[
+    ['hbHtn','יתר לחץ דם לא מאוזן',true],
+    ['hbRenal','תפקוד כלייתי לקוי',false],
+    ['hbLiver','תפקוד כבדי לקוי',false],
+    ['hbStroke','שבץ בעבר',false],
+    ['hbBleed','דימום או נטייה לדימום',true],
+    ['hbLabile','INR לא יציב',true],
+    ['hbDrugs','נוגדי טסיות או NSAIDs',true],
+    ['hbAlcohol','אלכוהול',true]
+  ];
+  let s=eld; const mods=[];
+  items.forEach(([id,name,modifiable])=>{ if(chk(id)){ s++; if(modifiable) mods.push(name); } });
+  return {score:s,eld,mods};
+}
+
+/* weekly dose → 7-day schedule in half-tablet steps */
+function schedule(weekly,strength){
+  const unit=strength/2;
+  let units=Math.round(weekly/unit);
+  if(units<0) units=0;
+  const base=Math.floor(units/7), rem=units%7;
+  const days=Array(7).fill(base);
+  const order=[0,3,5,1,4,2,6];
+  for(let i=0;i<rem;i++) days[order[i]]++;
+  return days.map(u=>u*unit);
+}
+const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+function render(){
+  const S=scores(), H=hasbled();
+
+  $('agePts').textContent=S.agePts;
+  $('ageLbl').textContent = S.age===null ? 'גיל — יש להזין למעלה'
+    : S.age>=75 ? 'גיל 75 ומעלה' : S.age>=65 ? 'גיל 65–74' : 'גיל מתחת ל-65';
+  $('ageAuto').checked=S.agePts>0;
+  $('sexPts').textContent = S.sex==='f'?1:0;
+  $('sexF').checked = S.sex==='f';
+  $('hbAgePts').textContent=H.eld;
+  $('hbElderly').checked=H.eld>0;
+
+  const ready = S.age!==null && S.sex;
+  $('vascVal').textContent = ready?S.vasc:'—';
+  $('vaVal').textContent   = ready?S.va:'—';
+
+  /* stroke interpretation */
+  let sh='';
+  if(ready){
+    const escTxt = S.va>=2 ? 'מומלץ נוגד קרישה (המלצה 1)'
+                 : S.va===1 ? 'יש לשקול נוגד קרישה (המלצה 2a)'
+                 : 'אין המלצה לנוגד קרישה';
+    const thr = S.sex==='f'?3:2, mid=S.sex==='f'?2:1;
+    const accTxt = S.vasc>=thr ? 'מומלץ נוגד קרישה (המלצה 1)'
+                 : S.vasc>=mid ? 'סביר לשקול נוגד קרישה (המלצה 2a)'
+                 : 'אפשר להימנע מנוגד קרישה';
+    sh=`<div class="card"><div class="kv"></div>
+      <table><tr><th>הנחיה</th><th>ציון</th><th>המסקנה</th></tr>
+      <tr><td>ESC 2024 — CHA₂DS₂-VA</td><td><b>${S.va}</b></td><td>${escTxt}</td></tr>
+      <tr><td>ACC/AHA 2023 — CHA₂DS₂-VASc</td><td><b>${S.vasc}</b></td><td>${accTxt}</td></tr>
+      </table></div>`;
+    const escAC = S.va>=1, accAC = S.vasc>=mid;
+    if(escAC!==accAC) sh+='<div class="warn"><b>שתי ההנחיות מגיעות למסקנות שונות</b> עבור מטופל/ת זה/זו. ההבדל נובע מספירת המין הנשי. יש להכריע לפי שיקול דעת קליני ולתעד את ההנמקה.</div>';
+  }
+  $('strokeOut').innerHTML=sh;
+
+  /* bleeding */
+  let bh=`<div class="res"><div style="font-size:15px">ציון HAS-BLED: <b style="font-size:26px;color:var(--a800)">${H.score}</b> מתוך 9</div>`;
+  bh += H.score>=3
+    ? '<div class="warn" style="margin-bottom:0"><b>סיכון דימום גבוה.</b> אין להסיק מכך הימנעות מנוגד קרישה — יש לטפל בגורמים בני-השינוי ולקבוע מעקב תכוף יותר.</div>'
+    : '<div class="ok" style="margin-bottom:0">סיכון דימום שאינו גבוה לפי הציון. יש להעריך מחדש בכל ביקור — הציון דינמי.</div>';
+  if(H.mods.length) bh+=`<div style="margin-top:8px"><b>גורמים בני-שינוי שזוהו:</b><ul class="tight" style="margin-bottom:0">${H.mods.map(m=>`<li>${m}</li>`).join('')}</ul></div>`;
+  bh+='</div>';
+  $('bleedOut').innerHTML=bh;
+
+  /* decision */
+  const D=$('decOut');
+  if(!ready) D.innerHTML='<span class="muted">יש להשלים גיל, מין וגורמי סיכון.</span>';
+  else{
+    const mid=S.sex==='f'?2:1, thr=S.sex==='f'?3:2;
+    const rec = (S.va>=2||S.vasc>=thr) ? 'strong' : (S.va===1||S.vasc>=mid) ? 'consider' : 'none';
+    let h='';
+    if(rec==='strong') h+='<div class="ok"><b>יש התוויה לטיפול בנוגד קרישה.</b> שתי ההנחיות מסכימות.</div>';
+    else if(rec==='consider') h+='<div class="warn"><b>אזור אפור.</b> יש לשקול נוגד קרישה בהחלטה משותפת עם המטופל/ת, תוך התייחסות להעדפותיו ולגורמי הסיכון בני-השינוי.</div>';
+    else h+='<div class="ok"><b>אין כרגע התוויה לנוגד קרישה.</b> יש להעריך מחדש בכל שינוי קליני — הסיכון דינמי ועולה עם הגיל.</div>';
+    h+=`<div class="muted" style="margin-top:8px">CHA₂DS₂-VA = ${S.va} · CHA₂DS₂-VASc = ${S.vasc} · HAS-BLED = ${H.score}</div>`;
+    D.innerHTML=h;
+  }
+
+  /* agent choice */
+  const t=$('afType').value;
+  let ag='';
+  if(t==='mech'||t==='ms'){
+    ag='<div class="bad"><b>קומדין הוא נוגד הקרישה היחיד המתאים כאן.</b> '+
+      (t==='mech'?'במסתם מכני':'בהיצרות מיטרלית בינונית-קשה או ראומטית')+
+      ' — DOAC אינו מתאים ואף מזיק. יעד ה-INR נקבע לפי סוג המסתם ומיקומו.</div>';
+  } else if(t==='nvaf'){
+    ag='<div class="info"><b>בפרפור לא-מסתמי — DOAC מועדף על פני קומדין</b> בשתי ההנחיות, אלא אם קיימת מניעה (אי-ספיקת כליות קשה, אינטראקציות, עלות, העדפת המטופל, או מטופל מאוזן היטב על קומדין לאורך זמן). מודול התאמת המינון שלמטה רלוונטי למטופלים הנמצאים כבר על קומדין.</div>';
+  }
+  $('agentOut').innerHTML=ag;
+
+  /* warfarin */
+  renderWarf();
+  buildSoap();
+}
+
+function renderWarf(){
+  const inr=num('inr'), weekly=num('weekly'), strength=parseFloat($('tab').value);
+  const tgt=$('target').value, bleeding=chk('bleeding');
+  const lo = tgt==='23'?2.0:2.5, hi = tgt==='23'?3.0:3.5;
+  const rows={lt15:false,'15':false,ther:false,'31':false,'40':false,'50':false,'90':false};
+  const W=$('warfOut');
+
+  if(inr===null){ W.innerHTML='<div class="muted">הזן INR נוכחי ומינון שבועי.</div>'; mark(rows); return; }
+
+  if(bleeding){
+    W.innerHTML='<div class="bad"><b>דימום פעיל.</b> הנומוגרמה אינה חלה. בדימום קל — לעצור מנה, לטפל מקומית ולעקוב. בדימום משמעותי או מסכן חיים — הפסקה, ויטמין K תוך-ורידי 5–10 מ"ג בעירוי איטי, PCC או פלזמה, והפניה דחופה.</div>';
+    mark(rows); return;
+  }
+
+  let band, pct=0, hold=0, extra='', vitK='';
+  if(inr<1.5){ band='lt15'; pct=15; extra='אפשר לשקול מנה נוספת חד-פעמית היום.'; }
+  else if(inr<lo){ band='15'; pct=7.5; }
+  else if(inr<=hi){ band='ther'; pct=0; }
+  else if(inr<4){ band='31'; pct=-7.5; }
+  else if(inr<5){ band='40'; pct=-10; hold=1; }
+  else if(inr<9){ band='50'; pct=-15; hold=2; vitK='ויטמין K אינו מומלץ שגרתית בהיעדר דימום.'; }
+  else { band='90'; pct=-20; hold=99; vitK='ויטמין K 2.5–5 מ"ג פומי, ומעקב INR צמוד.'; }
+  rows[band]=true; mark(rows);
+
+  let h='';
+  if(band==='ther'){
+    h+=`<div class="ok"><b>INR ${inr} — בטווח היעד ${lo}–${hi}.</b> ללא שינוי במינון. בדיקה חוזרת לפי מרווח המעקב הרגיל (עד 4–12 שבועות במטופל יציב).</div>`;
+  } else {
+    const dir = pct>0?'העלאה':'הפחתה';
+    h+=`<div class="${Math.abs(pct)>=15?'bad':'warn'}"><b>INR ${inr} — מחוץ לטווח היעד ${lo}–${hi}.</b> ${dir} של כ-${Math.abs(pct)}% מהמינון השבועי.`;
+    if(hold===99) h+=' <b>הפסקת הטיפול</b> עד לחזרת ה-INR לטווח.';
+    else if(hold) h+=` דילוג על ${hold===1?'מנה אחת':'1–2 מנות'}.`;
+    if(extra) h+=' '+extra;
+    if(vitK) h+=' '+vitK;
+    h+='</div>';
+  }
+
+  if(weekly!==null && band!=='ther' && hold!==99){
+    const nw = Math.round(weekly*(1+pct/100)*2)/2;
+    const days=schedule(nw,strength);
+    const actual=days.reduce((a,b)=>a+b,0);
+    h+=`<div class="res"><div class="kv" style="display:flex;justify-content:space-between;padding:4px 0"><span>מינון שבועי נוכחי</span><b>${weekly} מ"ג</b></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px dashed var(--line)"><span>מינון שבועי מוצע</span><b>${nw} מ"ג</b></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px dashed var(--line)"><span>מינון שבועי בפועל לפי חלוקה לטבליות</span><b>${actual} מ"ג</b></div>
+        <div class="week">${days.map((m,i)=>`<div class="day${m===0?' hold':''}"><div class="d">${DAYS[i]}</div><div class="m">${m}</div><div class="t">${m===0?'ללא':(m/strength)+' טבליות'}</div></div>`).join('')}</div>
+        <div class="hint">החלוקה בנויה בקפיצות של חצי טבליה של ${strength} מ"ג. אפשר לשנות ידנית כל עוד הסכום השבועי נשמר — מה שקובע הוא הסכום, לא הפיזור.</div></div>`;
+    if(hold) h+=`<div class="warn">לפני התחלת המינון החדש — דילוג על ${hold===1?'מנה אחת':'1–2 מנות'}.</div>`;
+  } else if(weekly===null && band!=='ther'){
+    h+='<div class="muted">הזן מינון שבועי נוכחי כדי לקבל חישוב והצעת חלוקה שבועית.</div>';
+  }
+
+  if(band!=='ther'){
+    const days = Math.abs(pct)>=15 ? '3–7 ימים' : '1–2 שבועות';
+    h+=`<div class="info"><b>בדיקה חוזרת בעוד ${days}.</b> השפעת השינוי מתבטאת במלואה רק לאחר 5–7 ימים. לפני השינוי — לברר תרופה חדשה, מחלה חריפה, שינוי תזונתי, שלשול או אלכוהול.</div>`;
+  }
+  W.innerHTML=h;
+}
+
+function mark(rows){
+  document.querySelectorAll('#nomo tr[data-n]').forEach(tr=>tr.classList.toggle('hit',!!rows[tr.dataset.n]));
+}
+
+const PE=`בדיקה גופנית:
+דופק ___ (סדיר / לא סדיר)   לחץ דם ___/___
+לב: ___   ריאות: ___
+בצקות היקפיות: ___
+סימני דימום — עור, ריריות, בדיקה רקטלית לפי הצורך: ___
+`;
+if(!$('pe').value) $('pe').value=PE;
+
+function buildSoap(){
+  const S=scores(), H=hasbled();
+  const inr=num('inr'), weekly=num('weekly');
+  let s='S: מעקב פרפור פרוזדורים וטיפול נוגד קרישה. ';
+  if(S.age!==null) s+=`בן/בת ${S.age}. `;
+  s+=$('afType').selectedOptions[0].text+'. ';
+  if(chk('hbBleed')) s+='עבר דימום או נטייה לדימום. ';
+  if(chk('hbDrugs')) s+='נוטל/ת נוגדי טסיות או NSAIDs. ';
+
+  let o='O: ';
+  if(inr!==null) o+=`INR ${inr}. `;
+  if(weekly!==null) o+=`מינון קומדין שבועי ${weekly} מ"ג. `;
+  o+='\n'+$('pe').value.trim();
+
+  let a='A: ';
+  if(S.age!==null&&S.sex){
+    a+=`CHA₂DS₂-VA = ${S.va}, CHA₂DS₂-VASc = ${S.vasc}, HAS-BLED = ${H.score}. `;
+    const mid=S.sex==='f'?2:1, thr=S.sex==='f'?3:2;
+    a += (S.va>=2||S.vasc>=thr) ? 'קיימת התוויה ברורה לטיפול נוגד קרישה. '
+       : (S.va===1||S.vasc>=mid) ? 'אזור אפור — החלטה משותפת עם המטופל/ת. '
+       : 'אין כרגע התוויה לנוגד קרישה. ';
+    if(H.score>=3) a+='סיכון דימום גבוה לפי HAS-BLED — אינו מהווה הוריית נגד, ומחייב טיפול בגורמים בני-השינוי ומעקב צמוד. ';
+    if(H.mods.length) a+='גורמים בני-שינוי: '+H.mods.join(', ')+'. ';
+  } else a+='נתונים חסרים לחישוב הציונים. ';
+
+  let p='P: ';
+  if(inr!==null){
+    const tgt=$('target').value, lo=tgt==='23'?2:2.5, hi=tgt==='23'?3:3.5;
+    p += (inr>=lo&&inr<=hi) ? `INR בטווח היעד ${lo}–${hi} — ללא שינוי במינון. ` : `INR מחוץ לטווח היעד ${lo}–${hi} — בוצעה התאמת מינון. `;
+  }
+  p+='נבדקו תרופות חדשות, מחלה חריפה ושינויים תזונתיים. הוסבר על שמירה על צריכה קבועה של ירקות עליים ועל דיווח מיידי על דימום. ';
+  p+='מועד בדיקת INR הבא: ___ .';
+
+  $('soap').value=[s,o,a,p].join('\n\n');
+}
+
+function copySoap(){
+  navigator.clipboard.writeText($('soap').value)
+    .then(()=>{ $('copyMsg').textContent='הועתק ללוח.'; setTimeout(()=>$('copyMsg').textContent='',2500); })
+    .catch(()=>{ $('copyMsg').textContent='ההעתקה נכשלה — יש לסמן ולהעתיק ידנית.'; });
+}
+
+document.querySelectorAll('input,select').forEach(el=>{
+  if(el.id==='soap'||el.id==='pe') return;
+  el.addEventListener('input',render); el.addEventListener('change',render);
+});
+$('pe').addEventListener('input',buildSoap);
+
+const links=[...document.querySelectorAll('#nav a')];
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+  links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id));}})},
+  {rootMargin:'-56px 0px -70% 0px'});
+document.querySelectorAll('section').forEach(x=>obs.observe(x));
+
+render();
+</script>
+</body>
+</html>
