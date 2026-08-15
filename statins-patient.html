@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>סטטינים — כמה זה באמת יעזור לי?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1b2733; --body:#3d4d5c; --mut:#71828f;
+  --paper:#f7f9fa; --card:#fff; --line:#e2e9ee;
+  --good:#0f766e; --good-bg:#f0fdfa;
+  --bad:#b4443a; --bad-bg:#fdf3f2;
+  --neutral:#cfd8de;
+  --accent:#155e75; --accent2:#0e7490;
+  --warn:#a16207; --warn-bg:#fefce8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--body);font-family:'Heebo',system-ui,sans-serif;font-size:17px;line-height:1.65}
+.wrap{max-width:680px;margin:0 auto;padding:0 18px 60px}
+header{background:linear-gradient(140deg,#134e4a,#155e75);color:#fff;padding:26px 0 22px;margin-bottom:20px}
+header .wrap{padding-bottom:0}
+header a{color:#a5f3fc;font-size:14px;text-decoration:none}
+h1{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:29px;line-height:1.2;margin:8px 0 8px;color:#fff}
+header p{color:#cffafe;font-size:16px}
+h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;color:var(--ink);margin:32px 0 10px}
+h3{font-size:17px;color:var(--ink);margin:18px 0 6px;font-weight:700}
+p{margin:10px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+label{display:block;font-size:14px;color:var(--mut);margin-bottom:4px;font-weight:500}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:17px;font-family:inherit;background:#fff}
+input:focus,select:focus{outline:2px solid var(--accent2);outline-offset:-1px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+.array{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:16px 0 10px;max-width:340px}
+.dot{aspect-ratio:1;border-radius:50%;background:var(--neutral)}
+.dot.evt{background:var(--bad)}
+.dot.prev{background:var(--good)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:14px;margin-top:6px}
+.legend span{display:flex;align-items:center;gap:6px}
+.key{width:13px;height:13px;border-radius:50%;flex:none}
+.num{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:40px;color:var(--accent);line-height:1}
+.mini{font-size:14px;color:var(--mut)}
+.good{background:var(--good-bg);border:1px solid #99f6e4;border-right:5px solid var(--good);border-radius:11px;padding:14px 16px;margin:12px 0}
+.warnbox{background:var(--warn-bg);border:1px solid #fde68a;border-right:5px solid var(--warn);border-radius:11px;padding:14px 16px;margin:12px 0}
+.badbox{background:var(--bad-bg);border:1px solid #f2d0cc;border-right:5px solid var(--bad);border-radius:11px;padding:14px 16px;margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15.5px}
+th,td{border:1px solid var(--line);padding:10px;text-align:right;vertical-align:top}
+th{background:#eef4f7;font-size:14.5px;color:var(--ink)}
+.myth{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;background:#fff}
+.myth .q{font-weight:700;color:var(--ink);font-size:16.5px}
+.myth .a{margin-top:6px}
+.tag{display:inline-block;font-size:12.5px;font-weight:700;padding:2px 9px;border-radius:99px;margin-bottom:6px}
+.t-no{background:#dcfce7;color:#14532d}
+.t-part{background:#fef9c3;color:#713f12}
+.t-yes{background:#fee2e2;color:#7f1d1d}
+ul{padding-right:22px;margin:10px 0}
+li{margin:6px 0}
+.q-list li{margin:9px 0}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--mut)}
+.pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pill{background:#eef4f7;border-radius:99px;padding:5px 13px;font-size:14px;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="patients.html">← חזרה לכלים למטופלים</a>
+    <h1>סטטינים — כמה זה באמת יעזור לי?</h1>
+    <p>כלי שיעזור לך להבין את המספרים שלך, מה באמת ידוע על תופעות הלוואי, ומה נכון להחליט יחד עם הרופא/ה.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="card">
+  <p style="margin-top:0"><b>הכלי הזה מיועד למי ש<u>לא</u> עבר התקף לב או שבץ.</b> אם כבר עברת אירוע כזה, או שיש לך מחלת לב ידועה, התמונה שונה לגמרי — היתרון בטיפול גדול הרבה יותר, וכדאי לדבר על כך ישירות עם הרופא/ה.</p>
+  <p style="margin-bottom:0">אין כאן המלצה לקחת או לא לקחת תרופה. יש כאן מספרים, ומה שידוע ומה שלא ידוע — כדי שההחלטה תהיה שלך, מתוך הבנה.</p>
+</div>
+
+<h2>1. המספרים שלך</h2>
+<p>הסיכון שלך לאירוע לב או שבץ בעשר השנים הקרובות תלוי בכמה דברים פשוטים. מלא/י אותם וקבל/י הערכה.</p>
+
+<div class="card">
+  <div class="grid">
+    <div><label>גיל</label><input type="number" id="age" min="40" max="69" placeholder="40 עד 69"></div>
+    <div><label>מין</label><select id="sex"><option value="">בחר/י…</option><option value="f">אישה</option><option value="m">גבר</option></select></div>
+    <div><label>מעשן/ת כיום?</label><select id="smoke"><option value="0">לא</option><option value="1">כן</option></select></div>
+    <div><label>לחץ דם עליון</label><input type="number" id="sbp" placeholder="לדוגמה: 135"></div>
+    <div><label>כולסטרול כללי</label><input type="number" id="tc" placeholder="מ״ג/ד״ל"></div>
+    <div><label>כולסטרול HDL ("הטוב")</label><input type="number" id="hdl" placeholder="מ״ג/ד״ל"></div>
+    <div><label>כולסטרול LDL ("הרע")</label><input type="number" id="ldl" placeholder="מ״ג/ד״ל"></div>
+    <div><label>עוצמת הטיפול</label>
+      <select id="intensity">
+        <option value="0.35">מינון רגיל — מוריד כ-35% מה-LDL</option>
+        <option value="0.5">מינון גבוה — מוריד כ-50% מה-LDL</option>
+      </select></div>
+  </div>
+  <p class="mini" style="margin-bottom:0">את המספרים אפשר למצוא בתוצאות בדיקת הדם האחרונה שלך.</p>
+</div>
+
+<div id="out"></div>
+
+<h2>2. מה סטטין עושה בפועל</h2>
+<p>הכולסטרול מסוג LDL מצטבר לאורך שנים בדפנות העורקים ויוצר רובד. הרובד מצר את העורק, ולפעמים נקרע פתאום ויוצר קריש שחוסם אותו — כך נגרמים התקף לב ושבץ.</p>
+<p>הסטטין מפחית את ייצור הכולסטרול בכבד. ככל שרמת ה-LDL בדם נמוכה יותר וממושכת יותר, כך הרובד גדל לאט יותר ויציב יותר. <b>זה לא טיפול שמרגישים.</b> הוא לא משפר את התחושה היומיומית — הוא משנה מה יקרה בעוד עשר או עשרים שנה. זו בדיוק הסיבה שקשה לקחת אותו, וגם הסיבה שקל להפסיק.</p>
+
+<h2>3. תופעות לוואי — מה באמת ידוע</h2>
+<p>זה החלק שבו יש הכי הרבה בלבול, ולכן נציג אותו בכנות: מה נכון, מה נכון חלקית, ומה פשוט לא הוכח.</p>
+
+<table>
+  <tr><th>תופעה</th><th>מה באמת ידוע</th></tr>
+  <tr>
+    <td><b>כאבי שרירים</b></td>
+    <td>זו התלונה הנפוצה ביותר, וצריך להתייחס אליה ברצינות. אבל יש כאן פער מעניין: במחקרים שבהם חלק מהמשתתפים קיבלו סטטין וחלק קיבלו כדור דמה, <b>ומאף אחד לא נאמר מה הוא מקבל</b> — כמעט אותו אחוז התלונן על כאבי שרירים בשתי הקבוצות. לעומת זאת, כשאנשים יודעים שהם נוטלים סטטין, שיעור התלונות נע בין 7% ל-29%.<br><br>המסקנה אינה "הכאב מדומיין". הכאב אמיתי לחלוטין. המסקנה היא שחלק ניכר ממנו אינו נגרם מהתרופה — אלא מכאבים שממילא קיימים בגיל הזה, ומהציפייה שהתרופה תגרום להם.</td>
+  </tr>
+  <tr>
+    <td><b>נזק אמיתי לשריר</b></td>
+    <td>קיים, אך נדיר. הצורה החמורה (פירוק שריר) מוערכת בכ-<b>מקרה אחד לכל 100,000 שנות טיפול</b>. אם מופיעה חולשת שרירים אמיתית או שתן כהה — יש לפנות לרופא/ה מיד.</td>
+  </tr>
+  <tr>
+    <td><b>אנזימי כבד</b></td>
+    <td>עלייה קלה מופיעה אצל 0.5%–2%, בדרך כלל חולפת מעצמה. התקדמות לפגיעה כבדית של ממש היא <b>נדירה ביותר</b>. בגלל זה כבר לא מבצעים בדיקות כבד שגרתיות למי שנוטל סטטין ותפקודי הכבד שלו תקינים.</td>
+  </tr>
+  <tr>
+    <td><b>סוכרת</b></td>
+    <td>קיימת עלייה קטנה בסיכון, והיא אמיתית. היא תלויה במינון ומופיעה כמעט רק אצל מי שכבר נמצא/ת על סף סוכרת — עודף משקל, סוכר גבולי בצום, תסמונת מטבולית. ההערכה המקובלת היא כמקרה נוסף אחד לכל כ-250 אנשים המטופלים במשך ארבע שנים. <b>בקבוצות סיכון, ההגנה מפני התקף לב ושבץ גוברת בבירור על הסיכון הזה.</b></td>
+  </tr>
+</table>
+
+<h3>מה שלא הוכח</h3>
+<p>ההנחיות הישראליות מציינות במפורש שקיימת <b>דיסאינפורמציה רבה</b> בנוגע לתופעות הלוואי של סטטינים, ושהדברים הבאים <b>לא הוכחו</b>:</p>
+
+<div class="myth"><span class="tag t-no">לא הוכח</span>
+  <div class="q">סטטינים גורמים לסרטן</div>
+  <div class="a">לא הודגם קשר בין נטילת סטטינים לבין מחלות הסרטן.</div></div>
+
+<div class="myth"><span class="tag t-no">לא הוכח</span>
+  <div class="q">סטטינים גורמים לירוד (קטרקט)</div>
+  <div class="a">לא הודגמה השפעה על התפתחות קטרקט.</div></div>
+
+<div class="myth"><span class="tag t-no">לא הוכח</span>
+  <div class="q">סטטינים גורמים לדמנציה, לאלצהיימר או לפגיעה בזיכרון</div>
+  <div class="a">היו דיווחים בודדים על ירידה בתפקוד הקוגניטיבי, ואפילו הודעת אזהרה של ה-FDA — אך היא התבססה על דיווחים אנקדוטליים בלבד. במחקרים מבוקרים ובמחקרי תצפית גדולים <b>התופעה לא הוכחה</b>. מחקר ייעודי שבדק תפקוד קוגניטיבי גם בערכי כולסטרול נמוכים מאוד לא מצא השפעה.</div></div>
+
+<div class="myth"><span class="tag t-part">נכון חלקית</span>
+  <div class="q">"הכולסטרול שלי ירד יותר מדי — זה מסוכן"</div>
+  <div class="a">המחקרים של השנים האחרונות מצאו את ההפך: גם כשה-LDL יורד לערכים נמוכים מאוד, ההגנה ממשיכה לגדול ולא נמצא סף שמתחתיו התועלת נעצרת או שמופיע נזק.</div></div>
+
+<h2>4. למה יש כל כך הרבה מידע סותר?</h2>
+<p>ההנחיות הישראליות מקדישות לכך פרק שלם. הן מציינות שהתקשורת בארץ ובעולם עוסקת בנושא תכופות, ולעיתים "נותנת במה למידע מגמתי ומטעה המשרה חוסר אמון כלפי רופאים וחשש מטיפול תרופתי".</p>
+<div class="warnbox">
+  <p style="margin-top:0">זה לא נשאר ברמת הדעה. במחקרים בדנמרק ובבריטניה נמצא <b>קשר ברור בין כתבות שליליות על סטטינים לבין הפסקה מוקדמת של הטיפול</b> — ובעקבותיה עלייה בתחלואה ובתמותה.</p>
+  <p style="margin-bottom:0">מצד שני, הטענה ההפוכה — שכל מי שמעלה ספק הוא בור או משרת אינטרסים — גם היא לא נכונה ולא מועילה. יש שאלות לגיטימיות, בעיקר סביב מי בדיוק צריך טיפול בסיכון נמוך. השאלה הנכונה אינה "בעד או נגד סטטינים", אלא <b>"כמה זה יעזור דווקא לי, ומה חשוב לי"</b>.</p>
+</div>
+
+<h2>5. אם מופיעים כאבי שרירים</h2>
+<p>כאב שרירים אינו סוף הסיפור ולא מחייב לוותר על ההגנה. יש דרך מסודרת לברר אם התרופה באמת אשמה:</p>
+<ul>
+  <li>הרופא/ה יבדוק/תבדוק אם יש גורם אחר — פעילות גופנית חריגה, בעיה בבלוטת התריס, חוסר ויטמין D, תרופה חדשה שמתנגשת.</li>
+  <li>לעיתים מפסיקים את התרופה לשבועיים עד ארבעה שבועות ובודקים אם הכאב חולף.</li>
+  <li>אם חלף — מחדשים את אותה תרופה ורואים אם הכאב חוזר. זו הדרך היחידה לדעת באמת.</li>
+  <li>אם הוא חוזר — אפשר מינון נמוך יותר, אפילו <b>כל יומיים</b>, או סטטין אחר לגמרי. לרוב נמצאת אפשרות שנסבלת.</li>
+  <li>ואם באמת אי אפשר — קיימות תרופות אחרות להורדת כולסטרול שאינן סטטינים.</li>
+</ul>
+<p class="mini">חשוב: אל תפסיק/י תרופה על דעת עצמך בלי לדבר על כך. הפסקה שקטה היא הדבר היחיד שבטוח לא יעזור.</p>
+
+<h2>6. מה שסטטין לא מחליף</h2>
+<p>גם כשמתחילים טיפול תרופתי, הבסיס נשאר: הימנעות מעישון, תזונה ים-תיכונית עם שמן זית ואגוזים, פעילות גופנית סדירה, שמירה על משקל ואיזון לחץ הדם. אלה משפיעים על הסיכון בדרכים שהתרופה אינה מכסה.</p>
+<div class="pillrow">
+  <span class="pill">הפסקת עישון</span><span class="pill">תזונה ים-תיכונית</span>
+  <span class="pill">30 דקות פעילות ברוב ימות השבוע</span><span class="pill">איזון לחץ דם</span><span class="pill">שמירה על משקל</span>
+</div>
+
+<h2>7. שאלות ששווה לשאול</h2>
+<ul class="q-list">
+  <li>מה הסיכון שלי לעשר השנים הקרובות, במספרים?</li>
+  <li>בכמה הטיפול צפוי להוריד אותו — לא באחוזים, אלא כמה אנשים מתוך מאה?</li>
+  <li>האם יש לי גורם סיכון שאפשר לשפר בלי תרופה, ובכמה זמן כדאי לנסות?</li>
+  <li>אם אתחיל ואחוש רע — מה התוכנית? מתי נבדוק שוב?</li>
+  <li>מה קורה אם אחליט לחכות שנה ולבדוק שוב?</li>
+</ul>
+
+<footer>
+  <p style="margin-top:0">המספרים בכלי זה הם הערכה סטטיסטית עבור <b>קבוצת אנשים</b> עם מאפיינים דומים לשלך — הם אינם ניבוי של מה שיקרה לך אישית. הכלי אינו מחליף שיחה עם הרופא/ה שלך, שמכיר/ה את מלוא התמונה הרפואית.</p>
+  <p style="margin-bottom:0">מבוסס על ההנחיות הישראליות לטיפול בדיסליפידמיה (ההסתדרות הרפואית בישראל) ועל מחשבון הסיכון האירופאי SCORE2.</p>
+</footer>
+
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v;};
+
+const S2={
+  m:{a:0.3742,s:0.6012,b:0.2777,t:0.1458,h:-0.2698,sa:-0.0755,ba:-0.0255,ta:-0.0281,ha:0.0426,S0:0.9605,x1:-0.5699,x2:0.7476},
+  f:{a:0.4648,s:0.7744,b:0.3131,t:0.1002,h:-0.2606,sa:-0.1088,ba:-0.0277,ta:-0.0226,ha:0.0613,S0:0.9776,x1:-0.7380,x2:0.7019}
+};
+function score2(sex,age,smoke,sbp,tcMg,hdlMg){
+  const c=S2[sex], tc=tcMg/38.67, hdl=hdlMg/38.67;
+  const ca=(age-60)/5, cb=(sbp-120)/20, ct=tc-6, ch=(hdl-1.3)/0.5;
+  const x=c.a*ca+c.s*smoke+c.b*cb+c.t*ct+c.h*ch+c.sa*smoke*ca+c.ba*cb*ca+c.ta*ct*ca+c.ha*ch*ca;
+  const u=1-Math.pow(c.S0,Math.exp(x));
+  return (1-Math.exp(-Math.exp(c.x1+c.x2*Math.log(-Math.log(1-u)))))*100;
+}
+
+function render(){
+  const age=num('age'), sex=$('sex').value, smoke=parseInt($('smoke').value),
+        sbp=num('sbp'), tc=num('tc'), hdl=num('hdl'), ldl=num('ldl'),
+        red=parseFloat($('intensity').value);
+  const O=$('out');
+
+  if(!sex||age===null||sbp===null||tc===null||hdl===null){
+    O.innerHTML='<div class="card"><p style="margin:0;color:var(--mut)">מלא/י את השדות למעלה כדי לראות את המספרים שלך.</p></div>';
+    return;
+  }
+  if(age<40||age>69){
+    O.innerHTML='<div class="warnbox"><p style="margin:0">מחשבון הסיכון שבו נעשה שימוש כאן תקף לגילאי 40 עד 69. מחוץ לטווח הזה יש דרכים אחרות להעריך את הסיכון — כדאי לשאול את הרופא/ה.</p></div>';
+    return;
+  }
+
+  const base=score2(sex,age,smoke,sbp,tc,hdl);
+  const ldlDrop = (ldl!==null? ldl*red : (tc-hdl)*red*0.8)/38.67;  // mmol/L
+  const rrr = 1-Math.pow(0.78,ldlDrop);
+  const treated = base*(1-rrr);
+  const prevented = base-treated;
+
+  const nBase=Math.round(base), nTreat=Math.round(treated), nPrev=Math.max(0,nBase-nTreat);
+  let dots='';
+  for(let i=0;i<100;i++){
+    let cls='dot';
+    if(i<nTreat) cls+=' evt';
+    else if(i<nTreat+nPrev) cls+=' prev';
+    dots+=`<div class="${cls}"></div>`;
+  }
+
+  const nnt = prevented>0 ? Math.round(100/prevented) : null;
+
+  O.innerHTML=`
+  <div class="card">
+    <h3 style="margin-top:0">מתוך 100 אנשים עם נתונים דומים לשלך, בעשר השנים הקרובות:</h3>
+    <div class="array">${dots}</div>
+    <div class="legend">
+      <span><i class="key" style="background:var(--bad)"></i> ${nTreat} יחוו אירוע לב או שבץ למרות הטיפול</span>
+      <span><i class="key" style="background:var(--good)"></i> ${nPrev} יינצלו מאירוע בזכות הטיפול</span>
+      <span><i class="key" style="background:var(--neutral)"></i> ${100-nTreat-nPrev} לא יחוו אירוע ממילא</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card" style="text-align:center">
+      <div class="mini">הסיכון שלך ללא טיפול</div>
+      <div class="num">${base.toFixed(1)}%</div>
+      <div class="mini">בעשר השנים הקרובות</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="mini">הסיכון עם סטטין</div>
+      <div class="num" style="color:var(--good)">${treated.toFixed(1)}%</div>
+      <div class="mini">ירידה של ${prevented.toFixed(1)} נקודות</div>
+    </div>
+  </div>
+
+  <div class="good">
+    <p style="margin-top:0"><b>איך לקרוא את זה בכנות.</b> הטיפול מוריד את הסיכון בכ-${Math.round(rrr*100)}% <i>יחסית</i> — וזה המספר שבדרך כלל מצוטט בכותרות. אבל מה שחשוב באמת הוא ההפרש בפועל: <b>${prevented.toFixed(1)} מתוך 100 אנשים</b> יימנע מהם אירוע.</p>
+    ${nnt?`<p style="margin-bottom:0">במילים אחרות: אם ${nnt} אנשים כמוך ייטלו סטטין במשך עשר שנים, אחד מהם יינצל מהתקף לב או שבץ. השאר ייטלו את התרופה בלי שהיא תשנה עבורם דבר — פשוט אי אפשר לדעת מראש מי מהם האחד.</p>`:''}
+  </div>
+
+  ${base<5?'<div class="warnbox"><p style="margin:0">הסיכון שלך נמוך יחסית. במצב כזה ההנחיות ממליצות קודם כול לנסות שיפור באורח החיים למשך שלושה עד שישה חודשים, ורק אחר כך לדון בטיפול תרופתי. יש לך זמן להחליט.</p></div>':''}
+  ${base>=10?'<div class="badbox"><p style="margin:0">הסיכון שלך גבוה. בקבוצה הזו התועלת מהטיפול גדולה במיוחד, וכדאי לדבר על כך עם הרופא/ה בהקדם — לצד הטיפול בגורמי סיכון נוספים כמו לחץ דם ועישון.</p></div>':''}
+  `;
+}
+
+document.querySelectorAll('input,select').forEach(e=>{
+  e.addEventListener('input',render); e.addEventListener('change',render);
+});
+render();
+</script>
+</body>
+</html>
