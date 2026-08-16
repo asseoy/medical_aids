@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>טופס מסירת מקרה לרופא/ה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f1c2e; --ink-2:#3b4a63; --paper:#e8ecf3; --card:#ffffff;
+  --line:#c9d2e0; --accent:#10627f; --alert:#b32218; --alert-soft:#fbe9e7;
+  --warn:#8a5a00; --warn-soft:#fdf1dc; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'Assistant',system-ui,sans-serif;font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+h1,h2{font-family:'Heebo',system-ui,sans-serif;font-weight:900;letter-spacing:-.02em}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px 120px}
+.topbar{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.topbar .t{font-family:'Heebo';font-weight:700;font-size:17px;flex:1}
+.topbar button{background:transparent;border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:8px;padding:5px 10px;font-family:'Assistant';font-size:14px;cursor:pointer}
+.eyebrow{font-size:12.5px;letter-spacing:.14em;color:var(--ink-2);font-weight:700}
+.hero{padding:26px 0 10px}
+.hero h1{font-size:30px;margin:6px 0 8px;line-height:1.15}
+.hero p{margin:0;color:var(--ink-2);font-size:16px}
+.grid{display:grid;gap:10px;margin-top:18px}
+.pick{display:block;width:100%;text-align:right;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;cursor:pointer;font:inherit;color:inherit;border-inline-start:5px solid var(--accent)}
+.pick:hover{border-color:var(--accent)}
+.pick .n{font-family:'Heebo';font-weight:700;font-size:19px;display:block}
+.pick .d{color:var(--ink-2);font-size:14.5px;margin-top:2px;display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:12px 0}
+.card > h2{font-size:18px;margin:0 0 10px}
+.sec-tag{font-size:11.5px;font-weight:700;color:var(--ink-2);letter-spacing:.1em}
+.field{margin:14px 0}
+.lab{display:block;font-weight:600;margin-bottom:6px;font-size:16px}
+.hint{font-size:13.5px;color:var(--ink-2);margin:-2px 0 6px}
+input[type=text],input[type=number],input[type=time],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:inherit}
+textarea{min-height:60px;resize:vertical}
+.nm{display:flex;align-items:center;gap:8px}
+.nm input{max-width:130px}
+.nm .u{color:var(--ink-2);font-size:15px}
+.bp{display:flex;align-items:center;gap:8px}
+.bp input{max-width:92px}
+.bp .sep{font-weight:700;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:15px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.yn{display:flex;gap:7px}
+.yn .chip{flex:1;text-align:center}
+.yn .chip[data-v="כן"][aria-pressed="true"]{background:var(--ink);border-color:var(--ink)}
+.gate{background:var(--alert-soft);border:2px solid var(--alert);border-radius:var(--radius);padding:16px;margin:14px 0}
+.gate h2{color:var(--alert);font-size:20px;margin:0 0 4px}
+.gate p{margin:0 0 12px;font-size:15px;color:#5c1a14}
+.rf{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:right;background:#fff;border:1px solid #e3b9b4;border-radius:12px;padding:12px;margin-bottom:8px;font:inherit;cursor:pointer;color:inherit}
+.rf[aria-pressed="true"]{background:var(--alert);border-color:var(--alert);color:#fff}
+.rf .box{width:22px;height:22px;border:2px solid var(--alert);border-radius:6px;flex:none;margin-top:2px}
+.rf[aria-pressed="true"] .box{background:#fff;border-color:#fff}
+.act{background:var(--alert);color:#fff;border-radius:var(--radius);padding:18px;margin:14px 0}
+.act h2{color:#fff;font-size:22px;margin:0 0 8px}
+.act ol{margin:0;padding-inline-start:20px;font-size:17px;line-height:1.7}
+.act .timer{font-family:'Heebo';font-weight:900;font-size:32px;background:rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;margin-top:14px;text-align:center;font-variant-numeric:tabular-nums}
+.btn{display:block;width:100%;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:14px;font-family:'Heebo';font-weight:700;font-size:17px;cursor:pointer;margin-top:10px}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.light{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.5)}
+.bar{position:fixed;bottom:0;inset-inline:0;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:20}
+.bar .inner{max-width:760px;margin:0 auto}
+.bar .btn{margin:0}
+.flags{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 12px}
+.flag{background:var(--warn-soft);border:1px solid #e0c281;color:var(--warn);border-radius:8px;padding:6px 11px;font-size:14.5px;font-weight:600}
+.flag.red{background:var(--alert-soft);border-color:#e3b9b4;color:var(--alert)}
+pre.sbar{white-space:pre-wrap;font-family:'Assistant';font-size:15.5px;line-height:1.65;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin:0}
+.none{color:var(--ink-2);font-size:15px}
+.foot{color:var(--ink-2);font-size:13px;margin-top:22px;text-align:center}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="t" id="tb">טופס מסירת מקרה</div><button id="home" hidden>מסך פתיחה</button></div>
+<div class="wrap" id="app"></div>
+<div class="bar" id="bar" hidden><div class="inner"><button class="btn" id="build">יצירת מסירה</button></div></div>
+
+<script>
+/* F(id, label, kind, options, phrase, hint)
+   kinds: sc=בחירה יחידה · ch=בחירה מרובה · yn=כן/לא · nm=מספר (options=יחידה) · bp=לחץ דם · tm=שעה · tx=טקסט
+   phrase: תבנית עם $ ; ב-yn מערך [חיובי, שלילי] , null = לא נכנס לסיכום */
+const F=(i,t,k,o,p,h)=>({i,t,k,o:o||null,p:p||null,h:h||null});
+const SEC=(t,r,f,j)=>({t,r,f,j:j||'. '});
+const ASK=SEC('הבקשה מהרופא/ה','r',[
+  F('ask','הבקשה','sc',['לראות עכשיו','לראות היום','ייעוץ טלפוני','מרשם','דיווח בלבד'],'הבקשה: $'),
+  F('worry','רמת החשש שלי','sc',['נמוכה','בינונית','גבוהה'],'רמת החשש: $'),
+  F('free','משהו נוסף שחשוב לדעת','tx',null,'$')
+]);
+const GUT='תחושת הבטן שלי שזה דחוף';
+const VIT=(...f)=>SEC('מדדים','a',f,', ');
+
+const MODULES=[
+{
+ id:'chest', name:'כאבים בחזה', desc:'כאב בחזה בכל צורה, כולל כאב שחלף',
+ gate:['הכאב עכשיו והמטופל נראה לא טוב – הזעה, חיוורון, הקאות או קוצר נשימה',
+       'כאב פתאומי וחזק, קורע, שמקרין לגב',
+       'התעלף או כמעט התעלף עם הכאב',
+       'סטורציה מתחת ל-94%, סיסטולי מתחת ל-100, דופק מתחת ל-50 או מעל 120',
+       GUT],
+ act:['להפסיק את השאלון.','לקרוא לרופא/ה עכשיו.','להשכיב את המטופל/ת ולא להשאיר לבד.','אק״ג ומדדים חוזרים.'],
+ sections:[
+  SEC('מאפייני הכאב','s',[
+   F('onset','מתי התחיל','sc',['פחות משעה','1-6 שעות','6-24 שעות','1-3 ימים','מעל 3 ימים'],'הכאב התחיל לפני $'),
+   F('now','הכאב קיים עכשיו','yn',null,['הכאב קיים גם עכשיו','הכאב חלף']),
+   F('dur','משך ההתקף','sc',['שניות','עד 5 דקות','5-20 דקות','20-60 דקות','מעל שעה','מתמשך'],'משך ההתקף $'),
+   F('rec','ראשון או חוזר','sc',['אירוע ראשון','אירוע חוזר'],'$'),
+   F('trend','מגמה','sc',['מחמיר','יציב','משתפר'],'מגמה: $'),
+   F('char','אופי','ch',['לחץ','צריבה','דקירה','אחר'],'אופי הכאב: $'),
+   F('site','מיקום','ch',['מרכזי','שמאל','ימין','אפיגסטרי'],'מיקום: $'),
+   F('rad','הקרנה','ch',['יד','לסת','גב','ללא הקרנה'],'הקרנה: $')]),
+  SEC('מה משפיע על הכאב','a',[
+   F('trig','גורמים','ch',['מופיע במאמץ','מופיע במנוחה','מחמיר בשכיבה','משתפר בהישענות קדימה','מחמיר בנשימה עמוקה','מופיע בלחיצה על בית החזה','קשור לארוחה'],'$'),
+   F('rel','מה הקל','ch',['מנוחה','ניטרט','סותר חומצה','שום דבר לא הקל'],'הקלה: $')]),
+  SEC('סימנים נלווים','a',[
+   F('assoc','סימנים','ch',['קוצר נשימה','הזעה','בחילה','דפיקות לב','שיעול','חום','ליחה','בצקת ברגל אחת','סחרחורת','ללא סימנים נלווים'],'מלווה ב$|ללא סימנים נלווים')]),
+  VIT(F('bp','לחץ דם','bp',null,'ל״ד $'),
+      F('pulse','דופק','nm','לדקה','דופק $'),
+      F('rhythm','סדירות','sc',['סדיר','לא סדיר'],'$'),
+      F('sat','סטורציה','nm','%','סטורציה $%'),
+      F('temp','חום','nm','מעלות','חום $')),
+  SEC('רקע וגורמי סיכון','b',[
+   F('card','לב וכלי דם','ch',['מחלת לב ידועה, צנתור או מעקפים','סוכרת','יתר לחץ דם','שומנים בדם','עישון','אירוע לב מוקדם במשפחה','ללא'],'גורמי סיכון: $'),
+   F('pe','הקשר לתסחיף','ch',['ניתוח לאחרונה','שכיבה ממושכת','טיסה ארוכה','ממאירות פעילה','הורמונים או היריון','ללא'],'הקשר לתסחיף: $'),
+   F('msk','אחר','ch',['חבלה או הרמת משקל לאחרונה'],'$'),
+   F('meds','תרופות רלוונטיות','ch',['אספירין או נוגד טסיות','נוגד קרישה','סטטין','חוסם בטא','ניטרטים','ללא'],'תרופות: $')]),
+  SEC('מה כבר נעשה','r',[
+   F('ecg','בוצע אק״ג','yn',null,['בוצע אק״ג','אק״ג לא בוצע']),
+   F('ecgres','ממצא באק״ג','sc',['תקין','שינויים','לא ברור','טרם נקרא'],'הממצא $'),
+   F('ecgby','מי קרא','sc',['אחות','רופא במרפאה','טרם נקרא'],'נקרא על ידי $'),
+   F('arms','ל״ד בשתי ידיים','yn',null,['נמדד ל״ד בשתי ידיים',null]),
+   F('o2','ניתן חמצן','yn',null,['ניתן חמצן',null]),
+   F('asa','ניתן אספירין','yn',null,['ניתן אספירין',null]),
+   F('prev','בירור קודם על אותו כאב','ch',['לא היה','מבחן מאמץ','צנתור','ביקור במיון'],'בירור קודם: $')]),
+  ASK],
+ flags:s=>{const f=[];
+  if(s.has('trig','מופיע במאמץ'))f.push(['מופיע במאמץ',1]);
+  if(s.has('trig','מחמיר בנשימה עמוקה')||s.has('trig','מחמיר בשכיבה')||s.has('trig','משתפר בהישענות קדימה'))f.push(['מאפיינים פלאוריטיים או תנוחתיים',0]);
+  if(s.has('trig','מופיע בלחיצה על בית החזה'))f.push(['רגיש למישוש – אינו שולל תסמונת כלילית',0]);
+  if(s.anyBut('pe','ללא'))f.push(['גורמי סיכון לתסחיף ריאתי',1]);
+  if(s.has('card','מחלת לב ידועה, צנתור או מעקפים'))f.push(['מחלת לב ידועה',1]);
+  if(s.v('ecg')!=='כן')f.push(['לא בוצע אק״ג',1]);
+  if(s.v('rhythm')==='לא סדיר')f.push(['דופק לא סדיר',1]);
+  return f;}
+},
+{
+ id:'bp', name:'יתר לחץ דם', desc:'מדידת לחץ דם גבוהה בעמדת האחות',
+ gate:['כאב בחזה, קוצר נשימה קשה או קוצר נשימה בשכיבה',
+       'ממצא נוירולוגי חדש – חולשה, עיוות פנים, קושי בדיבור, ירידה בראייה, כאב ראש חד וחזק, בלבול',
+       'היריון או עד 6 שבועות מהלידה עם לחץ דם 140/90 ומעלה',
+       'סיסטולי 220 ומעלה או דיאסטולי 120 ומעלה במדידה חוזרת',
+       GUT],
+ act:['להפסיק את השאלון.','לקרוא לרופא/ה עכשיו.','להשאיר את המטופל/ת בישיבה או שכיבה ולמדוד שוב בעוד 5 דקות.'],
+ sections:[
+  SEC('תנאי המדידה','a',[
+   F('cond','לסמן כל מה שהתקיים','ch',['מנוחה 5 דקות','גב וזרוע נתמכים','רגליים על הרצפה','לא דיבר בזמן המדידה','שרוול מתאים להיקף הזרוע','שרוול על יד חשופה','שלפוחית ריקה','ללא קפה, סיגריה או מאמץ בחצי שעה'],'-','הסיכום יציג רק את מה שלא התקיים'),
+   F('arm','באיזו יד','sc',['ימין','שמאל'],'נמדד ביד $')],', '),
+  VIT(F('bp1','מדידה ראשונה','bp',null,'מדידה ראשונה $'),
+      F('t1','שעת המדידה','tm',null,'בשעה $'),
+      F('bp2','מדידה חוזרת אחרי 5 דקות','bp',null,'מדידה חוזרת $'),
+      F('bp3','מדידה שלישית','bp',null,'מדידה שלישית $'),
+      F('other','מדידה ביד השנייה','bp',null,'ביד השנייה $'),
+      F('pulse','דופק','nm','לדקה','דופק $'),
+      F('rhythm','סדירות','sc',['סדיר','לא סדיר'],'$')),
+  SEC('הקשר','s',[
+   F('why','למה נמדד לחץ הדם','sc',['שגרה','תלונה','מעקב','לפני פרוצדורה','בקשת המטופל'],'לחץ הדם נמדד ב$'),
+   F('known','ידוע כיתר לחץ דם','sc',['ידוע כיתר לחץ דם','ממצא חדש','לא ברור'],'$'),
+   F('home','מדידות מהבית','sc',['לא מודד בבית','מודד וערכים תקינים','מודד וערכים גבוהים'],'$')]),
+  SEC('תרופות','b',[
+   F('rx','טיפול קיים ללחץ דם','ch',['ACE או ARB','חוסם סידן','משתן','חוסם בטא','אחר','ללא טיפול'],'טיפול: $'),
+   F('adh','נטילה','sc',['לקח היום','פספס מנות','נגמר המרשם','הפסיק מיוזמתו','שינוי מינון לאחרונה'],'נטילה: $'),
+   F('press','חומרים מעלי לחץ דם','ch',['NSAIDs','סטרואידים','טיפות או תרסיס לאף','ליקוריץ','משקאות אנרגיה','ממריצים','ללא'],'בשימוש: $'),
+   F('newrx','תרופה חדשה לאחרונה','yn',null,['תרופה חדשה לאחרונה',null])]),
+  SEC('תסמינים עכשיו','a',[
+   F('sx','תסמינים','ch',['כאב ראש','סחרחורת','דימום מהאף','דפיקות לב','כאב בחזה','קוצר נשימה','שינוי בראייה','בצקות ברגליים','ללא תסמינים'],'תסמינים: $')]),
+  SEC('רקע','b',[
+   F('hx','מחלות רקע','ch',['אי ספיקת כליות','סוכרת','מחלת לב','שבץ בעבר','אי ספיקת לב','דום נשימה בשינה','אפקט חלוק לבן ידוע','ללא'],'ידוע עם $|ללא מחלות רקע ידועות'),
+   F('preg','היריון','sc',['לא רלוונטי','לא בהיריון','בהיריון','ייתכן היריון'],'$')]),
+  SEC('מה כבר נעשה','r',[
+   F('again','מדידה חוזרת אחרי מנוחה','yn',null,['נמדד שוב אחרי מנוחה','לא נמדד שוב']),
+   F('med','תרופה במרפאה','sc',['לא רלוונטי','ניתנה מנה','נמנעה מנה'],'$'),
+   F('ecg','בוצע אק״ג','yn',null,['בוצע אק״ג',null]),
+   F('urine','סטיק שתן','sc',['לא בוצע','תקין','חלבון','דם'],'סטיק שתן $')]),
+  ASK],
+ flags:s=>{const f=[];
+  const cond=['מנוחה 5 דקות','גב וזרוע נתמכים','רגליים על הרצפה','לא דיבר בזמן המדידה','שרוול מתאים להיקף הזרוע','שרוול על יד חשופה','שלפוחית ריקה','ללא קפה, סיגריה או מאמץ בחצי שעה'];
+  const miss=cond.filter(c=>!s.has('cond',c));
+  if(miss.length)f.push(['סטיות בתנאי המדידה: '+miss.join(', '),1]);
+  if(!s.v('bp2'))f.push(['אין מדידה חוזרת',1]);
+  if(['פספס מנות','נגמר המרשם','הפסיק מיוזמתו'].includes(s.v('adh')))f.push(['בעיית היענות',1]);
+  if(s.anyBut('press','ללא'))f.push(['חומר מעלה לחץ דם בשימוש',1]);
+  if(['בהיריון','ייתכן היריון'].includes(s.v('preg')))f.push(['היריון או חשד להיריון',2]);
+  if(s.v('known')==='ממצא חדש')f.push(['ממצא חדש',0]);
+  if(s.v('rhythm')==='לא סדיר')f.push(['דופק לא סדיר',1]);
+  return f;}
+},
+{
+ id:'dyspnea', name:'קוצר נשימה', desc:'קושי בנשימה, חדש או מחמיר',
+ gate:['סטורציה מתחת ל-92% באוויר חדר (מתחת ל-88% ב-COPD ידוע)',
+       'לא מסיים משפט שלם, שימוש בשרירי עזר או מעל 25 נשימות בדקה',
+       'כחלון, בלבול או חוסר שקט',
+       'התחלה פתאומית, או כאב בחזה יחד עם קוצר הנשימה',
+       'סטרידור, ריור או נפיחות בפנים או בלשון',
+       GUT],
+ act:['להפסיק את השאלון.','לקרוא לרופא/ה עכשיו.','להושיב את המטופל/ת זקוף.','חמצן לפי נוהל ומדידת סטורציה חוזרת.'],
+ sections:[
+  SEC('התחלה ומהלך','s',[
+   F('onset','מתי התחיל','sc',['פחות משעה','1-6 שעות','6-24 שעות','1-3 ימים','מעל 3 ימים'],'התחיל לפני $'),
+   F('speed','קצב ההתחלה','sc',['פתאומי, תוך דקות','הדרגתי, על פני ימים'],'הופיע באופן $'),
+   F('trend','מגמה','sc',['מחמיר','יציב','משתפר'],'מגמה: $'),
+   F('epi','קבוע או התקפי','sc',['קבוע','התקפי'],'$'),
+   F('past','אירועים דומים בעבר','sc',['ללא','כן, אותו דפוס','כן, אחרת מהפעם'],'אירועים דומים בעבר: $')]),
+  SEC('חומרה מול המצב הרגיל','a',[
+   F('level','מתי מתנשם','sc',['במנוחה','במאמץ קל','בעליית מדרגות'],'קוצר נשימה $'),
+   F('base','שינוי מהתפקוד לפני שבוע','sc',['ללא שינוי','ירידה קלה','ירידה ניכרת','לא מתפקד כרגיל בכלל'],'לעומת השבוע שעבר: $'),
+   F('orth','שינה בלילה','sc',['ישן שטוח','2 כריות','3 כריות ומעלה','ישן בישיבה'],'$'),
+   F('pnd','מתעורר בלילה מחנק','yn',null,['התעוררות לילית מחנק',null])]),
+  SEC('סימנים נלווים','a',[
+   F('assoc','סימנים','ch',['שיעול יבש','שיעול עם ליחה','דם בליחה','חום','כאב בחזה','כאב שמחמיר בנשימה','צפצופים','דפיקות לב','בצקת ברגל אחת','בצקת בשתי הרגליים','עלייה במשקל','צרידות','פריחה או גרד','נפיחות בשפתיים או בלשון','ללא סימנים נלווים'],'מלווה ב$|ללא סימנים נלווים')]),
+  SEC('גורמים וחשיפות','b',[
+   F('trig','גורמים','ch',['מחלת חום או הצטננות לאחרונה','תרופה חדשה','חשיפה לאלרגן','אוויר קר או מאמץ','שכיבה','לא לקח משאפים','לא לקח משתן','טיסה, ניתוח או שכיבה ממושכת','עישון','אבק או חשיפה תעסוקתית','ללא'],'גורמים: $')]),
+  SEC('רקע','b',[
+   F('hx','מחלות רקע','ch',['אסתמה','COPD','אי ספיקת לב','מחלת לב','פרפור פרוזדורים','תסחיף בעבר','אנמיה','ממאירות','אי ספיקת כליות','השמנה','דום נשימה בשינה','היריון','חמצן ביתי','ללא'],'ידוע עם $|ללא מחלות רקע ידועות'),
+   F('meds','תרופות','ch',['משאפים','משתן','נוגד קרישה','חוסם בטא','ללא'],'תרופות: $')]),
+  VIT(F('sat','סטורציה','nm','%','סטורציה $%'),
+      F('satmode','באיזה מצב נמדדה','sc',['אוויר חדר','עם חמצן'],'$','שדה חובה – מספר בלי הקשר אינו ניתן לפירוש'),
+      F('flow','אם עם חמצן, כמה ליטר','nm','ליטר','בזרימה של $ ליטר'),
+      F('rr','נשימות בדקה, נספרו דקה מלאה','nm','לדקה','$ נשימות בדקה'),
+      F('pulse','דופק','nm','לדקה','דופק $'),
+      F('rhythm','סדירות','sc',['סדיר','לא סדיר'],'$'),
+      F('bp','לחץ דם','bp',null,'ל״ד $'),
+      F('temp','חום','nm','מעלות','חום $'),
+      F('pf','פיק פלו אם אסתמה ידועה','nm',null,'פיק פלו $'),
+      F('ausc','האזנה','ch',['נקי','חרחורים בשתי הריאות','צפצופים','הנמכה בצד אחד','לא בוצעה'],'בהאזנה: $')),
+  SEC('מה כבר ניתן','r',[
+   F('inh','טיפול נשימתי','ch',['לא ניתן','משאף מרחיב','אינהלציה','סטרואיד'],'ניתן: $'),
+   F('inht','שעת מתן','tm',null,'בשעה $'),
+   F('resp','התגובה לטיפול','sc',['שיפור ברור','שיפור חלקי','ללא שינוי','החמרה'],'התגובה: $'),
+   F('o2b','סטורציה לפני חמצן','nm','%','סטורציה לפני חמצן $%'),
+   F('o2a','סטורציה אחרי חמצן','nm','%','ואחריו $%'),
+   F('ecg','בוצע אק״ג','yn',null,['בוצע אק״ג',null])]),
+  ASK],
+ flags:s=>{const f=[];
+  const sat=parseFloat(s.v('sat'));
+  if(!isNaN(sat)&&sat<94)f.push(['היפוקסמיה '+s.v('sat')+'% ('+(s.v('satmode')||'המצב לא צוין')+')',2]);
+  if(s.v('sat')&&!s.v('satmode'))f.push(['לא צוין אם באוויר חדר או עם חמצן',1]);
+  if(s.v('speed')==='פתאומי, תוך דקות')f.push(['התחלה פתאומית',1]);
+  if(s.has('assoc','כאב שמחמיר בנשימה'))f.push(['כאב פלאוריטי',1]);
+  if(s.has('trig','טיסה, ניתוח או שכיבה ממושכת')||s.has('hx','תסחיף בעבר')||s.has('hx','ממאירות'))f.push(['גורמי סיכון לתסחיף ריאתי',1]);
+  if(s.v('pnd')==='כן'||s.has('assoc','בצקת בשתי הרגליים')||['3 כריות ומעלה','ישן בישיבה'].includes(s.v('orth')))f.push(['מאפיינים של אי ספיקת לב',1]);
+  if(s.has('assoc','חום')||s.has('assoc','שיעול עם ליחה'))f.push(['מאפיינים זיהומיים',0]);
+  if(s.v('base')==='לא מתפקד כרגיל בכלל')f.push(['ירידה תפקודית חדה מהמצב הבסיסי',1]);
+  return f;}
+},
+{
+ id:'allergy', name:'תגובה אלרגית', desc:'תגובה לאחר חשיפה – מזון, תרופה, חיסון, עקיצה',
+ gate:['תסמין בדרכי הנשימה – תחושת חנק בגרון, שינוי בקול, קושי בבליעה, סטרידור, נפיחות בלשון או בענבל',
+       'תסמין בעור או בריריות יחד עם קושי בנשימה, צפצופים, סחרחורת או התמוטטות',
+       'מעורבות של שתי מערכות ומעלה אחרי חשיפה סבירה – עור, נשימה, מערכת עיכול, לב וכלי דם',
+       'ירידה בלחץ הדם אחרי חשיפה לאלרגן ידוע',
+       GUT],
+ act:['אדרנלין תוך שרירי לפי נוהל המרפאה – עכשיו.','להשכיב את המטופל/ת עם רגליים מורמות. לא להושיב ולא להעמיד.','להזעיק מד״א.','לקרוא לרופא/ה.','לסמן את שעת מתן האדרנלין – היא פותחת את חלון ההשגחה.'],
+ timer:true,
+ sections:[
+  SEC('החשיפה','s',[
+   F('trig','גורם חשוד','sc',['מזון','תרופה','עקיצה','חיסון','לטקס','מוצר מקומי','לא ידוע'],'אחרי חשיפה ל$'),
+   F('what','מה בדיוק','tx',null,'מדובר ב$'),
+   F('gap','זמן מהחשיפה עד התסמין','sc',['דקות ספורות','עד חצי שעה','חצי שעה עד שעתיים','מעל שעתיים'],'התסמינים הופיעו $ מהחשיפה'),
+   F('route','דרך החשיפה','sc',['דרך הפה','בהזרקה','עקיצה','מגע'],'החשיפה: $'),
+   F('first','חשיפה ראשונה או חוזרת','sc',['חשיפה ראשונה','חשיפה חוזרת'],'$')]),
+  SEC('מהלך','s',[
+   F('start','מתי התחיל','sc',['פחות מחצי שעה','חצי שעה עד שעתיים','2-6 שעות','מעל 6 שעות'],'התחיל לפני $'),
+   F('trend','מגמה','sc',['מחמיר','יציב','משתפר'],'מגמה: $'),
+   F('earlier','הייתה תגובה קודמת היום שחלפה','yn',null,['הייתה תגובה מוקדמת יותר היום שחלפה',null])]),
+  SEC('תסמינים לפי מערכות','a',[
+   F('skin','עור','ch',['סרפדת מקומית','סרפדת מפושטת','אודם','גרד','נפיחות בשפתיים','נפיחות בעפעפיים','נפיחות בלשון','נפיחות בכפות ידיים','ללא'],'בעור: $'),
+   F('resp','נשימה','ch',['תחושת חנק בגרון','שינוי בקול','שיעול','צפצופים','קוצר נשימה','ללא'],'בנשימה: $'),
+   F('gi','מערכת עיכול','ch',['בחילה','הקאות','כאב בטן מתכווץ','שלשול','ללא'],'במערכת העיכול: $'),
+   F('cv','לב וכלי דם','ch',['סחרחורת','דפיקות לב','התעלפות','חיוורון','ללא'],'במערכת הלב: $')]),
+  SEC('רקע','b',[
+   F('known','אלרגיות ידועות','tx',null,'אלרגיות ידועות: $'),
+   F('anaph','אנפילקסיס בעבר','yn',null,['אנפילקסיס בעבר',null]),
+   F('pen','נושא מזרק אדרנלין','yn',null,['יש מזרק אדרנלין','אין מזרק אדרנלין']),
+   F('hx','רקע','ch',['אסתמה','סרפדת כרונית','מסטוציטוזיס','ללא'],'ידוע עם $|ללא מחלות רקע ידועות'),
+   F('meds','תרופות','ch',['מעכב ACE','חוסם בטא','NSAIDs','תרופה חדשה בשבועיים האחרונים','ללא'],'תרופות: $')]),
+  VIT(F('bp','לחץ דם','bp',null,'ל״ד $'),
+      F('pulse','דופק','nm','לדקה','דופק $'),
+      F('sat','סטורציה','nm','%','סטורציה $%'),
+      F('rr','נשימות בדקה','nm','לדקה','$ נשימות בדקה'),
+      F('bp2','לחץ דם במדידה חוזרת אחרי טיפול','bp',null,'ובמדידה חוזרת אחרי הטיפול ל״ד $')),
+  SEC('מה כבר ניתן','r',[
+   F('gave','טיפול שניתן','ch',['אדרנלין','אנטיהיסטמין','סטרואיד','משאף','חמצן','נוזלים לווריד','לא ניתן טיפול'],'ניתן: $'),
+   F('adrt','שעת האדרנלין','tm',null,'אדרנלין בשעה $'),
+   F('adrn','מספר מנות אדרנלין','nm','מנות','מספר מנות אדרנלין: $'),
+   F('tresp','התגובה לטיפול','sc',['שיפור ברור','שיפור חלקי','ללא שינוי','החמרה'],'התגובה: $')]),
+  ASK],
+ flags:s=>{const f=[];
+  const sys=[s.anyBut('skin','ללא'),s.anyBut('resp','ללא'),s.anyBut('gi','ללא'),s.anyBut('cv','ללא')].filter(Boolean).length;
+  if(s.anyBut('resp','ללא'))f.push(['מעורבות דרכי נשימה',2]);
+  if(sys>=2)f.push(['מעורבות של '+sys+' מערכות',2]);
+  if(s.has('hx','אסתמה'))f.push(['אסתמה ברקע – מנבא תגובה קשה',1]);
+  if(s.has('gave','אדרנלין'))f.push(['ניתן אדרנלין – חלון השגחה פתוח',1]);
+  if(s.has('meds','מעכב ACE')&&(s.has('skin','נפיחות בשפתיים')||s.has('skin','נפיחות בלשון'))&&!s.has('skin','גרד')&&!s.has('skin','סרפדת מפושטת')&&!s.has('skin','סרפדת מקומית'))
+    f.push(['אנגיואדמה על רקע מעכב ACE – מנגנון אחר, לא מגיב לאנטיהיסטמין ולאדרנלין',2]);
+  if(s.has('hx','סרפדת כרונית')&&s.v('trig')==='לא ידוע')f.push(['סרפדת כרונית ידועה ללא חשיפה מזוהה',0]);
+  return f;}
+},
+{
+ id:'syncope', name:'סינקופה', desc:'התעלפות או כמעט התעלפות',
+ gate:['לא חזר לעצמו – מנומנם, מבולבל או עם ממצא נוירולוגי חדש',
+       'כאב בחזה, קוצר נשימה או דפיקות לב לפני או אחרי האירוע',
+       'התעלף במאמץ, או בזמן שכיבה',
+       'סיסטולי מתחת ל-90, דופק מתחת ל-40 או מעל 130, או דופק לא סדיר',
+       'חבטה בראש או פציעה במטופל/ת שנוטל/ת נוגדי קרישה',
+       GUT],
+ act:['להפסיק את השאלון.','לקרוא לרופא/ה עכשיו.','להשכיב את המטופל/ת עם רגליים מורמות.','אק״ג וסוכר בדם.'],
+ sections:[
+  SEC('האירוע','s',[
+   F('when','מתי קרה','sc',['עכשיו במרפאה','בשעה האחרונה','היום','אתמול','לפני יותר מיום'],'האירוע היה $'),
+   F('wit','היה עד לאירוע','yn',null,['האירוע נצפה על ידי עד','לא היה עד']),
+   F('witphone','טלפון של העד אם אינו כאן','tx',null,'טלפון העד: $','תיאור של עד הוא לרוב המידע היחיד על מה שקרה בפועל'),
+   F('pos','התנוחה בתחילת האירוע','sc',['עמידה','ישיבה','שכיבה','בזמן קימה'],'קרה ב$'),
+   F('doing','מה עשה באותו רגע','ch',['מאמץ','מנוחה','עמידה ממושכת','מקום חם וצפוף','מתן שתן','שיעול','אחרי ארוחה','בדיקת דם','כאב או התרגשות','סיבוב ראש'],'בזמן $')]),
+  SEC('לפני האיבוד','s',[
+   F('pro','תסמינים מקדימים','ch',['בחילה','הזעה','תחושת חום','החשכת ראייה','צלצולים באוזניים','ללא כל אזהרה'],'לפני כן: $')]),
+  SEC('במהלך האירוע','a',[
+   F('dur','משך חוסר ההכרה','sc',['שניות','עד דקה','1-5 דקות','מעל 5 דקות','לא ידוע'],'חוסר הכרה $'),
+   F('jerk','היו תנועות פרכוס','yn',null,['נצפו תנועות פרכוס','לא נצפו תנועות פרכוס']),
+   F('jerksec','משך התנועות','sc',['עד 10 שניות','10-30 שניות','מעל 30 שניות'],'שנמשכו $','פרכוס קצר שכיח גם בהתעלפות רגילה. אין לסמן זאת כפרכוס'),
+   F('tongue','נשיכת לשון','sc',['אין','בצד הלשון','בקצה הלשון'],'נשיכת לשון $'),
+   F('inc','אי שליטה על סוגרים','yn',null,['הייתה אי שליטה על סוגרים',null]),
+   F('color','צבע העור שנצפה','sc',['חיוור','כחלחל','לא נצפה'],'העור נראה $')]),
+  SEC('ההתאוששות','a',[
+   F('rec','איך התאושש','sc',['מיד ומתמצא','בלבול ממושך'],'התאוששות $'),
+   F('after','תסמין שנשאר','ch',['ללא','חולשה','כאב ראש','בלבול','בחילה'],'נשאר: $'),
+   F('inj','פציעות','ch',['ללא','חבלת ראש','חשד לשבר','חתך','חבורה'],'פציעה: $')]),
+  SEC('היסטוריה','b',[
+   F('first','ראשון או חוזר','sc',['אירוע ראשון','אירוע חוזר'],'$'),
+   F('howmany','כמה אירועים בעבר','sc',['אחד','2-3','יותר מ-3'],'$ אירועים בעבר'),
+   F('workup','בירור קודם','ch',['לא היה','הולטר','אקו לב','מבחן מאמץ','ביקור במיון'],'בירור קודם: $'),
+   F('fam','מוות לבבי פתאומי במשפחה מתחת לגיל 50','yn',null,['מוות לבבי פתאומי במשפחה מתחת לגיל 50',null])]),
+  VIT(F('sup','ל״ד בשכיבה','bp',null,'בשכיבה ל״ד $'),
+      F('psup','דופק בשכיבה','nm','לדקה','דופק $'),
+      F('st1','ל״ד בעמידה, דקה','bp',null,'בעמידה אחרי דקה $'),
+      F('st3','ל״ד בעמידה, 3 דקות','bp',null,'ואחרי 3 דקות $'),
+      F('nostand','לא בוצעה מדידה בעמידה','sc',['לא יציב לעמידה','המטופל/ת סירב/ה','חוסר זמן','לא נבדק ללא סיבה מיוחדת'],'לא בוצעה מדידה בעמידה: $'),
+      F('glu','סוכר בדם','nm',null,'סוכר $'),
+      F('sat','סטורציה','nm','%','סטורציה $%'),
+      F('temp','חום','nm','מעלות','חום $'),
+      F('ecg','בוצע אק״ג','yn',null,['בוצע אק״ג','אק״ג לא בוצע'])),
+  SEC('רקע ותרופות','b',[
+   F('hx','רקע','ch',['מחלת לב מבנית','אי ספיקת לב','אוטם בעבר','הפרעת קצב ידועה','קוצב או דפיברילטור','אפילפסיה','סוכרת','אנמיה או דימום','הקאות, שלשול או צום לאחרונה','היריון','ללא'],'ידוע עם $|ללא מחלות רקע ידועות'),
+   F('meds','תרופות','ch',['תרופות ללחץ דם','משתנים','ניטרטים','חוסמי אלפא','נוגדי הפרעות קצב','נוגדי דיכאון','אינסולין או גלולות לסוכרת','נוגדי קרישה','שינוי מינון לאחרונה','ללא'],'תרופות: $'),
+   F('alc','אלכוהול','yn',null,['צריכת אלכוהול סמוך לאירוע',null])]),
+  ASK],
+ flags:s=>{const f=[];
+  if(s.has('doing','מאמץ'))f.push(['התעלפות במאמץ',2]);
+  if(s.v('pos')==='שכיבה')f.push(['התעלפות בשכיבה',2]);
+  if(s.has('pro','ללא כל אזהרה'))f.push(['ללא תסמינים מקדימים',1]);
+  if(s.v('fam')==='כן')f.push(['מוות לבבי פתאומי במשפחה',2]);
+  if(s.has('hx','מחלת לב מבנית')||s.has('hx','אוטם בעבר')||s.has('hx','הפרעת קצב ידועה'))f.push(['מחלת לב ידועה',1]);
+  if(s.v('ecg')!=='כן')f.push(['לא בוצע אק״ג',1]);
+  if(!s.v('st1')&&!s.v('st3'))f.push(['לא בוצעו מדדים בעמידה'+(s.v('nostand')?' – '+s.v('nostand'):' וללא סיבה רשומה'),1]);
+  if(s.v('rec')==='בלבול ממושך'||s.v('tongue')==='בצד הלשון')f.push(['מאפיינים שמעלים אפשרות של פרכוס',1]);
+  if(s.v('first')==='אירוע חוזר')f.push(['אירועים חוזרים',1]);
+  if(s.anyBut('inj','ללא'))f.push(['נגרמה פציעה',1]);
+  return f;}
+},
+{
+ id:'vomit', name:'הקאות וחשד להתייבשות', desc:'כולל בקשה למתן נוזלים',
+ gate:['מנומנם, מבולבל או לא מצליח לעמוד',
+       'סיסטולי מתחת ל-90, דופק מעל 120, או ירידת לחץ דם בעמידה עם תסמינים',
+       'הקאה דמית או בצבע קפה טחון, או צואה שחורה',
+       'כאב בטן חזק או מחמיר, בטן תפוחה או קשה, ללא יציאה או גזים',
+       'הקאות עם כאב ראש חזק, קשיון עורף, ממצא נוירולוגי חדש או אחרי חבלת ראש',
+       'הקאות במטופל/ת עם סוכרת – ללא קשר לערך הסוכר',
+       'כאב בחזה יחד עם ההקאות',
+       GUT],
+ act:['להפסיק את השאלון.','לקרוא לרופא/ה עכשיו.','לא להתחיל נוזלים לפני אישור.','למדוד סוכר בדם ולחץ דם בשכיבה ובעמידה.'],
+ sections:[
+  SEC('ההקאות','s',[
+   F('onset','מתי התחילו','sc',['פחות מ-6 שעות','6-24 שעות','1-3 ימים','מעל 3 ימים'],'ההקאות התחילו לפני $'),
+   F('freq','כמה פעמים ב-24 שעות','sc',['1-2','3-5','6-10','יותר מ-10'],'$ פעמים ב-24 שעות'),
+   F('cont','תוכן ההקאה','ch',['מזון','מרה','דם','צבע קפה טחון','ריח צואתי'],'תוכן: $'),
+   F('meal','קשר לארוחות','sc',['ללא קשר','מיד אחרי אכילה','כמה שעות אחרי','בבוקר על בטן ריקה'],'$ לארוחות'),
+   F('keep','שתייה','sc',['שותה ומחזיק','שותה ומקיא','לא מנסה לשתות'],'$'),
+   F('last','מתי הצליח לשתות ולהחזיק','sc',['בשעה האחרונה','1-6 שעות','6-24 שעות','מעל 24 שעות'],'שתייה אחרונה שנשארה בבטן לפני $')]),
+  SEC('סימנים נלווים','a',[
+   F('assoc','סימנים','ch',['שלשול','דם בצואה','חום','כאב בטן','כאב ראש','סחרחורת סיבובית','כאב בחזה','תסמינים במתן שתן','ללא'],'מלווה ב$|ללא סימנים נלווים'),
+   F('pain','מיקום כאב הבטן','ch',['ללא כאב','בטן עליונה','אפיגסטרי','ימין תחתון','שמאל תחתון','מפושט'],'מיקום כאב הבטן: $|ללא כאב בטן'),
+   F('epi','אנשים נוספים חולים בבית או מקור מזון משותף','yn',null,['יש חולים נוספים בבית או מקור מזון משותף',null]),
+   F('travel','נסיעה לחו״ל לאחרונה','yn',null,['נסיעה לחו״ל לאחרונה',null])]),
+  SEC('הערכת התייבשות','a',[
+   F('urine','מתי השתין לאחרונה','sc',['בשעתיים האחרונות','2-6 שעות','6-12 שעות','מעל 12 שעות'],'מתן שתן אחרון לפני $','הסימן המשמעותי ביותר במבוגרים'),
+   F('uvol','כמות','sc',['רגילה','מופחתת','מעט מאוד'],'בכמות $'),
+   F('ucol','צבע השתן','sc',['בהיר','כהה','כהה מאוד'],'שתן $'),
+   F('signs','סימנים','ch',['צמא','פה יבש','עיניים שקועות','טורגור ירוד','מילוי קפילרי איטי','חולשה','ללא'],'סימנים: $'),
+   F('wt','ירידה במשקל מול המשקל הרגיל','sc',['ללא ירידה','עד 2 ק״ג','מעל 2 ק״ג','לא ידוע'],'ירידה במשקל: $')]),
+  SEC('מה נכנס עד עכשיו','a',[
+   F('intake','שתייה ב-24 שעות','sc',['כלום','לגימות בלבד','פחות מחצי ליטר','מעל חצי ליטר'],'שתייה ב-24 שעות: $'),
+   F('ors','ניסיון תמיסת החייאה דרך הפה','sc',['לא נוסה','נוסה והוחזק','נוסה והוקא'],'תמיסת החייאה: $'),
+   F('orsq','כמה ניתן','sc',['עד 100 מ״ל','100-500 מ״ל','מעל 500 מ״ל'],'בכמות של $'),
+   F('ivprev','ניתנו כבר נוזלים לווריד באירוע הזה','yn',null,['כבר ניתנו נוזלים לווריד באירוע הזה',null])]),
+  VIT(F('sup','ל״ד בשכיבה','bp',null,'בשכיבה ל״ד $'),
+      F('psup','דופק בשכיבה','nm','לדקה','דופק $'),
+      F('stand','ל״ד בעמידה','bp',null,'בעמידה $'),
+      F('pstand','דופק בעמידה','nm','לדקה','דופק $'),
+      F('nostand','לא בוצעה מדידה בעמידה','sc',['לא יציב לעמידה','המטופל/ת סירב/ה','חוסר זמן','לא נבדק ללא סיבה מיוחדת'],'לא בוצעה מדידה בעמידה: $'),
+      F('temp','חום','nm','מעלות','חום $'),
+      F('rr','נשימות בדקה','nm','לדקה','$ נשימות בדקה'),
+      F('sat','סטורציה','nm','%','סטורציה $%'),
+      F('glu','סוכר בדם','nm',null,'סוכר $'),
+      F('ket','קטונים בדם','sc',['לא נבדק','שלילי','חיובי'],'קטונים $'),
+      F('stick','סטיק שתן','ch',['לא בוצע','תקין','קטונים','משקל סגולי גבוה'],'סטיק שתן: $')),
+  SEC('תרופות','b',[
+   F('meds','תרופות','ch',['משתנים','מעכב ACE או ARB','מעכב SGLT2','מטפורמין','אינסולין','NSAIDs','אופיאטים','כימותרפיה','תרופה חדשה לאחרונה','ללא'],'תרופות: $'),
+   F('missed','תרופות שלא נלקחו בגלל ההקאות','ch',['תרופות ללחץ דם','אינסולין','נוגדי קרישה','תרופות לאפילפסיה','מדכאי חיסון','ללא'],'לא נלקחו בגלל ההקאות: $'),
+   F('subst','אלכוהול או קנביס','ch',['אלכוהול','קנביס','ללא'],'$')]),
+  SEC('רקע','b',[
+   F('hx','רקע','ch',['סוכרת','אי ספיקת כליות או דיאליזה','אי ספיקת לב','אי ספיקת יותרת הכליה','ניתוח בטני לאחרונה','בקע או חסימה בעבר','ממאירות או כימותרפיה','קשיש שברירי','דיכוי חיסוני','ללא'],'ידוע עם $|ללא מחלות רקע ידועות'),
+   F('preg','היריון','sc',['לא רלוונטי','לא בהיריון','בהיריון','ייתכן היריון'],'$')]),
+  SEC('הבקשה לנוזלים','r',[
+   F('want','הבקשה לגבי נוזלים','sc',['נוזלים דרך הפה בלבד','נוזלים לווריד','תרופה נגד הקאות','בדיקה של הרופא/ה קודם'],'לגבי נוזלים: $'),
+   F('iv','ווריד כבר מוחדר','yn',null,['ווריד כבר מוחדר',null])]),
+  ASK],
+ flags:s=>{const f=[];
+  if(s.v('keep')==='שותה ומקיא')f.push(['לא מחזיק שום דבר דרך הפה',2]);
+  if(s.v('ors')==='לא נוסה'&&s.v('want')==='נוזלים לווריד')f.push(['מבוקשים נוזלים לווריד ללא ניסיון דרך הפה',1]);
+  if(!s.v('stand'))f.push(['לא בוצעו מדדים בעמידה'+(s.v('nostand')?' – '+s.v('nostand'):' וללא סיבה רשומה'),1]);
+  if(['6-12 שעות','מעל 12 שעות'].includes(s.v('urine')))f.push(['תפוקת שתן מופחתת',2]);
+  if(s.has('cont','דם')||s.has('cont','צבע קפה טחון')||s.has('assoc','דם בצואה'))f.push(['מאפייני דימום במערכת העיכול',2]);
+  if(s.has('cont','ריח צואתי'))f.push(['מאפיינים של חסימה',2]);
+  if(s.has('hx','סוכרת'))f.push(['סוכרת עם הקאות – קטואצידוזיס אפשרי גם בסוכר תקין',2]);
+  if(s.has('meds','מעכב SGLT2'))f.push(['מעכב SGLT2 – סיכון לקטואצידוזיס אאוגליקמי',2]);
+  if(['בהיריון','ייתכן היריון'].includes(s.v('preg')))f.push(['היריון או חשד להיריון',1]);
+  if(s.anyBut('missed','ללא'))f.push(['תרופות קריטיות שלא נלקחו',1]);
+  if(s.has('hx','אי ספיקת לב')||s.has('hx','אי ספיקת כליות או דיאליזה')||s.has('hx','קשיש שברירי'))f.push(['זהירות במתן נוזלים',1]);
+  return f;}
+}
+];
+
+/* ---------- state ---------- */
+const app=document.getElementById('app'), bar=document.getElementById('bar'),
+      tb=document.getElementById('tb'), homeBtn=document.getElementById('home');
+let M=null, A={}, gate=[], adrenTime=null, tick=null;
+
+const S={
+ v:id=>A[id]||'',
+ has:(id,val)=>Array.isArray(A[id])&&A[id].includes(val),
+ anyBut:(id,skip)=>Array.isArray(A[id])&&A[id].some(x=>x!==skip)
+};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COMMON=SEC('פרטי הפנייה','s',[
+   F('age','גיל','nm','שנים'),
+   F('sex','מין','sc',['אישה','גבר']),
+   F('where','איפה המטופל/ת עכשיו','sc',['בחדר האחות','בהמתנה','בטלפון','בבית']),
+   F('ctx','משהו נוסף על הפנייה','tx',null,'$')]);
+
+function home(){
+ M=null;A={};gate=[];adrenTime=null;if(tick){clearInterval(tick);tick=null}
+ tb.textContent='טופס מסירת מקרה';homeBtn.hidden=true;bar.hidden=true;
+ app.innerHTML=`
+  <div class="hero">
+    <div class="eyebrow">שאלוני מסירה</div>
+    <h1>מה הביא את המטופל/ת למרפאה?</h1>
+    <p>לבחור תלונה. השאלון פותח בדגלים אדומים, ממשיך בשאלות עם תשובות מוכנות, ומסתיים במסירה כתובה שאפשר להקריא או להעתיק לתיק.</p>
+  </div>
+  <div class="grid">${MODULES.map(m=>`
+    <button class="pick" data-m="${m.id}"><span class="n">${esc(m.name)}</span><span class="d">${esc(m.desc)}</span></button>`).join('')}
+  </div>
+  <p class="foot">השאלון אינו מאבחן ואינו מדרג חומרה. הוא אוסף מידע ומציג אותו.<br>אין שמירה של נתונים – יציאה מהדף מוחקת הכול.</p>`;
+ app.querySelectorAll('.pick').forEach(b=>b.onclick=()=>openModule(b.dataset.m));
+}
+
+function openModule(id){
+ M=MODULES.find(m=>m.id===id);A={};gate=[];
+ tb.textContent=M.name;homeBtn.hidden=false;bar.hidden=true;
+ renderGate();
+}
+
+function renderGate(){
+ app.innerHTML=`
+  <div class="gate">
+    <h2>דגלים אדומים</h2>
+    <p>לעבור על הרשימה לפני כל שאלה אחרת. אם משהו כאן נכון – לא למלא את השאלון.</p>
+    ${M.gate.map((g,i)=>`<button class="rf" data-i="${i}" aria-pressed="false"><span class="box"></span><span>${esc(g)}</span></button>`).join('')}
+  </div>
+  <div id="gateout"></div>
+  <button class="btn ghost" id="clear">אף אחד מהסעיפים אינו נכון – להמשיך לשאלון</button>`;
+ app.querySelectorAll('.rf').forEach(b=>b.onclick=()=>{
+   const on=b.getAttribute('aria-pressed')==='true';
+   b.setAttribute('aria-pressed',String(!on));
+   const i=+b.dataset.i;
+   gate = on ? gate.filter(x=>x!==i) : gate.concat(i);
+   drawAction();
+ });
+ document.getElementById('clear').onclick=()=>{gate=[];renderForm()};
+ drawAction();
+}
+
+function drawAction(){
+ const out=document.getElementById('gateout');
+ if(!out)return;
+ if(!gate.length){out.innerHTML='';return}
+ out.innerHTML=`
+  <div class="act">
+    <h2>עצירה – פעולה עכשיו</h2>
+    <ol>${M.act.map(a=>`<li>${esc(a)}</li>`).join('')}</ol>
+    ${M.timer?`<div class="timer" id="tmr">${adrenTime?fmt():'טרם ניתן אדרנלין'}</div>
+      <button class="btn light" id="adr">${adrenTime?'ניתנה מנה נוספת':'לסמן מתן אדרנלין עכשיו'}</button>`:''}
+    <button class="btn light" id="cont">אחרי הטיפול – להמשיך לתיעוד</button>
+  </div>`;
+ const adr=document.getElementById('adr');
+ if(adr)adr.onclick=()=>{
+   adrenTime=new Date();
+   A.gave=(A.gave||[]).includes('אדרנלין')?A.gave:(A.gave||[]).concat('אדרנלין');
+   A.adrt=adrenTime.toTimeString().slice(0,5);
+   A.adrn=String((parseInt(A.adrn||'0',10)||0)+1);
+   if(tick)clearInterval(tick);
+   tick=setInterval(()=>{const t=document.getElementById('tmr');if(t)t.textContent=fmt()},1000);
+   drawAction();
+ };
+ document.getElementById('cont').onclick=()=>renderForm();
+}
+function fmt(){
+ const s=Math.floor((Date.now()-adrenTime)/1000);
+ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+' מאז האדרנלין';
+}
+
+/* ---------- form ---------- */
+function renderForm(){
+ bar.hidden=false;
+ const secs=[COMMON].concat(M.sections);
+ app.innerHTML=secs.map((s,si)=>`
+   <section class="card">
+     <div class="sec-tag">${si+1} / ${secs.length}</div>
+     <h2>${esc(s.t)}</h2>
+     ${s.f.map(fieldHTML).join('')}
+   </section>`).join('') + (gate.length?`<p class="foot">התיעוד נעשה אחרי שכבר נקרא/ה הרופא/ה.</p>`:'');
+ wire();
+}
+
+function fieldHTML(f){
+ const h=f.h?`<div class="hint">${esc(f.h)}</div>`:'';
+ const lab=`<span class="lab">${esc(f.t)}</span>`;
+ if(f.k==='tx')return `<div class="field"><label class="lab" for="${f.i}">${esc(f.t)}</label>${h}<textarea id="${f.i}" data-f="${f.i}" rows="2"></textarea></div>`;
+ if(f.k==='nm')return `<div class="field">${lab}${h}<div class="nm"><input type="number" inputmode="decimal" data-f="${f.i}"><span class="u">${f.o?esc(f.o):''}</span></div></div>`;
+ if(f.k==='tm')return `<div class="field">${lab}${h}<input type="time" data-f="${f.i}"></div>`;
+ if(f.k==='bp')return `<div class="field">${lab}${h}<div class="bp"><input type="number" inputmode="numeric" placeholder="סיסטולי" data-bp="${f.i}" data-part="s"><span class="sep">/</span><input type="number" inputmode="numeric" placeholder="דיאסטולי" data-bp="${f.i}" data-part="d"></div></div>`;
+ if(f.k==='yn')return `<div class="field">${lab}${h}<div class="yn" data-single="${f.i}">${['כן','לא','לא ידוע'].map(v=>`<button type="button" class="chip" data-v="${v}" aria-pressed="false">${v}</button>`).join('')}</div></div>`;
+ if(f.k==='sc')return `<div class="field">${lab}${h}<div class="chips" data-single="${f.i}">${f.o.map(v=>`<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('')}</div></div>`;
+ return `<div class="field">${lab}${h}<div class="chips" data-multi="${f.i}">${f.o.map(v=>`<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('')}</div></div>`;
+}
+
+function wire(){
+ app.querySelectorAll('[data-f]').forEach(el=>{
+   const id=el.dataset.f;
+   if(A[id])el.value=A[id];
+   el.oninput=()=>{const v=el.value.trim(); if(v)A[id]=v; else delete A[id]};
+ });
+ app.querySelectorAll('[data-bp]').forEach(el=>{
+   const id=el.dataset.bp, parts=(A[id]||'').split('/');
+   el.value = el.dataset.part==='s' ? (parts[0]||'') : (parts[1]||'');
+   el.oninput=()=>{
+     const box=el.closest('.bp');
+     const s=box.querySelector('[data-part="s"]').value.trim();
+     const d=box.querySelector('[data-part="d"]').value.trim();
+     if(s||d)A[id]=s+'/'+d; else delete A[id];
+   };
+ });
+ app.querySelectorAll('[data-single]').forEach(g=>{
+   const id=g.dataset.single;
+   g.querySelectorAll('.chip').forEach(c=>{
+     if(A[id]===c.dataset.v)c.setAttribute('aria-pressed','true');
+     c.onclick=()=>{
+       const on=c.getAttribute('aria-pressed')==='true';
+       g.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));
+       if(on){delete A[id]}else{c.setAttribute('aria-pressed','true');A[id]=c.dataset.v}
+     };
+   });
+ });
+ app.querySelectorAll('[data-multi]').forEach(g=>{
+   const id=g.dataset.multi;
+   g.querySelectorAll('.chip').forEach(c=>{
+     if(S.has(id,c.dataset.v))c.setAttribute('aria-pressed','true');
+     c.onclick=()=>{
+       const on=c.getAttribute('aria-pressed')==='true';
+       c.setAttribute('aria-pressed',String(!on));
+       A[id]=A[id]||[];
+       A[id]= on ? A[id].filter(x=>x!==c.dataset.v) : A[id].concat(c.dataset.v);
+     };
+   });
+ });
+}
+
+/* ---------- prose summary ---------- */
+const SKIP=['לא ידוע','לא רלוונטי'];
+function clause(f){
+ if(['age','sex','where'].includes(f.i))return null;
+ if(f.p==='-')return null;          // כבר בשורת הפתיחה
+ const v=A[f.i];
+ if(v==null||v===''||(Array.isArray(v)&&!v.length))return null;
+ if(f.k==='yn'){
+   const p=Array.isArray(f.p)?f.p:[f.p,null];
+   if(v==='כן')return p[0]||null;
+   if(v==='לא')return p[1]||null;
+   return null;
+ }
+ if(!Array.isArray(v)&&SKIP.includes(v))return null;
+ if(f.k==='bp'&&/^\/?$|^\d*\/$|^\/\d*$/.test(v))return null;
+ let tpl=f.p, zero=null;
+ if(tpl&&tpl.indexOf('|')>-1){const parts=tpl.split('|');tpl=parts[0];zero=parts[1]}
+ const items=Array.isArray(v)?v.filter(x=>!SKIP.includes(x)):[v];
+ if(!items.length)return null;
+ if(zero&&items.every(x=>x.indexOf('ללא')===0))return zero;
+ const txt=items.join(', ');
+ return tpl?tpl.replace('$',txt):f.t+': '+txt;
+}
+function para(role){
+ const out=[];
+ [COMMON].concat(M.sections).filter(s=>s.r===role).forEach(s=>{
+   const cl=s.f.map(clause).filter(Boolean);
+   if(cl.length)out.push(cl.join(s.j));
+ });
+ let t=out.join('. ').replace(/\.\.+/g,'.').replace(/, \./g,'.');
+ return t?(/[.!?]$/.test(t)?t:t+'.'):'';
+}
+function opener(){
+ const age=A.age, sex=A.sex;
+ let who = sex==='אישה' ? ('אישה'+(age?' בת '+age:'')) : sex==='גבר' ? ('גבר'+(age?' בן '+age:'')) : (age?'מטופל בן '+age:'מטופל');
+ const loc = A.where ? (sex==='אישה'?' נמצאת ':' נמצא ')+A.where+'.' : '';
+ return who+', '+M.name+'.'+loc;
+}
+function bpTechMiss(){
+ if(M.id!=='bp')return null;
+ const cond=M.sections[0].f[0].o;
+ const miss=cond.filter(c=>!S.has('cond',c));
+ return miss.length?'תנאי מדידה שלא התקיימו: '+miss.join(', ')+'.':'תנאי המדידה התקיימו במלואם.';
+}
+function buildText(f){
+ const red=f.filter(x=>x[1]===2).map(x=>x[0]);
+ const stamp=new Date().toLocaleString('he-IL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+ const parts=[`מסירה — ${M.name}, ${stamp}`];
+ if(gate.length)parts.push('הופעל דגל אדום: '+gate.map(i=>M.gate[i]).join('; ')+'.');
+ if(red.length)parts.push('לתשומת לבך: '+red.join('; ')+'.');
+ parts.push('');
+ parts.push('מצב: '+opener()+' '+para('s'));
+ const b=para('b'); if(b)parts.push('רקע: '+b);
+ let a=para('a'); const tech=bpTechMiss(); if(tech)a=(a?a+' ':'')+tech;
+ if(a)parts.push('ממצאים: '+a);
+ const r=para('r'); if(r)parts.push('מה נעשה והבקשה: '+r);
+ return parts.join('\n').replace(/ +/g,' ').replace(/\s+\./g,'.');
+}
+
+function summary(){
+ const f=M.flags(S), txt=buildText(f);
+ const chips=f.filter(x=>x[1]<2);   // הדגלים האדומים כבר מופיעים בטקסט
+ bar.hidden=true;
+ app.innerHTML=`
+  <div class="card">
+    <div class="sec-tag">דגלים</div>
+    <h2>מה בולט במסירה הזו</h2>
+    ${f.length?`<div class="flags">${f.map(([t,lvl])=>`<span class="flag ${lvl===2?'red':''}">${esc(t)}</span>`).join('')}</div>`:`<p class="none">לא סומנו דגלים. היעדר דגל אינו קביעה שהממצא נשלל.</p>`}
+    <p class="none">אין כאן ניקוד ואין דירוג חומרה. הפרשנות היא של הרופא.</p>
+  </div>
+  <div class="card">
+    <div class="sec-tag">מסירה</div>
+    <h2>לקריאה או להעתקה לתיק</h2>
+    <pre class="sbar" id="sbar">${esc(txt)}</pre>
+    <button class="btn" id="copy">העתקה לתיק</button>
+    <button class="btn ghost" id="back">חזרה לשאלון</button>
+    <button class="btn ghost" id="new">מקרה חדש</button>
+  </div>`;
+ void chips;
+ document.getElementById('copy').onclick=async e=>{
+   try{await navigator.clipboard.writeText(txt);e.target.textContent='הועתק'}
+   catch{const r=document.createRange();r.selectNode(document.getElementById('sbar'));
+     getSelection().removeAllRanges();getSelection().addRange(r);e.target.textContent='לסמן ולהעתיק ידנית'}
+ };
+ document.getElementById('back').onclick=()=>renderForm();
+ document.getElementById('new').onclick=()=>home();
+}
+
+document.getElementById('build').onclick=summary;
+homeBtn.onclick=home;
+home();
+</script>
+</body>
+</html>
