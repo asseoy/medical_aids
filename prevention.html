@@ -46,6 +46,10 @@ input:focus,select:focus{outline:2px solid var(--t600);outline-offset:-1px}
 .why{display:block;margin-top:4px;font-size:11.5px;color:#9a3412;background:#fff7ed;border-radius:5px;padding:2px 7px;width:fit-content;max-width:100%}
 .uni{display:block;margin-top:4px;font-size:11.5px;color:var(--mut)}
 .fn{display:inline-block;background:var(--t100);color:var(--t800);border-radius:4px;padding:0 5px;font-size:11px;font-weight:700;margin-right:4px;cursor:pointer}
+.upd{display:inline-block;background:#fed7aa;color:#9a3412;border-radius:4px;padding:0 5px;font-size:11px;font-weight:700;margin-right:4px;cursor:pointer}
+.srcbox{background:#fff7ed;border:1px solid #fed7aa;border-right:4px solid #ea580c;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13px}
+.srcbox b{color:#9a3412}
+.srcbox .ref{display:block;margin-top:5px;font-size:11.5px;color:var(--mut)}
 .band{display:inline-block;background:var(--t700);color:#fff;padding:3px 12px;border-radius:99px;font-size:13px;font-weight:700}
 .warn{background:var(--warn-bg);border:1px solid #fde68a;border-right:4px solid var(--warn);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
 .note{background:var(--t50);border:1px solid var(--t100);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13px}
@@ -164,7 +168,22 @@ summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--t800)}
     <div class="note" id="fn-c-full"><b>ג — קבוצות סיכון לסרטן המעי:</b> מחלת מעי דלקתית או סיפור משפחתי של סרטן מעי בקרבה ראשונה (הורה, אח או אחות) — קולונוסקופיה מגיל 40, או עשר שנים לפני הגיל שבו לקה קרוב המשפחה. בתסמונות מורשות לא-פוליפוזיות — מגיל 25. בפוליפוזיס מורשת — מגיל 15. בהיעדר מחקר קליני מבוקר ההמלצה מבוססת על דעת מומחים.</div>
     <div class="note" id="fn-d-full"><b>ד — LDCT לסרטן ריאה:</b> למעשנים בני 50–80 עם היסטוריה של 20 שנות קופסה, שמעשנים עתה או הפסיקו ב-15 השנים האחרונות — מומלץ לפנות מדי שנה למכונים פרטיים ולבצע CT חזה בקרינה נמוכה. הבדיקה אינה כלולה בסל הבריאות. בישראל נערך פיילוט לשימוש בבדיקה כבדיקת סקר, ובעתיד ייתכן שאוכלוסיית הסקירה תשתנה בעקבות המלצותיו.</div>
   </details>
-  <p class="muted">הכלי מציג את טבלאות הגיל למבוגרים בלבד (20–39, 40–64, 65 ומעלה). טווחי הילדים והמתבגרים אינם כלולים.</p>
+  <h3 style="margin-top:22px">עדכונים לעומת מסמך המקור</h3>
+  <p class="muted" style="margin-top:0">ארבעה סעיפים בטבלאות המקור אינם משקפים עוד את המצב בישראל, ועודכנו כאן. פריטים שעודכנו מסומנים בתגית <span class="upd">עודכן</span>. שאר הכלי נאמן למסמך המקור.</p>
+  <div id="updOut"></div>
+  <details>
+    <summary>כל העדכונים והמקורות</summary>
+    <div class="srcbox" id="upd-ldct-full"><b>LDCT לסרטן ריאה — נכנס לסל 2025.</b> מסמך המקור כותב שהבדיקה אינה בסל וממליץ על ביצוע פרטי שנתי בגילים 50–80. כיום הבדיקה כלולה בסל לגברים ולנשים בגילי <b>65 עד 74</b> (כולל), עם רקע עישון של 20 שנות קופסה ומעלה, שמעשנים בפועל או שהפסיקו בטווח של עד 15 שנים. בבדיקה תקינה — <b>אחת לשנתיים</b>, ולא שנתית. הזכאות נמשכת כל עוד מתקיימים תנאי הסף.
+      <span class="ref">מקור: חוזר מנכ"ל משרד הבריאות — הרחבת סל שירותי הבריאות לשנת 2025.</span></div>
+    <div class="srcbox" id="upd-pcv-full"><b>חיסון פנאומוקוקי — פרבנר 20 החליף את הקודמים.</b> מסמך המקור ממליץ על חיסון פוליסכרידי (פנאומווקס) מגיל 65 עם שקילת תוספת חיסון מצומד (פרבנר) בקבוצות סיכון. כיום פרבנר 20 הוא חיסון הפנאומוקוק היחיד למבוגרים בישראל, והוא החליף הן את פרבנר 13 והן את פנאומווקס. מנה אחת מספיקה, ואין עוד צורך ברצף של שני חיסונים.
+      <span class="ref">מקור: מדריך הבריאות של שירותי בריאות כללית — חיסון נגד דלקת ריאות למבוגרים.</span></div>
+    <div class="srcbox" id="upd-shingrix-full"><b>שלבקת חוגרת — שינגריקס.</b> מסמך המקור מזכיר "חיסון נגד הרפס זוסטר" בלי לציין תכשיר, ניסוח שקדם לשינגריקס. החיסון נכלל בסל הבריאות משנת 2025. ההבחנה חשובה במיוחד במדוכאי חיסון, שעבורם החיסון החי הישן אינו מתאים.
+      <span class="ref">מקור: החלטות ועדת סל הבריאות לשנת 2025. יש לאמת את טווח הגילים והזכאות מול הקופה.</span></div>
+    <div class="srcbox" id="upd-rsv-full"><b>RSV במבוגרים — נושא שאינו מופיע כלל במסמך המקור.</b> קיים בישראל חיסון למבוגרים מגיל 60 ומעלה, וכן למי שסובלים ממחלת ריאות, מחלת לב או מערכת חיסון מוחלשת. החלטת סל הבריאות 2025 בנושא RSV התייחסה לתינוקות; במבוגרים מדובר בשלב זה בחיסון במימון פרטי.
+      <span class="ref">מקור: מדריך החיסונים של מכבי שירותי בריאות — חיסון נגד זיהום בנגיף RSV. יש לאמת זמינות ומחיר מול הקופה.</span></div>
+  </details>
+
+  <p class="muted">הכלי מציג את טבלאות הגיל למבוגרים בלבד (20–39, 40–64, 65 ומעלה). טווחי הילדים והמתבגרים אינם כלולים. סעיפי Lp(a) וסקר צוואר הרחם הושארו כלשונם במסמך המקור.</p>
 </section>
 
 <section id="sec-sum">
@@ -274,12 +293,19 @@ const R = [
 ['scr','דם סמוי בצואה אחת לשנה; קולונוסקופיה למי שנמצא חיובי', s=>(s.age>=50&&s.age<=74&&!s.noFobt)?true:false, 'b'],
 ['scr','קולונוסקופיה מדי 10 שנים, או לפחות פעם אחת בגיל 55–65 — כחלופה לדם סמוי (אינה בסל כבדיקת סריקה בסיכון נמוך)', s=>(s.age>=50&&s.noFobt)?'אינו/ה מבצע/ת דם סמוי':false, 'b'],
 ['scr','קולונוסקופיה אחת ל-5 שנים', s=>{ const c=colonStart(s); if(!c) return false; return s.age>=c.age ? c.why + ` — החל מגיל ${c.age}` : `${c.why} — להתחיל בגיל ${c.age}`; }, 'c'],
-['scr','CT חזה בקרינה נמוכה (LDCT) מדי שנה לאיתור סרטן ריאה — אינה כלולה בסל', s=>{
-    if(s.age<50||s.age>80) return false;
+['scr','CT חזה בקרינה נמוכה (LDCT) לאיתור סרטן ריאה — <b>כלול בסל הבריאות</b>. בבדיקה תקינה — אחת לשנתיים; אם נמצא ממצא ריאתי — הבדיקה הבאה מוקדמת יותר. הזכאות נמשכת כל עוד מתקיימים תנאי הסף', s=>{
+    if(s.age<65||s.age>74) return false;
     if(s.packYears<20) return false;
-    if(s.smoke==='current') return `מעשן/ת, ${s.packYears} שנות קופסה`;
-    if(s.smoke==='former'&&s.quitYears<=15) return `הפסיק/ה לפני ${s.quitYears} שנים, ${s.packYears} שנות קופסה`;
-    return false; }, 'd'],
+    if(s.smoke==='current') return `מעשן/ת בפועל, ${s.packYears} שנות קופסה — עומד/ת בקריטריוני הסל`;
+    if(s.smoke==='former'&&s.quitYears<=15) return `הפסיק/ה לעשן לפני ${s.quitYears} שנים, ${s.packYears} שנות קופסה — עומד/ת בקריטריוני הסל`;
+    return false; }, 'd', 'ldct'],
+['scr','LDCT לאיתור סרטן ריאה — <b>מחוץ לקריטריוני הסל</b>. מסמך המקור ממליץ על בדיקה שנתית באופן פרטי בטווח 50–80; יש לדון בעלות מול התועלת', s=>{
+    if(s.age<50||s.age>80) return false;
+    if(s.age>=65&&s.age<=74) return false;
+    if(s.packYears<20) return false;
+    const ok = s.smoke==='current'||(s.smoke==='former'&&s.quitYears<=15);
+    if(!ok) return false;
+    return `${s.packYears} שנות קופסה, אך הגיל מחוץ לטווח 65–74 המזכה בסל`; }, 'd', 'ldct'],
 ['scr','סקירה על-קולית (US) חד-פעמית של הוותין הבטני', s=>(s.sex==='m'&&s.age>=65&&s.age<=74&&s.ever)?'גבר 65–74 שמעשן או עישן בעבר':false],
 ['scr','דלדול עצמות: הערכה בשאלון כגון FRAX, ולפי התוצאות לשקול DEXA', s=>(s.sex==='f'&&s.postmeno&&s.age<65)?'לאחר הפסקת הווסת':false],
 ['scr','בדיקת צפיפות עצם DEXA — מומלצת לכל הנשים מגיל 65 (בסל הבריאות מגיל 60)', s=>(s.sex==='f'&&s.age>=60)?true:false],
@@ -302,9 +328,12 @@ const R = [
     if(s.preg) return false;
     if(s.sex==='f') return 'טרם חלתה, אינה בהיריון';
     return s.immunoHouse?'בן בית של מדוכא חיסון, טרם חלה':false; }],
-['vac','חיסון נגד מנינגוקוקים, פנאומוקוקים והמופילוס אינפלואנזה B', s=>(s.vaccRisk&&s.age<65)?'קבוצת סיכון':false],
-['vac','חיסון פוליסכרידי נגד פנאומוקוקים (פנאומווקס) מגיל 65; אפשר לשקול תוספת חיסון מצומד (פרבנר) לאוכלוסייה בסיכון', s=>s.age>=65],
-['vac','חיסון נגד הרפס זוסטר (שלבקת חוגרת)', s=>s.age>=60],
+['vac','חיסון נגד מנינגוקוקים והמופילוס אינפלואנזה B', s=>(s.vaccRisk&&s.age<65)?'קבוצת סיכון':false],
+['vac','חיסון נגד פנאומוקוקים — <b>פרבנר 20</b> (Prevenar 20), מנה אחת', s=>(s.vaccRisk&&s.age<65)?'קבוצת סיכון':false, null, 'pcv'],
+['vac','חיסון נגד פנאומוקוקים מגיל 65 — <b>פרבנר 20</b> (Prevenar 20), מנה אחת. החליף בישראל את פרבנר 13 ואת פנאומווקס, ואין עוד צורך בשילוב שני חיסונים או במנות חוזרות', s=>s.age>=65, null, 'pcv'],
+['vac','חיסון נגד שלבקת חוגרת — <b>שינגריקס</b> (Shingrix)', s=>s.age>=60, null, 'shingrix'],
+['vac','חיסון נגד RSV — לשקול ולדון עם המטופל/ת', s=>{ if(s.age<60) return false;
+    return 'גיל 60 ומעלה; ההתוויה רחבה יותר בנוכחות מחלת ריאות, מחלת לב או דיכוי חיסוני'; }, null, 'rsv'],
 ['vac','חיסון נגד Hepatitis B', s=>(s.hepRisk&&s.age<65)?'קבוצת סיכון':false],
 ['vac','חיסון נגד Hepatitis A', s=>(s.travelMsm&&s.age<65)?'נסיעה לאזור אנדמי / הזרקת סמים / MSM':false],
 ['vac','HIV — PrEP בהתאם להנחיות', s=>(s.prep&&s.age<65)?'בן/בת זוג של נשא HIV או MSM':false],
@@ -344,17 +373,19 @@ function render(){
   $('bandLine').innerHTML = 'טווח גיל: <span class="band">'+b+'</span> <span class="muted">— מוצגות רק ההמלצות הרלוונטיות למטופל/ת זה/זו.</span>';
 
   const hits={adv:[],scr:[],vac:[]}, fns=new Set();
-  R.forEach(([cat,text,cond,fn])=>{
+  const upds=new Set();
+  R.forEach(([cat,text,cond,fn,upd])=>{
     let r; try{ r=cond(s); }catch(e){ r=false; }
     if(!r) return;
-    hits[cat].push({text, why: typeof r==='string'?r:null, fn});
+    hits[cat].push({text, why: typeof r==='string'?r:null, fn, upd});
     if(fn) fns.add(fn);
+    if(upd) upds.add(upd);
   });
 
   $('out').innerHTML = Object.keys(CATS).map(k=>{
     const c=CATS[k];
     const items = hits[k].length
-      ? hits[k].map(i=>`<li>${i.fn?`<span class="fn" data-fn="${i.fn}">הערה ${({a:'א',b:'ב',c:'ג',d:'ד'})[i.fn]}</span>`:''}${i.text}
+      ? hits[k].map(i=>`<li>${i.fn?`<span class="fn" data-fn="${i.fn}">הערה ${({a:'א',b:'ב',c:'ג',d:'ד'})[i.fn]}</span>`:''}${i.upd?`<span class="upd" data-upd="${i.upd}">עודכן</span>`:''}${i.text}
           ${i.why?`<span class="why">נדלק בגלל: ${i.why}</span>`:'<span class="uni">לכל בני הגיל</span>'}</li>`).join('')
       : '<li class="muted">אין פריטים בקטגוריה זו לפרופיל הנוכחי.</li>';
     return `<div class="col ${c.cls}"><h4>${c.h}</h4><ul>${items}</ul></div>`;
@@ -364,6 +395,10 @@ function render(){
   $('notesOut').innerHTML = fns.size
     ? [...fns].sort().map(f=>$('fn-'+f+'-full').outerHTML.replace('id="fn-'+f+'-full"','')).join('')
     : '<p class="muted">לא נדלקו הערות עבור פרופיל זה.</p>';
+
+  $('updOut').innerHTML = upds.size
+    ? [...upds].map(u=>$('upd-'+u+'-full').outerHTML.replace('id="upd-'+u+'-full"','')).join('')
+    : '<p class="muted">לא נדלקו סעיפים מעודכנים עבור פרופיל זה.</p>';
 
   /* summary */
   let t=`רפואה מונעת — סיכום ביקור\nגיל ${s.age}, ${s.sex==='f'?'אישה':'גבר'} · טווח גיל ${b}\n`;
@@ -383,9 +418,10 @@ function copySum(){
 }
 
 document.addEventListener('click',e=>{
-  const f=e.target.closest('.fn'); if(!f) return;
-  const el=$('fn-'+f.dataset.fn+'-full');
-  if(el){ el.closest('details').open=true; el.scrollIntoView({behavior:'smooth',block:'center'});
+  const f=e.target.closest('.fn'), u=e.target.closest('.upd');
+  const el = f ? $('fn-'+f.dataset.fn+'-full') : (u&&u.dataset.upd ? $('upd-'+u.dataset.upd+'-full') : null);
+  if(el){ const d=el.closest('details'); if(d) d.open=true;
+    el.scrollIntoView({behavior:'smooth',block:'center'});
     el.style.transition='background .3s'; el.style.background='#fde68a';
     setTimeout(()=>el.style.background='',1200); }
 });
