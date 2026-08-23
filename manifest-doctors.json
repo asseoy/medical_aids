@@ -1,0 +1,32 @@
+{
+  "name": "כלי החלטה לרופאים",
+  "short_name": "רופאים",
+  "start_url": "./doctors.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "he",
+  "background_color": "#0F3F45",
+  "theme_color": "#0F3F45",
+  "icons": [
+    {
+      "src": "doctors-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "doctors-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "doctors-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
