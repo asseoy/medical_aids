@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תסמונת המעי הרגיש (תמ"ר) – כלי לרופא</title>
+<meta name="description" content="כלי החלטה לרופא: אבחנה לפי Rome IV/V, אבחנה מבדלת, אפשרויות טיפול וסיכום רפואי בתסמונת המעי הרגיש">
+<meta name="theme-color" content="#067a5b">
+<link rel="manifest" href="ibs.webmanifest">
+<meta name="apple-mobile-web-app-title" content="תמ&quot;ר">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f6f4;
+  --surface:#ffffff;
+  --surface-2:#f7fbf9;
+  --ink:#11231c;
+  --muted:#5d7169;
+  --brand:#067a5b;
+  --brand-dark:#04543f;
+  --tint:#e2f2ea;
+  --line:#d4e3db;
+  --line-strong:#b7cfc4;
+  --warn-bg:#fdf4e3;
+  --warn-line:#e8c98a;
+  --warn-ink:#8a5a08;
+  --danger-bg:#fdeceb;
+  --danger-line:#f0b3ae;
+  --danger-ink:#9c2620;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(17,35,28,.05), 0 6px 20px rgba(17,35,28,.05);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:118px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important; transition:none!important}}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Assistant", "Segoe UI", Arial, sans-serif;
+  font-size:16px; line-height:1.65;
+}
+
+/* ---------- header ---------- */
+.topbar{background:var(--brand-dark); color:#eaf6f1; padding:10px 16px}
+.topbar-in{max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.topbar a{color:#cfeade; text-decoration:none; font-weight:600; font-size:.9rem}
+.topbar a:hover{text-decoration:underline}
+.hero{background:var(--brand); color:#fff; padding:22px 16px 26px}
+.hero-in{max-width:1080px; margin:0 auto}
+.hero h1{margin:0 0 6px; font-size:1.65rem; font-weight:700; letter-spacing:-.01em}
+.hero p{margin:0; color:#d6efe4; font-size:.95rem; max-width:70ch}
+
+/* ---------- sticky nav ---------- */
+.nav{position:sticky; top:0; z-index:40; background:rgba(255,255,255,.96); backdrop-filter:blur(6px); border-bottom:1px solid var(--line)}
+.nav-in{max-width:1080px; margin:0 auto; display:flex; gap:4px; overflow-x:auto; padding:0 10px; scrollbar-width:thin}
+.nav a{
+  flex:0 0 auto; padding:12px 14px; text-decoration:none; color:var(--muted);
+  font-weight:600; font-size:.93rem; border-bottom:3px solid transparent; white-space:nowrap;
+}
+.nav a:hover{color:var(--brand)}
+.nav a.active{color:var(--brand-dark); border-bottom-color:var(--brand)}
+
+/* ---------- layout ---------- */
+main{max-width:1080px; margin:0 auto; padding:20px 16px 80px}
+section{scroll-margin-top:118px; margin-bottom:26px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 18px 20px; margin-bottom:16px}
+.card > h2{margin:0 0 4px; font-size:1.25rem; color:var(--brand-dark)}
+.card > h2 + .sub{margin:0 0 14px; color:var(--muted); font-size:.9rem}
+h3{font-size:1.02rem; margin:18px 0 8px; color:var(--brand-dark)}
+h3:first-of-type{margin-top:6px}
+.placeholder{border:1px dashed var(--line-strong); border-radius:var(--radius); padding:26px 18px; text-align:center; color:var(--muted); background:var(--surface-2); font-size:.92rem}
+
+/* ---------- form ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+.field{display:flex; flex-direction:column; gap:5px}
+.field > label, .legend{font-weight:600; font-size:.9rem; color:var(--ink)}
+.hint{font-size:.8rem; color:var(--muted); font-weight:400; line-height:1.45}
+input[type=text], input[type=number], select{
+  font:inherit; font-size:.95rem; padding:8px 10px; border:1px solid var(--line-strong);
+  border-radius:8px; background:#fff; color:var(--ink); width:100%;
+}
+input[type=number]{max-width:130px}
+select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%); background-position:calc(0% + 14px) calc(50% + 2px), calc(0% + 19px) calc(50% + 2px); background-size:5px 5px,5px 5px; background-repeat:no-repeat; padding-left:32px}
+input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible, .chk:focus-within{
+  outline:3px solid #7cc9ae; outline-offset:1px; border-radius:8px;
+}
+fieldset{border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px 14px; margin:0 0 14px; background:var(--surface-2)}
+legend{padding:0 6px; font-weight:700; font-size:.92rem; color:var(--brand-dark)}
+.chk{display:flex; gap:8px; align-items:flex-start; padding:6px 2px; font-size:.93rem; cursor:pointer}
+.chk input{margin:4px 0 0; width:17px; height:17px; accent-color:var(--brand); flex:0 0 auto}
+.chk span b{font-weight:600}
+.chk-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:2px 16px}
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg label{
+  border:1px solid var(--line-strong); border-radius:999px; padding:5px 13px; font-size:.88rem;
+  cursor:pointer; background:#fff; user-select:none;
+}
+.seg input{position:absolute; opacity:0; width:0; height:0}
+.seg input:checked + span{color:#fff}
+.seg label:has(input:checked){background:var(--brand); border-color:var(--brand); color:#fff; font-weight:600}
+.seg label:has(input:focus-visible){outline:3px solid #7cc9ae; outline-offset:1px}
+.slider-row{display:flex; align-items:center; gap:10px}
+input[type=range]{flex:1; accent-color:var(--brand); min-width:120px}
+.val{font-variant-numeric:tabular-nums; font-weight:700; color:var(--brand-dark); min-width:52px; text-align:left}
+.row-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}
+button{font:inherit; font-weight:600; cursor:pointer; border-radius:9px; padding:9px 16px; border:1px solid var(--line-strong); background:#fff; color:var(--ink)}
+button.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+button:hover{filter:brightness(.97)}
+
+/* ---------- notes ---------- */
+.note{border-radius:10px; padding:10px 13px; font-size:.9rem; margin:10px 0; border:1px solid}
+.note-info{background:var(--tint); border-color:#b6ddca; color:#0c4f3c}
+.note-warn{background:var(--warn-bg); border-color:var(--warn-line); color:var(--warn-ink)}
+.note-danger{background:var(--danger-bg); border-color:var(--danger-line); color:var(--danger-ink)}
+.src{font-size:.82rem; color:var(--muted)}
+.src a{color:var(--brand)}
+footer{max-width:1080px; margin:0 auto; padding:0 16px 60px; color:var(--muted); font-size:.83rem}
+footer p{margin:6px 0}
+.women-only{display:none}
+.women-only.on{display:block}
+@media (max-width:560px){
+  .hero h1{font-size:1.35rem}
+  main{padding:14px 12px 60px}
+  .card{padding:14px}
+}
+
+/* ---------- results: verdicts, tables, treatment cards ---------- */
+.verdict{display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:14px}
+.vcard{border:1px solid var(--line-strong); border-radius:var(--radius); padding:14px; background:#fff}
+.vcard.pass{border-color:#8ecfb4; background:#f2fbf7}
+.vcard.fail{border-color:var(--danger-line); background:#fffafa}
+.vcard.idle{background:var(--surface-2)}
+.vhead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:9px}
+.vhead h4{margin:0; font-size:1rem; color:var(--brand-dark)}
+.pill{font-size:.76rem; font-weight:700; border-radius:999px; padding:3px 10px; border:1px solid; white-space:nowrap}
+.pill.ok{background:var(--tint); border-color:#9ed3bb; color:#0c5340}
+.pill.no{background:var(--danger-bg); border-color:var(--danger-line); color:var(--danger-ink)}
+.pill.na{background:var(--surface-2); border-color:var(--line-strong); color:var(--muted)}
+ul.crit{list-style:none; margin:0; padding:0; font-size:.89rem}
+ul.crit li{display:flex; gap:8px; padding:5px 0; border-top:1px dashed var(--line); line-height:1.5}
+ul.crit li:first-child{border-top:0}
+.mark{flex:0 0 16px; font-weight:700; text-align:center}
+.mark.ok{color:#0b6b4f} .mark.no{color:var(--danger-ink)} .mark.na{color:var(--muted)}
+.crit .why{color:var(--muted); font-size:.83rem}
+table.tbl{width:100%; border-collapse:collapse; font-size:.87rem; margin:8px 0 4px}
+table.tbl th, table.tbl td{border:1px solid var(--line); padding:7px 9px; text-align:right; vertical-align:top}
+table.tbl th{background:var(--surface-2); font-weight:700; color:var(--brand-dark); font-size:.84rem}
+table.tbl tr.hi td{background:var(--tint)}
+.tbl-scroll{overflow-x:auto}
+.rx{border:1px solid var(--line); border-inline-start:4px solid var(--line-strong); border-radius:10px; padding:12px 14px; margin:10px 0; background:#fff}
+.rx.pick{border-inline-start-color:var(--brand); background:var(--surface-2)}
+.rx.off{opacity:.6}
+.rx h4{margin:0 0 4px; font-size:.98rem; color:var(--brand-dark); display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.rx p{margin:5px 0; font-size:.9rem}
+.rx ul{margin:5px 0; padding-inline-start:20px; font-size:.9rem}
+.rx li{margin:3px 0}
+.badge{font-size:.71rem; font-weight:700; border-radius:6px; padding:2px 7px; background:var(--tint); color:#0c5340; border:1px solid #9ed3bb}
+.badge.grey{background:var(--surface-2); color:var(--muted); border-color:var(--line-strong)}
+.badge.warn{background:var(--warn-bg); color:var(--warn-ink); border-color:var(--warn-line)}
+.badge.danger{background:var(--danger-bg); color:var(--danger-ink); border-color:var(--danger-line)}
+details.acc{border:1px solid var(--line); border-radius:10px; background:var(--surface-2); padding:9px 13px; margin:10px 0}
+details.acc summary{cursor:pointer; font-weight:600; font-size:.92rem; color:var(--brand-dark)}
+details.acc[open] summary{margin-bottom:8px}
+details.acc p, details.acc li{font-size:.89rem}
+.mdcp{display:grid; gap:0}
+.mdcp .row{display:grid; grid-template-columns:190px 1fr; gap:10px; font-size:.9rem; border-top:1px dashed var(--line); padding:7px 0}
+.mdcp .row:first-child{border-top:0}
+.mdcp .k{font-weight:700; color:var(--brand-dark)}
+@media(max-width:560px){.mdcp .row{grid-template-columns:1fr; gap:1px}}
+textarea{font:inherit; font-size:.92rem; line-height:1.6; width:100%; border:1px solid var(--line-strong); border-radius:10px; padding:11px 12px; background:#fff; color:var(--ink); resize:vertical}
+.soap-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; align-items:center}
+.copied{font-size:.85rem; color:var(--brand-dark); font-weight:600}
+.empty{color:var(--muted); font-size:.9rem; background:var(--surface-2); border:1px dashed var(--line-strong); border-radius:10px; padding:14px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a href="doctors.html">→ חזרה לכלים לרופאים</a>
+    <span class="src">מבוסס על נייר עמדה 194 (הר"י, יולי 2022) וקריטריוני Rome IV / Rome V</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero-in">
+    <h1>תסמונת המעי הרגיש (תמ"ר)</h1>
+    <p>כלי עזר לרופא/ה: אבחנה לפי קריטריוני Rome, אבחנה מבדלת ודגלים אדומים, בניית תכנית טיפול מדורגת, וסיכום רפואי להעתקה לתיק.</p>
+  </div>
+</header>
+
+<nav class="nav" aria-label="ניווט בעמוד">
+  <div class="nav-in">
+    <a href="#sec-input">נתוני המטופל</a>
+    <a href="#sec-dx">אבחנה</a>
+    <a href="#sec-ddx">אבחנה מבדלת</a>
+    <a href="#sec-tx">טיפול</a>
+    <a href="#sec-soap">סיכום רפואי</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ INPUT PANEL ============ -->
+<section id="sec-input">
+  <div class="card">
+    <h2>נתוני המטופל</h2>
+    <p class="sub">כל השדות מזינים את כל חלקי העמוד. אין צורך למלא הכול — כל חלק מתעדכן לפי מה שהוזן.</p>
+
+    <fieldset>
+      <legend>דמוגרפיה ומשך</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="age">גיל</label>
+          <input type="number" id="age" min="16" max="120" step="1" data-state="age" placeholder="שנים">
+        </div>
+        <div class="field">
+          <span class="legend">מין</span>
+          <div class="seg" role="radiogroup" aria-label="מין">
+            <label><input type="radio" name="sex" value="f" data-state="sex"><span>אישה</span></label>
+            <label><input type="radio" name="sex" value="m" data-state="sex"><span>גבר</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">תחילת התסמינים</span>
+          <div class="seg" role="radiogroup" aria-label="תחילת התסמינים">
+            <label><input type="radio" name="onset6" value="yes" data-state="onset6"><span>לפני 6 חודשים ומעלה</span></label>
+            <label><input type="radio" name="onset6" value="no" data-state="onset6"><span>פחות מ-6 חודשים</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">התסמינים קיימים ב-3 החודשים האחרונים</span>
+          <div class="seg" role="radiogroup" aria-label="שלושה חודשים אחרונים">
+            <label><input type="radio" name="last3" value="yes" data-state="last3"><span>כן</span></label>
+            <label><input type="radio" name="last3" value="no" data-state="last3"><span>לא</span></label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>כאב / אי-נוחות בטנית</legend>
+      <div class="grid">
+        <div class="field">
+          <span class="legend">אופי התלונה</span>
+          <span class="hint">Rome IV דורש <b>כאב</b>; Rome V מקבל גם <b>אי-נוחות</b>.</span>
+          <div class="seg" role="radiogroup" aria-label="אופי התלונה">
+            <label><input type="radio" name="painType" value="pain" data-state="painType"><span>כאב</span></label>
+            <label><input type="radio" name="painType" value="discomfort" data-state="painType"><span>אי-נוחות בלבד</span></label>
+            <label><input type="radio" name="painType" value="none" data-state="painType"><span>אין</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="painDays">תדירות — ימים בחודש</label>
+          <span class="hint">Rome IV: ≥4 ימים/חודש (יום בשבוע). Rome V: ≥3 ימים/חודש.</span>
+          <div class="slider-row">
+            <input type="range" id="painDays" min="0" max="30" step="1" value="0" data-state="painDays">
+            <span class="val" id="painDaysVal">0</span>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">רציפות הכאב</span>
+          <span class="hint">Rome V שולל כאב רציף (מכוון ל-CAPS).</span>
+          <div class="seg" role="radiogroup" aria-label="רציפות הכאב">
+            <label><input type="radio" name="continuous" value="no" data-state="continuous"><span>התקפי / לסירוגין</span></label>
+            <label><input type="radio" name="continuous" value="yes" data-state="continuous"><span>רציף או כמעט רציף</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">קשר ליציאה</span>
+          <div class="seg" role="radiogroup" aria-label="קשר ליציאה">
+            <label><input type="radio" name="relDefec" value="yes" data-state="relDefec"><span>יש קשר</span></label>
+            <label><input type="radio" name="relDefec" value="no" data-state="relDefec"><span>אין קשר</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">שינוי בתדירות היציאות</span>
+          <span class="hint">Rome V דורש שהשינוי היה <b>בתחילת</b> התסמינים; Rome IV מסתפק בקיום במקביל.</span>
+          <div class="seg" role="radiogroup" aria-label="שינוי בתדירות היציאות">
+            <label><input type="radio" name="freqChange" value="onset" data-state="freqChange"><span>מתחילת התסמינים</span></label>
+            <label><input type="radio" name="freqChange" value="concurrent" data-state="freqChange"><span>קיים במקביל</span></label>
+            <label><input type="radio" name="freqChange" value="no" data-state="freqChange"><span>אין</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">שינוי במרקם / צורת הצואה</span>
+          <div class="seg" role="radiogroup" aria-label="שינוי במרקם הצואה">
+            <label><input type="radio" name="formChange" value="onset" data-state="formChange"><span>מתחילת התסמינים</span></label>
+            <label><input type="radio" name="formChange" value="concurrent" data-state="formChange"><span>קיים במקביל</span></label>
+            <label><input type="radio" name="formChange" value="no" data-state="formChange"><span>אין</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="field women-only" id="mensesField" style="margin-top:10px">
+        <span class="legend">קשר לווסת</span>
+        <span class="hint">קריטריון תומך ב-Rome V: הכאב לא אמור להופיע רק סביב הווסת.</span>
+        <div class="seg" role="radiogroup" aria-label="קשר לווסת">
+          <label><input type="radio" name="menses" value="no" data-state="menses"><span>לא רק סביב הווסת</span></label>
+          <label><input type="radio" name="menses" value="yes" data-state="menses"><span>רק סביב הווסת</span></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>הרגלי יציאות — לקביעת תת-הסוג</legend>
+      <span class="hint">מתוך הימים שבהם הייתה לפחות יציאה אחת חריגה: איזה אחוז מהיציאות החריגות היו קשות ואיזה רכות. (Bristol 1-2 = גושים קשים/נקניק גושי; Bristol 6-7 = רכה מאוד/נוזלית.)</span>
+      <div class="grid" style="margin-top:10px">
+        <div class="field">
+          <label for="hard">אחוז יציאות Bristol 1-2 (קשות)</label>
+          <div class="slider-row">
+            <input type="range" id="hard" min="0" max="100" step="5" value="0" data-state="hard">
+            <span class="val" id="hardVal">0%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="loose">אחוז יציאות Bristol 6-7 (רכות/נוזליות)</label>
+          <div class="slider-row">
+            <input type="range" id="loose" min="0" max="100" step="5" value="0" data-state="loose">
+            <span class="val" id="looseVal">0%</span>
+          </div>
+        </div>
+      </div>
+      <div id="bristolWarn" class="note note-warn" hidden>סכום שני האחוזים עולה על 100% — יש לתקן כדי שתת-הסוג ייקבע נכון.</div>
+    </fieldset>
+
+    <fieldset>
+      <legend>תסמינים דומיננטיים וחומרה</legend>
+      <div class="chk-grid">
+        <label class="chk"><input type="checkbox" data-state="sx" value="pain"><span>כאב בטן</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="bloating"><span>תפיחות בטנית</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="gas"><span>ריבוי גזים</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="urgency"><span>דחיפות / חוסר שליטה</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="incomplete"><span>תחושת התרוקנות לא מלאה</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="dyspepsia"><span>דיספפסיה / תלונות מערכת עיכול עליונה</span></label>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <span class="legend">חומרה והשפעה תפקודית</span>
+        <div class="seg" role="radiogroup" aria-label="חומרה">
+          <label><input type="radio" name="severity" value="mild" data-state="severity"><span>קלה</span></label>
+          <label><input type="radio" name="severity" value="moderate" data-state="severity"><span>בינונית</span></label>
+          <label><input type="radio" name="severity" value="severe" data-state="severity"><span>קשה</span></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>דגלים אדומים</legend>
+      <span class="hint">כל סימון כאן פותח המלצת בירור בפרק האבחנה המבדלת.</span>
+      <div class="chk-grid" style="margin-top:8px">
+        <label class="chk"><input type="checkbox" data-state="alarm" value="age50"><span>הופעה ראשונה מעל גיל 50</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="weight"><span>ירידה לא מוסברת במשקל</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="blood"><span>דם בצואה / מלנה</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="anemia"><span>אנמיה או חסר ברזל</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="night"><span>תסמינים המעירים משינה</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="fever"><span>חום / סמני דלקת</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="famcrc"><span>סיפור משפחתי: סרטן מעי גס</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="famibd"><span>סיפור משפחתי: IBD או צליאק</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="mass"><span>מסה נמושה / ממצא בבדיקה</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="progressive"><span>החמרה מתקדמת ורציפה</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>רקע רפואי רלוונטי</legend>
+      <span class="hint">משפיע על התאמת תרופות והתוויות נגד.</span>
+      <div class="chk-grid" style="margin-top:8px">
+        <label class="chk"><input type="checkbox" data-state="bg" value="chole"><span>כריתת כיס מרה / ניתוח בטני</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="pancreas"><span>דלקת לבלב או מחלת דרכי מרה בעבר</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="cirrhosis"><span>שחמת הכבד</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="alcohol"><span>צריכת אלכוהול מעל 3 מנות ביום</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="pregnancy"><span>היריון או תכנון היריון</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="eatdis"><span>הפרעת אכילה בעבר או בהווה</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="anxdep"><span>חרדה או דיכאון</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="cardiac"><span>מחלת לב / הארכת QT</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="opioid"><span>טיפול באופיואידים</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>מה כבר נוסה</legend>
+      <div class="chk-grid">
+        <label class="chk"><input type="checkbox" data-state="tried" value="education"><span>הסבר ותיאום ציפיות</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="diet"><span>ייעוץ תזונתי / דיאטנית</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="fodmap"><span>דיאטה דלת FODMAP</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="fiber"><span>סיבים מסיסים</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="spasm"><span>נוגדי עוויתות / שמן מנטה</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="antidiarrheal"><span>לופרמיד / כולסטיראמין</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="peg"><span>תכשירי PEG</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="probiotic"><span>פרוביוטיקה</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="rifaximin"><span>ריפקסימין</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="neuro"><span>טיפול נוירומודולטורי</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="psych"><span>טיפול פסיכולוגי / היפנוזה</span></label>
+      </div>
+      <div class="row-actions">
+        <button type="button" class="primary" id="btnJump">מעבר לתוצאות</button>
+        <button type="button" id="btnReset">איפוס הטופס</button>
+      </div>
+    </fieldset>
+  </div>
+</section>
+
+<!-- ============ 2. DIAGNOSIS ============ -->
+<section id="sec-dx">
+  <div class="card">
+    <h2>אבחנה</h2>
+    <p class="sub">Rome IV ו-Rome V מוערכים במקביל על אותם נתונים. כשהמהדורות חלוקות — הסעיף המבדיל מסומן.</p>
+    <div id="dxVerdict"></div>
+    <div id="dxDiverge"></div>
+
+    <details class="acc">
+      <summary>Rome III — להשוואה בלבד</summary>
+      <p>Rome III דרש כאב <b>או אי-נוחות</b> לפחות 3 ימים בחודש, עם שניים או יותר מאלה: <b>הקלה</b> עם היציאה, הופעה בזמן שינוי בתדירות היציאות, הופעה בזמן שינוי במרקם. אותו תנאי משך: 3 חודשים אחרונים, תחילה לפחות 6 חודשים לפני האבחנה.</p>
+      <p class="hint">Rome V חוזר לרוב הבחירות של Rome III — אי-נוחות, סף של 3 ימים בחודש, ודרישה שהשינוי יהיה בתחילת התסמינים — ומוסיף עליהן את הדרישה שהכאב לא יהיה רציף. ההבדל שנשאר בין השניים הוא סעיף (א): Rome III דרש <b>הקלה</b> עם היציאה, ואילו Rome IV ו-V מסתפקים ב<b>קשר</b> ליציאה. הכלי אינו אוסף את סעיף ההקלה בנפרד, ולכן אינו מחשב את Rome III.</p>
+    </details>
+
+    <h3>תת-סוג לפי סולם Bristol</h3>
+    <div id="dxSubtype"></div>
+    <details class="acc">
+      <summary>סולם Bristol — תזכורת</summary>
+      <table class="tbl">
+        <tr><th>1</th><td>גושים קשים ונפרדים, קשים למעבר</td></tr>
+        <tr><th>2</th><td>צורת נקניק, גושית</td></tr>
+        <tr><th>3</th><td>צורת נקניק עם סדקים על פני השטח</td></tr>
+        <tr><th>4</th><td>צורת נקניק או נחש, חלקה ורכה</td></tr>
+        <tr><th>5</th><td>פיסות רכות עם קצוות ברורים</td></tr>
+        <tr><th>6</th><td>פיסות רכות עם קצוות מרוטשים, עיסתית</td></tr>
+        <tr><th>7</th><td>מימית, ללא חלקים מוצקים</td></tr>
+      </table>
+      <p class="hint">הסיווג נעשה מתוך הימים שבהם הייתה לפחות יציאה חריגה אחת, ובלי נטילת משלשלים או נוגדי שלשול.</p>
+    </details>
+
+    <h3>פרופיל קליני רב-ממדי (MDCP)</h3>
+    <p class="hint">חמשת הצירים שנייר העמדה מציע לאפיון המטופל, כבסיס לבחירת עוצמת הטיפול.</p>
+    <div id="dxMdcp" class="mdcp"></div>
+    <details class="acc">
+      <summary>שתי הדוגמאות מנייר העמדה — לכיול</summary>
+      <p><b>מטופלת בת 24:</b> תמ"ר עם שלשול, השפעה קלה על התפקוד, חרדה סביב התסמינים על רקע דודה שנפטרה מסרטן מעי גס, ללא סמנים ביולוגיים. תת-אפיון: תמ"ר קל — הסבר מותאם והרגעה, ללא צורך בטיפול תרופתי.</p>
+      <p><b>מטופל בן 57:</b> תמ"ר משולב עם דיספפסיה תפקודית וצרבת תפקודית, כאב יומיומי לסירוגין ללא קשר לאוכל, אינו מסוגל לעבוד ונמנע מחיי חברה, מתאים להפרעה סומטית לפי DSM-5, בירור אורגני שלילי. תת-אפיון: תמ"ר מורכב וקשה — חינוך והרגעה בתוספת שילוב של טיפול תרופתי ולא-תרופתי.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============ 3. DIFFERENTIAL ============ -->
+<section id="sec-ddx">
+  <div class="card">
+    <h2>אבחנה מבדלת ובירור</h2>
+    <p class="sub">מה חייב להישלל לפני שמאבחנים תמ"ר, ומה הבירור המתאים לפי תת-הסוג והדגלים שהוזנו.</p>
+    <div id="ddxAlarm"></div>
+    <h3>בירור בסיסי</h3>
+    <div id="ddxWorkup"></div>
+    <h3>אבחנה מבדלת לפי המצג</h3>
+    <div id="ddxList"></div>
+    <div class="note note-info">נייר העמדה מדגיש שהפניה לאין ספור בדיקות כדי לאשר את האבחנה "על דרך השלילה" היא מקור לעומס ולעלויות מיותרות. בהיעדר דגלים אדומים, האבחנה היא קלינית וחיובית — לפי קריטריוני Rome — ולא אבחנת סל.</div>
+  </div>
+</section>
+
+<!-- ============ 4. TREATMENT ============ -->
+<section id="sec-tx">
+  <div class="card">
+    <h2>אפשרויות טיפול</h2>
+    <p class="sub">לפי הפירמידה הטיפולית בנייר העמדה. מסומן <span class="badge">מותאם</span> מה שמתאים לנתונים שהוזנו, ו<span class="badge grey">כבר נוסה</span> מה שסומן בטופס.</p>
+    <div id="txLevel"></div>
+
+    <h3>1 · יחסי רופא-מטופל</h3>
+    <div id="txRelation"></div>
+
+    <h3>2 · תזונה</h3>
+    <div id="txDiet"></div>
+
+    <h3>3 · מיקרוביום: פרוביוטיקה, ריפקסימין, השתלת צואה</h3>
+    <div id="txMicro"></div>
+
+    <h3>4 · טיפול תרופתי תסמיני</h3>
+    <div id="txSympt"></div>
+
+    <h3>5 · טיפול נוירומודולטורי</h3>
+    <div id="txNeuro"></div>
+
+    <h3>6 · טיפול פסיכולוגי והתנהגותי</h3>
+    <div id="txPsych"></div>
+
+    <h3>7 · רפואה משלימה</h3>
+    <div id="txCam"></div>
+
+    <h3>8 · תרופות שאינן זמינות בארץ</h3>
+    <div id="txAbroad"></div>
+
+    <h3>9 · קנאביס רפואי</h3>
+    <div class="rx off">
+      <h4>קנאביס רפואי <span class="badge grey">אין המלצה</span></h4>
+      <p>קיים בסיס תיאורטי — ל-CBD ככל הנראה יכולת נוירומודולטורית לשיכוך כאב, ובמודלים בבעלי חיים הוא מפחית חרדה. מחקרים בתמ"ר עם שלשול שבחנו דרונבינול (THC סינתטי) הראו תוצאות סותרות. נכון להיום אין מידע מבוסס דיו, ולא ניתן להמליץ על טיפול זה.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. SOAP ============ -->
+<section id="sec-soap">
+  <div class="card">
+    <h2>סיכום רפואי</h2>
+    <p class="sub">נבנה מהנתונים שהוזנו וניתן לעריכה חופשית לפני ההעתקה לתיק.</p>
+    <div class="field">
+      <label for="soapText">SOAP</label>
+      <textarea id="soapText" rows="20" spellcheck="false"></textarea>
+    </div>
+    <div class="soap-actions">
+      <button type="button" class="primary" id="btnCopySoap">העתקה</button>
+      <button type="button" id="btnRebuildSoap">בנייה מחדש מהנתונים</button>
+      <span class="copied" id="copyMsg" hidden>הועתק</span>
+    </div>
+    <p class="hint">"בנייה מחדש" מוחקת עריכות ידניות ומייצרת את הטקסט מחדש מהטופס.</p>
+
+    <h3>תבנית בדיקה גופנית</h3>
+    <div class="field">
+      <textarea id="examText" rows="8" spellcheck="false"></textarea>
+    </div>
+    <div class="soap-actions">
+      <button type="button" id="btnCopyExam">העתקת הבדיקה</button>
+      <span class="copied" id="copyMsg2" hidden>הועתק</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><b>מקורות:</b> נייר עמדה 194, "טיפול בתסמונת המעי הרגיש", החוג הישראלי לנוירוגסטרואנטרולוגיה ולתנועתיות מערכת העיכול והאיגוד הישראלי לגסטרואנטרולוגיה ולמחלות כבד, המכון לאיכות ברפואה, הר"י, יולי 2022 · קריטריוני Rome IV ו-Rome V, Rome Foundation.</p>
+  <p>קריטריוני Rome מוצגים בתמצות לצורך שימוש קליני; זכויות היוצרים שמורות ל-Rome Foundation. <a href="https://theromefoundation.org/rome-iv/rome-iv-criteria/" target="_blank" rel="noopener">המקור המלא</a>.</p>
+  <p>הכלי הוא עזר לשיקול הדעת הקליני ואינו מחליף אותו. נבנה לשימוש הרופא/ה בלבד.</p>
+</footer>
+
+<script>
+"use strict";
+
+/* ---------- shared state: every later stage reads from here ---------- */
+const state = {
+  age:null, sex:null, onset6:null, last3:null,
+  painType:null, painDays:0, continuous:null,
+  relDefec:null, freqChange:null, formChange:null, menses:null,
+  hard:0, loose:0,
+  sx:[], severity:null, alarm:[], bg:[], tried:[]
+};
+
+/* subscribers registered by later stages: fn(state) called on every change */
+const subscribers = [];
+function onStateChange(fn){ subscribers.push(fn); fn(state); }
+function emit(){ subscribers.forEach(fn => fn(state)); }
+
+function readForm(){
+  document.querySelectorAll("[data-state]").forEach(el => {
+    const key = el.dataset.state;
+    if (el.type === "checkbox"){
+      if (!Array.isArray(state[key])) state[key] = [];
+    } else if (el.type === "radio"){
+      if (el.checked) state[key] = el.value;
+    } else if (el.type === "range" || el.type === "number"){
+      state[key] = el.value === "" ? null : Number(el.value);
+    } else {
+      state[key] = el.value || null;
+    }
+  });
+  ["sx","alarm","bg","tried"].forEach(key => {
+    state[key] = [...document.querySelectorAll(`input[type=checkbox][data-state="${key}"]:checked`)].map(el => el.value);
+  });
+}
+
+/* ---------- derived values used by later stages ---------- */
+function subtype(s){
+  const h = s.hard || 0, l = s.loose || 0;
+  if (h === 0 && l === 0) return null;
+  if (h > 25 && l <= 25) return "IBS-C";
+  if (l > 25 && h <= 25) return "IBS-D";
+  if (h > 25 && l > 25)  return "IBS-M";
+  return "IBS-U";
+}
+
+/* ---------- live UI bits ---------- */
+function refreshLiveBits(){
+  document.getElementById("painDaysVal").textContent = state.painDays ?? 0;
+  document.getElementById("hardVal").textContent  = (state.hard  ?? 0) + "%";
+  document.getElementById("looseVal").textContent = (state.loose ?? 0) + "%";
+  document.getElementById("mensesField").classList.toggle("on", state.sex === "f");
+  document.getElementById("bristolWarn").hidden = ((state.hard||0) + (state.loose||0)) <= 100;
+}
+
+document.addEventListener("input", e => {
+  if (!e.target.closest("[data-state]") && !e.target.dataset.state) return;
+  readForm(); refreshLiveBits(); emit();
+});
+document.addEventListener("change", e => {
+  if (!e.target.dataset.state) return;
+  readForm(); refreshLiveBits(); emit();
+});
+
+document.getElementById("btnReset").addEventListener("click", () => {
+  document.querySelectorAll("[data-state]").forEach(el => {
+    if (el.type === "checkbox" || el.type === "radio") el.checked = false;
+    else if (el.type === "range") el.value = 0;
+    else el.value = "";
+  });
+  /* readForm() only writes a radio value when one is checked, so clear those keys explicitly */
+  ["sex","onset6","last3","painType","continuous","relDefec","freqChange","formChange","menses","severity"]
+    .forEach(k => state[k] = null);
+  readForm(); refreshLiveBits(); emit();
+});
+document.getElementById("btnJump").addEventListener("click", () => {
+  document.getElementById("sec-dx").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ---------- sticky nav highlighting ---------- */
+const links = [...document.querySelectorAll(".nav a")];
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+  });
+}, {rootMargin:"-120px 0px -65% 0px", threshold:0});
+document.querySelectorAll("main section").forEach(sec => observer.observe(sec));
+
+readForm(); refreshLiveBits();
+
+/* ==================================================================
+   Stages 2-5 — diagnosis, differential, treatment, SOAP
+   All render functions read the shared `state` via onStateChange.
+   ================================================================== */
+const el = id => document.getElementById(id);
+const has = (a, v) => Array.isArray(a) && a.includes(v);
+const mark = st => st === true ? '<span class="mark ok">✓</span>'
+                 : st === false ? '<span class="mark no">✗</span>'
+                 : '<span class="mark na">–</span>';
+
+/* ---------- derived helpers shared by all stages ---------- */
+function derive(s){
+  const st = subtype(s);
+  return {
+    st,
+    stHe: st === "IBS-C" ? "תמ\"ר עם עצירות" : st === "IBS-D" ? "תמ\"ר עם שלשול"
+        : st === "IBS-M" ? "תמ\"ר מעורב" : st === "IBS-U" ? "תמ\"ר לא מסווג" : null,
+    loose: st === "IBS-D" || st === "IBS-M",
+    hard:  st === "IBS-C" || st === "IBS-M",
+    pain: has(s.sx,"pain"), bloat: has(s.sx,"bloating"), gas: has(s.sx,"gas"),
+    urgency: has(s.sx,"urgency"), dyspepsia: has(s.sx,"dyspepsia"),
+    anxdep: has(s.bg,"anxdep"), chole: has(s.bg,"chole"), cardiac: has(s.bg,"cardiac"),
+    preg: has(s.bg,"pregnancy"), eatdis: has(s.bg,"eatdis"),
+    cirrhosis: has(s.bg,"cirrhosis"), pancreas: has(s.bg,"pancreas"), alcohol: has(s.bg,"alcohol"),
+    opioid: has(s.bg,"opioid"),
+    alarms: s.alarm || [], nAlarm: (s.alarm||[]).length,
+    modPlus: s.severity === "moderate" || s.severity === "severe",
+    severe: s.severity === "severe",
+    tried: s.tried || []
+  };
+}
+
+/* ---------- Rome IV / Rome V ---------- */
+function durationItem(s){
+  if (s.onset6 === null && s.last3 === null) return {st:null, why:"טרם הוזן"};
+  if (s.onset6 === "yes" && s.last3 === "yes") return {st:true, why:""};
+  const bad = [];
+  if (s.onset6 === "no") bad.push("התסמינים החלו לפני פחות מ-6 חודשים");
+  if (s.last3 === "no") bad.push("אינם פעילים ב-3 החודשים האחרונים");
+  if (!bad.length) return {st:null, why:"חסר מידע על המשך"};
+  return {st:false, why:bad.join("; ")};
+}
+
+function twoOfThree(s, requireOnset){
+  const val = v => requireOnset ? v === "onset" : (v === "onset" || v === "concurrent");
+  const parts = [
+    {k:"קשר לפעולת המעיים", st: s.relDefec === null ? null : s.relDefec === "yes"},
+    {k:"שינוי בתדירות היציאות", st: s.freqChange === null ? null : val(s.freqChange)},
+    {k:"שינוי במרקם הצואה", st: s.formChange === null ? null : val(s.formChange)}
+  ];
+  const yes = parts.filter(p => p.st === true).length;
+  const unknown = parts.some(p => p.st === null);
+  const st = yes >= 2 ? true : (unknown ? null : false);
+  return {st, yes, parts,
+    why: st === true ? `${yes} מתוך 3 מתקיימים`
+       : st === false ? `רק ${yes} מתוך 3 מתקיימים`
+       : "חסרות תשובות"};
+}
+
+function romeIV(s){
+  const dur = durationItem(s);
+  const t23 = twoOfThree(s, false);
+  const pt = s.painType === null ? null : s.painType === "pain";
+  const freq = s.painType === null ? null : (s.painDays || 0) >= 4;
+  const items = [
+    {label:"כאב בטן (לא אי-נוחות)", st:pt,
+     why: s.painType === "discomfort" ? "אי-נוחות אינה עומדת בקריטריון של Rome IV"
+        : s.painType === "none" ? "לא דווח על תסמין בטני" : ""},
+    {label:"בממוצע יום אחד בשבוע ומעלה — לפחות 4 ימים בחודש", st:freq,
+     why: freq === false ? `הוזנו ${s.painDays||0} ימים בחודש` : ""},
+    {label:"3 חודשים אחרונים, תחילה לפחות 6 חודשים לפני האבחנה", st:dur.st, why:dur.why},
+    {label:"שניים או יותר מתוך שלושת מאפייני הקשר ליציאות", st:t23.st, why:t23.why}
+  ];
+  return {items, ok: items.every(i => i.st === true), idle: items.every(i => i.st === null), t23};
+}
+
+function romeV(s){
+  const dur = durationItem(s);
+  const t23 = twoOfThree(s, true);
+  const pt = s.painType === null ? null : (s.painType === "pain" || s.painType === "discomfort");
+  const freq = s.painType === null ? null : (s.painDays || 0) >= 3;
+  const cont = s.continuous === null ? null : s.continuous === "no";
+  const items = [
+    {label:"כאב או אי-נוחות בטנית", st:pt, why: s.painType === "none" ? "לא דווח על תסמין בטני" : ""},
+    {label:"חוזר אך לא רציף", st:cont,
+     why: cont === false ? "כאב רציף אינו עומד ב-Rome V; יש לשקול CAPS — כאב בטן ממקור מרכזי" : ""},
+    {label:"לפחות 3 ימים בחודש", st:freq, why: freq === false ? `הוזנו ${s.painDays||0} ימים בחודש` : ""},
+    {label:"3 חודשים אחרונים, תחילה לפחות 6 חודשים לפני האבחנה", st:dur.st, why:dur.why},
+    {label:"שניים או יותר, כאשר השינוי בתדירות ובמרקם החל <b>עם תחילת</b> התסמינים", st:t23.st, why:t23.why}
+  ];
+  if (s.sex === "f"){
+    items.push({label:"קריטריון תומך: התסמינים אינם מופיעים רק סביב הווסת",
+      st: s.menses === null ? null : s.menses === "no",
+      why: s.menses === "yes" ? "כאב המופיע רק סביב הווסת מכוון לאבחנה גינקולוגית" : ""});
+  }
+  return {items, ok: items.every(i => i.st === true), idle: items.every(i => i.st === null), t23};
+}
+
+function vcard(title, r, sub){
+  const cls = r.idle ? "idle" : r.ok ? "pass" : "fail";
+  const pill = r.idle ? '<span class="pill na">ממתין לנתונים</span>'
+             : r.ok ? '<span class="pill ok">הקריטריונים מתקיימים</span>'
+             : '<span class="pill no">אינם מתקיימים</span>';
+  return `<div class="vcard ${cls}">
+    <div class="vhead"><h4>${title}</h4>${pill}</div>
+    ${sub ? `<p class="hint" style="margin:0 0 8px">${sub}</p>` : ""}
+    <ul class="crit">${r.items.map(i =>
+      `<li>${mark(i.st)}<span>${i.label}${i.why ? `<br><span class="why">${i.why}</span>` : ""}</span></li>`
+    ).join("")}</ul></div>`;
+}
+
+function renderDx(s){
+  const iv = romeIV(s), v = romeV(s);
+  el("dxVerdict").innerHTML = `<div class="verdict">
+    ${vcard("Rome IV", iv, "המהדורה שעליה בנוי נייר העמדה הישראלי.")}
+    ${vcard("Rome V", v, "מקבל אי-נוחות וסף נמוך יותר, אך שולל כאב רציף.")}
+  </div>`;
+
+  /* divergence */
+  const d = el("dxDiverge");
+  if (iv.idle || v.idle){ d.innerHTML = ""; }
+  else if (iv.ok === v.ok){
+    d.innerHTML = iv.ok
+      ? `<div class="note note-info">שתי המהדורות מסכימות: המטופל עומד בקריטריונים לתמ"ר.</div>`
+      : `<div class="note note-warn">שתי המהדורות מסכימות שהקריטריונים אינם מתקיימים. יש לבחון אבחנה חלופית, או להשלים את הנתונים החסרים.</div>`;
+  } else {
+    const reasons = [];
+    if (s.painType === "discomfort") reasons.push("התלונה היא אי-נוחות ולא כאב — Rome V מקבל, Rome IV לא");
+    if ((s.painDays||0) >= 3 && (s.painDays||0) < 4) reasons.push(`תדירות של ${s.painDays} ימים בחודש — מעל הסף של Rome V ומתחת לזה של Rome IV`);
+    if (s.continuous === "yes") reasons.push("הכאב רציף — Rome IV אינו מתייחס לכך, Rome V שולל");
+    if (iv.t23.st === true && v.t23.st === false) reasons.push("השינוי בתדירות או במרקם אינו מתחילת התסמינים — Rome IV מסתפק בקיום במקביל, Rome V דורש הופעה בתחילה");
+    if (s.sex === "f" && s.menses === "yes") reasons.push("התסמינים מופיעים רק סביב הווסת — קריטריון תומך שלילי ב-Rome V");
+    d.innerHTML = `<div class="note note-warn"><b>המהדורות חלוקות.</b> ${iv.ok ? "עומד ב-Rome IV אך לא ב-Rome V" : "עומד ב-Rome V אך לא ב-Rome IV"}.
+      ${reasons.length ? "<br>הסעיף המבדיל: " + reasons.join("; ") + "." : ""}</div>`;
+  }
+
+  /* subtype */
+  const dv = derive(s);
+  const sum = (s.hard||0) + (s.loose||0);
+  el("dxSubtype").innerHTML = !dv.st
+    ? `<div class="empty">הזנת אחוזי היציאות בטופס תקבע את תת-הסוג.</div>`
+    : `<div class="note ${sum > 100 ? "note-warn" : "note-info"}">
+        <b>${dv.st}</b> — ${dv.stHe}. לפי ${s.hard||0}% יציאות Bristol 1-2 ו-${s.loose||0}% יציאות Bristol 6-7.
+        ${sum > 100 ? "<br>שימו לב: סכום האחוזים עולה על 100%." : ""}
+        <br><span class="hint">ספי Rome IV: מעל 25% מסוג אחד ופחות מ-25% מהשני. תת-הסוג קובע חלק ניכר מבחירת הטיפול בהמשך.</span></div>`;
+
+  /* MDCP */
+  const psych = [];
+  if (has(s.agenda,"cancer")) psych.push("חשש ממאירות");
+  if (has(s.agenda,"food")) psych.push("ייחוס לרגישות למזון או לזיהום");
+  if (has(s.agenda,"life")) psych.push("אירוע חיים או שינוי תפקודי");
+  if (has(s.agenda,"worse")) psych.push("החמרה אמיתית בתסמינים");
+  if (dv.anxdep) psych.push("חרדה או דיכאון ברקע");
+  const sevHe = {mild:"קלה", moderate:"בינונית", severe:"קשה"}[s.severity] || "טרם הוזנה";
+  el("dxMdcp").innerHTML = [
+    ["אבחנה רשמית", iv.ok || v.ok ? "עומד בקריטריוני Rome לתמ\"ר" : "טרם נקבעה — ראו הערכת הקריטריונים למעלה"],
+    ["תת-קבוצה", dv.st ? `${dv.st} — ${dv.stHe}` : "טרם נקבעה"],
+    ["השלכות אישיות", `חומרה ${sevHe}${(s.sx||[]).length ? " · תסמינים מטרידים: " + (s.sx||[]).map(x => ({pain:"כאב",bloating:"תפיחות",gas:"גזים",urgency:"דחיפות",incomplete:"התרוקנות לא מלאה",dyspepsia:"דיספפסיה"})[x]).join(", ") : ""}`],
+    ["גורמים פסיכוסוציאליים", psych.length ? psych.join(" · ") : "לא סומנו"],
+    ["ליקויים וסמנים ביולוגיים", dv.nAlarm ? `${dv.nAlarm} דגלים אדומים — ראו פרק האבחנה המבדלת` : "לא סומנו דגלים אדומים"]
+  ].map(([k, val]) => `<div class="row"><span class="k">${k}</span><span>${val}</span></div>`).join("");
+}
+
+/* ---------- 3. differential diagnosis ---------- */
+const ALARM_TEXT = {
+  age50:["הופעה ראשונה מעל גיל 50","קולונוסקופיה"],
+  weight:["ירידה לא מוסברת במשקל","קולונוסקופיה + בירור מערכתי"],
+  blood:["דם בצואה או מלנה","קולונוסקופיה"],
+  anemia:["אנמיה או חסר ברזל","ספירה, ברזל/פריטין, גסטרוסקופיה וקולונוסקופיה"],
+  night:["תסמינים המעירים משינה","בירור אורגני — אינו אופייני לתמ\"ר"],
+  fever:["חום או סמני דלקת","CRP, קלפרוטקטין בצואה, שקילת IBD או זיהום"],
+  famcrc:["סיפור משפחתי של סרטן מעי גס","קולונוסקופיה לפי גיל ההופעה במשפחה"],
+  famibd:["סיפור משפחתי של IBD או צליאק","סרולוגיה לצליאק, קלפרוטקטין"],
+  mass:["מסה נמושה או ממצא בבדיקה","הדמיה והפניה לגסטרואנטרולוג"],
+  progressive:["החמרה מתקדמת ורציפה","בירור אורגני מלא"]
+};
+
+function renderDdx(s){
+  const dv = derive(s);
+
+  el("ddxAlarm").innerHTML = !dv.nAlarm
+    ? `<div class="note note-info">לא סומנו דגלים אדומים. בהיעדרם, ובנוכחות קריטריוני Rome, ניתן לאבחן תמ"ר ולהתחיל טיפול בלי בירור נרחב.</div>`
+    : `<div class="note note-danger"><b>${dv.nAlarm} דגלים אדומים — יש להשלים בירור לפני אבחנה של תמ"ר.</b>
+       <table class="tbl" style="margin-top:8px"><tr><th>ממצא</th><th>הבירור המתבקש</th></tr>
+       ${dv.alarms.map(a => `<tr><td>${ALARM_TEXT[a][0]}</td><td>${ALARM_TEXT[a][1]}</td></tr>`).join("")}
+       </table></div>`;
+
+  const w = [
+    ["ספירת דם, CRP","בכל מטופל — סינון בסיסי לדלקת ואנמיה"],
+    ["סרולוגיה לצליאק: tTG-IgA עם IgA כללי","בכל מטופל, ובמיוחד בתת-סוג עם שלשול"],
+    ["TSH", dv.loose ? "לשלילת יתר-פעילות בלוטת התריס" : "לשלילת תת-פעילות בלוטת התריס"]
+  ];
+  if (dv.loose) w.push(["קלפרוטקטין בצואה","להבחנה בין תמ\"ר לבין IBD — בעל תשואה גבוהה בשלשול כרוני"]);
+  if (dv.loose) w.push(["בדיקת צואה לטפילים ולגיארדיה","בעיקר לאחר נסיעה, מי שתייה חשודים או הופעה חדה"]);
+  if (dv.hard) w.push(["סידן בדם","היפרקלצמיה כגורם לעצירות"]);
+  if (dv.nAlarm) w.push(["קולונוסקופיה","בנוכחות דגל אדום, ובהתאם להמלצות סקירה לפי גיל"]);
+  el("ddxWorkup").innerHTML = `<div class="tbl-scroll"><table class="tbl">
+    <tr><th style="width:38%">בדיקה</th><th>נימוק</th></tr>
+    ${w.map(([a,b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join("")}</table></div>`;
+
+  const items = [];
+  if (dv.loose){
+    items.push(["צליאק","שכיחות מוגברת בקרב מאובחני תמ\"ר עם שלשול; סרולוגיה בכל מטופל"]);
+    items.push(["קוליטיס מיקרוסקופית","שלשול מימי כרוני, שכיח יותר בנשים מבוגרות; מאובחן רק בביופסיות"]);
+    items.push(["מחלת מעי דלקתית","קלפרוטקטין, CRP; דם בצואה או תסמינים ליליים מטים לכיוון זה"]);
+    items.push(["שלשול מחומצות מרה", dv.chole ? "רלוונטי במיוחד — יש רקע של כריתת כיס מרה או ניתוח בטני. אין בארץ בדיקה מעבדתית; ניסיון אמפירי בכולסטיראמין הוא דרך האבחון המעשית" : "אין בארץ בדיקה מעבדתית; ניסיון אמפירי קצר בכולסטיראמין הוא דרך האבחון המעשית"]);
+    items.push(["אי-סבילות ללקטוז או לפרוקטוז","ניתן לזהות בהימנעות מכוונת או בדיקת נשיפה"]);
+    items.push(["גורם תרופתי","מטפורמין, מגנזיום, משלשלים, SSRI"]);
+  }
+  if (dv.hard){
+    items.push(["תת-פעילות בלוטת התריס","TSH"]);
+    items.push(["עצירות מגורם תרופתי", dv.opioid ? "רלוונטי במיוחד — טיפול כרוני באופיואידים; יש להבחין בין OIC לבין תמ\"ר עם עצירות" : "אופיואידים, אנטיכולינרגיים, חוסמי תעלות סידן, ברזל"]);
+    items.push(["הפרעת רצפת אגן / דיסינרגיה","עצירות עם התאמצות ותחושת חסימה; אינה מגיבה למשלשלים ודורשת בירור תפקודי"]);
+    items.push(["חסימה או ממאירות","בעיקר עם דגל אדום או עצירות שהופיעה לאחרונה"]);
+  }
+  items.push(["סרטן המעי הגס","לפי גיל, סיפור משפחתי ודגלים אדומים"]);
+  if (s.sex === "f") items.push(["אנדומטריוזיס","כאב מחזורי, דיספראוניה; שכיח שמאובחן שגוי כתמ\"ר"]);
+  if (s.continuous === "yes") items.push(["כאב בטן ממקור מרכזי (CAPS)","כאב רציף שאינו קשור ליציאות או לאוכל — אבחנה נפרדת מתמ\"ר, וטיפולה נוירומודולטורי"]);
+  if (dv.dyspepsia) items.push(["דיספפסיה תפקודית","חופפת לתמ\"ר בשיעור גבוה; אינה אבחנה מתחרה אלא נלווית"]);
+
+  el("ddxList").innerHTML = `<div class="tbl-scroll"><table class="tbl">
+    <tr><th style="width:32%">אבחנה</th><th>הערה</th></tr>
+    ${items.map(([a,b]) => `<tr><td>${a}</td><td>${b}</td></tr>`).join("")}</table></div>`;
+}
+
+/* ---------- 4. treatment ---------- */
+function rx(o){
+  const cls = o.pick ? "rx pick" : o.off ? "rx off" : "rx";
+  const badges = (o.badges || []).map(b => `<span class="badge ${b[1]||""}">${b[0]}</span>`).join("");
+  return `<div class="${cls}"><h4>${o.title}${badges}</h4>${o.body}</div>`;
+}
+const triedBadge = (dv, key) => has(dv.tried, key) ? [["כבר נוסה","grey"]] : [];
+const pickBadge = p => p ? [["מותאם",""]] : [];
+
+function renderTx(s){
+  const dv = derive(s);
+
+  /* --- where we are on the pyramid --- */
+  let lvl;
+  if (dv.nAlarm) lvl = `<div class="note note-danger">סומנו דגלים אדומים. יש להשלים את הבירור לפני בניית תכנית טיפול לתמ"ר.</div>`;
+  else if (s.severity === "mild") lvl = `<div class="note note-info"><b>חומרה קלה — בסיס הפירמידה.</b> הסבר, תיאום ציפיות, טיפול תזונתי וטיפול תסמיני לפי הצורך. נייר העמדה מציין שבחלק מהמקרים הקלים די בהסבר ובמעקב בלבד, ללא טיפול תרופתי.</div>`;
+  else if (s.severity === "moderate") lvl = `<div class="note note-info"><b>חומרה בינונית — אמצע הפירמידה.</b> לבסיס יש להוסיף שקילה של טיפול נוירומודולטורי ו/או טיפול פסיכולוגי.</div>`;
+  else if (s.severity === "severe") lvl = `<div class="note note-warn"><b>חומרה קשה — ראש הפירמידה.</b> שילוב טיפולים: תזונה, נוירומודולציה בתרופה אחת או יותר, טיפול תסמיני וטיפול פסיכולוגי. ככל שהפגיעה בתפקוד גדולה יותר, עולה גם שכיחות התחלואה הפסיכיאטרית הנלווית ומקומו של ייעוץ פסיכיאטרי.</div>`;
+  else lvl = `<div class="empty">סימון החומרה בטופס יקבע את מיקום המטופל בפירמידה הטיפולית.</div>`;
+  el("txLevel").innerHTML = lvl;
+
+  /* --- 1. relationship --- */
+  const agendaLine = [];
+  if (has(s.agenda,"cancer")) agendaLine.push("חשש מממאירות — יש להתייחס אליו ישירות ולהסביר מדוע הבירור שנעשה מספק");
+  if (has(s.agenda,"food")) agendaLine.push("ייחוס לרגישות למזון — הזדמנות לחבר את המטופל לטיפול תזונתי מובנה");
+  if (has(s.agenda,"life")) agendaLine.push("אירוע חיים או שינוי תפקודי — להצף את הקשר בין מצב רגשי לתסמינים");
+  if (has(s.agenda,"worse")) agendaLine.push("החמרה אמיתית — לוודא שאין דגל אדום חדש");
+  el("txRelation").innerHTML = rx({
+    pick: true,
+    badges: triedBadge(dv,"education"),
+    title: "ששת מרכיבי המפגש הטיפולי",
+    body: `<ul>
+      <li><b>הקשבה</b> אמפטית עם שיקוף.</li>
+      <li><b>הסבר</b> ביולוגי: רגישות יתר ויסצרלית, עיבוד עודף ולקוי של מידע במערכת העצבים המרכזית, והפרעה בתנועתיות. הדגשת האופי הכרוני והשפיר, עם תקופות רגיעה והתלקחות.</li>
+      <li><b>עיתוי הפנייה</b>: "מה הביא אותך אליי היום", "מה אתה חושב שיש לך", "מהם החששות העיקריים שלך", "כיצד אתה חושב שאוכל לעזור".</li>
+      <li><b>הצפת הנושא הרגשי</b> בלי לתייג את תמ"ר כהפרעה פסיכיאטרית — מעגל הקסמים שבו חרדה מגבירה תלונות והתלונות מגבירות חרדה.</li>
+      <li><b>תיאום ציפיות</b>: היעד הוא שיפור בתסמינים, בתפקוד ובאיכות החיים — לא ריפוי. מספר מצומצם של מטרות ברות השגה, ובחינתן בכל מפגש.</li>
+      <li><b>רצף טיפולי</b>: זמינות בין הביקורים מפחיתה כשלעצמה את עוצמת התסמינים.</li>
+    </ul>
+    ${agendaLine.length ? `<p><b>לפי מה שסומן:</b> ${agendaLine.join(" · ")}.</p>` : ""}`
+  });
+
+  /* --- 2. diet --- */
+  let diet = rx({
+    pick:true, badges: triedBadge(dv,"diet"),
+    title:"עקרונות כלליים",
+    body:`<p>מעבר ל"מה אוכלים" — גם "איך אוכלים": חלוקת ארוחות במהלך היום, אכילה איטית בישיבה, לעיסה טובה, והימנעות מארוחות גדולות בשעות הלילה המאוחרות.</p>
+      <p>הפחתת מזון חריף, אלכוהול, קפאין, שומן ומזון מתועש — נתמכת בספרות.</p>
+      <p><b>ללא תמיכה בספרות:</b> תזונה נטורופתית, ודיאטה על בסיס רמות נוגדני IgG בדם.</p>
+      <p class="hint">אין תחליף להתאמה אישית בליווי דיאטנית קלינית מנוסה; זהו הגורם שמעלה יותר מכל את סיכויי ההצלחה.</p>`
+  });
+  const fodPick = dv.loose;
+  diet += rx({
+    pick: fodPick, off: dv.st === "IBS-C", badges: [...pickBadge(fodPick), ...triedBadge(dv,"fodmap"),
+      ...(dv.preg || dv.eatdis ? [["דורש התאמה","warn"]] : [])],
+    title:"דיאטה דלת FODMAP",
+    body:`<p>${dv.loose ? "מומלצת בתת-הסוג שהוזן — יעילה בשלשולים או בשלשולים ועצירות לסירוגין."
+        : dv.st === "IBS-C" ? "העדויות מתייחסות בעיקר לתמ\"ר עם שלשול או מעורב; בעצירות בלבד התשואה נמוכה יותר."
+        : "יעילה ומומלצת בתמ\"ר עם שלשולים או שלשולים ועצירות לסירוגין."}
+      שיעור השיפור המדווח עומד על כ-70% במי שמתמיד ונמצא במעקב דיאטנית. בעבודה משנת 2020, השיפור נשמר 3 ו-6 חודשים לאחר החזרת המזונות.</p>
+      <p><b>שלוש דרכי יישום:</b> <b>Top Down</b> — התחלה בדיאטה הקלאסית והחזרה הדרגתית של מזונות; <b>Top Up</b> — הגבלה רופפת שמתהדקת לפי התסמינים; <b>Gentle FODMAP</b> — הגבלה מקלה יותר.</p>
+      ${dv.preg || dv.eatdis ? `<p class="note note-warn" style="margin:8px 0 0">${dv.eatdis ? "רקע של הפרעת אכילה" : "היריון או תכנון היריון"} — יש להעדיף את גישת Gentle FODMAP ולהימנע מדיאטת אלימינציה נוקשה.</p>` : ""}
+      <p class="hint">מקורות מידע אמינים: monashfodmap.com, myginutrition.com. בלי הנחיית דיאטנית, הסיכוי להתמיד יורד משמעותית.</p>`
+  });
+  diet += rx({
+    pick: dv.hard, badges: [...pickBadge(dv.hard), ...triedBadge(dv,"fiber")],
+    title:"סיבים תזונתיים מסיסים",
+    body:`<p>בתמ"ר עם עצירות, תוספת סיבים <b>מסיסים</b> עשויה לשפר את תדירות היציאות ואת מרקמן ללא החמרה בתסמינים אחרים. סיבים בלתי מסיסים נמצאו לא יעילים.</p>`
+  });
+  if (has(dv.tried,"fodmap")){
+    diet += rx({
+      pick:true, badges:[["מותאם",""]],
+      title:"ניסיון הפחתת גלוטן",
+      body:`<p>דיאטת FODMAP כבר נוסתה. במקרים שבהם היא אינה מפחיתה תסמינים, נייר העמדה מציע לשקול ניסיון של הימנעות או הפחתה משמעותית של גלוטן — לאחר שלילת צליאק. אין סמן ביולוגי לרגישות לגלוטן שאינה צליאק, והאבחנה מתבססת על דיווח המטופל.</p>`
+    });
+  }
+  el("txDiet").innerHTML = diet;
+
+  /* --- 3. microbiome --- */
+  const probPick = dv.loose || dv.gas || dv.bloat;
+  let micro = rx({
+    pick: probPick, badges:[...pickBadge(probPick), ...triedBadge(dv,"probiotic")],
+    title:"פרוביוטיקה",
+    body:`<p>העדויות אינן חד-משמעיות, אך פרופיל הבטיחות מעולה ומשך הטיפול קצר — ולכן ניתן להציע ניסיון אמפירי, בעיקר כשהתסמינים הבולטים הם שלשול, ריבוי גזים ותפיחות.</p>
+      <p>נכון להיום אין בישראל עדויות שמאפשרות להמליץ על תכשיר ספציפי, על משך טיפול או על מינון. איגודים שונים חלוקים: הקנדי, האמריקאי והקוריאני ממליצים בתמ"ר עם שלשול; אחרים אינם תומכים.</p>`
+  });
+  const rifaPick = dv.loose && (dv.gas || dv.bloat || dv.st === "IBS-D");
+  micro += rx({
+    pick: rifaPick, off: dv.st === "IBS-C",
+    badges:[...pickBadge(rifaPick), ...triedBadge(dv,"rifaximin"), ["עלות על המטופל","warn"]],
+    title:"ריפקסימין",
+    body:`<p><b>המינון להמלצה: 400 מ"ג שלוש פעמים ביום למשך 10 ימים</b> — זו התצורה הזמינה בישראל, וניתן לחזור על הקורס במידת הצורך. בטיפול אחזקה נהוגים 400-800 מ"ג ליממה, אך נייר העמדה מציין במפורש שגישה זו אינה נתמכת בעדויות מחקריות.</p>
+      <p class="hint">במחקרי TARGET 1 ו-2, שמהם מגיעות העדויות ליעילות, ניתן ריפקסימין 550 מ"ג שלוש פעמים ביום למשך 14 ימים. הפער בין המספרים הוא בין מינון המחקר לבין התצורה הזמינה כאן.</p>
+      <p>יעיל בעיקר לריבוי גזים ולשלשול; <b>אין עדויות ליעילות בתמ"ר עם עצירות</b>. במחקר TARGET 3, ב-64% מהמגיבים ההטבה הייתה זמנית, וטיפול חוזר הביא שוב לתגובה קלינית.</p>
+      <p>בישראל התרופה רשומה וכלולה בסל לאנצפלופתיה כבדית בלבד — הטיפול בתמ"ר כרוך בעלות שמושתת על המטופל.</p>`
+  });
+  micro += rx({
+    off:true, badges:[["מחקר בלבד","grey"]],
+    title:"השתלת צואה",
+    body:`<p>התוצאות במחקרים סותרות, ושתי מטא-אנליזות לא הראו עדיפות על פלצבו. בישראל ההשתלה רשומה לזיהום חוזר בקלוסטרידיום דיפיצילה בלבד; השימוש בתמ"ר הוא מחקרי ואינו נכלל בהמלצות של אף איגוד בינלאומי.</p>`
+  });
+  el("txMicro").innerHTML = micro;
+}
+
+/* ---------- 4b. symptomatic drugs, neuromodulators, psych, CAM, abroad ---------- */
+function renderTx2(s){
+  const dv = derive(s);
+
+  /* --- symptomatic --- */
+  const rows = [];
+  const R = (pick, sym, drug, dose, ae, note) => rows.push({pick, sym, drug, dose, ae, note});
+  R(dv.pain || dv.gas || dv.bloat, "כאב בטן וריבוי גזים", "שמן מנטה — Colpermin", "1-2 כדורים, עד 3 פעמים ביום", "צרבת, כאב ראש, צריבה בפי הטבעת", "קו ראשון, ללא מרשם. העדויות האיכותיות ביותר בקבוצה זו");
+  R(dv.pain, "כאב עוויתי", "אנטי-כולינרגיים — Notensyl, Spasmomen", "Notensyl 10-20 מ\"ג סמוך לארוחה · Spasmomen 20-40 מ\"ג עד 3 פעמים", "בחילה, חולשה, יובש בפה", "ליטול לפני הארוחה. Spasmomen שווק בארץ עד לאחרונה");
+  R(dv.pain, "כאב עוויתי", "חוסמי תעלות סידן — Papaverine, Mebeverine / Colotal", "40-80 מ\"ג עד 3 פעמים · Colotal 135 מ\"ג עד 3 פעמים", "חולשה, שינויים בלחץ דם ובקצב הלב", "ליטול לפני הארוחה");
+  R(dv.pain && dv.anxdep, "כאב על רקע מתח וחרדה", "Brelix — clidinium bromide / chlordiazepoxide", "1-2 כדורים, 2-3 פעמים ביום", "יובש בפה, עצירות, ישנוניות", "מכיל בנזודיאזפין — אפשרות טובה כשמתח וחרדה מחמירים את התסמינים, אך לא לשימוש ממושך");
+  R(false, "כאב", "Spasmalgin — codeine, papaverine, lidocaine, paracetamol", "כדור אחד עד 3 פעמים ביום", "יובש בפה, בחילות, ישנוניות", "מכיל קודאין — להימנע בעצירות ובשימוש חוזר");
+  R(dv.loose || dv.urgency, "שלשול", "לופרמיד — Imodium, Stopit, Lopicare", "עד 16 מ\"ג ליממה", "כאבי בטן, בחילות, ישנוניות", "טיפול נקודתי בלבד — אין השפעה על מכלול התסמינים. שימושי לפני אירוע שדורש שליטה ביציאות");
+  R(dv.loose && dv.chole, "שלשול לאחר כריתת כיס מרה", "כולסטיראמין — Questran, Colestid", "4 גרם, עד פעמיים ביום", "כאבי בטן, גזים", "ניסיון אמפירי של 2-4 שבועות. אין בארץ בדיקה לאבחון הפרעה בספיגת חומצות מרה, והתגובה מהירה ובטוחה");
+  R(dv.loose, "שלשול", "Gelsectan — חומר מצפה ופרה-ביוטי", "1-2 כמוסות, 1-2 פעמים ביום", "לא תוארו תופעות לוואי נפוצות", "ללא מרשם. שיפור במרקם ובמספר היציאות וגם בכאב, בתפיחות ובגזים");
+  R(dv.loose && dv.urgency, "שלשול עם דחיפות", "אונדנסטרון — Zofran", "4-8 מ\"ג", "עייפות, כאב ראש, עצירות", "אנטגוניסט 5-HT₃. שיפור בדחיפות ובמרקם תוך כשבוע");
+  R(dv.hard, "עצירות", "תכשירי PEG — Peglax, Normalax", "17 גרם, עד 3 פעמים ביום", "שלשולים, כאבי בטן, תפיחות", "משפר את תדירות היציאות ואת המאמץ, אך לא את שאר תסמיני תמ\"ר");
+
+  el("txSympt").innerHTML = `
+    <div class="note note-info">הטיפול התסמיני הוא פליאטיבי ומכוון לתסמין בודד. הוא מתאים לחומרה קלה-בינונית, או כטיפול משלים לנוירומודולציה. בהיעדר שיפור גלובלי הוא לרוב אינו יכול לעמוד לבדו.</div>
+    <div class="tbl-scroll"><table class="tbl">
+      <tr><th>תסמין</th><th>תכשיר</th><th>מינון</th><th>תופעות לוואי</th><th>הערה</th></tr>
+      ${rows.map(r => `<tr class="${r.pick ? "hi" : ""}"><td>${r.sym}</td><td><b>${r.drug}</b></td><td>${r.dose}</td><td>${r.ae}</td><td>${r.note}</td></tr>`).join("")}
+    </table></div>
+    <p class="hint">שורות מודגשות — מתאימות לנתונים שהוזנו. תפיחות היא התסמין העמיד ביותר לטיפול; אנזימי עיכול ופחם פעיל לא נבדקו בתמ"ר ויעילותם מוגבלת מאוד.</p>`;
+
+  /* --- neuromodulators --- */
+  const neuroIndicated = dv.modPlus;
+  const nrows = [];
+  const N = (pick, cls, drug, dose, improves, worsens, note) => nrows.push({pick, cls, drug, dose, improves, worsens, note});
+  const tcaPick = neuroIndicated && !dv.hard;
+  N(tcaPick, "TCA", "Amitriptyline — elatrol, elatrolet", "10-100", "כאב, שלשול", "עצירות, סחרחורת, נמנום, עיכוב בהתרוקנות קיבה", "");
+  N(tcaPick, "TCA", "Nortriptyline — nortylin", "25-100", "כאב, שלשול", "עצירות, סחרחורת, נמנום", "");
+  N(tcaPick, "TCA", "Desipramine — deprexan", "25-150", "כאב, שלשול", "עצירות, חרדה, עצבנות", "");
+  N(false, "TCA", "Doxepin — gilex", "25-75", "כאב", "ישנוניות, יובש בפה", "");
+  const snriPick = neuroIndicated && dv.hard;
+  N(snriPick, "SNRI", "Duloxetine — cymbalta", "30-60", "כאב", "עצירות, בחילות", "");
+  N(snriPick, "SNRI", "Venlafaxine — efexor, venla, viepax", "37.5-225", "כאב במינון מעל 225 מ\"ג, עצירות", "יתר לחץ דם", "");
+  N(false, "SNRI", "Milnacipran — ixel", "50-100", "כאב", "בעיות לבביות", "");
+  const ssriPick = neuroIndicated && dv.hard && dv.anxdep;
+  N(ssriPick, "SSRI", "Paroxetine — paxxet, parotin, seroxat", "12.5-50", "עצירות, חרדה", "שלשול, ישנוניות, הקאות", "");
+  N(ssriPick, "SSRI", "Es/citalopram — cipralex, esto", "10-15", "כאב, עצירות, ריבוי גזים, חרדה", "שלשול, הזעות", "");
+  N(false, "SSRI", "Fluoxetine — prozac, flutine, prizma", "20", "כאב, עצירות, תפיחות, חרדה", "כאב ראש, בלבול", "");
+  N(dv.bloat && dv.loose, "נוספות", "Pregabalin — lyrica", "75-300", "כאב, תפיחות, שלשול", "סחרחורת, יובש בפה, עלייה במשקל", "");
+  N(dv.dyspepsia, "נוספות", "Sulpiride — modal", "50-200", "כאב והקאות", "היפרפרולקטינמיה, דיסקינזיה, החמרת עצירות", "התרופה הנוירומודולטורית <b>היחידה הרשומה בארץ</b> להפרעות תפקודיות של מערכת העיכול. מומלצת כשתמ\"ר משולב בדיספפסיה תפקודית — במינון נמוך ולתקופה קצרה");
+  N(dv.loose && dv.anxdep, "נוספות", "Mirtazapine — miro, remeron", "15-45", "כאב, בחילה, הקאה, חרדה ושלשול", "עלייה בתיאבון ובמשקל, עצירות, טשטוש", "");
+
+  el("txNeuro").innerHTML = `
+    ${neuroIndicated
+      ? `<div class="note note-info">מיועד לתמ"ר בחומרה בינונית וקשה — כפי שהוזן. הטיפול ניתן במינונים נמוכים מאלה שבהתוויות פסיכיאטריות, אינו דורש אבחנה פסיכיאטרית, וייעודו העיקרי הוא <b>טיפול בכאב</b>. שיפור בתחלואה פסיכיאטרית נלווית הוא רווח משני.</div>`
+      : `<div class="note note-warn">הזרוע הנוירומודולטורית מיועדת לחומרה בינונית ומעלה. ${s.severity === "mild" ? "בחומרה קלה מתחילים בבסיס הפירמידה." : "יש לסמן חומרה בטופס."}</div>`}
+    ${dv.hard
+      ? `<div class="note note-info"><b>בחירה לפי תת-הסוג:</b> יש עצירות — SNRI הם תרופת הבחירה, ו-SSRI אפשרות טובה כשקיים מרכיב חרדתי משמעותי. TCA עלולים להחמיר את העצירות.</div>`
+      : dv.loose
+        ? `<div class="note note-info"><b>בחירה לפי תת-הסוג:</b> יש שלשול — TCA הם תרופת הבחירה, בשל השילוב בין הפחתת כאב להאטת המעי.</div>` : ""}
+    ${dv.cardiac ? `<div class="note note-warn">רקע לבבי או הארכת QT — יש לשקול מחדש TCA (השפעה על קצב הלב והארכת QT) ולהעדיף חלופה, או להתחיל במינון נמוך במיוחד עם מעקב ECG.</div>` : ""}
+    ${has(dv.tried,"neuro") ? `<div class="note note-warn">סומן שטיפול נוירומודולטורי כבר נוסה — כדאי לוודא שניתן במינון ולמשך מספקים (4-6 שבועות עד לאפקט) לפני שמסיקים כישלון, ולשקול מעבר בין משפחות או שילוב ביניהן.</div>` : ""}
+    <div class="tbl-scroll"><table class="tbl">
+      <tr><th>קבוצה</th><th>תרופה</th><th>מינון יומי (מ"ג)</th><th>עשוי לשפר</th><th>עלול לגרום</th></tr>
+      ${nrows.map(r => `<tr class="${r.pick ? "hi" : ""}"><td>${r.cls}</td><td><b>${r.drug}</b>${r.note ? `<br><span class="why">${r.note}</span>` : ""}</td><td>${r.dose}</td><td>${r.improves}</td><td>${r.worsens}</td></tr>`).join("")}
+    </table></div>
+    <p class="hint">התחלה במינון הנמוך ביותר הקיים לאותה תרופה או במחציתו, והעלאה הדרגתית. ב-TCA מקובל להתחיל ב-12.5-25 מ"ג; אפקט קליני מושג לרוב סביב 25-50 מ"ג. משך טיפול מקובל: 6-12 חודשים.</p>
+    <details class="acc">
+      <summary>איך להציג את זה למטופל — חמש הנקודות מנייר העמדה</summary>
+      <ul>
+        <li>זה אינו טיפול פסיכיאטרי אלא טיפול תסמיני גסטרואנטרולוגי, במינונים נמוכים מאלה שבהתוויה הפסיכיאטרית, ואינו רומז שיש בעיה פסיכיאטרית. להמחשה: אספירין ניתן לחום ולכאב, ומשמש היום למניעת אוטם ואירוע מוחי.</li>
+        <li>הטיפול אינו כרוך בהיווצרות תלות או התמכרות, וניתן להפסיקו בכל שלב.</li>
+        <li>במינונים נמוכים פרופיל תופעות הלוואי בטוח יחסית, והן קלות, קצרות טווח והפיכות.</li>
+        <li>האפקט הטיפולי מופיע רק לאחר 4-6 שבועות, בעוד תופעות לוואי — אם מופיעות — נוטות להופיע בשבוע הראשון ולחלוף מהר.</li>
+        <li>חוזה טיפולי: המטופל מתחייב לנסות ולהתמיד, והרופא מתחייב להיות זמין לשאלות ולבעיות.</li>
+      </ul>
+      <p class="hint">שני החסמים העיקריים לפי נייר העמדה: תת-שימוש מצד רופאים מחוסר מיומנות, והיענות נמוכה מצד מטופלים שרואים בטיפול הבעת אי-אמון בסבל הגופני שלהם.</p>
+    </details>`;
+
+  /* --- psychological --- */
+  const psychPick = dv.modPlus || dv.anxdep || has(dv.tried,"neuro");
+  el("txPsych").innerHTML = `
+    ${psychPick ? `<div class="note note-info">מתאים כאן: ${[dv.modPlus ? "חומרה בינונית ומעלה" : null, dv.anxdep ? "תחלואה פסיכיאטרית נלווית" : null, has(dv.tried,"neuro") ? "טיפול תרופתי שכבר נוסה" : null].filter(Boolean).join(", ")}. הטיפול הפסיכולוגי יכול לשמש כזרוע משלימה או כטיפול מרכזי בפני עצמו, בעיקר כשהמטופל מביע רתיעה מתרופות.</div>` : ""}
+    ${rx({pick: psychPick, badges: triedBadge(dv,"psych"), title:"CBT — טיפול קוגניטיבי-התנהגותי",
+      body:`<p>טיפול ממוקד וקצר טווח, לרוב עד 10 מפגשים. <b>NNT = 4</b>, בדומה לנוגדי דיכאון. יעיל במיוחד כשנדרש שינוי התנהגותי: חשש לצאת מהבית, הימנעות ממערכות יחסים או מעבודה, שהייה ממושכת בשירותים. הודגמה יעילות גם ב-CBT טלפוני ואינטרנטי, שנשמרה שנתיים.</p>`})}
+    ${rx({pick: psychPick, badges: triedBadge(dv,"psych"), title:"היפנוזה מכוונת למעי",
+      body:`<p>סדרה של 6-12 מפגשים. <b>NNT בין 4 ל-5</b>, והאפקט המיטיב עשוי להישמר לפחות 5 שנים. בישראל נדרשים הכשרה ורישוי של משרד הבריאות, שאותם רשאים לקבל פסיכולוגים, רופאים ורופאי שיניים בלבד. מוצע בחלק ממכוני הגסטרו; רשימת מטפלים מורשים באתר האגודה הישראלית להיפנוזה.</p>`})}
+    ${rx({pick: dv.anxdep, badges: pickBadge(dv.anxdep), title:"פסיכולוגיה רפואית",
+      body:`<p>כ-10 פגישות סביב מחלה גופנית, בשילוב אלמנטים מ-CBT, היפנוזה וגישה פסיכודינמית. יעילות זהה לטיפול בתרופות נוגדות דיכאון, בייחוד במטופלים עם רקע של טראומה נפשית. זמין בחלק מקופות החולים ובבתי החולים, והתשלום מכוסה חלקית.</p>`})}
+    ${rx({title:"מיינדפולנס — MBSR",
+      body:`<p>קורס מובנה בן 8 שבועות שהפחית 71% מתסמיני מערכת העיכול ומתסמינים נלווים. אינו מכוסה בסל וכרוך בעלות לא זניחה.</p>`})}
+    <p class="hint">המכשול המרכזי אינו יעילות הטיפול אלא ניתוב המטופל אליו. כשהמטופל עובר בתפיסתו מרפואה "גופנית" לרפואה שמשלבת גוף ונפש, הסיכוי להתמדה ולהטבה גדל משמעותית.</p>`;
+
+  /* --- CAM --- */
+  el("txCam").innerHTML = `
+    <div class="note note-warn">רוב המחקרים בתחום זה באיכות נמוכה, והבטיחות לא נבדקה ביסודיות. לא ניתן להמליץ על טיפולים אלה בצורה חד-משמעית, אך נוכח הביקוש ושביעות הרצון של מטופלים — כדאי להכיר אותם ולדון בהם.</div>
+    <div class="tbl-scroll"><table class="tbl">
+      <tr><th>תכשיר</th><th>עשוי להועיל ל</th><th>מינון</th></tr>
+      <tr class="${dv.loose || dv.hard ? "hi" : ""}"><td>Aloe Vera</td><td>הפחתת תסמיני תמ"ר לטווח קצר; האפקט אבד לאחר 3 חודשי טיפול</td><td>—</td></tr>
+      <tr class="${dv.pain ? "hi" : ""}"><td>STW5 — Iberogast</td><td>כאב בטן ושיפור גלובלי לאחר 4 שבועות</td><td>20 טיפות, 3 פעמים ביום</td></tr>
+      <tr class="${dv.hard ? "hi" : ""}"><td>Padma Lax</td><td>תמ"ר עם עצירות — מרקם היציאות, איכות החיים, תפיחות וכאב</td><td>כדור 1-2 ביום</td></tr>
+      <tr class="${dv.loose ? "hi" : ""}"><td>Tong-Xie-Yao-Fang — צמחי מרפא סיניים</td><td>תמ"ר עם שלשול</td><td>—</td></tr>
+    </table></div>
+    <p class="hint">כורכומין: מטא-אנליזה של שלושה מחקרים מצאה יתרון שאינו מובהק סטטיסטית. דיקור סיני: לא נמצא הבדל מול דיקור פלצבו; האיגוד הקנדי ו-NICE אינם ממליצים עליו. אין מידע מבוסס דיו לגבי עיסוי או רפלקסולוגיה.</p>`;
+
+  /* --- unavailable in Israel --- */
+  const arows = [];
+  if (dv.hard || !dv.st){
+    arows.push(["Lubiprostone — Amitiza","IBS-C","8-16 מק\"ג","בחילה, כאבי בטן, שלשול","היה רשום בארץ ושיווקו הופסק"]);
+    arows.push(["Linaclotide — Linzess, Constella","IBS-C","290 מק\"ג","כאבי בטן, ריבוי גזים, שלשול","פרופיל בטיחות מצוין"]);
+    arows.push(["Plecanatide — Trulance","IBS-C","3-6 מ\"ג","שלשול","—"]);
+    arows.push(["Tenapanor — Ibsrela","IBS-C","50-100 מ\"ג","שלשול, כאבי בטן","בטוח בגיל המבוגר, וככל הנראה גם בהיריון"]);
+  }
+  if (dv.loose || !dv.st){
+    arows.push(["Alosetron — Lotronex","IBS-D","1 מ\"ג","עצירות (עד 30%)","הוגבל לנשים עם תמ\"ר חמור בלבד, בשל קוליטיס איסכמית"]);
+    arows.push(["Ramosetron — Ibset, Irribow","IBS-D","2.5-10 מק\"ג","עצירות","פרופיל בטיחות טוב מאלוסטרון; יעילות דומה בנשים ובגברים"]);
+    arows.push(["Eluxadoline — Viberzi","IBS-D","100-200 מק\"ג","עצירות, כאבי בטן, בחילה",
+      (dv.cirrhosis || dv.chole || dv.pancreas || dv.alcohol)
+        ? `<b class="pill no">אסור למטופל זה</b> — ${[dv.cirrhosis?"שחמת":null, dv.chole?"ללא כיס מרה":null, dv.pancreas?"מחלת לבלב או דרכי מרה":null, dv.alcohol?"מעל 3 מנות אלכוהול ביום":null].filter(Boolean).join(", ")}`
+        : "אסור בשחמת, בהיעדר כיס מרה, ברקע של דלקת לבלב או מחלת דרכי מרה, ומעל 3 משקאות אלכוהוליים ביום"]);
+  }
+  el("txAbroad").innerHTML = `
+    <div class="note note-info">התרופות האלה יעילות ובטוחות אך אינן זמינות בישראל. ניתן להמליץ עליהן וליבאן דרך <b>טופס 29ג'</b>, באמצעות בית מרקחת המתמחה בייבוא, ובעלות מלאה על המטופל. רלוונטי בעיקר למי שמיצה את הטיפול הקיים בארץ.</div>
+    <div class="tbl-scroll"><table class="tbl">
+      <tr><th>תרופה</th><th>התוויה</th><th>מינון יומי</th><th>תופעות לוואי</th><th>הערה</th></tr>
+      ${arows.map(r => `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join("")}
+    </table></div>`;
+}
+
+/* ---------- 5. SOAP ---------- */
+const SX_HE = {pain:"כאב בטן", bloating:"תפיחות בטנית", gas:"ריבוי גזים", urgency:"דחיפות וחוסר שליטה", incomplete:"תחושת התרוקנות לא מלאה", dyspepsia:"דיספפסיה"};
+const BG_HE = {chole:"מצב לאחר כריתת כיס מרה או ניתוח בטני", pancreas:"רקע של דלקת לבלב או מחלת דרכי מרה", cirrhosis:"שחמת הכבד", alcohol:"צריכת אלכוהול מעל 3 מנות ביום", pregnancy:"היריון או תכנון היריון", eatdis:"הפרעת אכילה", anxdep:"חרדה או דיכאון", cardiac:"מחלת לב או הארכת QT", opioid:"טיפול באופיואידים"};
+const TRIED_HE = {education:"הסבר ותיאום ציפיות", diet:"ייעוץ תזונתי", fodmap:"דיאטה דלת FODMAP", fiber:"סיבים מסיסים", spasm:"נוגדי עוויתות או שמן מנטה", antidiarrheal:"לופרמיד או כולסטיראמין", peg:"תכשירי PEG", probiotic:"פרוביוטיקה", rifaximin:"ריפקסימין", neuro:"טיפול נוירומודולטורי", psych:"טיפול פסיכולוגי או היפנוזה"};
+
+const EXAM_TEMPLATE = `בדיקה גופנית:
+מצב כללי: ___ , ללא מצוקה. משקל ___ ק"ג, שינוי במשקל: ___
+סימנים חיוניים: ל"ד ___ , דופק ___ , חום ___
+בטן: רכה, ___ , ללא רגישות מקומית / עם רגישות ב___ , ללא סימני גירוי צפקי.
+תנועתיות מעיים תקינה. ללא אורגנומגליה, ללא מסה נמושה.
+בדיקה רקטלית: ___ (טונוס, רגישות, דם סמוי, בליטות)
+בלוטות לימפה: ללא הגדלה.`;
+
+function buildSoap(s){
+  const dv = derive(s);
+  const iv = romeIV(s), v = romeV(s);
+  const who = [s.age ? `בן/בת ${s.age}` : null, s.sex === "f" ? "אישה" : s.sex === "m" ? "גבר" : null].filter(Boolean).join(", ");
+  const painHe = s.painType === "pain" ? "כאב בטן" : s.painType === "discomfort" ? "אי-נוחות בטנית" : null;
+
+  const S_ = [];
+  S_.push(`${who || "מטופל/ת"} עם תלונות במערכת העיכול${s.onset6 === "yes" ? " מזה למעלה מ-6 חודשים" : s.onset6 === "no" ? " מזה פחות מ-6 חודשים" : ""}${s.last3 === "yes" ? ", פעילות ב-3 החודשים האחרונים" : ""}.`);
+  if (painHe) S_.push(`מדווח/ת על ${painHe} ב-${s.painDays || 0} ימים בחודש, ${s.continuous === "yes" ? "בעל אופי רציף" : s.continuous === "no" ? "בעל אופי חוזר ולא רציף" : "אופי לא מוגדר"}.`);
+  const rel = [];
+  if (s.relDefec === "yes") rel.push("קשור לפעולת המעיים");
+  if (s.freqChange === "onset") rel.push("שינוי בתדירות היציאות שהחל עם תחילת התסמינים");
+  else if (s.freqChange === "concurrent") rel.push("שינוי בתדירות היציאות במקביל לתסמינים");
+  if (s.formChange === "onset") rel.push("שינוי במרקם הצואה שהחל עם תחילת התסמינים");
+  else if (s.formChange === "concurrent") rel.push("שינוי במרקם הצואה במקביל לתסמינים");
+  if (rel.length) S_.push(`${rel.join("; ")}.`);
+  if (dv.st) S_.push(`דפוס היציאות: ${s.hard || 0}% Bristol 1-2 ו-${s.loose || 0}% Bristol 6-7.`);
+  if ((s.sx || []).length) S_.push(`תסמינים מטרידים: ${(s.sx || []).map(x => SX_HE[x]).join(", ")}.`);
+  if (s.severity) S_.push(`השפעה על התפקוד ואיכות החיים: ${{mild:"קלה", moderate:"בינונית", severe:"קשה"}[s.severity]}.`);
+  if ((s.agenda || []).length) S_.push(`סיבת הפנייה בנקודת הזמן הנוכחית: ${(s.agenda || []).map(a => ({cancer:"חשש ממאירות", food:"מחשבה על רגישות למזון או זיהום", life:"אירוע חיים או שינוי תפקודי", worse:"החמרה בתסמינים"})[a]).join(", ")}.`);
+  if ((s.bg || []).length) S_.push(`רקע רפואי רלוונטי: ${(s.bg || []).map(b => BG_HE[b]).join(", ")}.`);
+  if ((s.tried || []).length) S_.push(`נוסו עד כה ללא הצלחה מספקת: ${(s.tried || []).map(t => TRIED_HE[t]).join(", ")}.`);
+  S_.push(dv.nAlarm ? `דגלים אדומים: ${dv.alarms.map(a => ALARM_TEXT[a][0]).join(", ")}.` : `ללא דגלים אדומים: ללא דימום, ללא ירידה במשקל, ללא תסמינים ליליים, ללא סיפור משפחתי מחשיד.`);
+
+  const O_ = ["בדיקה גופנית — ראו תבנית נפרדת.", "מעבדה: ___"];
+
+  const A_ = [];
+  if (iv.ok && v.ok) A_.push(`תסמונת המעי הרגיש — עומד/ת בקריטריוני Rome IV ו-Rome V.`);
+  else if (iv.ok) A_.push(`תסמונת המעי הרגיש לפי Rome IV. אינו/ה עומד/ת בקריטריוני Rome V.`);
+  else if (v.ok) A_.push(`תסמונת המעי הרגיש לפי Rome V. אינו/ה עומד/ת בקריטריוני Rome IV.`);
+  else if (!iv.idle) A_.push(`אינו/ה עומד/ת כרגע בקריטריוני Rome לתמ"ר — יש לבחון אבחנה חלופית או להשלים נתונים.`);
+  else A_.push(`תסמונת המעי הרגיש — ___`);
+  if (dv.st) A_.push(`תת-סוג: ${dv.st} — ${dv.stHe}.`);
+  if (s.severity) A_.push(`דרגת חומרה: ${{mild:"קלה", moderate:"בינונית", severe:"קשה"}[s.severity]}.`);
+  if (dv.nAlarm) A_.push(`נוכחות דגלים אדומים מחייבת השלמת בירור בטרם קביעת האבחנה.`);
+  if (dv.anxdep) A_.push(`תחלואה נלווית: חרדה או דיכאון — תורמת לחומרת התסמינים.`);
+
+  const P_ = [];
+  P_.push("ניתן הסבר על אופי ההפרעה, מהלכה הכרוני והשפיר, והמנגנון של רגישות יתר ויסצרלית. בוצע תיאום ציפיות: היעד הוא שיפור בתסמינים ובתפקוד ולא ריפוי.");
+  if (dv.nAlarm) P_.push(`בירור: ${dv.alarms.map(a => ALARM_TEXT[a][1]).filter((x, i, arr) => arr.indexOf(x) === i).join("; ")}.`);
+  else P_.push("בירור בסיסי: ספירת דם, CRP, TSH, סרולוגיה לצליאק" + (dv.loose ? ", קלפרוטקטין בצואה" : "") + ".");
+  if (dv.loose) P_.push("הפניה לדיאטנית קלינית לצורך דיאטה דלת FODMAP בליווי מקצועי" + (dv.preg || dv.eatdis ? ", בגישת Gentle FODMAP" : "") + ".");
+  else if (dv.hard) P_.push("הנחיה תזונתית והוספת סיבים תזונתיים מסיסים.");
+  else P_.push("הנחיה תזונתית מותאמת אישית.");
+  if (dv.pain || dv.gas || dv.bloat) P_.push("שמן מנטה (Colpermin) 1-2 כדורים עד 3 פעמים ביום כטיפול קו ראשון לכאב ולגזים.");
+  if (dv.loose && (dv.gas || dv.bloat)) P_.push("שקילת ריפקסימין 400 מ\"ג × 3 ביום למשך 10 ימים (בעלות המטופל; אינו בסל להתוויה זו).");
+  if (dv.loose && dv.chole) P_.push("ניסיון אמפירי קצר בכולסטיראמין 4 גרם עד פעמיים ביום למשך 2-4 שבועות, לבחינת שלשול מחומצות מרה על רקע כריתת כיס המרה.");
+  if (dv.hard) P_.push("תכשיר PEG לפי הצורך להסדרת היציאות.");
+  if (dv.modPlus) P_.push(dv.hard
+    ? "התחלת טיפול נוירומודולטורי מקבוצת SNRI במינון נמוך, עם העלאה הדרגתית; הוסבר שהאפקט מופיע לאחר 4-6 שבועות ושאין תלות או התמכרות."
+    : "התחלת טיפול נוירומודולטורי מקבוצת TCA במינון התחלתי של 12.5-25 מ\"ג, עם העלאה הדרגתית; הוסבר שהאפקט מופיע לאחר 4-6 שבועות ושאין תלות או התמכרות.");
+  if (dv.modPlus || dv.anxdep) P_.push("הוצע טיפול פסיכולוגי — CBT או היפנוזה מכוונת למעי.");
+  if (dv.severe) P_.push("במידת הצורך שילוב ליווי פסיכיאטרי מקצועי.");
+  P_.push("נקבע מעקב ותואמה זמינות ליצירת קשר בין הביקורים. הודגשה חשיבות ההתמדה והרצף הטיפולי.");
+
+  return `S — סובייקטיבי\n${S_.map(x => "• " + x).join("\n")}\n\nO — אובייקטיבי\n${O_.map(x => "• " + x).join("\n")}\n\nA — הערכה\n${A_.map(x => "• " + x).join("\n")}\n\nP — תכנית\n${P_.map(x => "• " + x).join("\n")}`;
+}
+
+let soapDirty = false;
+function renderSoap(s){
+  const t = el("soapText");
+  if (!soapDirty) t.value = buildSoap(s);
+}
+el("soapText").addEventListener("input", () => { soapDirty = true; });
+el("btnRebuildSoap").addEventListener("click", () => { soapDirty = false; el("soapText").value = buildSoap(state); });
+el("examText").value = EXAM_TEMPLATE;
+
+function copyFrom(area, msg){
+  const t = el(area);
+  t.select();
+  navigator.clipboard.writeText(t.value).then(() => {
+    const m = el(msg); m.hidden = false; setTimeout(() => m.hidden = true, 1800);
+  }).catch(() => { document.execCommand("copy"); const m = el(msg); m.hidden = false; setTimeout(() => m.hidden = true, 1800); });
+}
+el("btnCopySoap").addEventListener("click", () => copyFrom("soapText", "copyMsg"));
+el("btnCopyExam").addEventListener("click", () => copyFrom("examText", "copyMsg2"));
+
+/* ---------- register all stages ---------- */
+onStateChange(renderDx);
+onStateChange(renderDdx);
+onStateChange(renderTx);
+onStateChange(renderTx2);
+onStateChange(renderSoap);
+
+</script>
+</body>
+</html>
