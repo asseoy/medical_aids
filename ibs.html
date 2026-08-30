@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תסמונת המעי הרגיש (תמ"ר) – כלי לרופא</title>
+<meta name="description" content="כלי החלטה לרופא: אבחנה לפי Rome IV/V, אבחנה מבדלת, אפשרויות טיפול וסיכום רפואי בתסמונת המעי הרגיש">
+<meta name="theme-color" content="#067a5b">
+<link rel="manifest" href="ibs.webmanifest">
+<meta name="apple-mobile-web-app-title" content="תמ&quot;ר">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f6f4;
+  --surface:#ffffff;
+  --surface-2:#f7fbf9;
+  --ink:#11231c;
+  --muted:#5d7169;
+  --brand:#067a5b;
+  --brand-dark:#04543f;
+  --tint:#e2f2ea;
+  --line:#d4e3db;
+  --line-strong:#b7cfc4;
+  --warn-bg:#fdf4e3;
+  --warn-line:#e8c98a;
+  --warn-ink:#8a5a08;
+  --danger-bg:#fdeceb;
+  --danger-line:#f0b3ae;
+  --danger-ink:#9c2620;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(17,35,28,.05), 0 6px 20px rgba(17,35,28,.05);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:118px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important; transition:none!important}}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Assistant", "Segoe UI", Arial, sans-serif;
+  font-size:16px; line-height:1.65;
+}
+
+/* ---------- header ---------- */
+.topbar{background:var(--brand-dark); color:#eaf6f1; padding:10px 16px}
+.topbar-in{max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.topbar a{color:#cfeade; text-decoration:none; font-weight:600; font-size:.9rem}
+.topbar a:hover{text-decoration:underline}
+.hero{background:var(--brand); color:#fff; padding:22px 16px 26px}
+.hero-in{max-width:1080px; margin:0 auto}
+.hero h1{margin:0 0 6px; font-size:1.65rem; font-weight:700; letter-spacing:-.01em}
+.hero p{margin:0; color:#d6efe4; font-size:.95rem; max-width:70ch}
+
+/* ---------- sticky nav ---------- */
+.nav{position:sticky; top:0; z-index:40; background:rgba(255,255,255,.96); backdrop-filter:blur(6px); border-bottom:1px solid var(--line)}
+.nav-in{max-width:1080px; margin:0 auto; display:flex; gap:4px; overflow-x:auto; padding:0 10px; scrollbar-width:thin}
+.nav a{
+  flex:0 0 auto; padding:12px 14px; text-decoration:none; color:var(--muted);
+  font-weight:600; font-size:.93rem; border-bottom:3px solid transparent; white-space:nowrap;
+}
+.nav a:hover{color:var(--brand)}
+.nav a.active{color:var(--brand-dark); border-bottom-color:var(--brand)}
+
+/* ---------- layout ---------- */
+main{max-width:1080px; margin:0 auto; padding:20px 16px 80px}
+section{scroll-margin-top:118px; margin-bottom:26px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 18px 20px; margin-bottom:16px}
+.card > h2{margin:0 0 4px; font-size:1.25rem; color:var(--brand-dark)}
+.card > h2 + .sub{margin:0 0 14px; color:var(--muted); font-size:.9rem}
+h3{font-size:1.02rem; margin:18px 0 8px; color:var(--brand-dark)}
+h3:first-of-type{margin-top:6px}
+.placeholder{border:1px dashed var(--line-strong); border-radius:var(--radius); padding:26px 18px; text-align:center; color:var(--muted); background:var(--surface-2); font-size:.92rem}
+
+/* ---------- form ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+.field{display:flex; flex-direction:column; gap:5px}
+.field > label, .legend{font-weight:600; font-size:.9rem; color:var(--ink)}
+.hint{font-size:.8rem; color:var(--muted); font-weight:400; line-height:1.45}
+input[type=text], input[type=number], select{
+  font:inherit; font-size:.95rem; padding:8px 10px; border:1px solid var(--line-strong);
+  border-radius:8px; background:#fff; color:var(--ink); width:100%;
+}
+input[type=number]{max-width:130px}
+select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%); background-position:calc(0% + 14px) calc(50% + 2px), calc(0% + 19px) calc(50% + 2px); background-size:5px 5px,5px 5px; background-repeat:no-repeat; padding-left:32px}
+input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible, .chk:focus-within{
+  outline:3px solid #7cc9ae; outline-offset:1px; border-radius:8px;
+}
+fieldset{border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px 14px; margin:0 0 14px; background:var(--surface-2)}
+legend{padding:0 6px; font-weight:700; font-size:.92rem; color:var(--brand-dark)}
+.chk{display:flex; gap:8px; align-items:flex-start; padding:6px 2px; font-size:.93rem; cursor:pointer}
+.chk input{margin:4px 0 0; width:17px; height:17px; accent-color:var(--brand); flex:0 0 auto}
+.chk span b{font-weight:600}
+.chk-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:2px 16px}
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg label{
+  border:1px solid var(--line-strong); border-radius:999px; padding:5px 13px; font-size:.88rem;
+  cursor:pointer; background:#fff; user-select:none;
+}
+.seg input{position:absolute; opacity:0; width:0; height:0}
+.seg input:checked + span{color:#fff}
+.seg label:has(input:checked){background:var(--brand); border-color:var(--brand); color:#fff; font-weight:600}
+.seg label:has(input:focus-visible){outline:3px solid #7cc9ae; outline-offset:1px}
+.slider-row{display:flex; align-items:center; gap:10px}
+input[type=range]{flex:1; accent-color:var(--brand); min-width:120px}
+.val{font-variant-numeric:tabular-nums; font-weight:700; color:var(--brand-dark); min-width:52px; text-align:left}
+.row-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}
+button{font:inherit; font-weight:600; cursor:pointer; border-radius:9px; padding:9px 16px; border:1px solid var(--line-strong); background:#fff; color:var(--ink)}
+button.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+button:hover{filter:brightness(.97)}
+
+/* ---------- notes ---------- */
+.note{border-radius:10px; padding:10px 13px; font-size:.9rem; margin:10px 0; border:1px solid}
+.note-info{background:var(--tint); border-color:#b6ddca; color:#0c4f3c}
+.note-warn{background:var(--warn-bg); border-color:var(--warn-line); color:var(--warn-ink)}
+.note-danger{background:var(--danger-bg); border-color:var(--danger-line); color:var(--danger-ink)}
+.src{font-size:.82rem; color:var(--muted)}
+.src a{color:var(--brand)}
+footer{max-width:1080px; margin:0 auto; padding:0 16px 60px; color:var(--muted); font-size:.83rem}
+footer p{margin:6px 0}
+.women-only{display:none}
+.women-only.on{display:block}
+@media (max-width:560px){
+  .hero h1{font-size:1.35rem}
+  main{padding:14px 12px 60px}
+  .card{padding:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a href="doctors.html">→ חזרה לכלים לרופאים</a>
+    <span class="src">מבוסס על נייר עמדה 194 (הר"י, יולי 2022) וקריטריוני Rome IV / Rome V</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero-in">
+    <h1>תסמונת המעי הרגיש (תמ"ר)</h1>
+    <p>כלי עזר לרופא/ה: אבחנה לפי קריטריוני Rome, אבחנה מבדלת ודגלים אדומים, בניית תכנית טיפול מדורגת, וסיכום רפואי להעתקה לתיק.</p>
+  </div>
+</header>
+
+<nav class="nav" aria-label="ניווט בעמוד">
+  <div class="nav-in">
+    <a href="#sec-input">נתוני המטופל</a>
+    <a href="#sec-dx">אבחנה</a>
+    <a href="#sec-ddx">אבחנה מבדלת</a>
+    <a href="#sec-tx">טיפול</a>
+    <a href="#sec-soap">סיכום רפואי</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ INPUT PANEL ============ -->
+<section id="sec-input">
+  <div class="card">
+    <h2>נתוני המטופל</h2>
+    <p class="sub">כל השדות מזינים את כל חלקי העמוד. אין צורך למלא הכול — כל חלק מתעדכן לפי מה שהוזן.</p>
+
+    <fieldset>
+      <legend>דמוגרפיה ומשך</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="age">גיל</label>
+          <input type="number" id="age" min="16" max="120" step="1" data-state="age" placeholder="שנים">
+        </div>
+        <div class="field">
+          <span class="legend">מין</span>
+          <div class="seg" role="radiogroup" aria-label="מין">
+            <label><input type="radio" name="sex" value="f" data-state="sex"><span>אישה</span></label>
+            <label><input type="radio" name="sex" value="m" data-state="sex"><span>גבר</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">תחילת התסמינים</span>
+          <div class="seg" role="radiogroup" aria-label="תחילת התסמינים">
+            <label><input type="radio" name="onset6" value="yes" data-state="onset6"><span>לפני 6 חודשים ומעלה</span></label>
+            <label><input type="radio" name="onset6" value="no" data-state="onset6"><span>פחות מ-6 חודשים</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">התסמינים קיימים ב-3 החודשים האחרונים</span>
+          <div class="seg" role="radiogroup" aria-label="שלושה חודשים אחרונים">
+            <label><input type="radio" name="last3" value="yes" data-state="last3"><span>כן</span></label>
+            <label><input type="radio" name="last3" value="no" data-state="last3"><span>לא</span></label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>כאב / אי-נוחות בטנית</legend>
+      <div class="grid">
+        <div class="field">
+          <span class="legend">אופי התלונה</span>
+          <span class="hint">Rome IV דורש <b>כאב</b>; Rome V מקבל גם <b>אי-נוחות</b>.</span>
+          <div class="seg" role="radiogroup" aria-label="אופי התלונה">
+            <label><input type="radio" name="painType" value="pain" data-state="painType"><span>כאב</span></label>
+            <label><input type="radio" name="painType" value="discomfort" data-state="painType"><span>אי-נוחות בלבד</span></label>
+            <label><input type="radio" name="painType" value="none" data-state="painType"><span>אין</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="painDays">תדירות — ימים בחודש</label>
+          <span class="hint">Rome IV: ≥4 ימים/חודש (יום בשבוע). Rome V: ≥3 ימים/חודש.</span>
+          <div class="slider-row">
+            <input type="range" id="painDays" min="0" max="30" step="1" value="0" data-state="painDays">
+            <span class="val" id="painDaysVal">0</span>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">רציפות הכאב</span>
+          <span class="hint">Rome V שולל כאב רציף (מכוון ל-CAPS).</span>
+          <div class="seg" role="radiogroup" aria-label="רציפות הכאב">
+            <label><input type="radio" name="continuous" value="no" data-state="continuous"><span>התקפי / לסירוגין</span></label>
+            <label><input type="radio" name="continuous" value="yes" data-state="continuous"><span>רציף או כמעט רציף</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">קשר ליציאה</span>
+          <div class="seg" role="radiogroup" aria-label="קשר ליציאה">
+            <label><input type="radio" name="relDefec" value="yes" data-state="relDefec"><span>יש קשר</span></label>
+            <label><input type="radio" name="relDefec" value="no" data-state="relDefec"><span>אין קשר</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">שינוי בתדירות היציאות</span>
+          <span class="hint">Rome V דורש שהשינוי היה <b>בתחילת</b> התסמינים; Rome IV מסתפק בקיום במקביל.</span>
+          <div class="seg" role="radiogroup" aria-label="שינוי בתדירות היציאות">
+            <label><input type="radio" name="freqChange" value="onset" data-state="freqChange"><span>מתחילת התסמינים</span></label>
+            <label><input type="radio" name="freqChange" value="concurrent" data-state="freqChange"><span>קיים במקביל</span></label>
+            <label><input type="radio" name="freqChange" value="no" data-state="freqChange"><span>אין</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span class="legend">שינוי במרקם / צורת הצואה</span>
+          <div class="seg" role="radiogroup" aria-label="שינוי במרקם הצואה">
+            <label><input type="radio" name="formChange" value="onset" data-state="formChange"><span>מתחילת התסמינים</span></label>
+            <label><input type="radio" name="formChange" value="concurrent" data-state="formChange"><span>קיים במקביל</span></label>
+            <label><input type="radio" name="formChange" value="no" data-state="formChange"><span>אין</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="field women-only" id="mensesField" style="margin-top:10px">
+        <span class="legend">קשר לווסת</span>
+        <span class="hint">קריטריון תומך ב-Rome V: הכאב לא אמור להופיע רק סביב הווסת.</span>
+        <div class="seg" role="radiogroup" aria-label="קשר לווסת">
+          <label><input type="radio" name="menses" value="no" data-state="menses"><span>לא רק סביב הווסת</span></label>
+          <label><input type="radio" name="menses" value="yes" data-state="menses"><span>רק סביב הווסת</span></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>הרגלי יציאות — לקביעת תת-הסוג</legend>
+      <span class="hint">מתוך הימים שבהם הייתה לפחות יציאה אחת חריגה: איזה אחוז מהיציאות החריגות היו קשות ואיזה רכות. (Bristol 1-2 = גושים קשים/נקניק גושי; Bristol 6-7 = רכה מאוד/נוזלית.)</span>
+      <div class="grid" style="margin-top:10px">
+        <div class="field">
+          <label for="hard">אחוז יציאות Bristol 1-2 (קשות)</label>
+          <div class="slider-row">
+            <input type="range" id="hard" min="0" max="100" step="5" value="0" data-state="hard">
+            <span class="val" id="hardVal">0%</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="loose">אחוז יציאות Bristol 6-7 (רכות/נוזליות)</label>
+          <div class="slider-row">
+            <input type="range" id="loose" min="0" max="100" step="5" value="0" data-state="loose">
+            <span class="val" id="looseVal">0%</span>
+          </div>
+        </div>
+      </div>
+      <div id="bristolWarn" class="note note-warn" hidden>סכום שני האחוזים עולה על 100% — יש לתקן כדי שתת-הסוג ייקבע נכון.</div>
+    </fieldset>
+
+    <fieldset>
+      <legend>תסמינים דומיננטיים וחומרה</legend>
+      <div class="chk-grid">
+        <label class="chk"><input type="checkbox" data-state="sx" value="pain"><span>כאב בטן</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="bloating"><span>תפיחות בטנית</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="gas"><span>ריבוי גזים</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="urgency"><span>דחיפות / חוסר שליטה</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="incomplete"><span>תחושת התרוקנות לא מלאה</span></label>
+        <label class="chk"><input type="checkbox" data-state="sx" value="dyspepsia"><span>דיספפסיה / תלונות מערכת עיכול עליונה</span></label>
+      </div>
+      <div class="field" style="margin-top:12px">
+        <span class="legend">חומרה והשפעה תפקודית</span>
+        <div class="seg" role="radiogroup" aria-label="חומרה">
+          <label><input type="radio" name="severity" value="mild" data-state="severity"><span>קלה</span></label>
+          <label><input type="radio" name="severity" value="moderate" data-state="severity"><span>בינונית</span></label>
+          <label><input type="radio" name="severity" value="severe" data-state="severity"><span>קשה</span></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>דגלים אדומים</legend>
+      <span class="hint">כל סימון כאן פותח המלצת בירור בפרק האבחנה המבדלת.</span>
+      <div class="chk-grid" style="margin-top:8px">
+        <label class="chk"><input type="checkbox" data-state="alarm" value="age50"><span>הופעה ראשונה מעל גיל 50</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="weight"><span>ירידה לא מוסברת במשקל</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="blood"><span>דם בצואה / מלנה</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="anemia"><span>אנמיה או חסר ברזל</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="night"><span>תסמינים המעירים משינה</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="fever"><span>חום / סמני דלקת</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="famcrc"><span>סיפור משפחתי: סרטן מעי גס</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="famibd"><span>סיפור משפחתי: IBD או צליאק</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="mass"><span>מסה נמושה / ממצא בבדיקה</span></label>
+        <label class="chk"><input type="checkbox" data-state="alarm" value="progressive"><span>החמרה מתקדמת ורציפה</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>רקע רפואי רלוונטי</legend>
+      <span class="hint">משפיע על התאמת תרופות והתוויות נגד.</span>
+      <div class="chk-grid" style="margin-top:8px">
+        <label class="chk"><input type="checkbox" data-state="bg" value="chole"><span>כריתת כיס מרה / ניתוח בטני</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="pancreas"><span>דלקת לבלב או מחלת דרכי מרה בעבר</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="cirrhosis"><span>שחמת הכבד</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="alcohol"><span>צריכת אלכוהול מעל 3 מנות ביום</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="pregnancy"><span>היריון או תכנון היריון</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="eatdis"><span>הפרעת אכילה בעבר או בהווה</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="anxdep"><span>חרדה או דיכאון</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="cardiac"><span>מחלת לב / הארכת QT</span></label>
+        <label class="chk"><input type="checkbox" data-state="bg" value="opioid"><span>טיפול באופיואידים</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>מה כבר נוסה</legend>
+      <div class="chk-grid">
+        <label class="chk"><input type="checkbox" data-state="tried" value="education"><span>הסבר ותיאום ציפיות</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="diet"><span>ייעוץ תזונתי / דיאטנית</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="fodmap"><span>דיאטה דלת FODMAP</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="fiber"><span>סיבים מסיסים</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="spasm"><span>נוגדי עוויתות / שמן מנטה</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="antidiarrheal"><span>לופרמיד / כולסטיראמין</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="peg"><span>תכשירי PEG</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="probiotic"><span>פרוביוטיקה</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="rifaximin"><span>ריפקסימין</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="neuro"><span>טיפול נוירומודולטורי</span></label>
+        <label class="chk"><input type="checkbox" data-state="tried" value="psych"><span>טיפול פסיכולוגי / היפנוזה</span></label>
+      </div>
+      <div class="row-actions">
+        <button type="button" class="primary" id="btnJump">מעבר לתוצאות</button>
+        <button type="button" id="btnReset">איפוס הטופס</button>
+      </div>
+    </fieldset>
+  </div>
+</section>
+
+<!-- ============ PLACEHOLDER SECTIONS (stages 2-4) ============ -->
+<section id="sec-dx">
+  <div class="card">
+    <h2>אבחנה</h2>
+    <p class="sub">קריטריוני Rome IV ו-Rome V זה לצד זה, תת-סוג לפי Bristol, ופרופיל MDCP.</p>
+    <div class="placeholder">שלב 2 — מנוע האבחנה.</div>
+  </div>
+</section>
+
+<section id="sec-ddx">
+  <div class="card">
+    <h2>אבחנה מבדלת ובירור</h2>
+    <p class="sub">דגלים אדומים, מה חובה לשלול, ומה לא נדרש.</p>
+    <div class="placeholder">שלב 3 — אבחנה מבדלת.</div>
+  </div>
+</section>
+
+<section id="sec-tx">
+  <div class="card">
+    <h2>אפשרויות טיפול</h2>
+    <p class="sub">לפי הפירמידה הטיפולית בנייר העמדה, מסונן לפי תת-הסוג והתסמין הדומיננטי.</p>
+    <div class="placeholder">שלב 3 — טיפול.</div>
+  </div>
+</section>
+
+<section id="sec-soap">
+  <div class="card">
+    <h2>סיכום רפואי</h2>
+    <p class="sub">S/O/A/P אוטומטי מהנתונים, תבנית בדיקה גופנית לעריכה, והעתקה לתיק.</p>
+    <div class="placeholder">שלב 4 — סיכום רפואי.</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><b>מקורות:</b> נייר עמדה 194, "טיפול בתסמונת המעי הרגיש", החוג הישראלי לנוירוגסטרואנטרולוגיה ולתנועתיות מערכת העיכול והאיגוד הישראלי לגסטרואנטרולוגיה ולמחלות כבד, המכון לאיכות ברפואה, הר"י, יולי 2022 · קריטריוני Rome IV ו-Rome V, Rome Foundation.</p>
+  <p>קריטריוני Rome מוצגים בתמצות לצורך שימוש קליני; זכויות היוצרים שמורות ל-Rome Foundation. <a href="https://theromefoundation.org/rome-iv/rome-iv-criteria/" target="_blank" rel="noopener">המקור המלא</a>.</p>
+  <p>הכלי הוא עזר לשיקול הדעת הקליני ואינו מחליף אותו. נבנה לשימוש הרופא/ה בלבד.</p>
+</footer>
+
+<script>
+"use strict";
+
+/* ---------- shared state: every later stage reads from here ---------- */
+const state = {
+  age:null, sex:null, onset6:null, last3:null,
+  painType:null, painDays:0, continuous:null,
+  relDefec:null, freqChange:null, formChange:null, menses:null,
+  hard:0, loose:0,
+  sx:[], severity:null, alarm:[], bg:[], tried:[]
+};
+
+/* subscribers registered by later stages: fn(state) called on every change */
+const subscribers = [];
+function onStateChange(fn){ subscribers.push(fn); fn(state); }
+function emit(){ subscribers.forEach(fn => fn(state)); }
+
+function readForm(){
+  document.querySelectorAll("[data-state]").forEach(el => {
+    const key = el.dataset.state;
+    if (el.type === "checkbox"){
+      if (!Array.isArray(state[key])) state[key] = [];
+    } else if (el.type === "radio"){
+      if (el.checked) state[key] = el.value;
+    } else if (el.type === "range" || el.type === "number"){
+      state[key] = el.value === "" ? null : Number(el.value);
+    } else {
+      state[key] = el.value || null;
+    }
+  });
+  ["sx","alarm","bg","tried"].forEach(key => {
+    state[key] = [...document.querySelectorAll(`input[type=checkbox][data-state="${key}"]:checked`)].map(el => el.value);
+  });
+}
+
+/* ---------- derived values used by later stages ---------- */
+function subtype(s){
+  const h = s.hard || 0, l = s.loose || 0;
+  if (h === 0 && l === 0) return null;
+  if (h > 25 && l <= 25) return "IBS-C";
+  if (l > 25 && h <= 25) return "IBS-D";
+  if (h > 25 && l > 25)  return "IBS-M";
+  return "IBS-U";
+}
+
+/* ---------- live UI bits ---------- */
+function refreshLiveBits(){
+  document.getElementById("painDaysVal").textContent = state.painDays ?? 0;
+  document.getElementById("hardVal").textContent  = (state.hard  ?? 0) + "%";
+  document.getElementById("looseVal").textContent = (state.loose ?? 0) + "%";
+  document.getElementById("mensesField").classList.toggle("on", state.sex === "f");
+  document.getElementById("bristolWarn").hidden = ((state.hard||0) + (state.loose||0)) <= 100;
+}
+
+document.addEventListener("input", e => {
+  if (!e.target.closest("[data-state]") && !e.target.dataset.state) return;
+  readForm(); refreshLiveBits(); emit();
+});
+document.addEventListener("change", e => {
+  if (!e.target.dataset.state) return;
+  readForm(); refreshLiveBits(); emit();
+});
+
+document.getElementById("btnReset").addEventListener("click", () => {
+  document.querySelectorAll("[data-state]").forEach(el => {
+    if (el.type === "checkbox" || el.type === "radio") el.checked = false;
+    else if (el.type === "range") el.value = 0;
+    else el.value = "";
+  });
+  /* readForm() only writes a radio value when one is checked, so clear those keys explicitly */
+  ["sex","onset6","last3","painType","continuous","relDefec","freqChange","formChange","menses","severity"]
+    .forEach(k => state[k] = null);
+  readForm(); refreshLiveBits(); emit();
+});
+document.getElementById("btnJump").addEventListener("click", () => {
+  document.getElementById("sec-dx").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ---------- sticky nav highlighting ---------- */
+const links = [...document.querySelectorAll(".nav a")];
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (!en.isIntersecting) return;
+    links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+  });
+}, {rootMargin:"-120px 0px -65% 0px", threshold:0});
+document.querySelectorAll("main section").forEach(sec => observer.observe(sec));
+
+readForm(); refreshLiveBits();
+</script>
+</body>
+</html>
