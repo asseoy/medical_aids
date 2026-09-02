@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תבניות תיעוד מהיר</title>
+<style>
+  :root{
+    --bg:#f4f6f7; --panel:#ffffff; --ink:#1f2937; --muted:#6b7280;
+    --line:#e2e8f0; --accent:#0f766e; --accent-ink:#ffffff;
+    --chip:#eef2f1; --chip-ink:#334155; --chip-active:#0f766e; --chip-active-ink:#fff;
+    --flag:#b91c1c; --flag-bg:#fee2e2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","Heebo",Arial,sans-serif;font-size:15px;line-height:1.55}
+  header{background:var(--accent);color:var(--accent-ink);padding:14px 20px}
+  header h1{margin:0;font-size:19px}
+  header p{margin:4px 0 0;font-size:13px;opacity:.9}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;padding:12px 20px;background:#fff;border-bottom:1px solid var(--line)}
+  .tab{border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:999px;
+    cursor:pointer;font-size:14px}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  main{max-width:1200px;margin:0 auto;padding:16px 20px 60px;display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:980px){ main{grid-template-columns:1.05fr 1fr} }
+  .module{display:none}
+  .module.active{display:block}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font-size:15px;color:var(--accent)}
+  .card h3{margin:14px 0 8px;font-size:13px;color:var(--muted);font-weight:600}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+  .row label{min-width:130px;font-size:13.5px;color:var(--muted)}
+  .row input[type=number], .row input[type=text]{
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px;width:110px}
+  .row input.wide{width:220px}
+  .chip{border:1px solid var(--line);background:var(--chip);color:var(--chip-ink);
+    padding:6px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;user-select:none}
+  .chip.active{background:var(--chip-active);color:var(--chip-active-ink);border-color:var(--chip-active)}
+  .chip.flag.active{background:var(--flag);border-color:var(--flag)}
+  .row label.flaglabel{color:var(--flag);font-weight:700}
+  .rfcat{display:none}
+  .rfcat.active{display:block}
+  .chip.toggle.active::before{content:"✓ "}
+  .out{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+  .out h2{margin:0 0 8px;font-size:14px;color:var(--accent);display:flex;justify-content:space-between;align-items:center}
+  .out textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:8px;padding:10px;
+    font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;background:#fafafa}
+  .btn{border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;
+    padding:5px 10px;font-size:12.5px;cursor:pointer}
+  .btn.solid{background:var(--accent);color:#fff}
+  .btn.small{padding:3px 8px;font-size:11.5px}
+  .btnrow{display:flex;gap:6px;flex-wrap:wrap}
+  .score{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;background:#f0fdfa;
+    color:var(--accent);font-size:12.5px;font-weight:600;border:1px solid #ccfbf1}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .checklist{display:flex;flex-wrap:wrap;gap:8px}
+  #printArea{display:none}
+  @media print{
+    body *{visibility:hidden}
+    #printArea, #printArea *{visibility:visible}
+    #printArea{display:block;position:absolute;top:0;right:0;left:0;padding:30px;font-size:16px;line-height:1.8}
+    #printArea h1{font-size:20px;border-bottom:2px solid #333;padding-bottom:8px}
+    #printArea .pf-line{margin:10px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>תבניות תיעוד מהיר</h1>
+  <p>בחירה בקליקים, ניסוח אוטומטי בעברית תקנית — לשם הדבקה בתיק הרפואי</p>
+</header>
+
+<div class="tabs" id="tabs"></div>
+
+<main>
+  <!-- ============ MODULE 1: כאב גרון ============ -->
+  <section class="module" data-module="throat">
+    <div class="card">
+      <h2>אנמנזה</h2>
+      <div class="row"><label>גיל</label><input type="number" data-m="throat" data-f="age" placeholder="גיל"></div>
+      <div class="row"><label>מין</label>
+        <button class="chip" data-group data-m="throat" data-f="sex" data-v="זכר">זכר</button>
+        <button class="chip" data-group data-m="throat" data-f="sex" data-v="נקבה">נקבה</button>
+      </div>
+      <div class="row"><label>משך (ימים)</label><input type="number" data-m="throat" data-f="duration" placeholder="ימים"></div>
+      <div class="row"><label>חום</label>
+        <button class="chip toggle" data-m="throat" data-f="fever">חום</button>
+        <input type="number" step="0.1" data-m="throat" data-f="feverTemp" placeholder="°C" style="width:70px">
+      </div>
+      <div class="row"><label>נלווה</label>
+        <button class="chip toggle" data-m="throat" data-f="cough">שיעול</button>
+        <button class="chip toggle" data-m="throat" data-f="rhinorrhea">נזלת</button>
+        <button class="chip toggle" data-m="throat" data-f="headache">כאב ראש</button>
+        <button class="chip toggle" data-m="throat" data-f="myalgia">כאבי שרירים</button>
+      </div>
+      <div class="row"><label class="flaglabel">דגלים אדומים</label>
+        <button class="chip toggle flag" data-m="throat" data-f="swallowing">קושי בבליעה/נשימה</button>
+        <button class="chip toggle flag" data-m="throat" data-f="drooling">ריור מוגבר</button>
+        <button class="chip toggle" data-m="throat" data-f="voice">שינוי בקול</button>
+      </div>
+
+      <h2 style="margin-top:18px">בדיקה גופנית</h2>
+      <div class="row"><label>מצב כללי</label>
+        <button class="chip" data-group data-m="throat" data-f="general" data-v="טוב">טוב</button>
+        <button class="chip" data-group data-m="throat" data-f="general" data-v="בינוני">בינוני</button>
+        <button class="chip" data-group data-m="throat" data-f="general" data-v="קשה">קשה</button>
+      </div>
+      <div class="row"><label>אורופרינקס</label>
+        <button class="chip" data-group data-m="throat" data-f="pharynx" data-v="תקין">תקין</button>
+        <button class="chip" data-group data-m="throat" data-f="pharynx" data-v="אדמומיות">אדמומיות</button>
+        <button class="chip" data-group data-m="throat" data-f="pharynx" data-v="אקסודט">אדמומיות + הפרשה</button>
+      </div>
+      <div class="row"><label>שקדים</label>
+        <button class="chip" data-group data-m="throat" data-f="tonsils" data-v="תקינים">תקינים</button>
+        <button class="chip" data-group data-m="throat" data-f="tonsils" data-v="מוגדלים">מוגדלים</button>
+        <button class="chip" data-group data-m="throat" data-f="tonsils" data-v="אקסודט">מוגדלים עם exudate</button>
+      </div>
+      <div class="row"><label class="flaglabel">דגלים אדומים</label>
+        <button class="chip toggle flag" data-m="throat" data-f="peritonsillar">נפיחות פריטונסילרית</button>
+        <button class="chip toggle flag" data-m="throat" data-f="uvula">סטיית ענבל</button>
+      </div>
+      <div class="row"><label>בלוטות צוואריות</label>
+        <button class="chip" data-group data-m="throat" data-f="nodes" data-v="לא">לא מוגדלות</button>
+        <button class="chip" data-group data-m="throat" data-f="nodes" data-v="כן">מוגדלות ורגישות</button>
+      </div>
+      <div id="centorBadge" class="score" style="display:none"></div>
+
+      <h2 style="margin-top:18px">תוכנית טיפול</h2>
+      <div class="row"><label>אבחנה</label>
+        <button class="chip" data-group data-m="throat" data-f="dx" data-v="ויראלית">דלקת גרון ויראלית סבירה</button>
+        <button class="chip" data-group data-m="throat" data-f="dx" data-v="חיידקית">חשד לזיהום חיידקי (Strep)</button>
+      </div>
+      <div class="row"><label>בדיקת Strep</label>
+        <button class="chip" data-group data-m="throat" data-f="strep" data-v="לא בוצע">לא בוצע</button>
+        <button class="chip" data-group data-m="throat" data-f="strep" data-v="חיובי">בוצע — חיובי</button>
+        <button class="chip" data-group data-m="throat" data-f="strep" data-v="שלילי">בוצע — שלילי</button>
+        <button class="chip toggle" data-m="throat" data-f="throatCulture">הופנה למשטח גרון</button>
+      </div>
+      <div class="row"><label>טיפול</label>
+        <button class="chip toggle" data-m="throat" data-f="supportive" data-default="true">טיפול תומך</button>
+        <button class="chip toggle" data-m="throat" data-f="abx">אנטיביוטיקה</button>
+        <button class="chip toggle" data-m="throat" data-f="pendingCulture">טיפול לפי תוצאות משטח גרון</button>
+      </div>
+      <div class="row"><label>פירוט אנטיביוטיקה</label>
+        <button class="chip" data-group data-m="throat" data-f="abxDetail" data-v="פן-רפא במינון 2 כדורים פעמיים ביום ל-10 ימים">פן-רפא — 2 כדורים פעמיים ביום, 10 ימים</button>
+        <button class="chip" data-group data-m="throat" data-f="abxDetail" data-v="רוקסו במינון כדור אחד פעמיים ביום ל-10 ימים">רוקסו — כדור אחד פעמיים ביום, 10 ימים</button>
+        <button class="chip" data-group data-m="throat" data-f="abxDetail" data-v='סירופ מוקסיפן במינון ___ מ״ל פעמיים ביום ל-10 ימים'>סירופ מוקסיפן — ___ מ״ל פעמיים ביום, 10 ימים</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 2: שיעול ============ -->
+  <section class="module" data-module="cough">
+    <div class="card">
+      <h2>אנמנזה</h2>
+      <div class="row"><label>גיל</label><input type="number" data-m="cough" data-f="age"></div>
+      <div class="row"><label>מין</label>
+        <button class="chip" data-group data-m="cough" data-f="sex" data-v="זכר">זכר</button>
+        <button class="chip" data-group data-m="cough" data-f="sex" data-v="נקבה">נקבה</button>
+      </div>
+      <div class="row"><label>משך (ימים)</label><input type="number" data-m="cough" data-f="duration"></div>
+      <div class="row"><label>אופי</label>
+        <button class="chip" data-group data-m="cough" data-f="character" data-v="יבש">יבש</button>
+        <button class="chip" data-group data-m="cough" data-f="character" data-v="פרודוקטיבי">פרודוקטיבי</button>
+      </div>
+      <div class="row"><label>כיח</label>
+        <button class="chip" data-group data-m="cough" data-f="sputum" data-v="לבן">לבן/צלול</button>
+        <button class="chip" data-group data-m="cough" data-f="sputum" data-v="צהוב-ירוק">צהוב-ירוק</button>
+        <button class="chip" data-group data-m="cough" data-f="sputum" data-v="דמי">דמי</button>
+      </div>
+      <div class="row"><label>חום</label>
+        <button class="chip toggle" data-m="cough" data-f="fever">חום</button>
+        <input type="number" step="0.1" data-m="cough" data-f="feverTemp" placeholder="°C" style="width:70px">
+      </div>
+      <div class="row"><label>נלווה</label>
+        <button class="chip toggle" data-m="cough" data-f="wheeze">צפצופים</button>
+        <button class="chip toggle" data-m="cough" data-f="chestPain">כאבים בחזה</button>
+      </div>
+      <div class="row"><label>סימני אזהרה</label>
+        <button class="chip toggle flag" data-m="cough" data-f="dyspnea">קוצר נשימה</button>
+      </div>
+      <div class="row"><label>עישון</label>
+        <button class="chip" data-group data-m="cough" data-f="smoking" data-v="לא מעשן/ת">לא מעשן/ת</button>
+        <button class="chip" data-group data-m="cough" data-f="smoking" data-v="מעשן/ת">מעשן/ת</button>
+      </div>
+
+      <h2 style="margin-top:18px">בדיקה גופנית</h2>
+      <div class="row"><label>סטורציה</label><input type="number" data-m="cough" data-f="spo2" placeholder="%"></div>
+      <div class="row"><label>קצב נשימה</label><input type="number" data-m="cough" data-f="rr" placeholder="/דק'"></div>
+      <div class="row"><label>ריאות</label>
+        <button class="chip" data-group data-m="cough" data-f="lungs" data-v="תקין">כניסת אויר תקינה דו״צ</button>
+        <button class="chip" data-group data-m="cough" data-f="lungs" data-v="צפצופים">צפצופים</button>
+        <button class="chip" data-group data-m="cough" data-f="lungs" data-v="חרחורים">חרחורים</button>
+        <button class="chip" data-group data-m="cough" data-f="lungs" data-v="ירידה מקומית">ירידה מקומית בכניסת אויר</button>
+      </div>
+      <div class="row"><label>א.א.ג</label>
+        <button class="chip" data-group data-m="cough" data-f="ent" data-v="תקין">תקין</button>
+        <button class="chip" data-group data-m="cough" data-f="ent" data-v="גרון אדום">גרון אדום</button>
+      </div>
+
+      <h2 style="margin-top:18px">תוכנית טיפול</h2>
+      <div class="row"><label>אבחנה</label>
+        <button class="chip" data-group data-m="cough" data-f="dx" data-v="URI">זיהום דרכי נשימה עליונות</button>
+        <button class="chip" data-group data-m="cough" data-f="dx" data-v="ברונכיטיס">ברונכיטיס חדה</button>
+        <button class="chip" data-group data-m="cough" data-f="dx" data-v="דלקת ריאות">חשד לדלקת ריאות</button>
+      </div>
+      <div class="row"><label>צילום חזה</label>
+        <button class="chip" data-group data-m="cough" data-f="cxr" data-v="לא נדרש">לא נדרש</button>
+        <button class="chip" data-group data-m="cough" data-f="cxr" data-v="בוצע">בוצע</button>
+      </div>
+      <div class="row"><label>טיפול</label>
+        <button class="chip toggle" data-m="cough" data-f="supportive">טיפול תומך</button>
+        <button class="chip toggle" data-m="cough" data-f="bronchodilator">מרחיב סימפונות</button>
+        <button class="chip toggle" data-m="cough" data-f="abx">אנטיביוטיקה</button>
+        <input type="text" class="wide" data-m="cough" data-f="abxDetail" placeholder="תרופה, מינון, משך">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 3: בדיקות דם כלליות ============ -->
+  <section class="module" data-module="bloods">
+    <div class="card">
+      <h2>סיבת ההפניה</h2>
+      <div class="row"><label>סיבה</label>
+        <button class="chip" data-group data-m="bloods" data-f="reason" data-v="תקופתית">בדיקה תקופתית</button>
+        <button class="chip" data-group data-m="bloods" data-f="reason" data-v="עייפות">עייפות</button>
+        <button class="chip" data-group data-m="bloods" data-f="reason" data-v="מעקב">מעקב</button>
+        <button class="chip" data-group data-m="bloods" data-f="reason" data-v="לפני טיפול">לפני התחלת טיפול</button>
+      </div>
+      <div class="row"><label>מין</label>
+        <button class="chip" data-group data-m="bloods" data-f="sex" data-v="זכר">זכר</button>
+        <button class="chip" data-group data-m="bloods" data-f="sex" data-v="נקבה">נקבה</button>
+      </div>
+      <div class="row"><label>היסטוריה</label><input type="text" class="wide" data-m="bloods" data-f="historyNote" placeholder="פירוט קצר (רשות)"></div>
+
+      <h2 style="margin-top:18px">בדיקה גופנית</h2>
+      <div class="row"><label>מצב כללי</label>
+        <button class="chip" data-group data-m="bloods" data-f="general" data-v="תקין">תקין, ללא ממצא חריג</button>
+        <button class="chip" data-group data-m="bloods" data-f="general" data-v="ממצא">יש ממצא לציין</button>
+        <input type="text" class="wide" data-m="bloods" data-f="findingNote" placeholder="פירוט הממצא">
+      </div>
+
+      <h2 style="margin-top:18px">בדיקות מבוקשות</h2>
+      <h3>פאנל בסיס (מסומן כברירת מחדל)</h3>
+      <div class="checklist" id="bloodsBase"></div>
+      <h3>תוספות לפי אינדיקציה</h3>
+      <div class="checklist" id="bloodsExtra"></div>
+      <div class="row" style="margin-top:8px"><label>אחר</label><input type="text" class="wide" data-m="bloods" data-f="otherTest" placeholder="בדיקה נוספת חופשית"></div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 4: בדיקת יילוד ============ -->
+  <section class="module" data-module="newborn">
+    <div class="card">
+      <h2>אנמנזה</h2>
+      <div class="row"><label>גיל</label><input type="text" class="wide" data-m="newborn" data-f="age" placeholder='למשל "בן שבועיים"'></div>
+      <div class="row"><label>מין</label>
+        <button class="chip" data-group data-m="newborn" data-f="sex" data-v="זכר">זכר</button>
+        <button class="chip" data-group data-m="newborn" data-f="sex" data-v="נקבה">נקבה</button>
+      </div>
+      <div class="row"><label>שבוע לידה</label><input type="number" data-m="newborn" data-f="gestAge" placeholder="שבועות"></div>
+      <div class="row"><label>משקל לידה</label><input type="number" data-m="newborn" data-f="birthWeight" placeholder="גרם"></div>
+      <div class="row"><label>האכלה</label>
+        <button class="chip" data-group data-m="newborn" data-f="feeding" data-v="הנקה">הנקה</button>
+        <button class="chip" data-group data-m="newborn" data-f="feeding" data-v="פורמולה">פורמולה</button>
+        <button class="chip" data-group data-m="newborn" data-f="feeding" data-v="משולב">משולב</button>
+      </div>
+      <div class="row"><label>עלייה במשקל</label>
+        <button class="chip" data-group data-m="newborn" data-f="weightGain" data-v="תקינה">תקינה</button>
+        <button class="chip" data-group data-m="newborn" data-f="weightGain" data-v="לבירור">לבירור</button>
+      </div>
+
+      <h2 style="margin-top:18px">בדיקה גופנית</h2>
+      <div class="row"><label>משקל נוכחי</label><input type="number" data-m="newborn" data-f="weightNow" placeholder="גרם"></div>
+      <div class="row"><label>היקף ראש</label><input type="number" data-m="newborn" data-f="headCirc" placeholder="ס״מ"></div>
+      <div class="row"><label>עור</label>
+        <button class="chip toggle flag" data-m="newborn" data-f="jaundice">צהבת</button>
+        <button class="chip toggle" data-m="newborn" data-f="rash">פריחה</button>
+      </div>
+      <div class="row"><label>מרפסים</label>
+        <button class="chip" data-group data-m="newborn" data-f="fontanelle" data-v="תקין">רך, לא בולט — תקין</button>
+        <button class="chip" data-group data-m="newborn" data-f="fontanelle" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>עיניים</label>
+        <button class="chip" data-group data-m="newborn" data-f="redReflex" data-v="תקין">Red reflex תקין דו״צ</button>
+        <button class="chip" data-group data-m="newborn" data-f="redReflex" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>לב</label>
+        <button class="chip" data-group data-m="newborn" data-f="heart" data-v="תקין">קולות תקינים, ללא אוושה</button>
+        <button class="chip" data-group data-m="newborn" data-f="heart" data-v="אוושה">אוושה</button>
+      </div>
+      <div class="row"><label>ריאות</label>
+        <button class="chip" data-group data-m="newborn" data-f="lungs" data-v="תקין">כניסת אויר תקינה דו״צ</button>
+        <button class="chip" data-group data-m="newborn" data-f="lungs" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>בטן/טבור</label>
+        <button class="chip" data-group data-m="newborn" data-f="abdomen" data-v="תקין">רכה, ללא הפטוספלנומגליה</button>
+        <button class="chip" data-group data-m="newborn" data-f="abdomen" data-v="חריג">חריג</button>
+        <button class="chip" data-group data-m="newborn" data-f="umbilicus" data-v="יבש">טבור יבש</button>
+        <button class="chip" data-group data-m="newborn" data-f="umbilicus" data-v="מפריש">טבור מפריש</button>
+      </div>
+      <div class="row"><label>גניטליה</label>
+        <button class="chip" data-group data-m="newborn" data-f="genitalia" data-v="תקין">תקינה</button>
+        <button class="chip" data-group data-m="newborn" data-f="genitalia" data-v="לבירור">לבירור</button>
+        <button class="chip toggle" data-m="newborn" data-f="testesDescended">אשכים בשק דו״צ</button>
+      </div>
+      <div class="row"><label>ירכיים</label>
+        <button class="chip" data-group data-m="newborn" data-f="hips" data-v="תקין">Ortolani/Barlow שלילי דו״צ</button>
+        <button class="chip" data-group data-m="newborn" data-f="hips" data-v="חריג">חיובי — הפניה</button>
+      </div>
+      <div class="row"><label>עמ״ש</label>
+        <button class="chip" data-group data-m="newborn" data-f="spine" data-v="תקין">ישר, ללא גומה סקרלית</button>
+        <button class="chip" data-group data-m="newborn" data-f="spine" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>טונוס ורפלקסים</label>
+        <button class="chip" data-group data-m="newborn" data-f="tone" data-v="תקין">תקינים וסימטריים</button>
+        <button class="chip" data-group data-m="newborn" data-f="tone" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>סקר שמיעה</label>
+        <button class="chip" data-group data-m="newborn" data-f="hearing" data-v="תקין">בוצע — תקין</button>
+        <button class="chip" data-group data-m="newborn" data-f="hearing" data-v="ממתין">ממתין</button>
+      </div>
+      <div class="row"><label>סקר מטבולי</label>
+        <button class="chip" data-group data-m="newborn" data-f="metabolic" data-v="בוצע">בוצע</button>
+        <button class="chip" data-group data-m="newborn" data-f="metabolic" data-v="ממתין">ממתין</button>
+      </div>
+
+      <h2 style="margin-top:18px">המלצות</h2>
+      <div class="checklist">
+        <button class="chip toggle" data-m="newborn" data-f="recFollowup" data-default="true">המשך מעקב תחנת טיפת חלב</button>
+        <button class="chip toggle" data-m="newborn" data-f="recVaccines" data-default="true">חיסונים לפי לוח החיסונים</button>
+        <button class="chip toggle" data-m="newborn" data-f="recVitD" data-default="true">ויטמין D יומי</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 5: בדיקה נוירולוגית מקיפה ============ -->
+  <section class="module" data-module="neuro">
+    <div class="card">
+      <h2>אנמנזה</h2>
+      <div class="row"><label>סיבת הבדיקה</label>
+        <button class="chip" data-group data-m="neuro" data-f="reason" data-v="כאב ראש">כאב ראש</button>
+        <button class="chip" data-group data-m="neuro" data-f="reason" data-v="סחרחורת">סחרחורת</button>
+        <button class="chip" data-group data-m="neuro" data-f="reason" data-v="חולשה">חולשה</button>
+        <button class="chip" data-group data-m="neuro" data-f="reason" data-v="נימול">נימול</button>
+        <button class="chip" data-group data-m="neuro" data-f="reason" data-v="מעקב">מעקב</button>
+      </div>
+      <div class="row"><label>משך</label><input type="text" data-m="neuro" data-f="duration" placeholder='למשל "יומיים"'></div>
+      <div class="row"><label>מין</label>
+        <button class="chip" data-group data-m="neuro" data-f="sex" data-v="זכר">זכר</button>
+        <button class="chip" data-group data-m="neuro" data-f="sex" data-v="נקבה">נקבה</button>
+      </div>
+
+      <h2 style="margin-top:18px">בדיקה גופנית — נוירולוגית מקיפה</h2>
+      <h3>הכרה ודיבור</h3>
+      <div class="row">
+        <button class="chip" data-group data-m="neuro" data-f="mental" data-v="תקין">ער/ה, מכוון/ת פי 3</button>
+        <button class="chip" data-group data-m="neuro" data-f="mental" data-v="חריג">חריג</button>
+        <button class="chip" data-group data-m="neuro" data-f="speech" data-v="תקין">דיבור תקין</button>
+        <button class="chip" data-group data-m="neuro" data-f="speech" data-v="דיסארתריה">דיסארתריה</button>
+        <button class="chip" data-group data-m="neuro" data-f="speech" data-v="אפזיה">אפזיה</button>
+      </div>
+      <h3>עצבים קרניאליים</h3>
+      <div class="row"><label>II (ראייה)</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnII" data-v="תקין">חדות ראייה ושדות תקינים</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnII" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>III/IV/VI</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnOcular" data-v="תקין">תנועות עיניים ואישונים תקינים</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnOcular" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>V</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnV" data-v="תקין">תחושת פנים ולעיסה תקינות</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnV" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>VII</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnVII" data-v="תקין">סימטריית פנים תקינה</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnVII" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>VIII</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnVIII" data-v="תקין">שמיעה תקינה</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnVIII" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>IX/X</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnIXX" data-v="תקין">חיך ורפלקס הקאה תקינים</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnIXX" data-v="חריג">חריג</button>
+      </div>
+      <div class="row"><label>XI/XII</label>
+        <button class="chip" data-group data-m="neuro" data-f="cnXIXII" data-v="תקין">כתפיים ולשון תקינים</button>
+        <button class="chip" data-group data-m="neuro" data-f="cnXIXII" data-v="חריג">חריג</button>
+      </div>
+      <h3>מוטוריקה, תחושה ורפלקסים</h3>
+      <div class="row"><label>טונוס</label>
+        <button class="chip" data-group data-m="neuro" data-f="tone" data-v="תקין">תקין</button>
+        <button class="chip" data-group data-m="neuro" data-f="tone" data-v="ספסטי">ספסטי</button>
+        <button class="chip" data-group data-m="neuro" data-f="tone" data-v="רפוי">רפוי</button>
+      </div>
+      <div class="row"><label>כוח גס</label>
+        <button class="chip" data-group data-m="neuro" data-f="strength" data-v="תקין">מלא (5/5) בכל הגפיים</button>
+        <button class="chip" data-group data-m="neuro" data-f="strength" data-v="חריג">ירידה — לפרט</button>
+        <input type="text" class="wide" data-m="neuro" data-f="strengthDetail" placeholder="פירוט גפה ודרגה">
+      </div>
+      <div class="row"><label>תחושה</label>
+        <button class="chip" data-group data-m="neuro" data-f="sensation" data-v="תקין">תקינה בכל המודליות</button>
+        <button class="chip" data-group data-m="neuro" data-f="sensation" data-v="חריג">חריג — לפרט</button>
+        <input type="text" class="wide" data-m="neuro" data-f="sensationDetail" placeholder="פירוט">
+      </div>
+      <div class="row"><label>רפלקסים</label>
+        <button class="chip" data-group data-m="neuro" data-f="reflexes" data-v="תקין">תקינים וסימטריים</button>
+        <button class="chip" data-group data-m="neuro" data-f="reflexes" data-v="חריג">חריגים</button>
+        <button class="chip" data-group data-m="neuro" data-f="babinski" data-v="שלילי">בבינסקי שלילי דו״צ</button>
+        <button class="chip" data-group data-m="neuro" data-f="babinski" data-v="חיובי">בבינסקי חיובי</button>
+      </div>
+      <h3>צרבלום והליכה</h3>
+      <div class="row">
+        <button class="chip" data-group data-m="neuro" data-f="cerebellar" data-v="תקין">ללא דיסמטריה/דיסדיאדוכוקינזיס</button>
+        <button class="chip" data-group data-m="neuro" data-f="cerebellar" data-v="חריג">חריג</button>
+        <button class="chip" data-group data-m="neuro" data-f="romberg" data-v="שלילי">רומברג שלילי</button>
+        <button class="chip" data-group data-m="neuro" data-f="romberg" data-v="חיובי">רומברג חיובי</button>
+        <button class="chip" data-group data-m="neuro" data-f="gait" data-v="תקין">הליכה תקינה</button>
+        <button class="chip" data-group data-m="neuro" data-f="gait" data-v="חריג">הליכה חריגה</button>
+      </div>
+
+      <h2 style="margin-top:18px">סיכום</h2>
+      <div class="row"><label>המלצות</label><input type="text" class="wide" data-m="neuro" data-f="recommendation" placeholder="המלצות / הפניה (רשות)"></div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE 6: דגלים אדומים ============ -->
+  <section class="module" data-module="redflags">
+    <div class="card">
+      <h2>תלונה</h2>
+      <div class="row" id="rf-category-picker"></div>
+      <div id="rf-categories"></div>
+    </div>
+  </section>
+
+  <!-- ================= OUTPUT PANELS (shared) ================= -->
+  <div>
+    <div class="out">
+      <h2>אנמנזה
+        <span class="btnrow">
+          <button class="btn small" onclick="copyPanel('history')">העתק</button>
+        </span>
+      </h2>
+      <textarea id="out-history" readonly></textarea>
+    </div>
+    <div class="out">
+      <h2>בדיקה גופנית
+        <span class="btnrow">
+          <button class="btn small" onclick="copyPanel('exam')">העתק</button>
+        </span>
+      </h2>
+      <textarea id="out-exam" readonly></textarea>
+    </div>
+    <div class="out">
+      <h2>סיכום והמלצות לטיפול
+        <span class="btnrow">
+          <button class="btn small" onclick="copyPanel('summary')">העתק</button>
+          <button class="btn small solid" onclick="printPatient()">הדפסה למטופל</button>
+        </span>
+      </h2>
+      <textarea id="out-summary" readonly></textarea>
+      <div class="hint">גרסת ההדפסה מנוסחת בשפה פשוטה עבור המטופל/ת, ללא ניקוד קליני.</div>
+    </div>
+  </div>
+</main>
+
+<div id="printArea">
+  <h1 id="pf-title"></h1>
+  <div class="pf-line" id="pf-date"></div>
+  <div class="pf-line" id="pf-body" style="white-space:pre-line"></div>
+</div>
+
+<script>
+const MODULES = [
+  {key:'throat', label:'כאב גרון'},
+  {key:'cough', label:'שיעול'},
+  {key:'bloods', label:'בדיקות דם כלליות'},
+  {key:'newborn', label:'בדיקת יילוד'},
+  {key:'neuro', label:'בדיקה נוירולוגית מקיפה'},
+  {key:'redflags', label:'דגלים אדומים'}
+];
+
+const REDFLAG_CATEGORIES = [
+  { key:'headache', label:'כאב ראש',
+    history: ['התחלה פתאומית בעוצמה מקסימלית (Thunderclap)','כאב ראש חדש מעל גיל 50',
+      'שינוי באופי/בתדירות של כאב ראש כרוני קיים','החמרה בשכיבה, בשיעול או במאמץ (Valsalva)',
+      'חום או נוקשות עורף נלווים','הפרעות ראייה או כאב עיני נלווה','חולשה, נימול או הפרעת דיבור נלווים',
+      'הקאות חוזרות, בעיקר בבוקר','טראומת ראש לאחרונה','דיכוי חיסוני, ממאירות ידועה או נטילת נוגדי קרישה',
+      'הריון או משכב לידה'],
+    exam: ['נוקשות עורף (סימני מנינגיזם)','בצקת פפילה','חסר נוירולוגי פוקאלי','שינוי מצב הכרה','חום'],
+    dxHint: 'דימום תת-עכבישי, מנינגיטיס, גידול תוך-גולגולתי, אירוע מוחי, גלאוקומה חדה, דלקת עורק רקתי' },
+  { key:'chest', label:'כאב חזה',
+    history: ['כאב מאמצי, המוקרן לזרוע/ללסת/לגב','הזעה, בחילה או קוצר נשימה נלווים',
+      'כאב קורע בעוצמה מקסימלית מתחילתו','גורמי סיכון לתסחיף ריאתי (ניתוח/ריתוק לאחרונה, גידול פעיל, קרישיות יתר, נסיעה ממושכת)',
+      'סינקופה נלווית','מחלת לב איסכמית ידועה או גורמי סיכון קרדיווסקולריים משמעותיים'],
+    exam: ['אי-יציבות המודינמית (לחץ דם/דופק חריגים)','הבדל לחץ דם משמעותי בין הידיים','אוושה לבבית חדשה',
+      'סימני אי ספיקת לב (גודש ורידי צוואר, בצקות היקפיות)','ירידה בסטורציה או קוצר נשימה בבדיקה','רגישות פלאורליטית ממוקדת'],
+    dxHint: 'תסמונת כלילית חדה, תסחיף ריאתי, דיסקציה של אבי העורקים, טמפונדה לבבית, פנאומוטורקס במתח' },
+  { key:'abdo', label:'כאב בטן',
+    history: ['כאב פתאומי בעוצמה מקסימלית מתחילתו','דימום רקטלי או הקאות דמיות',
+      'הקאות מתמשכות עם חוסר יכולת לשמר נוזלים','אפשרות הריון או איחור וסת','חום גבוה נלווה','ירידה במשקל לא מוסברת'],
+    exam: ['רגישות פריטונאלית (Guarding או Rebound)','בטן קשה כלוח','אי-יציבות המודינמית','מסה בטנית נמושה חדשה'],
+    dxHint: 'בטן חריפה/פריטוניט, איסכמיה מזנטרית, מפרצת אבי עורקים בטנית קורעת, הריון חוץ-רחמי' },
+  { key:'back', label:'כאב גב תחתון',
+    history: ['הפרעה חדשה בשליטה על סוגרים (שתן או צואה)','נימול באזור האוכף','חולשה מתקדמת ברגליים',
+      'חום נלווה','ירידה במשקל לא מוסברת או ממאירות ידועה','טראומה משמעותית לאחרונה',
+      'שימוש כרוני בסטרואידים או אוסטאופורוזיס משמעותי'],
+    exam: ['חולשה מוטורית מתקדמת בגפיים תחתונות','ירידה בטונוס הסוגר האנאלי','אנסתזיה באזור האוכף','רפלקסים חריגים בגפיים תחתונות'],
+    dxHint: 'תסמונת זנב הסוס, פריצת דיסק עם חסר נוירולוגי מתקדם, גרורות בעמוד השדרה, אבצס אפידורלי בעמוד השדרה' },
+  { key:'malignancy', label:'חשד לממאירות (B symptoms)',
+    history: ['ירידה במשקל לא רצונית (מעל 10% ממשקל הגוף תוך 6 חודשים)','הזעות לילה','חום ממושך לא מוסבר',
+      'עייפות משמעותית ומתמשכת','כאבי עצמות לא מוסברים'],
+    exam: ['לימפדנופתיה מוחשית (מיקום, גודל, קונסיסטנציה)','הפטוספלנומגליה','מסה נמושה חדשה','חיוורון משמעותי'],
+    dxHint: 'לימפומה, גידול מוצק עם גרורות, לוקמיה' }
+];
+
+const BASE_TESTS = ['ספירת דם (CBC)','ביוכימיה כללית (Na,K,קריאטינין,GFR)','תפקודי כבד (ALT,AST,GGT,בילירובין)',
+  'פרופיל שומנים','גלוקוז בצום','TSH','ברזל + פריטין','B12 + חומצה פולית','ויטמין D','CRP'];
+const EXTRA_TESTS = ['HbA1c','TSH + Free T4 מורחב','PSA','בדיקת שתן כללית','אלקטרוליטים מורחבים (Ca,Mg,Phos)','ESR'];
+
+let state = {};
+MODULES.forEach(m => state[m.key] = {});
+
+function initChecklists(){
+  const baseEl = document.getElementById('bloodsBase');
+  const extraEl = document.getElementById('bloodsExtra');
+  state.bloods.baseTests = {}; state.bloods.extraTests = {};
+  BASE_TESTS.forEach(t=>{
+    state.bloods.baseTests[t] = true;
+    const b = document.createElement('button');
+    b.className='chip toggle active'; b.textContent=t;
+    b.onclick=()=>{ b.classList.toggle('active'); state.bloods.baseTests[t]=b.classList.contains('active'); render(); };
+    baseEl.appendChild(b);
+  });
+  EXTRA_TESTS.forEach(t=>{
+    state.bloods.extraTests[t] = false;
+    const b = document.createElement('button');
+    b.className='chip toggle'; b.textContent=t;
+    b.onclick=()=>{ b.classList.toggle('active'); state.bloods.extraTests[t]=b.classList.contains('active'); render(); };
+    extraEl.appendChild(b);
+  });
+}
+
+function initRedflagsUI(){
+  const picker = document.getElementById('rf-category-picker');
+  const label = document.createElement('label');
+  label.textContent = 'תלונה';
+  picker.appendChild(label);
+  const container = document.getElementById('rf-categories');
+  REDFLAG_CATEGORIES.forEach((cat,i)=>{
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = cat.label;
+    b.dataset.group = '';
+    b.dataset.m = 'redflags';
+    b.dataset.f = 'category';
+    b.dataset.v = cat.key;
+    if(i===0) b.dataset.default = 'true';
+    picker.appendChild(b);
+
+    state.redflags[cat.key] = { history:{}, exam:{} };
+    const div = document.createElement('div');
+    div.className = 'rfcat' + (i===0 ? ' active' : '');
+    div.dataset.cat = cat.key;
+    div.innerHTML = `<h2 style="margin-top:18px">בשאלון (היסטוריה)</h2><div class="checklist" data-list="history"></div>
+      <h2 style="margin-top:18px">בבדיקה גופנית</h2><div class="checklist" data-list="exam"></div>`;
+    container.appendChild(div);
+    const histEl = div.querySelector('[data-list="history"]');
+    const examEl = div.querySelector('[data-list="exam"]');
+    cat.history.forEach(item=>{
+      state.redflags[cat.key].history[item] = false;
+      const cb = document.createElement('button');
+      cb.className = 'chip toggle flag'; cb.textContent = item;
+      cb.onclick = ()=>{ cb.classList.toggle('active'); state.redflags[cat.key].history[item] = cb.classList.contains('active'); render(); };
+      histEl.appendChild(cb);
+    });
+    cat.exam.forEach(item=>{
+      state.redflags[cat.key].exam[item] = false;
+      const cb = document.createElement('button');
+      cb.className = 'chip toggle flag'; cb.textContent = item;
+      cb.onclick = ()=>{ cb.classList.toggle('active'); state.redflags[cat.key].exam[item] = cb.classList.contains('active'); render(); };
+      examEl.appendChild(cb);
+    });
+  });
+}
+
+function buildTabs(){
+  const tabs = document.getElementById('tabs');
+  MODULES.forEach((m,i)=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (i===0?' active':'');
+    b.textContent = m.label;
+    b.onclick = ()=> switchModule(m.key);
+    b.id = 'tabbtn-'+m.key;
+    tabs.appendChild(b);
+  });
+}
+
+function switchModule(key){
+  document.querySelectorAll('.module').forEach(s=> s.classList.toggle('active', s.dataset.module===key));
+  document.querySelectorAll('.tab').forEach(b=> b.classList.toggle('active', b.id==='tabbtn-'+key));
+  currentModule = key;
+  render();
+}
+
+let currentModule = MODULES[0].key;
+
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('.chip');
+  if(!btn || !btn.dataset.m) return;
+  const m = btn.dataset.m, f = btn.dataset.f;
+  if('group' in btn.dataset){
+    document.querySelectorAll(`.chip[data-m="${m}"][data-f="${f}"]`).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state[m][f] = btn.dataset.v;
+  } else {
+    btn.classList.toggle('active');
+    state[m][f] = btn.classList.contains('active');
+  }
+  render();
+});
+
+document.addEventListener('input', e=>{
+  const el = e.target;
+  if(!el.dataset || !el.dataset.m) return;
+  state[el.dataset.m][el.dataset.f] = el.value;
+  render();
+});
+
+function applyDefaults(){
+  document.querySelectorAll('.chip[data-default="true"]').forEach(b=>{
+    b.classList.add('active');
+    state[b.dataset.m][b.dataset.f] = ('group' in b.dataset) ? b.dataset.v : true;
+  });
+}
+
+// ---------- composers ----------
+function j(arr){ return arr.filter(Boolean).join(' '); }
+function G(sex, male, female, both){ return sex==='זכר' ? male : sex==='נקבה' ? female : (both!==undefined ? both : male); }
+
+function composeThroat(s){
+  const age = s.age || '___', dur = s.duration || '___';
+  const patWord = G(s.sex,'מטופל','מטופלת','מטופל/ת');
+  const complainWord = G(s.sex,'מתלונן','מתלוננת','מתלונן/ת');
+  const reportWord = G(s.sex,'מדווח','מדווחת','מדווח/ת');
+  const ageFragment = s.sex==='זכר' ? `בן ${age}` : s.sex==='נקבה' ? `בת ${age}` : `בגיל ${age}`;
+  let h = `${patWord} ${ageFragment} ${complainWord} על כאב גרון מזה ${dur} ימים.`;
+  const assoc = [];
+  assoc.push(s.fever ? `חום עד ${s.feverTemp||'___'}°C` : null);
+  assoc.push(s.rhinorrhea ? 'נזלת' : null);
+  assoc.push(s.headache ? 'כאב ראש' : null);
+  assoc.push(s.myalgia ? 'כאבי שרירים' : null);
+  const assocPos = assoc.filter(Boolean);
+  h += assocPos.length ? ` נלווים: ${assocPos.join(', ')}.` : ' ללא חום, נזלת, כאב ראש או כאבי שרירים נלווים.';
+  h += s.cough ? ' עם שיעול נלווה.' : ' ללא שיעול.';
+  h += s.swallowing ? ` ${reportWord} על קושי בבליעה/נשימה.` : ' ללא קושי בבליעה או בנשימה,';
+  h += s.drooling ? ' עם ריור מוגבר.' : ' ללא ריור מוגבר.';
+  h += s.voice ? ` ${reportWord} על שינוי בקול.` : '';
+
+  const g = s.general || 'טוב';
+  let e = `בבדיקה: מצב כללי ${g}.`;
+  const pharynxMap = {'תקין':'אורופרינקס תקין, ללא אדמומיות או הפרשה', 'אדמומיות':'אורופרינקס עם אדמומיות, ללא הפרשה', 'אקסודט':'אורופרינקס אדום עם הפרשה (exudate)'};
+  e += ` ${pharynxMap[s.pharynx] || 'אורופרינקס: ___'}.`;
+  const tonsilsMap = {'תקינים':'שקדים תקינים בגודלם', 'מוגדלים':'שקדים מוגדלים, ללא exudate', 'אקסודט':'שקדים מוגדלים עם exudate'};
+  e += ` ${tonsilsMap[s.tonsils] || 'שקדים: ___'}.`;
+  e += s.peritonsillar ? ' נצפית נפיחות פריטונסילרית.' : ' ללא נפיחות פריטונסילרית,';
+  e += s.uvula ? ' עם סטיית ענבל.' : ' ללא סטיית ענבל.';
+  e += s.nodes==='כן' ? ' בלוטות לימפה צוואריות קדמיות מוגדלות ורגישות.' : ' ללא לימפדנופתיה צווארית קדמית.';
+
+  const centorPts = (s.fever?1:0) + (!s.cough?1:0) + (s.tonsils==='אקסודט'?1:0) + (s.nodes==='כן'?1:0);
+  const centorText = centorPts>=3 ? 'סבירות בינונית-גבוהה לזיהום סטרפטוקוקלי — מומלץ בדיקת Strep מהירה'
+                    : centorPts===2 ? 'סבירות בינונית לזיהום סטרפטוקוקלי'
+                    : 'סבירות נמוכה לזיהום סטרפטוקוקלי';
+  document.getElementById('centorBadge').style.display='inline-block';
+  document.getElementById('centorBadge').textContent = `Centor score: ${centorPts}/4 — ${centorText}`;
+
+  const dxMap = {'ויראלית':'דלקת גרון חדה, ככל הנראה ויראלית', 'חיידקית':'דלקת גרון חדה עם חשד לזיהום סטרפטוקוקלי'};
+  const patientDxMap = {'ויראלית':'דלקת גרון (ככל הנראה ממקור נגיפי)', 'חיידקית':'דלקת גרון עם חשד לזיהום חיידקי'};
+  let dx = dxMap[s.dx] || 'דלקת גרון חדה';
+  let plan = `אבחנה: ${dx} (Centor ${centorPts}/4).`;
+  if(s.strep && s.strep!=='לא בוצע') plan += ` בוצעה בדיקת Strep מהירה — תוצאה ${s.strep}.`;
+  if(s.throatCulture) plan += ` ${G(s.sex,'הופנה','הופנתה','הופנה/תה')} למשטח גרון.`;
+  const tx = [];
+  if(s.supportive) tx.push('טיפול תומך (משככי כאבים/חום, נוזלים)');
+  if(s.abx) tx.push(`אנטיביוטיקה${s.abxDetail? ' — '+s.abxDetail : ''}`);
+  if(s.pendingCulture) tx.push('טיפול לפי תוצאות משטח גרון');
+  plan += tx.length ? ` טיפול: ${tx.join('; ')}.` : ' טיפול: תומך.';
+  plan += ` ${G(s.sex,'הודרך','הודרכה','הודרך/ה')} לחזור לבדיקה בכל החמרה, קושי בבליעה או בנשימה, ריור מוגבר, או המשך חום מעל 3 ימים.`;
+
+  const patient = j([
+    `אבחנה: ${patientDxMap[s.dx] || 'דלקת גרון'}.`,
+    tx.length ? `טיפול מומלץ: ${tx.join(', ')}.` : 'מומלץ טיפול תומך להקלה בתסמינים.',
+    'יש לשתות הרבה נוזלים ולנוח.',
+    'חשוב לפנות שוב למרפאה אם מופיע קושי בבליעה או בנשימה, ריור מוגבר, או שהחום נמשך מעבר ל-3 ימים.'
+  ]);
+  return {history:h, exam:e, summary:plan, patient, title:'סיכום ביקור — כאב גרון'};
+}
+
+function composeCough(s){
+  const age = s.age || '___', dur = s.duration || '___';
+  const patWord = G(s.sex,'מטופל','מטופלת','מטופל/ת');
+  const complainWord = G(s.sex,'מתלונן','מתלוננת','מתלונן/ת');
+  const reportWord = G(s.sex,'מדווח','מדווחת','מדווח/ת');
+  const ageFragment = s.sex==='זכר' ? `בן ${age}` : s.sex==='נקבה' ? `בת ${age}` : `בגיל ${age}`;
+  let h = `${patWord} ${ageFragment} ${complainWord} על שיעול מזה ${dur} ימים`;
+  h += s.character==='פרודוקטיבי' ? `, פרודוקטיבי${s.sputum? ' (כיח '+s.sputum+')':''}.` : s.character==='יבש' ? ', יבש.' : '.';
+  h += s.fever ? ` מלווה בחום עד ${s.feverTemp||'___'}°C.` : ' ללא חום.';
+  const assoc = [s.wheeze?'צפצופים':null, s.chestPain?'כאבים בחזה':null].filter(Boolean);
+  h += assoc.length ? ` נלווים: ${assoc.join(', ')}.` : ' ללא צפצופים או כאבים בחזה.';
+  h += s.dyspnea ? ` ${reportWord} על קוצר נשימה.` : ' ללא קוצר נשימה.';
+  h += s.smoking ? ` ${s.smoking}.` : '';
+
+  let e = `בבדיקה: סטורציה ${s.spo2||'___'}%, קצב נשימה ${s.rr||'___'}/דק'.`;
+  const lungsMap = {'תקין':'כניסת אויר תקינה דו״צ, ללא ממצא פתולוגי', 'צפצופים':'צפצופים דיפוזיים', 'חרחורים':'חרחורים', 'ירידה מקומית':'ירידה מקומית בכניסת האויר'};
+  e += ` ${lungsMap[s.lungs] || 'ריאות: ___'}.`;
+  e += ` א.א.ג: ${s.ent==='גרון אדום' ? 'גרון אדום' : 'תקין'}.`;
+
+  const dxMap = {'URI':'זיהום דרכי נשימה עליונות', 'ברונכיטיס':'ברונכיטיס חדה', 'דלקת ריאות':'חשד לדלקת ריאות'};
+  const dx = dxMap[s.dx] || 'זיהום דרכי נשימה עליונות';
+  let plan = `אבחנה: ${dx}.`;
+  plan += s.cxr==='בוצע' ? ' בוצע צילום חזה.' : ' צילום חזה לא נדרש בשלב זה.';
+  const tx = [s.supportive?'טיפול תומך':null, s.bronchodilator?'מרחיב סימפונות':null, s.abx?`אנטיביוטיקה${s.abxDetail?' — '+s.abxDetail:''}`:null].filter(Boolean);
+  plan += tx.length ? ` טיפול: ${tx.join('; ')}.` : ' טיפול: תומך.';
+  plan += ` ${G(s.sex,'הודרך','הודרכה','הודרך/ה')} לחזור אם קוצר הנשימה מחמיר, החום נמשך, או מופיע כיח דמי.`;
+
+  const patient = j([
+    `אבחנה: ${dx}.`,
+    tx.length ? `טיפול מומלץ: ${tx.join(', ')}.` : 'מומלץ טיפול תומך להקלה בתסמינים.',
+    'מומלץ מנוחה, שתייה מרובה, והימנעות מעישון/חשיפה לעשן.',
+    'יש לפנות שוב אם מופיע קוצר נשימה, החום נמשך מעבר למספר ימים, או מופיע כיח עם דם.'
+  ]);
+  return {history:h, exam:e, summary:plan, patient, title:'סיכום ביקור — שיעול'};
+}
+
+function composeBloods(s){
+  const reasonMap = {'תקופתית':'בדיקה תקופתית','עייפות':'בירור עייפות','מעקב':'בדיקת מעקב','לפני טיפול':'הערכה לפני התחלת טיפול'};
+  let h = `הפניה לבדיקות דם — ${reasonMap[s.reason] || '___'}.`;
+  h += s.historyNote ? ` ${s.historyNote}.` : '';
+
+  let e = s.general==='ממצא' ? `בבדיקה: ${s.findingNote||'___'}.` : 'בבדיקה: מצב כללי תקין, ללא ממצא חריג.';
+
+  const base = Object.keys(s.baseTests||{}).filter(t=>s.baseTests[t]);
+  const extra = Object.keys(s.extraTests||{}).filter(t=>s.extraTests[t]);
+  const all = base.concat(extra);
+  if(s.otherTest) all.push(s.otherTest);
+  let plan = `מבוקש: ${all.length? all.join(', ') : '___'}.`;
+  const needsFasting = all.some(t=> t.includes('גלוקוז') || t.includes('שומנים'));
+  plan += needsFasting ? ' יש להגיע בצום של 8–12 שעות (מותר מים).' : '';
+
+  const patient = j([
+    `${G(s.sex,'הופנה','הופנתה','הופנה/תה')} לבדיקות דם לפי הפירוט הבא:`,
+    all.length ? all.join(', ')+'.' : '',
+    needsFasting ? 'חשוב להגיע בצום של 8–12 שעות לפני הבדיקה (מותר לשתות מים).' : 'ניתן לבצע את הבדיקה ללא צום.',
+    'התוצאות יתקבלו בדרך כלל תוך מספר ימי עבודה ויועברו/יידונו בביקור המעקב.'
+  ]);
+  return {history:h, exam:e, summary:plan, patient, title:'הפניה לבדיקות דם'};
+}
+
+function composeNewborn(s){
+  const babyWord = G(s.sex,'תינוק','תינוקת','תינוק/ת');
+  let h = `${babyWord} גיל ${s.age||'___'} (לידה בשבוע ${s.gestAge||'___'}, משקל לידה ${s.birthWeight||'___'} גרם).`;
+  h += ` האכלה: ${s.feeding||'___'}.`;
+  h += s.weightGain==='תקינה' ? ' עלייה במשקל תקינה.' : s.weightGain==='לבירור' ? ' עלייה במשקל לבירור.' : '';
+
+  const alertLine = G(s.sex,'ער ופעיל','ערה ופעילה','ער/ה ופעיל/ה');
+  const lines = [];
+  lines.push(`בבדיקה: ${alertLine}. משקל נוכחי ${s.weightNow||'___'} גרם, היקף ראש ${s.headCirc||'___'} ס״מ.`);
+  lines.push(`עור: ${s.jaundice? 'צהבת':'ללא צהבת'}${s.rash? ', עם פריחה':''}.`);
+  lines.push(`מרפסים: ${s.fontanelle==='חריג' ? 'חריגים' : 'רכים, לא בולטים — תקינים'}.`);
+  lines.push(`עיניים: ${s.redReflex==='חריג' ? 'red reflex חריג' : 'red reflex תקין דו״צ'}.`);
+  lines.push(`לב: ${s.heart==='אוושה' ? 'נשמעת אוושה' : 'קולות תקינים, ללא אוושה'}.`);
+  lines.push(`ריאות: ${s.lungs==='חריג' ? 'חריגות' : 'כניסת אויר תקינה דו״צ'}.`);
+  lines.push(`בטן: ${s.abdomen==='חריג' ? 'חריגה' : 'רכה, ללא הפטוספלנומגליה'}, טבור ${s.umbilicus||'יבש'}.`);
+  let genLine = `גניטליה: ${s.genitalia==='לבירור' ? 'לבירור' : 'תקינה'}`;
+  if(s.testesDescended) genLine += ', אשכים בשק האשכים דו״צ';
+  lines.push(genLine+'.');
+  lines.push(`ירכיים: ${s.hips==='חריג' ? `Ortolani/Barlow חיובי — ${G(s.sex,'הופנה','הופנתה','הופנה/תה')} להערכה` : 'Ortolani/Barlow שלילי דו״צ'}.`);
+  lines.push(`עמוד שדרה: ${s.spine==='חריג' ? 'חריג' : 'ישר, ללא גומה סקרלית פתולוגית'}.`);
+  lines.push(`טונוס ורפלקסים ראשוניים: ${s.tone==='חריג' ? 'חריגים' : 'תקינים וסימטריים'}.`);
+  lines.push(`סקר שמיעה: ${s.hearing||'ממתין'}. סקר מטבולי: ${s.metabolic||'ממתין'}.`);
+  const e = lines.join(' ');
+
+  const abnormal = [s.jaundice,s.fontanelle==='חריג',s.redReflex==='חריג',s.heart==='אוושה',s.lungs==='חריג',
+    s.abdomen==='חריג',s.genitalia==='לבירור',s.hips==='חריג',s.spine==='חריג',s.tone==='חריג'].some(Boolean);
+  let plan = abnormal ? 'מסקנה: נמצאו ממצאים המחייבים בירור/מעקב כמפורט לעיל.' : `מסקנה: ${G(s.sex,'התינוק בריא, מתפתח כשורה','התינוקת בריאה, מתפתחת כשורה','התינוק/ת בריא/ה, מתפתח/ת כשורה')}.`;
+  const recs = [];
+  if(s.recFollowup) recs.push('המשך מעקב בתחנת טיפת חלב');
+  if(s.recVaccines) recs.push('חיסונים לפי לוח החיסונים');
+  if(s.recVitD) recs.push('מתן ויטמין D יומי');
+  plan += recs.length ? ` המלצות: ${recs.join(', ')}.` : '';
+
+  const patient = j([
+    abnormal ? 'בבדיקה נמצאו מספר ממצאים שמצריכים המשך בירור או מעקב — יוסבר בעל פה בביקור.' : G(s.sex,'התינוק נבדק ונמצא בריא ומתפתח יפה.','התינוקת נבדקה ונמצאה בריאה ומתפתחת יפה.','התינוק/ת נבדק/ה ונמצא/ה בריא/ה ומתפתח/ת יפה.'),
+    `משקל נוכחי: ${s.weightNow||'___'} גרם.`,
+    recs.length ? `המלצות: ${recs.join(', ')}.` : ''
+  ]);
+  return {history:h, exam:e, summary:plan, patient, title:'סיכום בדיקת יילוד'};
+}
+
+function composeNeuro(s){
+  let h = `בדיקה נוירולוגית — סיבה: ${s.reason||'___'}${s.duration? ', משך '+s.duration : ''}.`;
+
+  const L = [];
+  L.push(`הכרה: ${s.mental==='חריג'?'חריגה':G(s.sex,'ער, מכוון פי 3','ערה, מכוונת פי 3','ער/ה, מכוון/ת פי 3')}. דיבור: ${s.speech==='דיסארתריה'?'דיסארתריה':s.speech==='אפזיה'?'אפזיה':'תקין'}.`);
+  L.push(`עצבים קרניאליים: II — ${s.cnII==='חריג'?'חריג':'תקין'}; III/IV/VI — ${s.cnOcular==='חריג'?'חריג':'תקינים'}; V — ${s.cnV==='חריג'?'חריג':'תקין'}; VII — ${s.cnVII==='חריג'?'חריג':'תקין'}; VIII — ${s.cnVIII==='חריג'?'חריג':'תקין'}; IX/X — ${s.cnIXX==='חריג'?'חריג':'תקינים'}; XI/XII — ${s.cnXIXII==='חריג'?'חריג':'תקינים'}.`);
+  L.push(`טונוס: ${s.tone||'תקין'}. כוח גס: ${s.strength==='חריג' ? (s.strengthDetail||'ירידה — לפרט') : 'מלא (5/5) בכל הגפיים'}.`);
+  L.push(`תחושה: ${s.sensation==='חריג' ? (s.sensationDetail||'חריגה — לפרט') : 'תקינה בכל המודליות'}.`);
+  L.push(`רפלקסים גידיים: ${s.reflexes==='חריג'?'חריגים':'תקינים וסימטריים'}. בבינסקי: ${s.babinski==='חיובי'?'חיובי':'שלילי דו״צ'}.`);
+  L.push(`צרבלום: ${s.cerebellar==='חריג'?'חריג':'ללא דיסמטריה או דיסדיאדוכוקינזיס'}. רומברג: ${s.romberg==='חיובי'?'חיובי':'שלילי'}. הליכה: ${s.gait==='חריג'?'חריגה':'תקינה'}.`);
+  const e = L.join(' ');
+
+  const abnormal = [s.mental,s.speech,s.cnII,s.cnOcular,s.cnV,s.cnVII,s.cnVIII,s.cnIXX,s.cnXIXII,s.tone,s.strength,
+    s.sensation,s.reflexes,s.babinski,s.cerebellar,s.romberg,s.gait].some(v=> v==='חריג'||v==='דיסארתריה'||v==='אפזיה'||v==='ספסטי'||v==='רפוי'||v==='חיובי');
+  let plan = abnormal ? 'מסקנה: בדיקה נוירולוגית עם ממצאים חריגים כמפורט לעיל.' : 'מסקנה: בדיקה נוירולוגית תקינה בכל המערכות שנבדקו.';
+  plan += s.recommendation ? ` המלצות: ${s.recommendation}.` : '';
+
+  const patient = j([
+    abnormal ? 'בבדיקה המערכתית של מערכת העצבים נמצאו ממצאים שמצריכים המשך בירור — יוסבר בעל פה.' : 'הבדיקה הנוירולוגית המקיפה שבוצעה הייתה תקינה.',
+    s.recommendation ? `המלצות: ${s.recommendation}.` : ''
+  ]);
+  return {history:h, exam:e, summary:plan, patient, title:'סיכום בדיקה נוירולוגית'};
+}
+
+function composeRedflags(s){
+  const catKey = s.category || REDFLAG_CATEGORIES[0].key;
+  const cat = REDFLAG_CATEGORIES.find(c=>c.key===catKey) || REDFLAG_CATEGORIES[0];
+  document.querySelectorAll('.rfcat').forEach(el=> el.classList.toggle('active', el.dataset.cat===catKey));
+
+  const histState = (s[catKey] && s[catKey].history) || {};
+  const examState = (s[catKey] && s[catKey].exam) || {};
+  const histPos = cat.history.filter(item=>histState[item]);
+  const histNeg = cat.history.filter(item=>!histState[item]);
+  const examPos = cat.exam.filter(item=>examState[item]);
+  const examNeg = cat.exam.filter(item=>!examState[item]);
+
+  let h = `הערכת דגלים אדומים — ${cat.label}.`;
+  h += histNeg.length ? ` בשאלון פעיל נשללו: ${histNeg.join('; ')}.` : '';
+  h += histPos.length ? ` דווח על: ${histPos.join('; ')}.` : '';
+
+  let e = examNeg.length ? `בבדיקה נשללו: ${examNeg.join('; ')}.` : '';
+  e += examPos.length ? ` נמצא: ${examPos.join('; ')}.` : '';
+  if(!e) e = 'בבדיקה: ללא ממצא.';
+
+  const anyPositive = histPos.length>0 || examPos.length>0;
+  const plan = anyPositive
+    ? `מסקנה: נמצאו דגלים אדומים המחייבים הערכה דחופה/בירור נוסף בהתאם לממצא. יש לשלול: ${cat.dxHint}.`
+    : `מסקנה: לא נמצאו דגלים אדומים. האבחנות המסכנות חיים באבחנה המבדלת (${cat.dxHint}) אינן נתמכות קלינית בשלב זה.`;
+
+  const patient = anyPositive
+    ? 'בבדיקה נמצאו ממצאים המצריכים הערכה או בירור דחוף נוסף, כפי שהוסבר בעל פה.'
+    : j(['ההערכה שבוצעה היום לא העלתה סימנים מדאיגים המחייבים בירור דחוף.',
+         'אם יופיעו בהמשך תסמינים חדשים או מחמירים, יש לפנות לחדר מיון או לחזור לבדיקה ללא דיחוי.']);
+
+  return {history:h, exam:e, summary:plan, patient, title:`הערכת דגלים אדומים — ${cat.label}`};
+}
+
+const COMPOSERS = {throat:composeThroat, cough:composeCough, bloods:composeBloods, newborn:composeNewborn, neuro:composeNeuro, redflags:composeRedflags};
+
+function render(){
+  const s = state[currentModule];
+  const out = COMPOSERS[currentModule](s);
+  document.getElementById('out-history').value = out.history;
+  document.getElementById('out-exam').value = out.exam;
+  document.getElementById('out-summary').value = out.summary;
+  window.__lastPatient = out.patient;
+  window.__lastTitle = out.title;
+  if(currentModule!=='throat') document.getElementById('centorBadge').style.display='none';
+}
+
+function copyPanel(name){
+  const el = document.getElementById('out-'+name);
+  el.select();
+  navigator.clipboard && navigator.clipboard.writeText(el.value).catch(()=>document.execCommand('copy'));
+}
+
+function printPatient(){
+  document.getElementById('pf-title').textContent = window.__lastTitle || 'סיכום ביקור';
+  document.getElementById('pf-date').textContent = 'תאריך: ' + new Date().toLocaleDateString('he-IL');
+  document.getElementById('pf-body').textContent = window.__lastPatient || '';
+  window.print();
+}
+
+buildTabs();
+initChecklists();
+initRedflagsUI();
+applyDefaults();
+switchModule(MODULES[0].key);
+</script>
+</body>
+</html>
