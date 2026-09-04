@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>דיסליפידמיה ומניעה קרדיווסקולרית — כלי עזר לרופא</title>
+<style>
+:root{
+  --v900:#2e1065; --v800:#4c1d95; --v700:#6d28d9; --v600:#7c3aed;
+  --v100:#ede9fe; --v50:#f5f3ff;
+  --ink:#1e1b2e; --mut:#6b6880; --line:#e3e0ee; --bg:#faf9fd; --card:#fff;
+  --ok:#047857; --ok-bg:#ecfdf5; --warn:#b45309; --warn-bg:#fffbeb;
+  --bad:#b91c1c; --bad-bg:#fef2f2; --us:#0e7490; --us-bg:#ecfeff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
+header{background:linear-gradient(135deg,var(--v900),var(--v700));color:#fff;padding:18px 20px 14px}
+header a.back{color:#ddd6fe;text-decoration:none;font-size:13px}
+header h1{margin:6px 0 2px;font-size:21px}
+header p{margin:0;font-size:13px;color:#ddd6fe}
+nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+  display:flex;gap:2px;overflow-x:auto;padding:0 8px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+nav a{padding:11px 12px;font-size:13px;color:var(--mut);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent}
+nav a:hover{color:var(--v700)}
+nav a.on{color:var(--v800);border-bottom-color:var(--v700);font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px 14px 80px}
+section{scroll-margin-top:56px;margin-bottom:26px}
+h2{font-size:18px;color:var(--v800);border-right:4px solid var(--v600);padding-right:9px;margin:0 0 12px}
+h3{font-size:15px;margin:16px 0 7px;color:var(--v900)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:3px;font-weight:600}
+input[type=number],select,input[type=text]{width:100%;padding:8px;border:1px solid var(--line);border-radius:7px;font-size:15px;font-family:inherit;background:#fff}
+input:focus,select:focus{outline:2px solid var(--v600);outline-offset:-1px}
+.chk{display:flex;align-items:flex-start;gap:7px;font-size:13.5px;padding:4px 0;color:var(--ink);font-weight:400;margin:0}
+.chk input{margin-top:4px;flex:none;width:16px;height:16px;accent-color:var(--v700)}
+.cols2{columns:2;column-gap:18px}
+@media(max-width:620px){.cols2{columns:1}}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:700;vertical-align:middle}
+.p-low{background:#dcfce7;color:#166534}.p-mod{background:#fef9c3;color:#854d0e}
+.p-high{background:#ffedd5;color:#9a3412}.p-vhigh{background:#fee2e2;color:#991b1b}
+.p-ext{background:#4c1d95;color:#fff}
+.res{background:var(--v50);border:1px solid #ddd6fe;border-radius:10px;padding:14px}
+.big{font-size:30px;font-weight:800;color:var(--v800);line-height:1.1}
+.us{background:var(--us-bg);border:1px solid #a5f3fc;border-right:4px solid var(--us);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13.5px}
+.us b{color:var(--us)}
+.warn{background:var(--warn-bg);border:1px solid #fde68a;border-right:4px solid var(--warn);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+.bad{background:var(--bad-bg);border:1px solid #fecaca;border-right:4px solid var(--bad);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+.ok{background:var(--ok-bg);border:1px solid #a7f3d0;border-right:4px solid var(--ok);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:right;vertical-align:top}
+th{background:var(--v50);color:var(--v900);font-size:12.5px}
+tr.hit td{background:#f5f3ff;font-weight:700;box-shadow:inset 3px 0 0 var(--v600)}
+.cite{font-size:11px;color:var(--v700);text-decoration:none;background:var(--v100);padding:1px 6px;border-radius:5px;white-space:nowrap;margin-right:4px}
+.cite:hover{background:#ddd6fe}
+.cor{display:inline-block;min-width:26px;text-align:center;font-weight:700;font-size:11.5px;padding:1px 6px;border-radius:5px;background:#e5e7eb;color:#374151;margin-left:5px}
+.cor.c1{background:#dcfce7;color:#166534}.cor.c2a{background:#fef9c3;color:#854d0e}
+.cor.c2b{background:#ffedd5;color:#9a3412}.cor.c3{background:#fee2e2;color:#991b1b}
+.muted{color:var(--mut);font-size:12.5px}
+ul.tight{margin:6px 0;padding-right:20px}ul.tight li{margin:3px 0;font-size:13.5px}
+textarea{width:100%;min-height:150px;padding:10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px;line-height:1.6}
+button{background:var(--v700);color:#fff;border:0;padding:9px 15px;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer;font-weight:600}
+button:hover{background:var(--v800)}
+button.sec{background:#fff;color:var(--v700);border:1px solid #ddd6fe}
+.hint{font-size:12px;color:var(--mut);margin-top:3px}
+.flag{background:#fff7ed;border:1px dashed #fdba74;border-radius:8px;padding:9px 11px;font-size:12.5px;color:#9a3412;margin:8px 0}
+details{border:1px solid var(--line);border-radius:8px;padding:8px 11px;margin:8px 0;background:#fff}
+summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--v800)}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.kv:last-child{border:0}
+.kv b{color:var(--v800)}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="doctors.html">← חזרה לכלים לרופא</a>
+  <h1>דיסליפידמיה ומניעה קרדיווסקולרית</h1>
+  <p>מבוסס על ההנחיות הישראליות לטיפול בדיסליפידמיה (הר"י, 2020) · נייר עמדה Lp(a) (הר"י, 2024) · הבדלים מהנחיות ACC/AHA 2026 מסומנים בנפרד</p>
+</header>
+
+<nav id="nav">
+  <a href="#sec-input" class="on">נתוני המטופל</a>
+  <a href="#sec-risk">דרגת סיכון</a>
+  <a href="#sec-img">הדמיה ו-Lp(a)</a>
+  <a href="#sec-target">יעדי טיפול</a>
+  <a href="#sec-tx">טיפול תרופתי</a>
+  <a href="#sec-tg">טריגליצרידים</a>
+  <a href="#sec-sams">כאבי שרירים</a>
+  <a href="#sec-fu">מעקב</a>
+  <a href="#sec-soap">סיכום SOAP</a>
+</nav>
+
+<main>
+
+<!-- ============ INPUT ============ -->
+<section id="sec-input">
+  <h2>נתוני המטופל</h2>
+
+  <div class="card">
+    <div class="grid">
+      <div><label>גיל</label><input type="number" id="age" min="18" max="100" placeholder="50–69"></div>
+      <div><label>מין</label><select id="sex"><option value="">בחר…</option><option value="m">גבר</option><option value="f">אישה</option></select></div>
+      <div><label>עישון פעיל</label><select id="smoke"><option value="0">לא</option><option value="1">כן</option></select></div>
+      <div><label>לחץ דם סיסטולי (מ"מ כספית)</label><input type="number" id="sbp" min="80" max="260"></div>
+    </div>
+    <div id="ageMsg"></div>
+  </div>
+
+  <div class="card">
+    <h3>פרופיל שומנים (מ"ג/ד"ל)</h3>
+    <div class="grid">
+      <div><label>כולסטרול כללי</label><input type="number" id="tc"></div>
+      <div><label>HDL</label><input type="number" id="hdl"></div>
+      <div><label>טריגליצרידים</label><input type="number" id="tg"></div>
+      <div><label>LDL ישיר (אם נמדד)</label><input type="number" id="ldlDirect" placeholder="לא חובה"></div>
+      <div><label>apoB (אם נמדד)</label><input type="number" id="apob" placeholder="לא חובה"></div>
+    </div>
+    <div id="lipidCalc" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h3>מצבים המגדירים סיכון ללא מחשבון <span class="muted">(טבלה 2, פרק 2)</span></h3>
+    <p class="muted" style="margin-top:0">סימון אחד מאלה מייתר את חישוב ה-SCORE2 — המטופל מוגדר אוטומטית בסיכון גבוה או גבוה-מאוד.</p>
+    <div class="cols2">
+      <label class="chk"><input type="checkbox" id="ascvdClin"><span>מחלת כלי דם טרשתית קלינית — מחלה כלילית, שבץ/TIA איסכמי, מחלת כלי דם היקפית</span></label>
+      <label class="chk"><input type="checkbox" id="ascvdImg"><span>טרשת משמעותית בהדמיה — רובד/היצרות &gt;50% בקרוטיס, פמורלי, כליה, או ב-CT כלילי</span></label>
+      <label class="chk"><input type="checkbox" id="aaa"><span>מפרצת אאורטה בטנית</span></label>
+      <label class="chk"><input type="checkbox" id="fh"><span>היפרכולסטרולמיה משפחתית (FH)</span></label>
+      <label class="chk"><input type="checkbox" id="htnSev"><span>יתר לחץ דם לא מאוזן &gt; 180/110</span></label>
+      <label class="chk"><input type="checkbox" id="ldl190"><span>LDL מעל 190 מ"ג/ד"ל</span></label>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div><label>סוכרת</label>
+        <select id="dm">
+          <option value="none">אין</option>
+          <option value="young">צעיר/ת — T1 מתחת 35 או T2 מתחת 50, משך &lt;10 שנים, ללא גורמי סיכון</option>
+          <option value="high">משך ≥10 שנים או גורם סיכון נוסף, ללא פגיעת איבר מטרה</option>
+          <option value="vhigh">פגיעת איבר מטרה, ≥3 גורמי סיכון, או T1DM מעל 20 שנה</option>
+        </select></div>
+      <div><label>תפקוד כלייתי (eGFR)</label>
+        <select id="ckd">
+          <option value="none">מעל 60 / תקין</option>
+          <option value="s3">30–59 (דרגה 3)</option>
+          <option value="s4">מתחת 30 (דרגה 4–5)</option>
+        </select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>גורמי סיכון מחמירים <span class="muted">(risk modifiers — פרק 1.2)</span></h3>
+    <p class="muted" style="margin-top:0">בנבדק הנמצא בגבול העליון של דרגת סיכון, נוכחותם מצדיקה העלאה לדרגה הבאה (המלצה I, רמת הוכחה C).</p>
+    <div class="cols2" id="mods">
+      <label class="chk"><input type="checkbox" data-mod><span>סיפור משפחתי של מחלת כלי דם טרשתית מוקדמת (גבר &lt;55, אישה &lt;60)</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>מצב סוציואקונומי ירוד</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>השמנה, בפרט השמנה מרכזית</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>אורח חיים ישבני</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>מחלה דלקתית כרונית</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>הפרעה פסיכיאטרית מז'ורית</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>טיפול ב-HIV</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>פרפור עליות</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>היפרטרופיה של חדר שמאל</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>מחלת כליות קלה (eGFR מעל 60 עם ממצא)</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>דום נשימה חסימתי בשינה</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>כבד שומני לא-אלכוהולי</span></label>
+      <label class="chk"><input type="checkbox" data-mod><span>עבר טיפול כימותרפי / הקרנות לבית החזה / סרטן בלוטת התריס</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>בדיקות משלימות</h3>
+    <div class="grid">
+      <div><label>Lp(a)</label><input type="number" id="lpa" placeholder="ערך"></div>
+      <div><label>יחידות Lp(a)</label><select id="lpaUnit"><option value="nmol">nmol/L (מומלץ)</option><option value="mg">מ"ג/ד"ל</option></select></div>
+      <div><label>Calcium score (Agatston)</label><input type="number" id="cac" placeholder="אם בוצע"></div>
+      <div><label>דופלר קרוטידים / פמורלי</label>
+        <select id="duplex">
+          <option value="na">לא בוצע</option>
+          <option value="clean">תקין, ללא רובד</option>
+          <option value="plaque">רובד ללא היצרות משמעותית</option>
+          <option value="sten50">היצרות ≥ 50%</option>
+        </select></div>
+    </div>
+    <div class="hint">Lp(a) — בדיקה חד-פעמית בחיים, אינה דורשת צום. מומלץ לדווח ב-nmol/L; אין פקטור המרה מדויק בין היחידות.
+      <a class="cite" href="#" data-pdf="lpa" data-page="9">נייר עמדה Lp(a), עמ' 9</a></div>
+  </div>
+</section>
+
+<!-- ============ RISK ============ -->
+<section id="sec-risk">
+  <h2>דרגת סיכון</h2>
+  <div id="riskOut" class="res"><span class="muted">הזן גיל, מין, לחץ דם ופרופיל שומנים.</span></div>
+
+  <details>
+    <summary>הגדרות דרגות הסיכון (פרק 2)</summary>
+    <table>
+      <tr><th>דרגה</th><th>הגדרה</th></tr>
+      <tr><td><span class="pill p-vhigh">גבוה מאוד</span></td><td>מחלת כלי דם טרשתית קלינית או בהדמיה · מפרצת אאורטה בטנית · סוכרת עם פגיעת איבר מטרה / ≥3 גורמי סיכון / T1DM מעל 20 שנה · CKD דרגה 4 · FH עם גורם סיכון משמעותי נוסף · SCORE ≥ 10%</td></tr>
+      <tr><td><span class="pill p-high">גבוה</span></td><td>סוכרת ללא פגיעת איבר מטרה עם גורם סיכון נוסף או משך ≥10 שנים · גורם סיכון בערך קיצוני (יל"ד דרגה 3, LDL מעל 190) · CKD דרגה 3 · FH ללא גורמי סיכון נוספים · SCORE 5–10%</td></tr>
+      <tr><td><span class="pill p-mod">בינוני</span></td><td>סוכרת צעירה קצרת-משך ללא גורמי סיכון · SCORE 1–5%</td></tr>
+      <tr><td><span class="pill p-low">נמוך</span></td><td>SCORE מתחת 1%</td></tr>
+    </table>
+    <p class="muted">בתוך דרגת "גבוה מאוד" ההפרדה ליעדים נעשית לפי אירוע ווסקולרי קליני: אירוע קליני — מניעה שניונית, יעד LDL ≤ 55. טרשת מוכחת בהדמיה או מפרצת אאורטה ללא אירוע — מניעה ראשונית, יעד ≤ 70 עם אופציה לשקול ≤ 55 (טבלה 7).</p>
+    <p class="muted">גם רמת Lp(a) מעל 180 מ"ג/ד"ל מגדירה אוטומטית סיכון גבוה ומעלה, ללא צורך בחישוב.
+      <a class="cite" href="#" data-pdf="il" data-page="5">הנחיות 2020, עמ' 5</a></p>
+  </details>
+
+  <div class="us">
+    <b>הבדל מההנחיות האמריקאיות 2026:</b> ההנחיה האמריקאית משתמשת במשוואות <b>PREVENT-ASCVD</b> ולא ב-SCORE2, ומגדירה סיכון בינוני כ-5% עד פחות מ-10% וסיכון גבולי כ-3% עד פחות מ-5%. אין מיפוי מספרי ישיר בין המחשבונים — הערך המוצג כאן הוא SCORE2 בלבד, כפי שנדרש להנחיה הישראלית.
+  </div>
+
+  <div class="flag">
+    הכלי מוגבל לגילאי 50–69, הטווח שבו ספי דרגות הסיכון של ההנחיה הישראלית (5% ו-10%) חופפים מספרית לספי ESC 2021 ל-SCORE2. מחוץ לטווח זה המחשבון מושבת, אך מצבי "עקיפת המחשבון" ממשיכים לפעול בכל גיל.
+  </div>
+</section>
+
+<!-- ============ IMAGING + LPA ============ -->
+<section id="sec-img">
+  <h2>הדמיה ו-Lp(a)</h2>
+
+  <h3>מתי לשקול הדמיה <span class="muted">(טבלה 5)</span></h3>
+  <table>
+    <tr><th>המלצה</th><th>דרגה</th></tr>
+    <tr><td>בנבדקים בסיכון נמוך או בינוני שבהם קיימת התלבטות לגבי הצורך בטיפול תרופתי — ניתן לשקול אולטרסאונד של עורקי הצוואר ו/או גפיים תחתונות, או CT ללא חומר ניגוד עם כימות calcium score. בעיקר בנוכחות risk modifiers או סיפור משפחתי של טרשת בגיל צעיר.</td><td><span class="cor c2b">IIb</span> B</td></tr>
+    <tr><td>ניתן לשקול הדמיה להערכה נוספת במטופלים עם הוריית-נגד או תופעות לוואי משמעותיות לטיפול התרופתי.</td><td><span class="cor c2b">IIb</span> C</td></tr>
+    <tr><td>ניתן לשקול הדמיה בנבדקים בסיכון גבוה שחוששים לקבל טיפול תרופתי.</td><td><span class="cor c2b">IIb</span> B</td></tr>
+  </table>
+  <p class="muted">מדידת IMT של עורקי הצוואר נחשבת פחות טובה ככלי ניבוי ואינה מומלצת לצורך זה. אין המלצה להתחיל אספירין על סמך calcium score גבוה בלבד.
+    <a class="cite" href="#" data-pdf="il" data-page="8">הנחיות 2020, עמ' 8</a></p>
+
+  <div id="imgOut"></div>
+
+  <div class="us">
+    <b>הבדל מההנחיות האמריקאיות 2026 — כאן ההבדל מהותי:</b> בהנחיה הישראלית ה-calcium score הוא כלי <b>לריבוד מחדש</b> של דרגת הסיכון (IIb), ויעד ה-LDL נגזר אחר כך מטבלה 7. בהנחיה האמריקאית 2026 ה-CAC <b>קובע בעצמו את יעד הטיפול</b>, ברובו בדרגת המלצה 1:
+    <table style="margin-top:8px">
+      <tr><th>CAC (Agatston)</th><th>יעד לפי ACC/AHA 2026</th><th>דרגה</th></tr>
+      <tr><td>≥ 1000</td><td>הפחתה ≥50% · LDL &lt; 55 · non-HDL &lt; 85</td><td><span class="cor c1">1</span> B-NR</td></tr>
+      <tr><td>300–999</td><td>הפחתה ≥50% · LDL &lt; 70 · non-HDL &lt; 100 (וסביר להעצים עד LDL &lt; 55)</td><td><span class="cor c1">1</span> B-R</td></tr>
+      <tr><td>100–299 או ≥ אחוזון 75</td><td>הפחתה ≥50% · LDL &lt; 70 · non-HDL &lt; 100</td><td><span class="cor c1">1</span> B-R</td></tr>
+      <tr><td>1–99 ומתחת לאחוזון 75, או CAC קל אגבי ב-CT לא-לבבי</td><td>סטטין בעצימות בינונית · הפחתה 30–49% · LDL &lt; 100 · non-HDL &lt; 130</td><td><span class="cor c2a">2a</span> B-R</td></tr>
+    </table>
+    הרציונל: שיעורי האירועים ב-CAC מעל 300 דומים לאלה של אוכלוסיות במניעה שניונית. כמו כן ההנחיה האמריקאית מתייחסת לטרשת כלילית אגבית ב-CT לא-לבבי (בינונית–קשה → סטטין בעצימות גבוהה, 2a). לגבי רובד קרוטידי — ההנחיה האמריקאית מכירה בו כמעלה סיכון אך קובעת שאין די ראיות לקבוע עבורו יעדי LDL ייעודיים, בדומה לגישה הישראלית.
+    <a class="cite" href="#" data-pdf="us" data-page="2690">ACC/AHA 2026, עמ' 2690–2693</a>
+  </div>
+
+  <h3>Lp(a) — במי למדוד <span class="muted">(נייר עמדה 2024)</span></h3>
+  <p class="muted" style="margin-top:0">האיגודים האירופאיים תומכים בבדיקה אוניברסלית חד-פעמית לכלל האוכלוסייה הבוגרת (המלצה בינונית). נייר העמדה הישראלי מציין שבשלב הנוכחי יש לשקול את הבדיקה בעיקר בקבוצות הבאות:</p>
+  <ul class="tight">
+    <li>סיפור משפחתי או אישי של מחלה קרדיווסקולרית טרשתית מוקדמת (גבר עד 55, אישה עד 65)</li>
+    <li>רמת Lp(a) מוגברת בקרוב משפחה מדרגה ראשונה (cascade screening)</li>
+    <li>מחלה טרשתית פרוגרסיבית למרות טיפול אופטימלי ועמידה ביעדים</li>
+    <li>דרגת סיכון גבולית בין בינוני לגבוה — לצורך ריבוד מחדש והחלטה על טיפול</li>
+    <li>היפרכולסטרולמיה ניכרת עם LDL מעל 190 או חשד ל-FH</li>
+    <li>תגובה פחותה מהצפוי לטיפול להורדת כולסטרול למרות היענות טובה</li>
+    <li>היצרות מסויידת של המסתם האאורטלי בגיל צעיר או בקצב מהיר</li>
+    <li>מטופלים בסיכון גבוה-מאוד — לזיהוי מי יפיק תועלת רבה יותר ממעכבי PCSK9</li>
+  </ul>
+  <p class="muted">חשוב: הכולסטרול שבחלקיקי Lp(a) נכלל בתוך ה-LDL המחושב. רמה גבוהה עשויה אפוא להיראות כ-FH ולהסביר תגובה חלקית לסטטין. אין להחסיר את תרומת ה-Lp(a) מה-LDL בחישוב מספרי.
+    <a class="cite" href="#" data-pdf="lpa" data-page="7">נייר עמדה Lp(a), עמ' 7</a></p>
+
+  <div id="lpaOut"></div>
+</section>
+
+<!-- ============ TARGETS ============ -->
+<section id="sec-target">
+  <h2>יעדי טיפול</h2>
+  <div id="targetOut" class="res"><span class="muted">יש להשלים את נתוני המטופל.</span></div>
+
+  <details>
+    <summary>טבלה 7 — יעדי הטיפול המלאים</summary>
+    <table id="t7">
+      <tr><th>דרגת סיכון</th><th>% ירידה</th><th>LDL</th><th>non-HDL</th><th>apoB</th><th>דרגה</th></tr>
+      <tr data-cat="low"><td>נמוכה <span class="muted">(עד גיל 75)</span></td><td>—</td><td>≤ 140</td><td>≤ 170</td><td>≤ 130</td><td><span class="cor c2b">IIb</span> B</td></tr>
+      <tr data-cat="mod"><td>בינונית <span class="muted">(עד גיל 75)</span></td><td>—</td><td>≤ 100</td><td>≤ 130</td><td>≤ 100</td><td><span class="cor c2b">IIb</span> A</td></tr>
+      <tr data-cat="high"><td>גבוהה</td><td>&gt; 50%</td><td>≤ 70</td><td>≤ 100</td><td>≤ 80</td><td><span class="cor c1">I</span> A</td></tr>
+      <tr data-cat="vhigh1"><td>גבוהה מאוד — מניעה ראשונית</td><td>&gt; 50%</td><td>≤ 70<br><span class="muted">אופציה לשקול ≤ 55</span></td><td>≤ 100<br><span class="muted">≤ 85</span></td><td>≤ 80<br><span class="muted">≤ 65</span></td><td><span class="cor c1">I</span> A<br><span class="cor c2b">IIb</span> B</td></tr>
+      <tr data-cat="vhigh2"><td>גבוהה מאוד — מניעה שניונית</td><td>&gt; 50%</td><td>≤ 55</td><td>≤ 85</td><td>≤ 65</td><td><span class="cor c1">I</span> A</td></tr>
+      <tr data-cat="ext"><td>גבוהה במיוחד — אירוע ווסקולרי נוסף תוך שנתיים למרות מינון סטטין מקסימלי נסבל</td><td>&gt; 50%</td><td>≤ 40</td><td>≤ 70</td><td>≤ 50</td><td><span class="cor c2b">IIb</span> B</td></tr>
+    </table>
+    <p class="muted"><a class="cite" href="#" data-pdf="il" data-page="13">הנחיות 2020, עמ' 13</a></p>
+  </details>
+
+  <div class="card">
+    <h3>טריגליצרידים ו-non-HDL <span class="muted">(פרק 3.2)</span></h3>
+    <p style="margin:0;font-size:13.5px">יעד ה-non-HDL הוא 30 מ"ג/ד"ל מעל יעד ה-LDL של אותו מטופל. בנבדקים עם טריגליצרידים בצום מעל 300 מ"ג/ד"ל נוסחת פרידוולד מאבדת אמינות — יש להשתמש ב-non-HDL או ב-apoB כיעד טיפולי במקום LDL.</p>
+  </div>
+</section>
+
+<!-- ============ TREATMENT ============ -->
+<section id="sec-tx">
+  <h2>טיפול תרופתי להורדת LDL</h2>
+
+  <div id="txOut"></div>
+
+  <h3>עצימות הסטטין <span class="muted">(טבלה 9)</span></h3>
+  <table>
+    <tr><th>עצימות</th><th>הפחתת LDL</th><th>תכשירים ומינונים</th></tr>
+    <tr id="int-high"><td><b>גבוהה</b></td><td>50% ומעלה</td><td>Atorvastatin 40–80 מ"ג · Rosuvastatin 20–40 מ"ג</td></tr>
+    <tr id="int-mod"><td><b>בינונית</b></td><td>30–49%</td><td>Atorvastatin 10–20 · Rosuvastatin 5–10 · Simvastatin 20–40 · Pravastatin 40</td></tr>
+    <tr id="int-low"><td><b>נמוכה</b></td><td>מתחת ל-30%</td><td>Simvastatin 10 · Pravastatin 10–20</td></tr>
+  </table>
+
+  <h3>סדר ההסלמה <span class="muted">(טבלה 10)</span></h3>
+  <table>
+    <tr><th>המלצה</th><th>דרגה</th></tr>
+    <tr><td>טיפול ראשוני: סטטין בעצימות בינונית–גבוהה, במינון המקסימלי הנסבל, בהתאם לדרגת הסיכון.</td><td><span class="cor c1">I</span> A</td></tr>
+    <tr><td>אין הגעה ליעד עם מינון סטטין מקסימלי נסבל → שילוב אזטימיב.</td><td><span class="cor c1">I</span> B</td></tr>
+    <tr><td>מניעה שניונית, סיכון גבוה-מאוד, ללא הגעה ליעד עם סטטין + אזטימיב → מעכב PCSK9.</td><td><span class="cor c1">I</span> A</td></tr>
+    <tr><td>FH בסיכון גבוה-מאוד ללא הגעה ליעד עם סטטין + אזטימיב → מעכב PCSK9.</td><td><span class="cor c1">I</span> C</td></tr>
+    <tr><td>במניעה שניונית — ניתן לשקול פתיחה ישירה בסטטין בעצימות גבוהה יחד עם אזטימיב.</td><td><span class="cor c2a">IIa</span> C</td></tr>
+    <tr><td>אי-סבילות לסטטין בכל מינון → אזטימיב לבד; בסיכון גבוה-מאוד — הוספת מעכב PCSK9 לאזטימיב.</td><td><span class="cor c2a">IIa</span> C</td></tr>
+    <tr><td>מניעה ראשונית בסיכון גבוה-מאוד (ללא FH) — ניתן לשקול מעכב PCSK9 אם אין הגעה ליעד.</td><td><span class="cor c2b">IIb</span> C</td></tr>
+  </table>
+  <p class="muted"><a class="cite" href="#" data-pdf="il" data-page="24">הנחיות 2020, עמ' 24</a></p>
+
+  <h3>תכשירים בישראל</h3>
+  <table id="drugs">
+    <tr><th>תרופה</th><th>שם מסחרי</th><th>מינון</th><th>הפחתת LDL</th><th>הערות</th></tr>
+    <tr><td>Atorvastatin</td><td>Lipitor ואחרים</td><td>10–80 מ"ג ליום</td><td>עד ~55%</td><td>פינוי כבדי כמעט מלא — עדיף באי-ספיקת כליות</td></tr>
+    <tr><td>Rosuvastatin</td><td>Crestor ואחרים</td><td>5–40 מ"ג ליום</td><td>עד ~60%</td><td>להימנע ממינון גבוה ב-eGFR נמוך</td></tr>
+    <tr><td>Simvastatin</td><td>Simovil / Simvacor</td><td>10–40 מ"ג ליום</td><td>~30–40%</td><td>אינטראקציות רבות (CYP3A4)</td></tr>
+    <tr><td>Pravastatin</td><td>Pravalip</td><td>10–40 מ"ג ליום</td><td>~20–35%</td><td>פחות אינטראקציות; מועדף עם ציקלוספורין</td></tr>
+    <tr><td>Ezetimibe</td><td>Ezetrol</td><td>10 מ"ג ליום</td><td>15–20% נוספים</td><td>ללא קשר לארוחה; אין צורך בהתאמת מינון בכליה/כבד</td></tr>
+    <tr><td>Ezetimibe + Simvastatin</td><td>Inegy</td><td>משולב</td><td>—</td><td></td></tr>
+    <tr><td>Ezetimibe + Atorvastatin</td><td>Atozet</td><td>משולב</td><td>—</td><td></td></tr>
+    <tr><td>Evolocumab</td><td>Repatha</td><td>140 מ"ג כל שבועיים</td><td>~60%</td><td>מעכב PCSK9 בזריקה</td></tr>
+    <tr><td>Alirocumab</td><td>Praluent</td><td>75–150 מ"ג כל שבועיים</td><td>~60%</td><td>מעכב PCSK9 בזריקה</td></tr>
+    <tr><td>Inclisiran</td><td>Leqvio</td><td>284 מ"ג — חודש 0, 3, ואז כל 6 חודשים</td><td>~50%</td><td>siRNA כנגד PCSK9. <b>עדכון לעומת ההנחיה:</b> רשום בישראל ונכלל בסל 2025 במסגרת ההכללה של משפחת מעכבי PCSK9</td></tr>
+    <tr><td>Icosapent ethyl</td><td>Vazkepa</td><td>2 גרם × 2 ליום</td><td>—</td><td><b>עדכון לעומת ההנחיה:</b> אושר על ידי משרד הבריאות ומשווק בישראל מאז 2023</td></tr>
+    <tr><td>Fenofibrate</td><td>Lipidil / Norlip</td><td>לפי תכשיר</td><td>—</td><td>להיפרטריגליצרידמיה</td></tr>
+    <tr><td>Bempedoic acid</td><td>—</td><td>180 מ"ג ליום</td><td>~20–25%</td><td>לא נמצא רישום בישראל נכון לכתיבת הכלי</td></tr>
+  </table>
+
+  <div class="flag">
+    <b>לאימות:</b> שמות מסחריים, גנריקות ותנאי סל משתנים תדיר. הטבלה מבוססת על ההנחיה משנת 2020 בתוספת עדכוני רישום וסל שאותרו — מומלץ להצליב מול מדריך התרופות של הקופה לפני שימוש קליני, ולעדכן כאן ישירות.
+  </div>
+
+  <div class="us">
+    <b>הבדל מההנחיות האמריקאיות 2026:</b> ההנחיה האמריקאית כוללת גם bempedoic acid כאופציה (דרגה 2a בחולי ASCVD, בהיעדר מחקרי תוצאים בשילוב עם סטטין סטנדרטי), ומציינת שבהיעדר מחקרי תוצאים גמורים ל-inclisiran, evolocumab ו-alirocumab עדיפים כאשר נדרשת הפחתה משמעותית של LDL.
+    <a class="cite" href="#" data-pdf="us" data-page="2690">ACC/AHA 2026, עמ' 2690</a>
+  </div>
+</section>
+
+<!-- ============ TG ============ -->
+<section id="sec-tg">
+  <h2>היפרטריגליצרידמיה</h2>
+  <div id="tgOut"></div>
+
+  <table>
+    <tr><th>המלצה</th><th>דרגה</th></tr>
+    <tr><td>לברר ולטפל בגורם להפרעה (סוכרת לא מאוזנת, תת-תריסיות, אלכוהול, מחלת כליות, תרופות) ולשוחח על אורח החיים.</td><td><span class="cor c1">I</span> A</td></tr>
+    <tr><td>סיכון גבוה עם TG מעל 200 → סטטין כטיפול בחירה ראשון.</td><td><span class="cor c1">I</span> B</td></tr>
+    <tr><td>TG מעל 500 למרות טיפול מירבי באורחות החיים → פיברט ו/או אומגה 3 במינון גבוה, למניעת דלקת לבלב.</td><td><span class="cor c1">I</span> B</td></tr>
+    <tr><td>סיכון גבוה עם TG 135–499 למרות סטטין → לשקול הוספת icosapent ethyl.</td><td><span class="cor c2a">IIa</span> B</td></tr>
+    <tr><td>TG מעל 200 למרות סטטין → ניתן לשקול הוספת פיברט.</td><td><span class="cor c2b">IIb</span> B</td></tr>
+    <tr><td>TG גבוה מאוד עם דלקות לבלב חוזרות למרות טיפול מירבי → ניתן לשקול apheresis.</td><td><span class="cor c2b">IIb</span> C</td></tr>
+  </table>
+  <p class="muted">הסיכון לדלקת לבלב נעשה משמעותי מעל 900 מ"ג/ד"ל, אך המחלה יכולה להופיע כבר מ-440, בעיקר בשילוב עם אלכוהול.
+    <a class="cite" href="#" data-pdf="il" data-page="27">הנחיות 2020, עמ' 27</a></p>
+
+  <details>
+    <summary>טיפולים לא-תרופתיים (טבלה 11)</summary>
+    <ul class="tight">
+      <li>הורדת עודף משקל · הפחתת אלכוהול · הגדלת פעילות גופנית · הפחתת פחמימות · תוספי אומגה 3 — רמת הוכחה A</li>
+      <li>הפחתת סוכרים פשוטים · החלפת שומן רווי בלא-רווי — רמת הוכחה B</li>
+    </ul>
+  </details>
+</section>
+
+<!-- ============ SAMS ============ -->
+<section id="sec-sams">
+  <h2>כאבי שרירים תחת סטטין</h2>
+  <div class="card">
+    <p style="margin-top:0;font-size:13.5px">אין המלצה לבדוק CPK באופן שגרתי במטופל א-תסמיני. לפני תחילת טיפול מומלץ לבדוק CPK בסיסי — ואם הוא מעל פי 4 מהגבול העליון, לא להתחיל ולחזור על הבדיקה כעבור מספר שבועות.</p>
+    <table>
+      <tr><th>ממצא</th><th>פעולה</th></tr>
+      <tr><td>תלונה שרירית, CPK תקין או עד פי 4 ULN</td><td>לחפש גורמי סיכון בני-טיפול. ניתן להפסיק את הסטטין ל-2–4 שבועות ולבדוק אם התסמינים חולפים.</td></tr>
+      <tr><td>התסמינים חלפו לאחר הפסקה</td><td>re-challenge באותו מינון. אם לא חזרו — להמשיך באותו טיפול תוך מעקב.</td></tr>
+      <tr><td>התסמינים חזרו עם החידוש</td><td>אותו סטטין במינון מופחת, אפילו כל יומיים (בשילוב אזטימיב לפי הצורך), או מעבר לסטטין אחר.</td></tr>
+      <tr><td>CPK פי 4–9 ULN</td><td>להפסיק, לוודא חזרה לנורמה, ואז לחדש עם סטטין אחר או מינון נמוך יותר, תוך מעקב קליני ו-CPK.</td></tr>
+      <tr><td>CPK מעל פי 10 ULN או חולשת שרירים חדשה</td><td>להפסיק ולשלול רבדומיוליזיס.</td></tr>
+      <tr><td>לא ניתן להגיע ליעד עקב בעיית שרירים</td><td>לשקול הוספת אזטימיב ו/או מעכב PCSK9.</td></tr>
+    </table>
+    <p class="muted">גורמים המגבירים רגישות: גיל מעל 80, מסת גוף נמוכה, תת-פעילות בלוטת התריס, אי-ספיקת כליות או כבד, חוסר ויטמין D, CPK מוגבר בעבר, מחלת שריר, פעילות גופנית נמרצת, ותרופות כמו מקרולידים, נוגדי פטרת וציקלוספורין. בכל שלב יש להעריך מחדש את נחיצות הטיפול מול דרגת הסיכון.
+      <a class="cite" href="#" data-pdf="il" data-page="46">הנחיות 2020, עמ' 46–47</a></p>
+  </div>
+</section>
+
+<!-- ============ FOLLOW-UP ============ -->
+<section id="sec-fu">
+  <h2>מעקב קליני ומעבדתי</h2>
+  <table>
+    <tr><th>בדיקה</th><th>לפני תחילת טיפול</th><th>4–6 שבועות מהתחלה</th><th>4–6 שבועות אחרי כל שינוי</th><th>לאחר התייצבות</th></tr>
+    <tr><td>פרופיל שומנים</td><td>✔</td><td>✔</td><td>✔</td><td>כל 6–12 חודשים</td></tr>
+    <tr><td>גלוקוז בצום / HbA1c</td><td>✔</td><td>✔</td><td>—</td><td>כל 12 חודשים במטופל יציב</td></tr>
+    <tr><td>תפקודי כבד</td><td>✔</td><td colspan="3">בסטטינים, אזטימיב ומעכבי PCSK9 — אין צורך במעקב שגרתי. בפיברטים — בכל בדיקת פרופיל שומנים.</td></tr>
+    <tr><td>CK</td><td>✔ (בסיסי)</td><td colspan="3">רק במטופלים המתלוננים על כאבים או חולשה בשרירים</td></tr>
+    <tr><td>תפקודי כליה</td><td>✔ (אם אין עדכני)</td><td colspan="3">לפי הצורך הקליני בלבד</td></tr>
+  </table>
+  <ul class="tight">
+    <li>בנבדק בסיכון נמוך שאינו דורש התערבות — פרופיל שומנים כל 3–5 שנים, ותכוף יותר בשינוי לרעה בגורמי הסיכון.</li>
+    <li>במטופל המטופל בשינוי אורח חיים בלבד — לחזור על הפרופיל כעבור 3–6 חודשים.</li>
+    <li>עלייה בלתי מוסברת בערכים — לברר היענות, ולשלול תת-פעילות בלוטת התריס, תסמונת נפרוטית, פאראפרוטאינמיה, סוכרת לא מאוזנת ותרופות חדשות, לפני הסקת מסקנות.</li>
+    <li>עליית טרנסאמינזות מעל פי 3 — לחפש סיבה אחרת (כבד שומני, אלכוהול) ולחזור על הבדיקה; אם נשארת גבוהה, להפסיק ולעבור לתכשיר חלופי לאחר נורמליזציה.</li>
+  </ul>
+  <p class="muted"><a class="cite" href="#" data-pdf="il" data-page="48">הנחיות 2020, עמ' 48–49</a></p>
+</section>
+
+<!-- ============ SOAP ============ -->
+<section id="sec-soap">
+  <h2>סיכום לרשומה הרפואית</h2>
+  <div class="card">
+    <label>בדיקה גופנית — תבנית לעריכה</label>
+    <textarea id="pe" style="min-height:110px"></textarea>
+  </div>
+  <div class="card">
+    <label>סיכום SOAP</label>
+    <textarea id="soap"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button onclick="copySoap()">העתק ללוח</button>
+      <button class="sec" onclick="buildSoap()">בנה מחדש מהנתונים</button>
+    </div>
+    <div id="copyMsg" class="hint"></div>
+  </div>
+</section>
+
+<p class="muted" style="text-align:center;font-size:12px;border-top:1px solid var(--line);padding-top:14px">
+כלי עזר לרופא/ה. אינו מחליף שיקול דעת קליני בכל מצב נתון.
+</p>
+
+</main>
+
+<script>
+/* ---------- citation targets ---------- */
+const PDFS = { il:'dyslipidemia-israel-2020.pdf', lpa:'lpa-israel-2024.pdf', us:'accaha-dyslipidemia-2026.pdf' };
+document.addEventListener('click', e=>{
+  const a = e.target.closest('.cite'); if(!a) return;
+  e.preventDefault();
+  window.open(PDFS[a.dataset.pdf] + '#page=' + a.dataset.page, '_blank');
+});
+
+/* ---------- SCORE2 (validated against the published worked example) ---------- */
+const S2 = {
+  m:{a:0.3742,s:0.6012,b:0.2777,t:0.1458,h:-0.2698,sa:-0.0755,ba:-0.0255,ta:-0.0281,ha:0.0426,S0:0.9605,x1:-0.5699,x2:0.7476},
+  f:{a:0.4648,s:0.7744,b:0.3131,t:0.1002,h:-0.2606,sa:-0.1088,ba:-0.0277,ta:-0.0226,ha:0.0613,S0:0.9776,x1:-0.7380,x2:0.7019}
+};
+function score2(sex,age,smoke,sbp,tcMg,hdlMg){
+  const c=S2[sex], tc=tcMg/38.67, hdl=hdlMg/38.67;
+  const ca=(age-60)/5, cb=(sbp-120)/20, ct=tc-6, ch=(hdl-1.3)/0.5;
+  const x = c.a*ca + c.s*smoke + c.b*cb + c.t*ct + c.h*ch
+          + c.sa*smoke*ca + c.ba*cb*ca + c.ta*ct*ca + c.ha*ch*ca;
+  const u = 1 - Math.pow(c.S0, Math.exp(x));
+  return (1 - Math.exp(-Math.exp(c.x1 + c.x2*Math.log(-Math.log(1-u))))) * 100;
+}
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const num = id => { const v = parseFloat($(id).value); return isNaN(v) ? null : v; };
+const chk = id => $(id).checked;
+
+const CATS = {
+  low:   {name:'נמוכה',        cls:'p-low',   ldl:140, nhdl:170, apob:130, pct:null},
+  mod:   {name:'בינונית',      cls:'p-mod',   ldl:100, nhdl:130, apob:100, pct:null},
+  high:  {name:'גבוהה',        cls:'p-high',  ldl:70,  nhdl:100, apob:80,  pct:50},
+  vhigh1:{name:'גבוהה מאוד — מניעה ראשונית', cls:'p-vhigh', ldl:70, nhdl:100, apob:80, pct:50},
+  vhigh2:{name:'גבוהה מאוד — מניעה שניונית', cls:'p-vhigh', ldl:55, nhdl:85,  apob:65, pct:50},
+  ext:   {name:'גבוהה במיוחד', cls:'p-ext',   ldl:40,  nhdl:70,  apob:50,  pct:50}
+};
+
+/* ---------- lipid derivation ---------- */
+function lipids(){
+  const tc=num('tc'), hdl=num('hdl'), tg=num('tg'), direct=num('ldlDirect');
+  let ldl=null, nhdl=null, friedInvalid=false, src='';
+  if(tc!==null && hdl!==null) nhdl = tc - hdl;
+  if(direct!==null){ ldl=direct; src='LDL ישיר'; }
+  else if(tc!==null && hdl!==null && tg!==null){
+    if(tg>400){ friedInvalid=true; }
+    else { ldl = tc - hdl - tg/5; src='פרידוולד'; }
+  }
+  return {tc,hdl,tg,ldl,nhdl,friedInvalid,src};
+}
+
+/* ---------- risk engine ---------- */
+function assess(){
+  const age=num('age'), sex=$('sex').value, smoke=parseInt($('smoke').value), sbp=num('sbp');
+  const L=lipids();
+  const dm=$('dm').value, ckd=$('ckd').value;
+  const mods=[...document.querySelectorAll('#mods input:checked')].map(i=>i.parentElement.innerText.trim());
+  const lpaRaw=num('lpa'), lpaMg = lpaRaw===null?null:($('lpaUnit').value==='mg'?lpaRaw:lpaRaw/2.5);
+  const cac=num('cac'), duplex=$('duplex').value;
+
+  /* מניעה שניונית = אירוע ווסקולרי קליני בלבד.
+     טרשת מוכחת בהדמיה או מפרצת אאורטה ללא אירוע = גבוהה מאוד, מניעה ראשונית (טבלה 7).
+     היצרות ≥50% בדופלר מטופלת כאן, זהה לצ'קבוקס, כדי שלא יתקבלו שתי תשובות לאותו ממצא. */
+  const secondary   = chk('ascvdClin');
+  const imagingImg  = chk('ascvdImg');
+  const imagingDup  = duplex === 'sten50';
+  const imagingAscvd = imagingImg || imagingDup;
+  const aaa = chk('aaa');
+  const reasons=[];
+  let cat=null;
+
+  if(secondary){ cat='vhigh2'; reasons.push('מחלת כלי דם טרשתית קלינית — מניעה שניונית'); }
+  if(imagingAscvd){
+    if(!cat) cat='vhigh1';
+    reasons.push(imagingImg
+      ? 'טרשת משמעותית בהדמיה, ללא אירוע ווסקולרי קליני'
+      : 'היצרות ≥50% בדופלר, ללא אירוע ווסקולרי קליני');
+  }
+  if(aaa){ if(!cat) cat='vhigh1'; reasons.push('מפרצת אאורטה בטנית, ללא אירוע ווסקולרי קליני'); }
+  if(dm==='vhigh'){ if(!cat) cat='vhigh1'; reasons.push('סוכרת עם פגיעת איבר מטרה / ≥3 גורמי סיכון / T1DM ממושכת'); }
+  if(ckd==='s4'){ if(!cat) cat='vhigh1'; reasons.push('מחלת כליות כרונית דרגה 4'); }
+  if(chk('fh')){ if(!cat) cat = mods.length? 'vhigh1':'high'; reasons.push('היפרכולסטרולמיה משפחתית'); }
+  if(lpaMg!==null && lpaMg>180){ if(!cat||cat==='high') cat=cat||'high'; reasons.push('Lp(a) מעל 180 מ"ג/ד"ל'); }
+  if(dm==='high'){ if(!cat) cat='high'; reasons.push('סוכרת עם משך ≥10 שנים או גורם סיכון נוסף'); }
+  if(ckd==='s3'){ if(!cat) cat='high'; reasons.push('מחלת כליות כרונית דרגה 3'); }
+  if(chk('htnSev')){ if(!cat) cat='high'; reasons.push('יתר לחץ דם לא מאוזן מעל 180/110'); }
+  if(chk('ldl190') || (L.ldl!==null && L.ldl>190)){ if(!cat) cat='high'; reasons.push('LDL מעל 190 מ"ג/ד"ל'); }
+  if(dm==='young' && !cat){ cat='mod'; reasons.push('סוכרת צעירה קצרת-משך ללא גורמי סיכון'); }
+
+  /* SCORE2 */
+  let s2=null, ageOk = age!==null && age>=50 && age<=69;
+  const haveAll = sex && age!==null && sbp!==null && L.tc!==null && L.hdl!==null && !isNaN(smoke);
+  if(!cat && haveAll && ageOk) s2 = score2(sex,age,smoke,sbp,L.tc,L.hdl);
+  if(s2!==null){
+    cat = s2>=10 ? 'vhigh1' : s2>=5 ? 'high' : s2>=1 ? 'mod' : 'low';
+    reasons.push('SCORE2 = ' + s2.toFixed(1) + '%');
+  }
+
+  /* imaging reclassification — Israeli approach.
+     היצרות ≥50% כבר נקבעה למעלה כמצב המגדיר דרגה; כאן נותר calcium score בלבד. */
+  let reclass=null;
+  if(cac!==null && cac>100){
+    const up={low:'mod',mod:'high',high:'vhigh1'};
+    if(cat && up[cat]){ reclass={from:cat,to:up[cat],why:'calcium score מעל 100'}; cat=up[cat]; }
+  }
+  return {age,sex,smoke,sbp,L,dm,ckd,mods,lpaMg,lpaRaw,cac,duplex,secondary,imagingAscvd,aaa,cat,reasons,s2,ageOk,haveAll,reclass};
+}
+
+/* ---------- render ---------- */
+function render(){
+  const A = assess();
+
+  /* age gate */
+  $('ageMsg').innerHTML = (A.age!==null && !A.ageOk)
+    ? '<div class="warn">הכלי מכויל לגילאי 50–69. מחשבון SCORE2 מושבת בגיל זה; המצבים המגדירים סיכון ללא מחשבון ממשיכים לפעול, ושאר הסעיפים תקפים.</div>' : '';
+
+  /* lipids */
+  const L=A.L; let lh='';
+  if(L.nhdl!==null) lh += `<div class="kv"><span>non-HDL מחושב</span><b>${L.nhdl.toFixed(0)} מ"ג/ד"ל</b></div>`;
+  if(L.ldl!==null)  lh += `<div class="kv"><span>LDL (${L.src})</span><b>${L.ldl.toFixed(0)} מ"ג/ד"ל</b></div>`;
+  if(L.friedInvalid) lh += '<div class="bad">טריגליצרידים מעל 400 — נוסחת פרידוולד אינה אמינה. יש להשתמש ב-non-HDL או ב-apoB כיעד, או למדוד LDL ישירות.</div>';
+  else if(L.tg!==null && L.tg>300) lh += '<div class="warn">טריגליצרידים מעל 300 — בחלק מהמעבדות פרידוולד מאבדת אמינות כבר בטווח זה. עדיף להתבסס על non-HDL או apoB.</div>';
+  $('lipidCalc').innerHTML = lh;
+
+  /* risk */
+  const R=$('riskOut');
+  if(!A.cat){
+    R.innerHTML = A.haveAll && !A.ageOk
+      ? '<span class="muted">מחוץ לטווח הגילים של הכלי, ולא סומן מצב המגדיר סיכון ללא מחשבון.</span>'
+      : '<span class="muted">הזן גיל, מין, עישון, לחץ דם, כולסטרול כללי ו-HDL.</span>';
+  } else {
+    const c=CATS[A.cat];
+    let h = '';
+    if(A.s2!==null) h += `<div class="big">${A.s2.toFixed(1)}%</div><div class="muted" style="margin-bottom:10px">סיכון ל-10 שנים לאירוע קרדיווסקולרי קטלני ולא-קטלני — SCORE2, אזור סיכון נמוך</div>`;
+    h += `<div style="font-size:17px;margin-bottom:8px">דרגת סיכון: <span class="pill ${c.cls}">${c.name}</span></div>`;
+    h += '<ul class="tight">' + A.reasons.map(r=>`<li>${r}</li>`).join('') + '</ul>';
+    if(A.reclass) h += `<div class="ok"><b>ריבוד מחדש:</b> ${A.reclass.why} — הועלה מדרגה ${CATS[A.reclass.from].name} לדרגה ${CATS[A.reclass.to].name}.</div>`;
+    if(A.mods.length) h += `<div class="warn"><b>${A.mods.length} גורמי סיכון מחמירים סומנו.</b> אם המטופל נמצא בגבול העליון של דרגת הסיכון — מומלץ להעלותו לדרגה הבאה.<br><span class="muted">${A.mods.join(' · ')}</span></div>`;
+    if(A.secondary) h += '<div class="muted" style="margin-top:6px">מניעה שניונית — יעדי הטיפול נגזרים בהתאם.</div>';
+    else if(A.cat==='vhigh1' && (A.imagingAscvd || A.aaa)) h += '<div class="muted" style="margin-top:6px">טרשת מוכחת ללא אירוע ווסקולרי קליני — מניעה ראשונית. היעד ≤ 70, עם אופציה (IIb, B) להחמיר ל-≤ 55.</div>';
+    R.innerHTML = h;
+  }
+
+  /* imaging + Lp(a) */
+  let ih='';
+  if(A.cat && (A.cat==='low'||A.cat==='mod')) ih += '<div class="ok">המטופל בדרגת סיכון נמוכה–בינונית. אם קיימת התלבטות לגבי טיפול תרופתי — זהו בדיוק המצב שבו ההנחיה מציעה לשקול calcium score או דופלר קרוטידים/פמורלי לריבוד נוסף (IIb, B).</div>';
+  if(A.cac!==null){
+    ih += `<div class="card"><b>Calcium score = ${A.cac} יחידות אגטסטון</b><br>`;
+    ih += A.cac>100 ? 'לפי ההנחיה הישראלית — מעביר לדרגת סיכון גבוהה יותר.'
+        : A.cac===0 ? 'ערך אפס — נלווה לשיעור אירועים נמוך; בהנחיה הישראלית אין המלצה להימנע מטיפול על סמך זה בגילאי 50–69 (ההמלצה לשקול הימנעות מוגבלת לגילאי 76–80).'
+        : 'מתחת ל-100 — אינו מעלה את דרגת הסיכון לפי ההנחיה הישראלית.';
+    const usGoal = A.cac>=1000 ? 'LDL &lt; 55 · non-HDL &lt; 85 (דרגה 1)'
+                 : A.cac>=300 ? 'LDL &lt; 70 · non-HDL &lt; 100, וסביר להעצים עד LDL &lt; 55 (דרגה 1 / 2a)'
+                 : A.cac>=100 ? 'LDL &lt; 70 · non-HDL &lt; 100 (דרגה 1)'
+                 : A.cac>=1   ? 'סטטין בעצימות בינונית · LDL &lt; 100 · non-HDL &lt; 130 (דרגה 2a)' : null;
+    if(usGoal) ih += `<div class="us" style="margin-bottom:0"><b>ACC/AHA 2026 לערך זה:</b> ${usGoal}</div>`;
+    ih += '</div>';
+  }
+  if(A.duplex==='sten50') ih += '<div class="card"><b>דופלר: היצרות ≥ 50%</b> — עדות לטרשת משמעותית בהדמיה. מגדירה דרגת סיכון גבוהה מאוד ללא צורך במחשבון, זהה לסימון "טרשת משמעותית בהדמיה" למעלה. בהיעדר אירוע ווסקולרי קליני — מניעה ראשונית, יעד LDL ≤ 70. בהיצרות קרוטידית משמעותית יש לשקול הפניה לייעוץ וסקולרי בהתאם לתסמינים.</div>';
+  else if(A.duplex==='plaque') ih += '<div class="card"><b>דופלר: רובד ללא היצרות משמעותית</b> — ההנחיה אינה קובעת שינוי בדרגת הסיכון בממצא זה, וסף ההעלאה בדרגה הוא היצרות ≥50%. הממצא אינו משנה את החישוב בכלי. רובד טרשתי נושא משמעות פרוגנוסטית, אך אין לו מעמד פורמלי — לא ברשימת המצבים המגדירים דרגה ולא ברשימת גורמי הסיכון המחמירים.</div>';
+  $('imgOut').innerHTML = ih;
+
+  let lh2='';
+  if(A.lpaMg!==null){
+    const mg=A.lpaMg, nmol = $('lpaUnit').value==='nmol' ? A.lpaRaw : null;
+    let band, cls;
+    if(mg>180){ band='גבוהה מאוד — סיכון לאורך החיים בדומה ל-FH הטרוזיגוטית; מגדיר אוטומטית סיכון גבוה ומעלה'; cls='bad'; }
+    else if(mg>50){ band='מוגברת — גורם מעצים סיכון (risk-enhancing factor)'; cls='warn'; }
+    else if(mg>=30){ band='אזור אפור'; cls='card'; }
+    else { band='נמוכה — שוללת את הסיכון הכרוך ב-Lp(a)'; cls='ok'; }
+    lh2 += `<div class="${cls}"><b>Lp(a) = ${A.lpaRaw} ${nmol!==null?'nmol/L':'מ"ג/ד"ל'}</b> — ${band}.`;
+    if(mg>50) lh2 += '<ul class="tight"><li>לטפל באגרסיביות בכל שאר גורמי הסיכון ולהדגיש אורחות חיים.</li><li>בדרגת סיכון גבולית בין בינוני לגבוה — משמש כשיקול בעד תחילת טיפול תרופתי.</li><li>בדרגה גבוהה או גבוהה-מאוד — משמש כשיקול לטיפול אינטנסיבי או משולב יותר להורדת LDL.</li><li>לשקול סקירת קרובי משפחה מדרגה ראשונה.</li></ul>';
+    if(mg>180) lh2 += '<div class="muted">בסיכון גבוה-מאוד עם LDL מעל 70 (או non-HDL מעל 100) תחת סטטין פוטנטי ואזטימיב במינון מקסימלי נסבל — מומלץ לשקול הוספת מעכב PCSK9 (המלצה חזקה).</div>';
+    lh2 += '</div>';
+    if($('lpaUnit').value==='mg') lh2 += '<div class="muted">הוזן בערכי מסה. נייר העמדה ממליץ על דיווח ב-nmol/L; יחס ההמרה 2–2.5 הוא אומדן בלבד ואינו מדויק.</div>';
+  }
+  $('lpaOut').innerHTML = lh2;
+
+  /* targets */
+  document.querySelectorAll('#t7 tr[data-cat]').forEach(tr=>tr.classList.toggle('hit', tr.dataset.cat===A.cat));
+  const T=$('targetOut');
+  if(!A.cat){ T.innerHTML='<span class="muted">יש להשלים את נתוני המטופל.</span>'; }
+  else{
+    const c=CATS[A.cat]; let h=`<div style="font-size:17px;margin-bottom:8px">יעדים לדרגה <span class="pill ${c.cls}">${c.name}</span></div>`;
+    h += `<div class="kv"><span>LDL</span><b>≤ ${c.ldl} מ"ג/ד"ל</b></div>`;
+    h += `<div class="kv"><span>non-HDL</span><b>≤ ${c.nhdl} מ"ג/ד"ל</b></div>`;
+    h += `<div class="kv"><span>apoB</span><b>≤ ${c.apob} מ"ג/ד"ל</b></div>`;
+    if(c.pct) h += `<div class="kv"><span>ובנוסף — הפחתה מהערך הבסיסי</span><b>לפחות ${c.pct}%</b></div>`;
+    if(L.ldl!==null){
+      const gap = L.ldl - c.ldl;
+      const need = c.pct ? Math.max(c.pct, (1 - c.ldl/L.ldl)*100) : (1 - c.ldl/L.ldl)*100;
+      h += gap<=0
+        ? `<div class="ok">ה-LDL הנוכחי (${L.ldl.toFixed(0)}) עומד ביעד. ${c.pct?'יש לוודא גם שהושגה הפחתה של לפחות '+c.pct+'% מהערך הבסיסי טרם טיפול.':''}</div>`
+        : `<div class="warn">פער של <b>${gap.toFixed(0)} מ"ג/ד"ל</b> מהיעד. נדרשת הפחתה של כ-<b>${need.toFixed(0)}%</b> מהערך הנוכחי.</div>`;
+    }
+    if(A.cat==='vhigh1') h += '<div class="muted">בסיכון גבוה-מאוד במניעה ראשונית קיימת אופציה (IIb, B) להפחית מעבר לכך — LDL ≤ 55, non-HDL ≤ 85, apoB ≤ 65.</div>';
+    if(A.cat==='vhigh2') h += '<div class="muted">אירוע ווסקולרי נוסף תוך שנתיים למרות מינון סטטין מקסימלי נסבל — ניתן לשקול יעד LDL ≤ 40 (IIb, B).</div>';
+    if(L.tg!==null && L.tg>300) h += '<div class="warn">בנוכחות טריגליצרידים מעל 300 — מומלץ להשתמש ב-non-HDL כיעד הטיפולי במקום LDL.</div>';
+    T.innerHTML=h;
+  }
+
+  /* treatment */
+  const X=$('txOut');
+  ['int-high','int-mod','int-low'].forEach(i=>$(i).classList.remove('hit'));
+  if(!A.cat){ X.innerHTML=''; }
+  else{
+    const c=CATS[A.cat];
+    let need = (L.ldl!==null) ? Math.max(c.pct||0, (1 - c.ldl/L.ldl)*100) : null;
+    let tier = need===null ? (['high','vhigh1','vhigh2','ext'].includes(A.cat)?'high':'mod')
+             : need>=50 ? 'high' : need>=30 ? 'mod' : 'low';
+    $('int-'+tier).classList.add('hit');
+    let h='<div class="res">';
+    h += (A.cat==='low')
+      ? '<b>המלצה ראשונית:</b> ייעוץ לאורח חיים בריא. טיפול תרופתי מיידי שמור לערכי LDL מעל 190 מ"ג/ד"ל.'
+      : (A.cat==='mod')
+      ? '<b>המלצה ראשונית:</b> התערבות באורחות החיים למשך 3–6 חודשים; אם אין שיפור — דיון עם המטופל/ת על טיפול תרופתי. בערכי LDL מעל 190 — טיפול תרופתי מיידי.'
+      : `<b>המלצה ראשונית:</b> התערבות באורחות החיים <u>יחד עם</u> טיפול תרופתי מיידי. נדרש סטטין בעצימות <b>${tier==='high'?'גבוהה':tier==='mod'?'בינונית':'נמוכה'}</b>${need!==null?` — הפחתה של כ-${need.toFixed(0)}%`:''}.`;
+    if(['high','vhigh1','vhigh2','ext'].includes(A.cat))
+      h += '<div style="margin-top:8px">אם לא הושג היעד במינון המקסימלי הנסבל → הוספת אזטימיב. אם עדיין לא הושג → מעכב PCSK9, בהתאם לקריטריוני הסל והביטוחים.</div>';
+    if(A.cat==='vhigh2') h += '<div class="muted" style="margin-top:6px">במניעה שניונית ניתן לשקול פתיחה ישירה בסטטין בעצימות גבוהה יחד עם אזטימיב (IIa, C).</div>';
+    h += '</div>';
+    X.innerHTML=h;
+  }
+
+  /* TG */
+  const G=$('tgOut');
+  if(L.tg===null){ G.innerHTML=''; }
+  else{
+    let h='';
+    if(L.tg>900) h='<div class="bad"><b>טריגליצרידים מעל 900</b> — סיכון משמעותי לדלקת לבלב. פיברט ו/או אומגה 3 במינון 2–4 גרם ליום, דיאטה דלת שומן, הימנעות מאלכוהול. בחולי סוכרת — לשקול אינסולין.</div>';
+    else if(L.tg>500) h='<div class="warn"><b>מעל 500</b> — למרות טיפול מירבי באורחות החיים, מומלץ פיברט ו/או אומגה 3 במינון גבוה למניעת דלקת לבלב (I, B). סטטינים אינם יעילים בטווח זה.</div>';
+    else if(L.tg>200) h='<div class="warn"><b>200–500</b> — בסיכון גבוה, סטטין הוא טיפול הבחירה הראשון (I, B). לאחר השגת יעד ה-LDL וכאשר הערך נותר מעל 200 למרות אורחות חיים — לשקול טיפול להורדת non-HDL/apoB (IIa, B).</div>';
+    else if(L.tg>=135) h='<div class="card"><b>135–199</b> — בסיכון גבוה תחת סטטין, ניתן לשקול הוספת icosapent ethyl (IIa, B).</div>';
+    else h='<div class="ok">טריגליצרידים בטווח התקין.</div>';
+    G.innerHTML=h;
+  }
+
+  buildSoap();
+}
+
+/* ---------- SOAP ---------- */
+const PE_TEMPLATE = `בדיקה גופנית:
+לחץ דם ___/___ · דופק ___ · BMI ___ · היקף מותניים ___
+לב: ___
+ריאות: ___
+דפקים היקפיים: ___   אוושה קרוטידית: ___
+xanthoma / xanthelasma / arcus cornealis: ___
+`;
+if(!$('pe').value) $('pe').value = PE_TEMPLATE;
+
+function buildSoap(){
+  const A=assess(), L=A.L, c=A.cat?CATS[A.cat]:null;
+  let s='S: מעקב דיסליפידמיה ומניעה קרדיווסקולרית. ';
+  if(A.age!==null) s += `בן/בת ${A.age}. `;
+  s += A.smoke ? 'מעשן/ת פעיל/ה. ' : 'לא מעשן/ת. ';
+  if(A.mods.length) s += 'גורמי סיכון מחמירים: ' + A.mods.join(', ') + '. ';
+
+  let o='O: ';
+  if(A.sbp!==null) o += `ל"ד סיסטולי ${A.sbp}. `;
+  const lp=[];
+  if(L.tc!==null) lp.push('כולסטרול כללי '+L.tc);
+  if(L.hdl!==null) lp.push('HDL '+L.hdl);
+  if(L.ldl!==null) lp.push('LDL '+L.ldl.toFixed(0)+(L.src?` (${L.src})`:''));
+  if(L.nhdl!==null) lp.push('non-HDL '+L.nhdl.toFixed(0));
+  if(L.tg!==null) lp.push('TG '+L.tg);
+  if(num('apob')!==null) lp.push('apoB '+num('apob'));
+  if(lp.length) o += lp.join(' · ') + ' מ"ג/ד"ל. ';
+  if(A.lpaRaw!==null) o += `Lp(a) ${A.lpaRaw} ${$('lpaUnit').value==='nmol'?'nmol/L':'מ"ג/ד"ל'}. `;
+  if(A.cac!==null) o += `Calcium score ${A.cac} AU. `;
+  if(A.duplex!=='na') o += 'דופלר: ' + $('duplex').selectedOptions[0].text + '. ';
+  o += '\n' + $('pe').value.trim();
+
+  let a='A: ';
+  if(c){
+    a += `דרגת סיכון קרדיווסקולרי: ${c.name}. `;
+    if(A.s2!==null) a += `SCORE2 ל-10 שנים ${A.s2.toFixed(1)}% (אזור סיכון נמוך). `;
+    if(A.reasons.length) a += 'על בסיס: ' + A.reasons.join('; ') + '. ';
+    if(A.reclass) a += `רובד מחדש כלפי מעלה בעקבות ${A.reclass.why}. `;
+  } else a += 'נתונים חסרים להערכת דרגת סיכון. ';
+
+  let p='P: ';
+  if(c){
+    p += `יעדי טיפול: LDL ≤ ${c.ldl}, non-HDL ≤ ${c.nhdl}, apoB ≤ ${c.apob} מ"ג/ד"ל`;
+    p += c.pct ? `, ובנוסף הפחתה של לפחות ${c.pct}% מהערך הבסיסי. ` : '. ';
+    if(L.ldl!==null && L.ldl>c.ldl) p += `פער נוכחי ${(L.ldl-c.ldl).toFixed(0)} מ"ג/ד"ל מהיעד. `;
+  }
+  p += 'הודגשו אורחות חיים: תזונה ים-תיכונית, פעילות גופנית סדירה, שמירה על משקל, הימנעות מעישון. ';
+  p += 'טיפול תרופתי: ___ . ';
+  p += 'מעקב: פרופיל שומנים בעוד 4–6 שבועות מהתחלה/שינוי, ולאחר התייצבות כל 6–12 חודשים. ';
+  p += 'הוסבר על תופעות לוואי אפשריות והונחה לפנות במקרה של כאבי שרירים.';
+
+  $('soap').value = [s,o,a,p].join('\n\n');
+}
+
+function copySoap(){
+  $('soap').select();
+  navigator.clipboard.writeText($('soap').value)
+    .then(()=>{ $('copyMsg').textContent='הועתק ללוח.'; setTimeout(()=>$('copyMsg').textContent='',2500); })
+    .catch(()=>{ $('copyMsg').textContent='ההעתקה נכשלה — יש לסמן ולהעתיק ידנית.'; });
+}
+
+/* ---------- wiring ---------- */
+document.querySelectorAll('input,select').forEach(el=>{
+  if(el.id==='soap'||el.id==='pe') return;
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+$('pe').addEventListener('input', buildSoap);
+
+/* nav highlight */
+const links=[...document.querySelectorAll('#nav a')];
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id)); } });
+},{rootMargin:'-56px 0px -70% 0px'});
+document.querySelectorAll('section').forEach(s=>obs.observe(s));
+
+render();
+</script>
+</body>
+</html>
