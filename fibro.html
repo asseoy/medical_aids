@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>פיברומיאלגיה — אבחנה וטיפול | כלי לרופא/ה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F4F8; --card:#FFFFFF; --ink:#231D33; --muted:#665F7A;
+  --plum:#5A3D8A; --plum-d:#3D2862; --plum-s:#ECE6F4; --line:#DCD5E6;
+  --ok:#2E7A58; --ok-s:#E3F1EA; --warn:#94580F; --warn-s:#FBF0DF; --bad:#A23B37; --bad-s:#F8E4E2;
+  --afp:#24527A; --afp-s:#E4EDF5;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Assistant',system-ui,sans-serif;font-size:16.5px;line-height:1.55}
+h1,h2,h3{font-family:'Rubik','Assistant',sans-serif;font-weight:600;line-height:1.25}
+a{color:var(--plum)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header.top{background:var(--plum-d);color:#fff;padding:18px 0 22px}
+header.top .back{color:#D9CCF0;text-decoration:none;font-size:.92rem}
+header.top .back:hover{text-decoration:underline}
+header.top h1{font-size:2.1rem;margin:8px 0 4px;letter-spacing:-.01em}
+header.top .sub{margin:0;color:#E4DBF3;max-width:72ch}
+nav.anchors{position:sticky;top:0;z-index:30;background:rgba(245,244,248,.97);border-bottom:1px solid var(--line)}
+.navin{display:flex;gap:4px;align-items:center;overflow-x:auto;padding:8px 16px;white-space:nowrap}
+.navin a{text-decoration:none;color:var(--ink);padding:5px 10px;border-radius:6px;font-weight:600;font-size:.95rem}
+.navin a:hover{background:var(--plum-s)}
+.navstat{margin-inline-start:auto;font-size:.88rem;padding:4px 10px;border-radius:6px;background:var(--plum-s);color:var(--plum-d);font-weight:600}
+.navstat.met{background:var(--ok-s);color:var(--ok)}
+.navstat.not{background:var(--bad-s);color:var(--bad)}
+section.blk{padding:30px 0 6px;scroll-margin-top:52px}
+section.blk>h2{font-size:1.5rem;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 12px;max-width:74ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0}
+.panel>h3{font-size:1.08rem;margin:0 0 8px;color:var(--plum-d)}
+.q{margin:12px 0}
+.ql{font-weight:600;display:block;margin-bottom:6px}
+.hint{font-weight:400;color:var(--muted);font-size:.9rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.95rem;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--ink);line-height:1.4}
+.chip:hover{border-color:var(--plum)}
+.chip[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:#fff}
+.chip.sev{border-radius:6px;text-align:start;display:flex;flex-direction:column;align-items:flex-start;padding:5px 8px;flex:1 1 78px}
+.chip.sev small{font-size:.8rem;opacity:.85}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,.chip:focus-visible{outline:3px solid #B79BE0;outline-offset:2px}
+input[type=number]{font:inherit;width:90px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.row{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+.row .q{margin:6px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.cite{unicode-bidi:isolate;font-size:.76rem;background:var(--plum-s);color:var(--plum-d);border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap;margin-inline-start:4px;font-weight:600;vertical-align:1px}
+.cite.afp{background:var(--afp-s);color:var(--afp)}
+.cite:hover{text-decoration:underline}
+.gen{unicode-bidi:isolate;font-size:.74rem;color:var(--muted);border:1px dashed #BDB4CC;border-radius:4px;padding:0 5px;white-space:nowrap;margin-inline-start:4px}
+.alert{border-inline-start:4px solid var(--plum);background:var(--plum-s);padding:9px 14px;border-radius:6px;margin:8px 0}
+.alert.ok{border-color:var(--ok);background:var(--ok-s)}
+.alert.warn{border-color:var(--warn);background:var(--warn-s)}
+.alert.bad{border-color:var(--bad);background:var(--bad-s)}
+.alert b{font-weight:700}
+/* body map + ACR */
+.acrgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:820px){.acrgrid{grid-template-columns:1fr}}
+svg.body{width:100%;max-width:420px;display:block;margin:0 auto}
+svg.body .fig{fill:#E7E1F0;stroke:none}
+svg.body .limb{stroke:#E7E1F0;stroke-linecap:round;fill:none}
+svg.body circle.site{fill:#fff;stroke:var(--plum);stroke-width:2;cursor:pointer}
+svg.body circle.site.ex{stroke-dasharray:3 2.5}
+svg.body circle.site.on{fill:var(--plum)}
+svg.body circle.site.ex.on{fill:#A48DCB;stroke-dasharray:none}
+svg.body text{font-size:11px;fill:var(--muted);font-family:'Assistant',sans-serif}
+.legend{font-size:.85rem;color:var(--muted);margin:6px 0 0}
+.regs{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:10px}
+@media (max-width:520px){.regs{grid-template-columns:1fr}}
+.regs .rh{font-weight:700;font-size:.92rem;margin-bottom:3px}
+.regs .rh .cnt{color:var(--plum);margin-inline-start:4px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 10px}
+.score{background:var(--plum-s);border-radius:8px;padding:6px 12px;min-width:92px}
+.score .n{font-family:'Rubik',sans-serif;font-size:1.55rem;font-weight:600;color:var(--plum-d);line-height:1.1}
+.score .l{font-size:.8rem;color:var(--muted)}
+svg.zone{width:100%;max-width:320px;display:block;direction:ltr}
+svg.zone text{font-family:'Assistant',sans-serif;font-size:10.5px;fill:var(--muted)}
+ul.crit{list-style:none;padding:0;margin:8px 0}
+ul.crit li{padding:4px 0;display:flex;gap:8px;align-items:baseline}
+.mk{display:inline-block;min-width:22px;text-align:center;font-weight:700;border-radius:4px;font-size:.85rem}
+.mk.y{color:var(--ok)} .mk.n{color:var(--bad)} .mk.u{color:var(--muted)}
+.verdict{font-family:'Rubik',sans-serif;font-weight:600;font-size:1.12rem;padding:8px 12px;border-radius:8px;margin:6px 0}
+.verdict.met{background:var(--ok-s);color:var(--ok)}
+.verdict.not{background:var(--bad-s);color:var(--bad)}
+.verdict.inc{background:#EEEDF2;color:var(--muted)}
+/* FiRST */
+.fitem{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid #EEEAF3}
+.fitem:last-child{border-bottom:0}
+.fitem .ft{flex:1}
+/* labs */
+.labrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid #EEEAF3;flex-wrap:wrap}
+.labrow:last-child{border-bottom:0}
+/* treatment ladder */
+.tier{position:relative;margin:18px 0;padding-inline-start:52px}
+.tier::before{content:attr(data-n);position:absolute;inset-inline-start:0;top:2px;width:38px;height:38px;border-radius:50%;background:var(--plum);color:#fff;font-family:'Rubik',sans-serif;font-weight:600;font-size:1.2rem;display:flex;align-items:center;justify-content:center}
+.tier.t2::before{background:#7B5FA8}.tier.t3::before{background:#9D86C2}
+.tier>h3{margin:4px 0 2px;font-size:1.2rem}
+.tier>.lead{margin-bottom:8px}
+.rx{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0}
+.rx.rel{border-color:var(--plum);box-shadow:inset -4px 0 0 var(--plum)}
+.rx .hd{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pl{display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer}
+.pl input{width:18px;height:18px;accent-color:var(--plum)}
+.tag{font-size:.78rem;background:var(--plum-s);color:var(--plum-d);padding:1px 8px;border-radius:999px;font-weight:600}
+.tag.warn{background:var(--warn-s);color:var(--warn)}
+.rxb{margin-top:4px;font-size:.96rem}
+.rxb p{margin:4px 0}
+.rxb ul{margin:4px 0;padding-inline-start:20px}
+.dose{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:6px 0;font-size:.94rem}
+.dose dt{font-weight:600;color:var(--muted)}
+.dose dd{margin:0}
+.caut{margin:6px 0 0;padding:6px 10px;background:var(--warn-s);border-radius:6px;font-size:.93rem}
+.caut ul{margin:2px 0;padding-inline-start:18px}
+details{margin:8px 0}
+details>summary{cursor:pointer;font-weight:700;color:var(--plum-d);padding:4px 0}
+table.ref{width:100%;border-collapse:collapse;font-size:.93rem;margin:6px 0}
+table.ref th,table.ref td{border-bottom:1px solid #EEEAF3;padding:6px 6px;text-align:start;vertical-align:top}
+table.ref th{color:var(--muted);font-weight:600;background:#FAF9FC}
+.btn{font:inherit;font-weight:700;border:1px solid var(--plum);background:var(--plum);color:#fff;border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--plum)}
+.btn:hover{filter:brightness(1.08)}
+textarea{font:inherit;width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff;line-height:1.6;resize:vertical}
+#soapOut{min-height:420px;font-size:.98rem}
+#examTpl{min-height:150px}
+.soapbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.dirty{font-size:.88rem;color:var(--warn)}
+footer{color:var(--muted);font-size:.86rem;padding:28px 0 40px}
+footer p{margin:4px 0;max-width:80ch}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="back" href="doctors.html">חזרה לכלים לרופאים</a>
+  <h1>פיברומיאלגיה</h1>
+  <p class="sub">תשאול, קריטריוני אבחנה, אבחנה מבדלת, טיפול מדורג וסיכום לרשומה. מבוסס על המלצת HAS (יולי 2025), קריטריוני ACR המעודכנים (2016) וסקירות AFP (2023, 2025).</p>
+</div></header>
+
+<nav class="anchors" aria-label="ניווט בין חלקי הכלי"><div class="navin">
+  <a href="#sec-input">רקע ובדיקה</a>
+  <a href="#sec-first">סינון FiRST</a>
+  <a href="#sec-acr">ACR 2016</a>
+  <a href="#sec-ddx">אבחנה מבדלת</a>
+  <a href="#sec-impact">הערכה</a>
+  <a href="#sec-tx">טיפול</a>
+  <a href="#sec-soap">סיכום</a>
+  <span id="navStatus" class="navstat">ACR: טרם מולא</span>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ============ INPUT ============ -->
+<section class="blk" id="sec-input">
+  <h2>רקע, תרופות ובדיקה גופנית</h2>
+  <p class="lead">שלושה סימנים מכוונים לפיברומיאלגיה: כאב מפושט 3 חודשים ומעלה עם תסמינים נלווים, בדיקה גופנית תקינה, והיעדר מחלה או תרופה שמסבירות את הכאב. <span id="c-orient"></span></p>
+
+  <div class="panel">
+    <div class="row">
+      <div class="q"><label class="ql" for="age">גיל</label><input id="age" type="number" min="18" max="110" data-num="age"></div>
+      <div class="q"><span class="ql">מין</span><div class="chips" data-single="sex" data-opts="sex"></div></div>
+      <div class="q"><span class="ql">משך התסמינים</span><div class="chips" data-single="dur" data-opts="dur"></div></div>
+      <div class="q"><span class="ql">אופי הכאב</span><div class="chips" data-multi="pain" data-opts="pain"></div></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h3>ברקע</h3>
+      <div class="q"><span class="ql">ראומטולוגי</span><div class="chips" data-multi="bg" data-opts="bgRheum"></div></div>
+      <div class="q"><span class="ql">מצבים חופפים ונלווים</span><div class="chips" data-multi="bg" data-opts="bgOther"></div></div>
+      <div class="q"><span class="ql">נפשי</span><div class="chips" data-multi="bg" data-opts="bgPsych"></div></div>
+      <div class="q"><span class="ql">משפיע על בחירת תרופה</span><div class="chips" data-multi="bg" data-opts="bgRx"></div></div>
+    </div>
+    <div class="panel">
+      <h3>טיפול תרופתי נוכחי</h3>
+      <div class="q"><span class="ql">תרופות שעלולות לגרום לכאב <span class="hint">(HAS טבלה 1)</span></span><div class="chips" data-multi="meds" data-opts="meds"></div></div>
+      <div class="q"><span class="ql">טיפול קבוע נוסף</span><div class="chips" data-multi="cur" data-opts="cur"></div></div>
+      <h3 style="margin-top:14px">בדיקה גופנית</h3>
+      <div class="q"><span class="ql">ממצאים שאינם מתאימים לפיברומיאלגיה</span><div class="chips" data-multi="exam" data-opts="examAbn"></div></div>
+      <div class="q"><span class="ql">ממצאים תומכים</span><div class="chips" data-multi="exam" data-opts="examSup"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FiRST ============ -->
+<section class="blk" id="sec-first">
+  <h2>סינון: שאלון FiRST</h2>
+  <p class="lead">שאלון עצמי בן 6 פריטים לסינון בקרב מטופלים עם כאב כרוני מפושט. 5 תשובות חיוביות ומעלה: חשד גבוה, אך השיפוט הקליני קובע. פחות מ-5: אבחנה פחות סבירה — להמשיך בבירור. <span id="c-first"></span></p>
+  <div class="panel" id="firstItems"></div>
+  <div id="firstOut"></div>
+</section>
+
+<!-- ============ ACR ============ -->
+<section class="blk" id="sec-acr">
+  <h2>אישור האבחנה: קריטריוני ACR 2016</h2>
+  <p class="lead">מדד הכאב המפושט (WPI) מבוסס על השבוע האחרון. HAS ממליצה להשתמש בקריטריונים גם למעקב לאורך זמן; החישוב אורך 2–3 דקות. <span id="c-acr"></span></p>
+  <div class="acrgrid">
+    <div class="panel">
+      <h3>אזורי כאב בשבוע האחרון</h3>
+      <div id="bodyMap"></div>
+      <p class="legend">מבט מלפנים: צד ימין של המטופל מוצג משמאלך. עיגול מקווקו (כשמסומן: סגול בהיר) = נספר ב-WPI אך לא בהגדרת כאב מוכלל (לסת, חזה, בטן).</p>
+      <div class="regs" id="siteChips"></div>
+      <div style="margin-top:8px"><button class="btn ghost" type="button" id="clearSites">ניקוי אזורים</button></div>
+    </div>
+    <div>
+      <div class="panel">
+        <h3>חומרת תסמינים (SSS)</h3>
+        <div class="q"><span class="ql">עייפות <span class="hint">(שבוע אחרון)</span></span><div class="chips" data-single="fat" data-opts="sev"></div></div>
+        <div class="q"><span class="ql">יקיצה לא מרעננת</span><div class="chips" data-single="unref" data-opts="sev"></div></div>
+        <div class="q"><span class="ql">קשיים קוגניטיביים</span><div class="chips" data-single="cog" data-opts="sev"></div></div>
+        <div class="q"><span class="ql">ב-6 החודשים האחרונים, האם היו:</span>
+          <div class="labrow"><span>כאבי ראש</span><div class="chips" data-single="ha" data-opts="yn01"></div></div>
+          <div class="labrow"><span>כאב או התכווצויות בבטן התחתונה</span><div class="chips" data-single="abd" data-opts="yn01"></div></div>
+          <div class="labrow"><span>דיכאון</span><div class="chips" data-single="dep" data-opts="yn01"></div></div>
+        </div>
+      </div>
+      <div class="panel" id="acrOut"></div>
+    </div>
+  </div>
+  <details class="panel">
+    <summary>קריטריוני AAPT 2019 (חלופה שמוזכרת ב-AFP)</summary>
+    <p>כאב במספר אתרים: לפחות 6 מתוך 9 אזורים (ראש, זרוע ימין, זרוע שמאל, חזה, בטן, גב עליון ועמוד שדרה, גב תחתון ועמוד שדרה כולל ישבן, רגל ימין, רגל שמאל); בעיות שינה או עייפות בינוניות עד חמורות; משך 3 חודשים לפחות. במחקר השוואתי יחיד הרגישות הייתה 74%, לעומת 78%–80% לקריטריוני ACR 2011/2016. <span id="c-aapt"></span></p>
+  </details>
+</section>
+
+<!-- ============ DDX ============ -->
+<section class="blk" id="sec-ddx">
+  <h2>אבחנה מבדלת ובירור</h2>
+  <p class="lead">האבחנה קלינית ואין לה סמן ביולוגי. יש להימנע גם מתת-אבחון וגם מאבחון-יתר: פיברומיאלגיה יכולה להתקיים לצד מחלה אחרת, שיש לאבחן ולטפל בה. <span id="c-ddx"></span></p>
+  <div class="grid2">
+    <div class="panel">
+      <h3>מעבדה</h3>
+      <div id="labRows"></div>
+    </div>
+    <div class="panel">
+      <h3>ממצאים מהנתונים</h3>
+      <div id="ddxOut"></div>
+    </div>
+  </div>
+  <details class="panel">
+    <summary>רשימת האבחנה המבדלת המלאה</summary>
+    <table class="ref" id="ddxTable"></table>
+  </details>
+</section>
+
+<!-- ============ IMPACT ============ -->
+<section class="blk" id="sec-impact">
+  <h2>הערכה רב-ממדית</h2>
+  <p class="lead">השפעת המחלה על התפקוד, השינה, מצב הרוח והעבודה, ומה מפריע למטופל/ת יותר מכל. הנתונים כאן מכוונים את תוכנית הטיפול. <span id="c-impact"></span></p>
+  <div class="grid2">
+    <div class="panel">
+      <h3>מדדים</h3>
+      <div class="row">
+        <div class="q"><label class="ql" for="nrs">כאב NRS <span class="hint">0–10</span></label><input id="nrs" type="number" min="0" max="10" data-num="nrs"></div>
+        <div class="q"><label class="ql" for="fiq">FIQ <span class="hint">0–100</span></label><input id="fiq" type="number" min="0" max="100" data-num="fiq"></div>
+        <div class="q"><label class="ql" for="phq">PHQ-9 <span class="hint">0–27</span></label><input id="phq" type="number" min="0" max="27" data-num="phq"></div>
+      </div>
+      <div class="q"><span class="ql">מחשבות אובדניות</span><div class="chips" data-single="si" data-opts="si"></div></div>
+      <div class="row">
+        <div class="q"><label class="ql" for="wt">משקל (ק״ג)</label><input id="wt" type="number" min="30" max="300" data-num="wt"></div>
+        <div class="q"><label class="ql" for="ht">גובה (ס״מ)</label><input id="ht" type="number" min="120" max="220" data-num="ht"></div>
+        <div class="q"><span class="ql">BMI</span><span id="bmiOut" class="hint">—</span></div>
+      </div>
+      <div class="q"><span class="ql">שינה</span><div class="chips" data-multi="sleep" data-opts="sleep"></div></div>
+    </div>
+    <div class="panel">
+      <h3>תפקוד והתמודדות</h3>
+      <div class="q"><span class="ql">פעילות גופנית</span><div class="chips" data-single="pa" data-opts="pa"></div></div>
+      <div class="q"><span class="ql">דפוסי התמודדות</span><div class="chips" data-multi="cope" data-opts="cope"></div></div>
+      <div class="q"><span class="ql">עבודה</span><div class="chips" data-single="work" data-opts="work"></div></div>
+      <div class="q"><span class="ql">גורמי פגיעות</span><div class="chips" data-multi="vuln" data-opts="vuln"></div></div>
+      <div class="q"><span class="ql">מה מפריע יותר מכל <span class="hint">(עד 2)</span></span><div class="chips" data-multi="prio" data-opts="prio" data-max="2"></div></div>
+    </div>
+  </div>
+  <div id="impactOut"></div>
+</section>
+
+<!-- ============ TREATMENT ============ -->
+<section class="blk" id="sec-tx">
+  <h2>טיפול מדורג</h2>
+  <p class="lead">קו ראשון לכולם, קו שני כהשלמה, קו שלישי לאחר הערכה מחודשת וחוות דעת. סמנו את מה שנכנס לתוכנית — זה עובר לסעיף P בסיכום. <span id="c-tx"></span></p>
+  <div class="soapbar"><button class="btn ghost" type="button" id="markRel">סימון כל ההמלצות הרלוונטיות</button></div>
+  <div id="txOut"></div>
+</section>
+
+<!-- ============ SOAP ============ -->
+<section class="blk" id="sec-soap">
+  <h2>סיכום לרשומה</h2>
+  <p class="lead">הסיכום נבנה מהנתונים שמולאו. תבנית הבדיקה הגופנית נערכת בנפרד ונכנסת לסעיף O.</p>
+  <div class="panel">
+    <h3>תבנית בדיקה גופנית</h3>
+    <textarea id="examTpl" spellcheck="false"></textarea>
+  </div>
+  <div class="panel">
+    <div class="soapbar">
+      <button class="btn" type="button" id="copySoap">העתקה ללוח</button>
+      <button class="btn ghost" type="button" id="rebuildSoap">בנייה מחדש מהנתונים</button>
+      <button class="btn ghost" type="button" id="resetAll">איפוס הכלי</button>
+      <span id="soapMsg" class="dirty" aria-live="polite"></span>
+    </div>
+    <textarea id="soapOut" spellcheck="false" aria-label="סיכום SOAP"></textarea>
+  </div>
+</section>
+
+<footer>
+  <p><b>מקורות.</b> Haute Autorité de santé. Fibromyalgie de l’adulte: conduite diagnostique et stratégie thérapeutique. אושר 19.6.2025, פורסם יולי 2025 — כל ההמלצות בדרגת הסכמת מומחים (AE). Wolfe F et al. 2016 revisions to the 2010/2011 fibromyalgia diagnostic criteria. Semin Arthritis Rheum 2016;46:319-329. Winslow BT et al. Fibromyalgia: Diagnosis and Management. Am Fam Physician 2023;107(2):137-144. Barry H. POEM: Duloxetine, milnacipran and pregabalin. Am Fam Physician 2025;112(4):456.</p>
+  <p><b>סימון.</b> תגיות סגולות = HAS, כחולות = AFP, מקווקוות = ידע פרמקולוגי כללי שאינו מהמקורות. שמות מסחריים בישראל אינם מופיעים במקורות ויש לאמת מול מדריך התרופות. אף תרופה אינה רשומה בצרפת להתוויה זו; בארה״ב רשומות דולוקסטין, מילנסיפרן ופרגבלין.</p>
+  <p>כלי עזר להחלטה קלינית; אינו מחליף שיקול דעת. אין שמירת נתונים — הכול נמחק בסגירת הדף.</p>
+</footer>
+</main>
+
+<script>
+/* ---------- sources ---------- */
+const HAS_URL='https://www.has-sante.fr/upload/docs/application/pdf/2025-07/fibromyalgie_de_ladulte_conduite_diagnostique_et_strategie_therapeutique_-_recommandations.pdf';
+const AFP_URL='https://www.aafp.org/afp/2023/0200/fibromyalgia';
+const POEM_URL='https://www.aafp.org/afp/2025/1000/poems-fibromyalgia';
+const ACR_URL='https://doi.org/10.1016/j.semarthrit.2016.08.012';
+const has=(p,r)=>`<a class="cite" href="${HAS_URL}#page=${p}" target="_blank" rel="noopener">HAS ${r}</a>`;
+const afp=(a,l)=>`<a class="cite afp" href="${AFP_URL}${a?'#'+a:''}" target="_blank" rel="noopener">AFP${l?' '+l:''}</a>`;
+const poem=()=>`<a class="cite afp" href="${POEM_URL}" target="_blank" rel="noopener">AFP POEM 2025</a>`;
+const acrC=()=>`<a class="cite" href="${ACR_URL}" target="_blank" rel="noopener">ACR 2016</a>`;
+const GEN='<span class="gen">ידע כללי</span>';
+const T5='afp20230200p137-t5';
+
+/* ---------- options ---------- */
+const OPT={
+  sex:[['f','נקבה'],['m','זכר']],
+  dur:[['lt3','פחות מ-3 חודשים'],['ge3','3 חודשים ומעלה']],
+  pain:[['fluct','משתנה בעוצמה ובמיקום']],
+  bgRheum:[['ra','דלקת מפרקים שגרונית'],['spa','ספונדילוארתריטיס / PsA'],['sle','לופוס / סיוגרן'],['oa','אוסטאוארתריטיס'],['pmr','PMR']],
+  bgOther:[['hypothy','תת-פעילות בלוטת התריס'],['celiac','צליאק'],['ibs','מעי רגיז'],['migraine','מיגרנה / כאב ראש כרוני'],['tmd','כאב לסת (TMD)'],['lyme','מחלת ליים / פוסט-ליים'],['longcovid','תסמינים ממושכים לאחר COVID-19'],['cfs','תסמונת עייפות כרונית'],['osa','דום נשימה בשינה'],['rls','תסמונת רגליים חסרות מנוחה']],
+  bgPsych:[['depdx','דיכאון'],['anx','הפרעת חרדה'],['ptsd','PTSD'],['bipolar','הפרעה דו-קוטבית'],['sud','הפרעת שימוש בחומרים']],
+  bgRx:[['cardiac','מחלת לב / הפרעת קצב'],['glaucoma','גלאוקומה צרת זווית'],['uret','אצירת שתן / הגדלת ערמונית'],['ckd','אי ספיקת כליות'],['liver','מחלת כבד'],['htn','יל״ד לא מאוזן'],['epilepsy','אפילפסיה'],['preg','הריון או תכנון הריון']],
+  meds:[['statin','סטטין'],['ai','מעכב ארומטאז'],['bisph','ביספוספונט'],['chemo','כימותרפיה']],
+  cur:[['opioidS','אופיואיד חזק'],['tram','טרמדול קבוע'],['nsaid','NSAIDs קבוע'],['benzo','בנזודיאזפינים / Z-drugs'],['steroid','סטרואידים'],['serot','SSRI / SNRI / טריפטנים'],['gabap','גבפנטינואיד'],['refr','ללא תגובה לקו 1 ו-2']],
+  examAbn:[['syn','נפיחות מפרקים / סינוביטיס'],['neuro','חסר מוטורי או תחושתי מערכתי'],['weak','חולשה פרוקסימלית'],['girdle','נוקשות בוקר ממושכת בחגורות'],['rash','פריחה / רגישות לאור / יובש עיניים-פה'],['const','חום / ירידה במשקל / הזעות לילה']],
+  examSup:[['tender','רגישות מפושטת למגע או ללחץ'],['hyper','רגישות יתר לקור, חום, אור או רעש']],
+  sev:[[0,'אין בעיה',''],[1,'קלה','קלה או לסירוגין'],[2,'בינונית','ניכרת, לרוב נוכחת'],[3,'חמורה','מתמשכת, משבשת חיים']],
+  yn01:[[1,'כן'],[0,'לא']],
+  yn:[['y','כן'],['n','לא']],
+  lab:[['n','תקין'],['abn','חריג'],['nd','לא נבדק']],
+  si:[['no','לא'],['yes','כן'],['na','לא נשאל']],
+  sleep:[['insom','קשיי הירדמות / יקיצות'],['snore','נחירות / הפסקות נשימה'],['rlsS','דחף להזיז רגליים בערב']],
+  pa:[['who','עומד/ת בהמלצות WHO'],['low','פעילות לא מספקת'],['sed','בעיקר בישיבה']],
+  cope:[['cata','קטסטרופיזציה'],['kinesio','פחד מתנועה / הימנעות'],['overact','פעילות-יתר ללא הפסקה']],
+  work:[['ok','עובד/ת ללא פגיעה משמעותית'],['impact','עובד/ת עם פגיעה משמעותית'],['leave','בחופשת מחלה'],['none','לא עובד/ת']],
+  vuln:[['iso','בדידות / בידוד'],['econ','קושי כלכלי'],['viol','אלימות או התעללות (עבר או הווה)']],
+  prio:[['pain','כאב'],['sleep','שינה'],['fatigue','עייפות'],['mood','מצב רוח / חרדה'],['cog','ריכוז וזיכרון'],['func','תפקוד ועבודה']]
+};
+const LABEL={};
+Object.values(OPT).forEach(arr=>arr.forEach(o=>{ if(typeof o[0]==='string') LABEL[o[0]]=o[1]; }));
+
+const FIRST=[
+  'הכאבים שלי ממוקמים בכל מקום בגוף',
+  'הכאבים מלווים בעייפות כללית מתמשכת ולא נעימה',
+  'הכאבים מרגישים כמו צריבה, זרמים חשמליים או התכווצויות',
+  'הכאבים מלווים בתחושות חריגות בכל הגוף: נמלול, עקצוץ או חוסר תחושה',
+  'הכאבים מלווים בבעיות בריאות נוספות: בעיות עיכול, בעיות בדרכי השתן, כאבי ראש או רגליים חסרות מנוחה',
+  'לכאבים השפעה משמעותית על חיי, בעיקר על השינה ועל הריכוז, עם תחושה של תפקוד מואט'
+];
+
+const REG={1:'גפה עליונה שמאל',2:'גפה עליונה ימין',3:'גפה תחתונה שמאל',4:'גפה תחתונה ימין',5:'צירי'};
+const SITES=[
+  {id:'lJaw',he:'לסת שמאל',r:1,ex:1,x:120,y:42},{id:'lSh',he:'חגורת כתף שמאל',r:1,x:141,y:68},{id:'lUA',he:'זרוע עליונה שמאל',r:1,x:154,y:98},{id:'lLA',he:'אמה שמאל',r:1,x:166,y:148},
+  {id:'rJaw',he:'לסת ימין',r:2,ex:1,x:100,y:42},{id:'rSh',he:'חגורת כתף ימין',r:2,x:79,y:68},{id:'rUA',he:'זרוע עליונה ימין',r:2,x:66,y:98},{id:'rLA',he:'אמה ימין',r:2,x:54,y:148},
+  {id:'lHip',he:'ירך-ישבן-טרוכנטר שמאל',r:3,x:136,y:172},{id:'lUL',he:'ירך עליונה שמאל',r:3,x:126,y:212},{id:'lLL',he:'שוק שמאל',r:3,x:127,y:264},
+  {id:'rHip',he:'ירך-ישבן-טרוכנטר ימין',r:4,x:84,y:172},{id:'rUL',he:'ירך עליונה ימין',r:4,x:94,y:212},{id:'rLL',he:'שוק ימין',r:4,x:93,y:264},
+  {id:'neck',he:'צוואר',r:5,x:110,y:57},{id:'chest',he:'חזה',r:5,ex:1,x:110,y:90},{id:'abd',he:'בטן',r:5,ex:1,x:110,y:128},{id:'uBack',he:'גב עליון',r:5,x:270,y:90},{id:'lBack',he:'גב תחתון',r:5,x:270,y:140}
+];
+const LABS=[{id:'cbc',he:'ספירת דם',core:1},{id:'crp',he:'CRP',core:1},{id:'tsh',he:'TSH',core:1},{id:'cpk',he:'CPK',core:1},{id:'lft',he:'טרנסאמינזות',core:1},{id:'cmp',he:'כימיה (כליות, אלקטרוליטים, סידן)',core:0}];
+
+/* ---------- state ---------- */
+const S={
+  age:null,sex:null,dur:null,pain:new Set(),bg:new Set(),meds:new Set(),cur:new Set(),exam:new Set(),
+  first:[null,null,null,null,null,null],
+  sites:new Set(),sitesTouched:false,fat:null,unref:null,cog:null,ha:null,abd:null,dep:null,
+  labs:{cbc:null,crp:null,tsh:null,cpk:null,lft:null,cmp:null},
+  nrs:null,fiq:null,phq:null,si:null,wt:null,ht:null,sleep:new Set(),pa:null,cope:new Set(),work:null,vuln:new Set(),prio:new Set(),
+  plan:new Set()
+};
+let soapDirty=false;
+const g=(m,f,n)=>S.sex==='m'?m:S.sex==='f'?f:(n||m+'/'+f.slice(-1));
+
+function getK(k){return k.split('.').reduce((o,p)=>o[p],S)}
+function setK(k,v){const ps=k.split('.');const last=ps.pop();ps.reduce((o,p)=>o[p],S)[last]=v}
+
+/* ---------- build inputs ---------- */
+function chipHtml(o,sev){
+  if(sev) return `<button type="button" class="chip sev" data-v="${o[0]}" aria-pressed="false"><span>${o[0]} ${o[1]}</span>${o[2]?`<small>${o[2]}</small>`:''}</button>`;
+  return `<button type="button" class="chip" data-v="${o[0]}" aria-pressed="false">${o[1]}</button>`;
+}
+document.querySelectorAll('.chips[data-opts]').forEach(box=>{
+  const opts=OPT[box.dataset.opts];
+  box.innerHTML=opts.map(o=>chipHtml(o,box.dataset.opts==='sev')).join('');
+});
+document.getElementById('firstItems').innerHTML=FIRST.map((t,i)=>`<div class="fitem"><span class="ft">${i+1}. ${t}</span><div class="chips" data-single="first.${i}" >${OPT.yn01.map(o=>chipHtml(o)).join('')}</div></div>`).join('');
+document.getElementById('labRows').innerHTML=LABS.map(l=>`<div class="labrow"><span>${l.he}${l.core?'':' <span class="hint">(AFP)</span>'}</span><div class="chips" data-single="labs.${l.id}">${OPT.lab.map(o=>chipHtml(o)).join('')}</div></div>`).join('');
+
+/* body map */
+(function(){
+  const dot=s=>`<circle class="site${s.ex?' ex':''}" data-site="${s.id}" cx="${s.x}" cy="${s.y}" r="8.5"><title>${s.he}</title></circle>`;
+  const figure=(cx)=>`
+    <circle class="fig" cx="${cx}" cy="30" r="17"/>
+    <rect class="fig" x="${cx-7}" y="45" width="14" height="14" rx="3"/>
+    <path class="fig" d="M${cx-33} 62 Q${cx} 54 ${cx+33} 62 L${cx+26} 150 Q${cx+32} 170 ${cx+30} 182 L${cx-30} 182 Q${cx-32} 170 ${cx-26} 150 Z"/>
+    <path class="limb" stroke-width="15" d="M${cx-32} 68 L${cx-45} 118 L${cx-57} 172"/>
+    <path class="limb" stroke-width="15" d="M${cx+32} 68 L${cx+45} 118 L${cx+57} 172"/>
+    <path class="limb" stroke-width="18" d="M${cx-16} 180 L${cx-17} 236 L${cx-17} 292"/>
+    <path class="limb" stroke-width="18" d="M${cx+16} 180 L${cx+17} 236 L${cx+17} 292"/>`;
+  document.getElementById('bodyMap').innerHTML=`<svg class="body" viewBox="0 0 340 312" aria-hidden="true">
+    ${figure(110)}${figure(270)}
+    <text x="110" y="309" text-anchor="middle">מלפנים</text><text x="270" y="309" text-anchor="middle">מאחור</text>
+    <text x="52" y="14" text-anchor="middle">ימין</text><text x="168" y="14" text-anchor="middle">שמאל</text>
+    ${SITES.map(dot).join('')}</svg>`;
+  document.getElementById('siteChips').innerHTML=[1,2,3,4,5].map(r=>`<div><div class="rh">${REG[r]}<span class="cnt" data-regcnt="${r}"></span></div><div class="chips">${SITES.filter(s=>s.r===r).map(s=>`<button type="button" class="chip" data-site="${s.id}" aria-pressed="false">${s.he}</button>`).join('')}</div></div>`).join('');
+})();
+
+document.getElementById('examTpl').value=
+`מצב כללי: ___
+מפרקים: ללא נפיחות, חום או הגבלת תנועה ___
+כוח גס בחגורת הכתפיים והאגן: ___
+תחושה ורפלקסים: ___
+עור ורירות: ___
+מישוש שרירים וגידים: ___`;
+
+/* static citations in leads */
+document.getElementById('c-orient').innerHTML=has(9,'טבלה 1')+afp('clinical-presentation','הסתמנות');
+document.getElementById('c-first').innerHTML=has(34,'נספח 1')+has(9,'R.6')+afp('afp20230200p137-t1','טבלה 1');
+document.getElementById('c-acr').innerHTML=has(11,'R.15')+has(36,'נספח 3')+acrC()+afp('afp20230200p137-t3','טבלה 3');
+document.getElementById('c-aapt').innerHTML=afp('diagnosis','אבחנה');
+document.getElementById('c-ddx').innerHTML=has(9,'R.8')+has(10,'R.9–R.11')+afp('differential-diagnosis','אבחנה מבדלת');
+document.getElementById('c-impact').innerHTML=has(8,'R.4')+has(11,'R.16–R.17');
+document.getElementById('c-tx').innerHTML=has(16,'R.30')+has(15,'אלגוריתם');
+
+document.getElementById('ddxTable').innerHTML=`<tr><th>קבוצה</th><th>מצבים</th><th>מקור</th></tr>
+<tr><td>ראומטולוגי / סיסטמי</td><td>דלקת מפרקים שגרונית, ספונדילוארתריטיס, דלקת מפרקים פסוריאטית, אוסטאוארתריטיס, לופוס, סיוגרן, טרשת סיסטמית, PMR</td><td>${has(9,'R.8')}${afp('differential-diagnosis')}</td></tr>
+<tr><td>שריר ועצב</td><td>מיוזיטיס, מיופתיה; טרשת נפוצה והפרעות הגורמות לכאב נוירופתי</td><td>${has(9,'R.8')}${afp('differential-diagnosis')}</td></tr>
+<tr><td>אנדוקריני ומטבולי</td><td>תת-פעילות או יתר-פעילות של בלוטת התריס, יתר-פעילות של הפאראתירואיד; פורפיריה, מחלת פברי, אהלרס-דנלוס</td><td>${has(9,'R.8')}${afp('differential-diagnosis')}</td></tr>
+<tr><td>המטולוגי</td><td>מיאלומה; אנמיה כגורם לעייפות</td><td>${has(9,'R.8')}${afp('testing')}</td></tr>
+<tr><td>מערכת העיכול</td><td>צליאק</td><td>${has(9,'R.8')}</td></tr>
+<tr><td>זיהומי ולאחר זיהום</td><td>מחלת ליים וסינדרום לאחר ליים מטופל, תסמינים ממושכים לאחר COVID-19, דלקת כבד נגיפית. בדיקת ליים רק עם חשיפה וממצאים מתאימים</td><td>${has(9,'R.8')}${afp('differential-diagnosis')}</td></tr>
+<tr><td>עייפות</td><td>תסמונת עייפות כרונית</td><td>${has(9,'R.8')}</td></tr>
+<tr><td>תרופתי</td><td>סטטינים (כאבי שרירים), אופיואידים (כאב מפושט), מעכבי ארומטאז (כאבי מפרקים וכאב מפושט), ביספוספונטים (כאבי עצמות), כימותרפיה (כאב נוירופתי)</td><td>${has(9,'טבלה 1')}${afp('differential-diagnosis')}</td></tr>
+<tr><td>בדיקות שאינן מומלצות כשגרה</td><td>RF ו-ANA ללא מאפיינים של מחלה ראומטית (שיעור גבוה של תוצאות חיוביות כוזבות)</td><td>${afp('testing')}</td></tr>`;
+
+/* ---------- computations ---------- */
+function acr(){
+  const wpi=S.sites.size;
+  const sev=[S.fat,S.unref,S.cog], som=[S.ha,S.abd,S.dep];
+  const known=sev.filter(v=>v!==null).length+som.filter(v=>v!==null).length;
+  const sss=sev.reduce((a,v)=>a+(v||0),0)+som.reduce((a,v)=>a+(v||0),0);
+  const sssMax=sss+sev.filter(v=>v===null).length*3+som.filter(v=>v===null).length;
+  const regs=new Set(); SITES.forEach(s=>{if(S.sites.has(s.id)&&!s.ex) regs.add(s.r)});
+  const touched=S.sitesTouched||wpi>0;
+  const rule=(w,s)=>(w>=7&&s>=5)||(w>=4&&w<=6&&s>=9);
+  let c1; if(!touched&&known===0) c1=null; else if(rule(wpi,sss)) c1=true; else if(known<6&&rule(wpi,sssMax)) c1=null; else if(!touched) c1=null; else c1=false;
+  const c2=touched?regs.size>=4:null;
+  const c3=S.dur==='ge3'?true:S.dur==='lt3'?false:null;
+  const any=touched||known>0;
+  let verdict='inc';
+  if(c1===true&&c2===true&&c3===true) verdict='met';
+  else if(c1===false||c2===false||c3===false) verdict=any||c3===false?'not':'inc';
+  const fs=wpi+sss;
+  const band=fs<=3?'ללא':fs<=7?'קלה':fs<=11?'בינונית':fs<=19?'חמורה':'חמורה מאוד';
+  return {wpi,sss,known,sssMax,regs,c1,c2,c3,verdict,fs,band,touched,any};
+}
+function firstScore(){const a=S.first.filter(v=>v!==null).length;const n=S.first.filter(v=>v===1).length;return {a,n,pos:n>=5,neg:a===6&&n<5}}
+function bmi(){return S.wt&&S.ht?S.wt/((S.ht/100)**2):null}
+function phqBand(p){return p<=4?'מינימלי':p<=9?'קל':p<=14?'בינוני':p<=19?'בינוני-חמור':'חמור'}
+const labAbn=id=>S.labs[id]==='abn';
+const sevTxt=['ללא','קלה','בינונית','חמורה'];
+const listHe=a=>a.length<=1?a.join(''):a.slice(0,-1).join(', ')+' ו'+a[a.length-1];
+
+/* ---------- renders ---------- */
+function renderFirst(){
+  const f=firstScore(); const el=document.getElementById('firstOut');
+  if(!f.a){el.innerHTML='';return}
+  if(f.pos) el.innerHTML=`<div class="alert warn"><b>FiRST ${f.n}/6 — חיובי.</b> חשד גבוה לפיברומיאלגיה; להמשיך לאישור בקריטריוני ACR 2016 ולבצע בירור מעבדה מינימלי בכל מקרה. ${has(11,'R.15')}${has(10,'R.9')}</div>`;
+  else if(f.neg) el.innerHTML=`<div class="alert"><b>FiRST ${f.n}/6 — שלילי.</b> האבחנה פחות סבירה; להמשיך בבירור הגורם לכאב. ${has(9,'טבלה 1')}</div>`;
+  else el.innerHTML=`<div class="alert"><b>FiRST: ${f.n} חיוביות מתוך ${f.a} שנענו.</b></div>`;
+}
+
+function renderAcr(){
+  const a=acr();
+  document.querySelectorAll('[data-regcnt]').forEach(el=>{const r=+el.dataset.regcnt;const n=SITES.filter(s=>s.r===r&&S.sites.has(s.id)).length;el.textContent=n?`(${n})`:''});
+  const W=260,H=180,x0=34,x1=250,y0=150,y1=14;
+  const sx=w=>x0+w*(x1-x0)/19, sy=s=>y0-s*(y0-y1)/12;
+  const pt=(a.touched||a.known)?`<circle cx="${sx(a.wpi)}" cy="${sy(a.sss)}" r="6" fill="${a.c1?'#2E7A58':'#5A3D8A'}" stroke="#fff" stroke-width="2"/>`:'';
+  const chart=`<svg class="zone" viewBox="0 0 ${W} ${H}" role="img" aria-label="מיקום המטופל ביחס לאזור הקריטריון">
+    <rect x="${sx(6.5)}" y="${sy(12)}" width="${sx(19)-sx(6.5)}" height="${sy(4.5)-sy(12)}" fill="#E3F1EA"/>
+    <rect x="${sx(3.5)}" y="${sy(12)}" width="${sx(6.5)-sx(3.5)}" height="${sy(8.5)-sy(12)}" fill="#E3F1EA"/>
+    <line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="#BDB4CC"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="#BDB4CC"/>
+    ${[0,4,7,19].map(w=>`<text x="${sx(w)}" y="${y0+13}" text-anchor="middle">${w}</text>`).join('')}
+    ${[0,5,9,12].map(s=>`<text x="${x0-6}" y="${sy(s)+3.5}" text-anchor="end">${s}</text>`).join('')}
+    <text x="${(x0+x1)/2}" y="${H-2}" text-anchor="middle">WPI</text>
+    <text x="10" y="${(y0+y1)/2}" text-anchor="middle" transform="rotate(-90 10 ${(y0+y1)/2})">SSS</text>
+    <text x="${sx(18.6)}" y="${sy(5.4)}" text-anchor="end" fill="#2E7A58">אזור הקריטריון</text>
+    ${pt}</svg>`;
+  const mk=v=>v===true?'<span class="mk y">✓</span>':v===false?'<span class="mk n">✗</span>':'<span class="mk u">?</span>';
+  const regNames=[...a.regs].sort().map(r=>REG[r]);
+  const vtxt={met:'עומד/ת בקריטריוני ACR 2016 לפיברומיאלגיה',not:'אינו/ה עומד/ת בקריטריוני ACR 2016',inc:'חסרים נתונים להכרעה'}[a.verdict];
+  document.getElementById('acrOut').innerHTML=`
+    <div class="scorebar">
+      <div class="score"><div class="n">${a.wpi}<small style="font-size:.8rem">/19</small></div><div class="l">WPI</div></div>
+      <div class="score"><div class="n">${a.known?a.sss:'—'}<small style="font-size:.8rem">/12</small></div><div class="l">SSS${a.known&&a.known<6?' (חלקי)':''}</div></div>
+      <div class="score"><div class="n">${a.known||a.touched?a.fs:'—'}<small style="font-size:.8rem">/31</small></div><div class="l">FS ${a.known===6?'חומרה '+a.band:''}</div></div>
+    </div>
+    ${chart}
+    <ul class="crit">
+      <li>${mk(a.c1)}<span>WPI ≥7 ו-SSS ≥5, או WPI 4–6 ו-SSS ≥9</span></li>
+      <li>${mk(a.c2)}<span>כאב מוכלל: לפחות 4 מתוך 5 אזורים (לסת, חזה ובטן אינם נספרים) — ${a.regs.size}/5${regNames.length?': '+regNames.join(',\u200F '):''}</span></li>
+      <li>${mk(a.c3)}<span>תסמינים ברמה דומה 3 חודשים לפחות <a href="#sec-input" class="hint">(משך בחלק הרקע)</a></span></li>
+      <li><span class="mk u">i</span><span>האבחנה תקפה ללא קשר לאבחנות אחרות ואינה שוללת מחלה נוספת.</span></li>
+    </ul>
+    <div class="verdict ${a.verdict}">${vtxt}</div>
+    ${a.verdict==='met'&&S.exam.size&&[...S.exam].some(e=>OPT.examAbn.some(o=>o[0]===e))?`<div class="alert warn">עומד/ת בקריטריונים, אך יש ממצא בבדיקה שאינו מתאים לפיברומיאלגיה — יש לברר מחלה נוספת. ${has(9,'R.8')}</div>`:''}`;
+  const ns=document.getElementById('navStatus');
+  ns.className='navstat '+(a.verdict==='met'?'met':a.verdict==='not'?'not':'');
+  ns.textContent='ACR: '+(a.verdict==='met'?'עומד בקריטריונים':a.verdict==='not'?'לא עומד':a.any?'חלקי':'טרם מולא');
+}
+
+function ddxFlags(){
+  const f=[], L=S.labs, ex=S.exam, bg=S.bg, md=S.meds, cur=S.cur, a=acr();
+  const miss=LABS.filter(l=>l.core&&(L[l.id]===null||L[l.id]==='nd')).map(l=>l.he);
+  if(miss.length) f.push(['warn',`<b>בירור מעבדה מינימלי חסר:</b> ${miss.join(',\u200F ')}. מומלץ בכל מקרה, ללא קשר לתוצאת FiRST. בירור נוסף רק לפי ממצאים. AFP מציעה ספירת דם, כימיה ו-TSH, ומציינת שבדיקות אינן נדרשות כשגרה.`,has(10,'R.9–R.10')+afp('testing','בדיקות')]);
+  if(labAbn('crp')||ex.has('syn')||ex.has('girdle')) f.push(['bad',`<b>ממצא דלקתי</b> (${[labAbn('crp')&&'CRP חריג',ex.has('syn')&&'סינוביטיס',ex.has('girdle')&&'נוקשות חגורות'].filter(Boolean).join(', ')}): לשלול מחלה ראומטית דלקתית — דלקת מפרקים שגרונית, ספונדילוארתריטיס, דלקת מפרקים פסוריאטית, PMR. במקרה של ספק: הפניה לראומטולוג/ית.`,has(9,'R.8')+has(10,'R.11')+afp('differential-diagnosis')]);
+  if(labAbn('cpk')||ex.has('weak')) f.push(['bad',`<b>${labAbn('cpk')?'CPK חריג':''}${labAbn('cpk')&&ex.has('weak')?' וחולשה פרוקסימלית':ex.has('weak')?'חולשה פרוקסימלית':''}:</b> לשלול מיוזיטיס או מיופתיה.${md.has('statin')?' נוטל/ת סטטין — לשקול כאבי שרירים או מיופתיה מסטטין.':''}`,has(9,'R.8')+afp('differential-diagnosis')]);
+  if(labAbn('tsh')) f.push(['bad','<b>TSH חריג:</b> תת-פעילות או יתר-פעילות של בלוטת התריס — לאבחן ולטפל; פיברומיאלגיה יכולה להתקיים במקביל.',has(9,'R.8')+afp('differential-diagnosis')]);
+  if(ex.has('rash')) f.push(['bad','<b>פריחה, רגישות לאור או יובש:</b> לשקול לופוס או סיוגרן. בדיקת ANA מוצדקת כשיש מאפיינים כאלה.',has(9,'R.8')+afp('testing','בדיקות')]);
+  if(ex.has('neuro')) f.push(['bad','<b>חסר נוירולוגי מערכתי:</b> אינו תואם פיברומיאלגיה — לשקול טרשת נפוצה או מחלה נוירולוגית אחרת; הפניה לנוירולוג/ית.',has(9,'טבלה 1')+afp('differential-diagnosis')]);
+  if(ex.has('const')||labAbn('cbc')) f.push(['bad',`<b>${ex.has('const')?'תסמינים כלליים':''}${ex.has('const')&&labAbn('cbc')?' וספירת דם חריגה':labAbn('cbc')?'ספירת דם חריגה':''}:</b> לשלול מיאלומה, זיהום ומחלה סיסטמית; אנמיה כגורם לעייפות.`,has(9,'R.8')+afp('testing','בדיקות')]);
+  if(labAbn('lft')) f.push(['warn','<b>טרנסאמינזות חריגות:</b> לשקול דלקת כבד; להביא בחשבון בבחירת תרופה.',afp('differential-diagnosis')]);
+  if(labAbn('cmp')) f.push(['warn','<b>כימיה חריגה:</b> לשקול יתר-פעילות של הפאראתירואיד (סידן) ופגיעה כלייתית.',afp('differential-diagnosis')]);
+  const dm=[md.has('statin')&&'סטטין (כאבי שרירים)',(cur.has('opioidS')||cur.has('tram'))&&'אופיואידים (כאב מפושט)',md.has('ai')&&'מעכב ארומטאז (כאבי מפרקים וכאב מפושט)',md.has('bisph')&&'ביספוספונט (כאבי עצמות)',md.has('chemo')&&'כימותרפיה (כאב נוירופתי)'].filter(Boolean);
+  if(dm.length) f.push(['warn',`<b>תרופה שעלולה להסביר את הכאב:</b> ${dm.join('; ')}.`,has(9,'טבלה 1')+afp('differential-diagnosis')]);
+  if(S.sleep.has('snore')||S.sleep.has('rlsS')) f.push(['warn',`<b>חשד ל${[S.sleep.has('snore')&&'דום נשימה בשינה',S.sleep.has('rlsS')&&'תסמונת רגליים חסרות מנוחה'].filter(Boolean).join(' ול')}:</b> לאשר אבחנה ולטפל באופן ספציפי.`,has(22,'R.55')+afp('comorbidities','תחלואה נלווית')]);
+  if(['ra','spa','sle','oa','pmr'].some(k=>bg.has(k))) f.push(['',`<b>מחלה ראומטית ברקע:</b> פיברומיאלגיה יכולה להתקיים במקביל${a.verdict==='met'?' (עומד/ת בקריטריונים)':''}. בחולים עם מחלה דלקתית, ציוני פעילות בדיווח עצמי גבוהים ממידת הדלקת בפועל ועלולים להוביל לטיפול-יתר במחלה הדלקתית.`,has(9,'R.8')+afp('comorbidities','תחלואה נלווית')]);
+  if(bg.has('lyme')) f.push(['','<b>מחלת ליים:</b> בדיקה סרולוגית רק עם היסטוריית חשיפה וממצאים מתאימים.',afp('differential-diagnosis')]);
+  const abnEx=OPT.examAbn.some(o=>ex.has(o[0])); const allLabs=LABS.filter(l=>l.core).every(l=>L[l.id]==='n');
+  if(!abnEx&&allLabs&&!dm.length) f.push(['ok','<b>בדיקה גופנית ומעבדה מינימלית תקינות.</b> אין צורך להרחיב בירור ללא ממצא חדש: ריבוי בדיקות מגביר התמקדות בתסמינים. במקרה של ספק — חוות דעת מומחה/ית ולא בדיקות נוספות.',has(10,'R.11')+afp('management','ניהול')]);
+  f.push(['','כל תסמין חדש: בדיקה גופנית חוזרת ובירור הסיבה לפני שמייחסים אותו לפיברומיאלגיה.',has(11,'R.14')]);
+  return f;
+}
+function renderDdx(){
+  document.getElementById('ddxOut').innerHTML=ddxFlags().map(([l,t,c])=>`<div class="alert ${l}">${t} ${c}</div>`).join('');
+}
+
+function renderImpact(){
+  const b=bmi(); document.getElementById('bmiOut').textContent=b?b.toFixed(1):'—';
+  const o=[];
+  if(S.si==='yes') o.push(`<div class="alert bad"><b>מחשבות אובדניות:</b> הפניה לפסיכיאטר/ית ללא דיחוי. ${has(23,'R.58')}</div>`);
+  if(S.phq!==null) o.push(`<div class="alert ${S.phq>=10?'warn':''}"><b>PHQ-9 ${S.phq} — ${phqBand(S.phq)}.</b> ${S.phq>=10?'לאבחן אפיזודה דיכאונית ולהתאים טיפול לחומרה: פסיכותרפיה תומכת, נוגד דיכאון או פסיכותרפיה מובנית (CBT).':'להמשיך לעקוב בכל ביקור.'} ${has(22,'R.57')}</div>`);
+  if(b&&b>=25) o.push(`<div class="alert warn"><b>BMI ${b.toFixed(1)}:</b> עודף משקל והשמנה שכיחים יותר בפיברומיאלגיה ומחייבים הערכה וטיפול. ${has(23,'R.59')}</div>`);
+  if(S.vuln.size) o.push(`<div class="alert warn"><b>גורמי פגיעות:</b> ${[...S.vuln].map(v=>LABEL[v]).join(', ')}. לשקול עו״ס, פסיכולוג/ית או רופא/ת תעסוקתי/ת להערכה מעמיקה. ${has(11,'R.17')}${has(12,'R.18')}</div>`);
+  document.getElementById('impactOut').innerHTML=o.join('');
+}
+
+/* ---------- treatment catalog ---------- */
+const dx=()=>acr().verdict;
+const T1=[
+ {id:'edu',t:'הודעת האבחנה והסבר',rel:()=>dx()==='met',soap:'הוסברה האבחנה: רגישות-יתר של מערכת העצבים המרכזית לכאב; אינה מחלה ניוונית, אינה מסכנת איברים חיוניים ואינה מקצרת חיים. ניתן מידע כתוב.',
+  body:()=>`<p>להכיר בסבל ובלגיטימיות התלונה, בלי שיפוטיות. להסביר: מנגנון רגישות מרכזית לכאב; לא ניוונית, לא מסוכנת, לא פוגעת באיברים חיוניים ובתוחלת החיים; הטיפול מתמקד בפעילות, ניהול עצמי ושמירה על תעסוקה, ולתרופות השפעה צנועה. לוודא הבנה ולתת מידע כתוב. הצבת האבחנה מרגיעה ומונעת בירורים מיותרים.</p>${has(12,'R.19–R.20')}${has(41,'נספח 5')}${afp('management','ניהול')}`},
+ {id:'goals',t:'הגדרת יעדים משותפים',rel:()=>dx()==='met',soap:'הוגדרו יעדי טיפול משותפים ומדדי מעקב (תפקוד, כאב, איכות חיים).',
+  body:()=>`<p>יעדים ריאליים ובני השגה לשיפור התפקוד והתמודדות עם המחלה, לפי מה שהמטופל/ת כבר עושה ומה שעזר, העדפות ועדיפויות. לקבוע יחד מדדים למעקב.</p>${has(12,'R.21')}${has(13,'R.22')}`},
+ {id:'pa',t:'פעילות גופנית יומיומית והפחתת ישיבה',rel:()=>true,soap:'הומלץ על פעילות גופנית הדרגתית (אירובית ומחזקת, בעצימות נמוכה עד בינונית) והפחתת זמן ישיבה.',
+  body:()=>`<p>לעודד פעילות מהנה, נבחרת והדרגתית, מותאמת בתדירות, משך ועצימות. לקטוע ישיבה כל 90–120 דקות ב-4–5 דקות תנועה. יעד WHO: ‏150–300 דקות שבועיות בעצימות בינונית וחיזוק שרירים פעמיים בשבוע. AFP: להתחיל בעצימות ובתדירות נמוכות; העדות החזקה ביותר לפעילות אירובית בעצימות בינונית, שמשפרת גם עייפות ושינה.</p>${has(16,'R.31–R.32')}${has(35,'נספח 2')}${afp('management','ניהול')}`},
+ {id:'apa',t:'תוכנית פעילות מותאמת בהשגחה (פיזיותרפיה / הידרותרפיה)',rel:()=>S.pa==='low'||S.pa==='sed'||S.cope.has('kinesio'),soap:'הפניה לתוכנית פעילות מותאמת בהשגחת פיזיותרפיה, 1–3 מפגשים בשבוע למשך 3 חודשים, כולל הדרכה לתרגול עצמאי.',
+  body:()=>`<p>כשהפעילות מתחת להמלצות או כשקשה לתרגל לבד בבטחה. תרגילים הדרגתיים בעצימות נמוכה עד בינונית, ביבשה או במים (במים נסבלים יותר ומפחיתים פחד מתנועה): אירובי, חיזוק, גמישות ושיווי משקל. 1–3 מפגשים בשבוע, 3 חודשים; הדרכה לתרגול עצמאי בכל מפגש. להימנע מגישות פסיביות. אם השיפור לא מספק — חידוש ל-3 חודשים; קשיים מתמשכים או דה-קונדישנינג — שיקום.</p>${has(16,'R.32')}${has(17,'R.33–R.35')}${has(18,'R.37–R.39')}`},
+ {id:'self',t:'ניהול עצמי ואסטרטגיות הסתגלות',rel:()=>dx()==='met',soap:'הודרכ/ה בניהול עצמי: פיצול פעילויות, איזון בין פעילות למנוחה, שמירה על שגרה.',
+  body:()=>`<p>פישוט ופיצול פעולות יומיומיות, איזון פעילות ומנוחה, שמירה על שינה, תזונה סדירה ותעסוקה. אם נדרש פיתוח עצמאות או שיש קושי בהסתגלות — הדרכה קבוצתית (חינוך טיפולי) בהשתתפות מטופלים מיומנים.</p>${has(19,'R.42–R.44')}${afp('afp20230200p137-t4','טבלה 4')}`},
+ {id:'cbt',t:'טיפול פסיכולוגי מובנה (CBT)',rel:()=>S.cope.size>0,soap:'הפניה לטיפול פסיכולוגי מובנה (CBT) להתמודדות עם הכאב.',
+  body:()=>`<p>בקטסטרופיזציה, פעילות-יתר כפייתית או הימנעות ופחד מתנועה. מבוצע בידי פסיכולוג/ית קליני/ת או פסיכיאטר/ית מיומנים. AFP: שיפור צנוע בכאב ובמוגבלות בטווח הקצר והבינוני (דרגת ראיות A).</p>${has(19,'R.46')}${has(20,'R.47')}${afp('afp20230200p137-ut1','SORT')}`},
+ {id:'work',t:'רופא/ת תעסוקתי/ת והתאמות בעבודה',rel:()=>S.work==='impact'||S.work==='leave',soap:'הפניה לרופא/ת תעסוקתי/ת לבחינת התאמות בעבודה, במטרה לשמור על רצף תעסוקתי.',
+  body:()=>`<p>לעודד שמירה על תעסוקה: היעדרות ממושכת או חוזרת מובילה לבידוד וחרדה לקראת החזרה. בפגיעה משמעותית — רופא/ת תעסוקתי/ת, רצוי לפני חופשת מחלה. התאמות: שעות גמישות או משרה חלקית, חלוקת משימות קלות וכבדות, התאמת עמדה, אפשרות לשבת, עבודה מהבית בלי בידוד.</p>${has(21,'R.48–R.51')}`},
+ {id:'sleepH',t:'היגיינת שינה',rel:()=>S.unref>=2||S.sleep.has('insom')||S.prio.has('sleep'),soap:'הודרכ/ה בהיגיינת שינה ושמירה על שעון שינה-ערות.',
+  body:()=>`<p>שעות קבועות, חשיפה לאור ותנועה בבוקר, פעילות במהלך היום אך לא סמוך לשינה, הפחתת מסכים, קפאין, אלכוהול ועישון. תרופות שינה ובנזודיאזפינים אינם מיועדים לנדודי שינה כרוניים: לכל היותר 4 שבועות כולל הפחתה, ולתכנן את הסיום מהמרשם הראשון.</p>${has(21,'R.54')}${has(22,'R.56')}`},
+ {id:'sleepE',t:'בירור דום נשימה בשינה / רגליים חסרות מנוחה',rel:()=>S.sleep.has('snore')||S.sleep.has('rlsS'),soap:'בירור לדום נשימה בשינה / תסמונת רגליים חסרות מנוחה.',
+  body:()=>`<p>בכל תלונת שינה: לחפש סימנים לשני המצבים, לאשר אבחנה ולטפל ספציפית; לשקול הפניה למרפאת שינה. לבדוק תרופות ותרופות עצמיות שפוגעות בשינה.</p>${has(22,'R.55')}${afp('comorbidities','תחלואה נלווית')}`},
+ {id:'mood',t:'איתור וטיפול בדיכאון וחרדה',rel:()=>(S.phq!==null&&S.phq>=10)||S.bg.has('depdx')||S.bg.has('anx')||S.dep===1||S.prio.has('mood'),soap:'איתור וטיפול בהפרעת מצב רוח לפי חומרה; מעקב PHQ-9.',
+  body:()=>`<p>מהאבחנה ועד התייצבות, ובכל ביקור: לאתר אפיזודה דיכאונית (PHQ-9) ולהתאים טיפול לחומרה. טיפול בהפרעות אלו מקל ומאפשר מעורבות בטיפול. מעל מחצית מהחולים סובלים מדיכאון נלווה.</p>${has(22,'R.57')}${has(23,'R.58')}${afp('comorbidities','תחלואה נלווית')}`},
+ {id:'psych',t:'הפניה דחופה לפסיכיאטר/ית',rel:()=>S.si==='yes',soap:'מחשבות אובדניות — הפניה לפסיכיאטר/ית ללא דיחוי.',
+  body:()=>`<p>בכל מחשבה אובדנית: הפניה ללא דיחוי.</p>${has(23,'R.58')}`},
+ {id:'weight',t:'טיפול בעודף משקל',rel:()=>{const b=bmi();return !!(b&&b>=25)},soap:'ליווי לשינוי אורח חיים: תזונה, פעילות גופנית ושינה; ייצוב משקל ולאחר מכן יעד אישי. לשקול דיאטנ/ית.',
+  body:()=>`<p>ייצוב משקל ואחר כך יעד אישי; שיפור תזונה תמיד בשילוב פעילות, הפחתת ישיבה ושיפור שינה; לבחון תרופות שמעלות משקל; דיאטנ/ית לפי הצורך.</p>${has(23,'R.59')}`},
+ {id:'diet',t:'תזונה: ללא דיאטות מגבילות ותוספים',rel:()=>false,soap:'הוסבר שתזונה מאוזנת ומגוונת מספיקה; דיאטות מגבילות ותוספים ללא תועלת מוכחת בהיעדר חסר.',
+  body:()=>`<p>אין תועלת מוכחת לדיאטות מגבילות (ללא גלוטן, ללא לקטוז, דל FODMAP), פרוביוטיקה, פרה-ביוטיקה, ויטמין D או ויטמינים ומינרלים, ותוספי צמחים — אלא בחסר מוכח או בהפרעת עיכול שאובחנה. חסר ויטמין D מטופל לפי הכללים הרגילים. אין ראיות בעד או נגד תזונה ים-תיכונית, צמחונית או טבעונית.</p>${has(23,'R.60')}`},
+ {id:'mind',t:'טאי צ׳י, יוגה, צ׳י גונג, פילאטיס',rel:()=>false,soap:'הומלץ על פעילות גוף-נפש (טאי צ׳י / יוגה / פילאטיס) בהדרכה מקצועית.',
+  body:()=>`<p>שיפור מתון בכאב ובתפקוד בטווח הקצר, בהדרכת מדריכים מיומנים ועם מעבר לתרגול עצמאי. AFP: טאי צ׳י שעה פעמיים בשבוע במשך 12–24 שבועות הביא לשיפור מתון.</p>${has(30,'R.107')}${afp('management','ניהול')}`},
+ {id:'relax',t:'הרפיה, היפנוזה, מדיטציה',rel:()=>false,soap:'הוצעו טכניקות הרפיה / מדיטציה בהדרכת מטפל/ת מיומנ/ת, עם הערכת תגובה.',
+  body:()=>`<p>ניתן לשקול כשיש מטפל/ת מיומנ/ת, מספר מפגשים מוגדר, למידה לתרגול עצמאי, והפסקה אם אין תגובה. לפני היפנוזה — לוודא שאין פסיכופתולוגיה פעילה הדורשת הערכה פסיכיאטרית.</p>${has(29,'R.102')}${has(30,'R.103–R.105')}`},
+ {id:'spa',t:'טיפולים במים חמים (ספא טיפולי) עם פעילות בבריכה',rel:()=>false,soap:'לשקול טיפולים במים חמים בשילוב פעילות מודרכת בבריכה.',
+  body:()=>`<p>תועלת מתונה לכאב ולתפקוד בטווח הקצר-בינוני, בשילוב קבוע עם פעילות בבריכה. מתאים במיוחד בחומרה בינונית ובשלב יציב; להמשיך בפעילות עצמאית אחרי.</p>${has(28,'R.95')}${has(29,'R.96–R.97')}`},
+ {id:'assoc',t:'קבוצות ועמותות מטופלים',rel:()=>false,soap:'נמסר מידע על קבוצות תמיכה ועמותות מטופלים.',
+  body:()=>`<p>שיתוף מידע אמין וחוויות, תמיכה, ועירנות כלפי שיטות לא מבוססות ומטפלים שמבטלים את הרפואה המקובלת.</p>${has(32,'R.113')}${has(14,'R.29')}`}
+];
+
+const RX=[
+ {id:'ami',gen:'אמיטריפטילין',br:'Elatrol (אלטרול)',best:['pain','sleep'],
+  has:'10–75 מ״ג ליום, לרוב סביב 25 מ״ג. כאב ושינה.',hasC:has(26,'R.76'),
+  afp:'התחלה 5–10 מ״ג בלילה, יעד 20–30 מ״ג בלילה. תופעות: יובש בפה, עצירות, סחרחורת, אצירת שתן, ישנוניות.',
+  note:'בהפסקה — הפחתה הדרגתית. אמיטריפטילין מקומי (תכשיר רוקחי) אינו מומלץ.',noteC:has(26,'R.76–R.77'),
+  soap:'התחלת אמיטריפטילין (Elatrol) 5–10 מ״ג בלילה, עלייה הדרגתית לפי סבילות עד 20–30 מ״ג (טווח 10–75).'},
+ {id:'dul',gen:'דולוקסטין',br:'Cymbalta (סימבלטה) וגנריים',best:['pain','mood'],
+  has:'60–120 מ״ג ליום.',hasC:has(26,'R.78'),
+  afp:'התחלה 20–30 מ״ג בבוקר, יעד 60 מ״ג בבוקר. תופעות: בחילה, יובש, ישנוניות, עייפות, עצירות, ירידה בתיאבון. אזהרת FDA לאובדנות עד גיל צעיר.',
+  soap:'התחלת דולוקסטין (Cymbalta) 30 מ״ג בבוקר, עלייה ל-60 מ״ג לפי סבילות.'},
+ {id:'mil',gen:'מילנסיפרן',br:'ככל הידוע אינו משווק בישראל — לאמת',best:['pain','fatigue','cog'],
+  has:'100 מ״ג ליום.',hasC:has(26,'R.78'),
+  afp:'התחלה 12.5 מ״ג בבוקר, יעד 50 מ״ג פעמיים ביום. כאב, עייפות וקוגניציה. תופעות: בחילה, הזעה, דפיקות לב, טכיקרדיה, יל״ד.',
+  soap:'התחלת מילנסיפרן 12.5 מ״ג בבוקר, עלייה הדרגתית עד 50 מ״ג פעמיים ביום.'},
+ {id:'ven',gen:'ונלפקסין',br:'Efexor XR (אפקסור), Viepax (ויאפקס)',best:['mood'],
+  has:'75–150 מ״ג ליום; נתונים צנועים אך חיוביים.',hasC:has(26,'R.78'),
+  afp:'נחקר פחות משאר ה-SNRI.',
+  soap:'התחלת ונלפקסין XR 37.5–75 מ״ג, עלייה עד 75–150 מ״ג ליום לפי סבילות.'},
+ {id:'gab',gen:'גבפנטין',br:'Neurontin (נוירונטין) וגנריים',best:['pain','sleep'],
+  has:'1,200–3,600 מ״ג ליום. קבוצת העבודה מעדיפה גבפנטין כבחירה ראשונה בגלל סיכון שימוש לרעה בפרגבלין.',hasC:has(26,'R.82'),
+  afp:'אין די ראיות לקביעת יעילות.',
+  note:'בהפסקה — הפחתה הדרגתית.',noteC:has(26,'R.82'),
+  soap:'התחלת גבפנטין (Neurontin) במינון נמוך בערב, עלייה הדרגתית לפי סבילות לטווח 1,200–3,600 מ״ג ליום.'},
+ {id:'pre',gen:'פרגבלין',br:'Lyrica (ליריקה) וגנריים',best:['pain','sleep','fatigue'],
+  has:'150–600 מ״ג ליום. אות בינלאומי לשימוש לרעה (בלבול, ירידה בהכרה, תרדמת): לבדוק בכל מרשם וחידוש. בצרפת — מרשם מאובטח ומוגבל ל-6 חודשים.',hasC:has(26,'R.82'),
+  afp:'התחלה 25–50 מ״ג לפני השינה, יעד 150–450 מ״ג לפני השינה. משפר גם שינה, עייפות ואיכות חיים; מתאים בהפרעת שינה קשה. תופעות: סחרחורת, ישנוניות, יובש, טשטוש ראייה.',
+  note:'סקירת-על של Cochrane (2025): לדולוקסטין, מילנסיפרן ופרגבלין NNT של 6–10 להפחתת כאב ב-30% ו-7–14 להפחתה ב-50%; אין נתוני יעילות מעבר ל-6 חודשים; תופעות לוואי חמורות לא שכיחות יותר מפלצבו.',noteC:poem(),
+  soap:'התחלת פרגבלין (Lyrica) 25–50 מ״ג לפני השינה, עלייה הדרגתית עד 150–450 מ״ג; מעקב אחר שימוש לרעה.'},
+ {id:'cyc',gen:'ציקלובנזפרין',br:'ככל הידוע אינו משווק בישראל — לאמת',best:[],conflict:true,
+  has:'מרפי שרירים אינם מומלצים.',hasC:has(25,'R.75'),
+  afp:'חלופה למי שלא סובל/ת אמיטריפטילין: התחלה 5–10 מ״ג בלילה, 10–40 מ״ג ליום ב-1–3 מנות. הפחתה צנועה בכאב, ללא השפעה על עייפות ושינה. תופעות: טשטוש, פרכוסים, הפרעות קצב, בלבול.',
+  soap:'ציקלובנזפרין 5–10 מ״ג בלילה (לפי AFP; HAS אינה ממליצה על מרפי שרירים).'}
+];
+const RX_INC=[
+ {id:'ana',gen:'פרצטמול / NSAIDs לכאב מתפרץ',br:'Acamol (אקמול), Dexamol (דקסמול); NSAIDs',
+  has:'לכאב חד מתפרץ בלבד (למשל לאחר מאמץ), במינון הנמוך האפקטיבי. אין די נתונים לפרצטמול כטיפול קבוע; NSAIDs כטיפול קבוע אינם מומלצים.',hasC:has(25,'R.68–R.70'),
+  afp:'NSAIDs אינם עדיפים על פלצבו ובעלי תופעות לוואי משמעותיות; אין די נתונים לפרצטמול.',
+  soap:'לכאב מתפרץ בלבד: פרצטמול, ובמידת הצורך NSAID לזמן קצר; לא כטיפול קבוע.'},
+ {id:'trm',gen:'טרמדול לכאב מתפרץ',br:'Tramadex (טרמדקס), Zaldiar (זלדיאר, עם פרצטמול)',
+  has:'באופן נקודתי לכאב חד מתפרץ, בזהירות ובבדיקת שימוש לרעה בכל מרשם. טיפול ממושך — חריג ורק לאחר חוות דעת מרפאת כאב. בצרפת — עד 3 חודשים ומרשם מאובטח. שאר האופיואידים אינם מומלצים.',hasC:has(25,'R.71–R.74'),
+  afp:'אופיואידים אינם מומלצים: אינם פועלים על מנגנון הרגישות המרכזית וגורמים לתלות, שימוש לרעה והחמרת היפראלגזיה.',
+  soap:'טרמדול באופן נקודתי לכאב חד מתפרץ בלבד, עם מעקב אחר שימוש לרעה.'}
+];
+
+const CAUT=[
+ [()=>S.age>=65,['ami'],()=>`גיל ${S.age}: זהירות בקשישים.`,()=>has(26,'R.76')],
+ [()=>S.bg.has('cardiac'),['ami','cyc'],()=>'מחלת לב / הפרעת קצב: השפעה על הולכה ו-QT.',()=>GEN],
+ [()=>S.bg.has('glaucoma'),['ami','cyc'],()=>'גלאוקומה צרת זווית: השפעה אנטיכולינרגית.',()=>GEN],
+ [()=>S.bg.has('uret'),['ami','cyc'],()=>'אצירת שתן היא תופעת לוואי שכיחה.',()=>afp(T5,'טבלה 5')],
+ [()=>S.bg.has('sud'),['pre'],()=>'הפרעת שימוש בחומרים: סיכון מוגבר לשימוש לרעה בפרגבלין.',()=>has(26,'R.82')],
+ [()=>S.bg.has('sud'),['trm'],()=>'הפרעת שימוש בחומרים: להימנע מטרמדול ככל האפשר.',()=>has(25,'R.71')],
+ [()=>S.bg.has('sud'),['gab'],()=>'גם בגבפנטין קיים סיכון לשימוש לרעה.',()=>GEN],
+ [()=>S.bg.has('ckd'),['gab','pre'],()=>'אי ספיקת כליות: התאמת מינון לפי eGFR.',()=>GEN],
+ [()=>S.bg.has('liver')||labAbn('lft'),['dul'],()=>'מחלת כבד או אנזימים חריגים: להימנע מדולוקסטין.',()=>GEN],
+ [()=>S.bg.has('htn'),['dul','ven'],()=>'יל״ד לא מאוזן: SNRI עלולים להעלות לחץ דם.',()=>GEN],
+ [()=>S.bg.has('htn'),['mil'],()=>'יל״ד לא מאוזן: יתר לחץ דם וטכיקרדיה הן תופעות לוואי.',()=>afp(T5,'טבלה 5')],
+ [()=>S.bg.has('epilepsy'),['trm'],()=>'אפילפסיה: טרמדול מוריד סף פרכוסים.',()=>GEN],
+ [()=>S.cur.has('serot'),['trm','dul','mil','ven','ami'],()=>'שילוב עם SSRI / SNRI / טריפטנים: סיכון לתסמונת סרוטונין.',()=>GEN],
+ [()=>S.cur.has('benzo')||S.cur.has('opioidS')||S.cur.has('tram'),['gab','pre'],()=>'שילוב עם אופיואידים או בנזודיאזפינים: טשטוש ודיכוי נשימתי.',()=>GEN],
+ [()=>S.cur.has('gabap'),['gab','pre'],()=>'כבר נוטל/ת גבפנטינואיד — לא לשלב שניים.',()=>GEN],
+ [()=>S.bg.has('bipolar'),['ami','dul','mil','ven'],()=>'הפרעה דו-קוטבית: סיכון למעבר למאניה בנוגדי דיכאון.',()=>GEN],
+ [()=>S.age!==null&&S.age<25,['dul','mil'],()=>'גיל צעיר: אזהרת FDA לסיכון אובדני.',()=>afp(T5,'טבלה 5')],
+ [()=>S.si==='yes',['ami'],()=>'מחשבות אובדניות: טריציקליים מסוכנים במנת יתר.',()=>GEN],
+ [()=>S.bg.has('preg'),['ami','dul','mil','ven','gab','pre','cyc','trm','ana'],()=>'הריון או תכנון הריון: לשקול סיכון-תועלת ולהתייעץ.',()=>GEN]
+];
+function cautFor(id){return CAUT.filter(c=>c[1].includes(id)&&c[0]()).map(c=>`<li>${c[2]()} ${c[3]()}</li>`)}
+
+const T3=[
+ {id:'pain',t:'מרפאת כאב',rel:()=>S.cur.has('refr')||S.cur.has('opioidS')||S.cur.has('tram'),soap:'הפניה למרפאת כאב להערכה רב-מקצועית.',
+  body:()=>`<p>בכאב עמיד, קשיי תיאום, תסמינים חדשים או חוסר תגובה; גם לפני טיפול ממושך בטרמדול. במקביל — חוות דעת ראומטולוג/ית, נוירולוג/ית, פסיכיאטר/ית או רופא/ת שיקום לפי הצורך.</p>${has(13,'R.24')}${has(25,'R.73')}`},
+ {id:'tens',t:'TENS',rel:()=>false,soap:'לשקול TENS להחמרה של כאב ממוקד, לאחר חוות דעת רב-מקצועית וניסיון מקדים.',
+  body:()=>`<p>להקלה זמנית בהחמרה של כאב ממוקד או אזורי. לאחר חוות דעת רב-מקצועית, ניסיון מקדים לזיהוי מגיבים והדרכה לשימוש עצמאי. לא הוכחה השפעה ארוכת טווח על תפקוד.</p>${has(29,'R.98')}`},
+ {id:'rtms',t:'rTMS או tDCS',rel:()=>false,soap:'לשקול גירוי מוחי לא פולשני (rTMS / tDCS) לאחר חוות דעת מרפאת כאב.',
+  body:()=>`<p>השפעה כללית על הכאב ועל איכות החיים בטווח הקצר-בינוני. לאחר חוות דעת מרפאת כאב, במוסד עם צוות מיומן; הפסקה אם אין תגובה.</p>${has(29,'R.99–R.100')}`}
+];
+const FU={id:'fu',t:'מעקב',rel:()=>dx()==='met',soap:'מעקב צמוד עד התייצבות, לאחר מכן כל 3–6 חודשים. מדדים: ACR 2016, FIQ, PHQ-9, התרשמות כללית מהשינוי; יעד הפחתת כאב של כ-30%.',
+  body:()=>`<p>ביקורים צפופים עד התייצבות, אחר כך כל 3–6 חודשים, רצוי ביקור ארוך ייעודי. מדדים: קריטריוני ACR 2016, FIQ, PHQ-9, CGI; לבדוק צריכת תרופות ותרופות עצמיות. יעד ריאלי: הפחתת כאב של כ-30%.</p>${has(14,'R.25–R.28')}${has(24,'R.65')}`};
+
+function itemHtml(it){
+  const rel=it.rel();
+  return `<div class="rx${rel?' rel':''}"><div class="hd"><label class="pl"><input type="checkbox" data-plan="${it.id}"${S.plan.has(it.id)?' checked':''}><span>${it.t}</span></label>${rel?'<span class="tag">רלוונטי לנתונים</span>':''}</div><div class="rxb">${it.body()}</div></div>`;
+}
+function rxHtml(r,inc){
+  const c=cautFor(r.id);
+  const prioMatch=!inc&&r.best.some(b=>S.prio.has(b));
+  return `<div class="rx${prioMatch?' rel':''}"><div class="hd"><label class="pl"><input type="checkbox" data-plan="rx_${r.id}"${S.plan.has('rx_'+r.id)?' checked':''}><span>${r.gen}</span></label>
+    ${prioMatch?'<span class="tag">מתאים לתסמין הדומיננטי</span>':''}${r.conflict?'<span class="tag warn">מחלוקת בין המקורות</span>':''}${c.length?`<span class="tag warn">${c.length} אזהרות</span>`:''}</div>
+    <div class="rxb"><dl class="dose"><dt>בישראל</dt><dd>${r.br}</dd><dt>HAS</dt><dd>${r.has} ${r.hasC}</dd><dt>AFP</dt><dd>${r.afp} ${afp(T5,'טבלה 5')}</dd>${r.note?`<dt>הערה</dt><dd>${r.note} ${r.noteC}</dd>`:''}</dl>
+    ${c.length?`<div class="caut"><b>לפי הנתונים שהוזנו:</b><ul>${c.join('')}</ul></div>`:''}</div></div>`;
+}
+
+function renderTx(){
+  const o=[];
+  // tier 1
+  o.push(`<div class="tier" data-n="1"><h3>קו ראשון: לשלב את כל הרכיבים</h3><p class="lead">פעילות גופנית עם למידה לתרגול עצמאי, ניהול עצמי, שמירה על תעסוקה, וטיפול במצבים נלווים — שינה, מצב רוח, משקל ופגיעות. ${has(16,'R.30')}${afp('afp20230200p137-ut1','SORT')}</p>${T1.map(itemHtml).join('')}</div>`);
+  // tier 2
+  const deps=[];
+  if(S.cur.has('opioidS')) deps.push(`<li><b>אופיואיד חזק:</b> אינו מומלץ בפיברומיאלגיה — לתכנן הפחתה הדרגתית בליווי. ${has(25,'R.74')}${afp('management')}</li>`);
+  if(S.cur.has('tram')) deps.push(`<li><b>טרמדול קבוע:</b> טיפול ממושך רק באופן חריג ולאחר חוות דעת מרפאת כאב. ${has(25,'R.73')}</li>`);
+  if(S.cur.has('nsaid')) deps.push(`<li><b>NSAIDs קבוע:</b> אינו מומלץ לכאב מתמשך. ${has(25,'R.69')}${afp('management')}</li>`);
+  if(S.cur.has('benzo')) deps.push(`<li><b>בנזודיאזפינים / Z-drugs:</b> אינם מיועדים לנדודי שינה כרוניים — לתכנן הפחתה. ${has(22,'R.56')}</li>`);
+  if(S.cur.has('steroid')) deps.push(`<li><b>סטרואידים:</b> אינם מומלצים לפיברומיאלגיה. ${has(25,'R.75')}</li>`);
+  if(S.cur.has('serot')) deps.push(`<li><b>SSRI:</b> אינם מומלצים לטיפול בכאב, אך מתאימים לחרדה או דיכאון נלווים; SNRI כבר בשימוש — לא להוסיף SNRI נוסף. ${has(26,'R.80')}${afp('management')}</li>`);
+  const pr=[...S.prio];
+  const guide=[];
+  if(S.prio.has('sleep')) guide.push('<b>שינה:</b> אמיטריפטילין במינון נמוך (כאב ושינה, HAS) או גבפנטינואיד (פרגבלין משפר שינה, AFP)');
+  if(S.prio.has('mood')) guide.push('<b>מצב רוח / חרדה:</b> SNRI (דולוקסטין, ונלפקסין), שמטפלים גם בדיכאון ובחרדה');
+  if(S.prio.has('fatigue')||S.prio.has('cog')) guide.push('<b>עייפות / קוגניציה:</b> מילנסיפרן (עייפות וקוגניציה) או פרגבלין (עייפות) לפי AFP');
+  if(!guide.length&&S.prio.size) guide.push('<b>כאב:</b> לא הודגם הבדל בין התרופות בהשפעה על הכאב — הבחירה לפי תסמינים נלווים, תופעות לוואי והתוויות נגד');
+  o.push(`<div class="tier t2" data-n="2"><h3>קו שני: טיפול תרופתי כהשלמה</h3>
+   <p class="lead">התועלת צנועה. להבחין בין כאב מתמשך (טיפול רקע במינון נמוך) לבין כאב מתפרץ (טיפול נקודתי, לעולם לא ממושך). ${has(24,'R.61–R.63')}</p>
+   <div class="panel"><h3>עקרונות</h3><ul style="margin:0;padding-inline-start:20px">
+     <li>להחליט יחד עם המטופל/ת על מקום התרופות בתוכנית. ${has(24,'R.61')}</li>
+     <li>אין הבדל מוכח בין התרופות בהשפעה על הכאב — הבחירה לפי השינה, הדיכאון והחרדה, תופעות לוואי והתוויות נגד. ${has(24,'R.64')}</li>
+     <li>להתחיל במינון נמוך ולהעלות לאט. יעד ריאלי: הפחתת כאב של כ-30%. ${has(24,'R.65–R.66')}</li>
+     <li>בכל ביקור: סבילות, יעילות נתפסת ושימוש לרעה. ${has(25,'R.67')}</li>
+     <li>AFP: תרופה אחת, ניסיון של 3 חודשים לפחות; אם יש תגובה — להמשיך 12 חודשים לפחות. בהיעדר תגובה: היענות, מיצוי הטיפול הלא-תרופתי ושלילת מצב אחר. שילובים לעתים נדרשים. ${afp('management','ניהול')}</li>
+   </ul>
+   ${guide.length?`<div class="alert" style="margin-top:10px"><b>בחירה לפי מה שמפריע יותר מכל</b> (${pr.map(p=>LABEL[p]).join(', ')}):<br>${guide.join('<br>')} ${has(24,'R.64')}${afp(T5,'טבלה 5')}</div>`:`<p class="hint" style="margin:8px 0 0">בחירה בחלק ההערכה של מה שמפריע יותר מכל תסמן כאן את התרופות המתאימות.</p>`}
+   ${deps.length?`<div class="caut" style="margin-top:10px"><b>טיפול נוכחי לבחינה מחדש:</b><ul>${deps.join('')}</ul></div>`:''}
+   </div>
+   <h3 style="font-size:1.05rem;margin:14px 0 4px">טיפול רקע לכאב מתמשך</h3>
+   ${RX.map(r=>rxHtml(r)).join('')}
+   <h3 style="font-size:1.05rem;margin:14px 0 4px">כאב חד מתפרץ</h3>
+   ${RX_INC.map(r=>rxHtml(r,true)).join('')}
+   <details class="panel"><summary>לא מומלץ, או שאין די ראיות</summary>
+    <table class="ref"><tr><th>טיפול</th><th>עמדה</th><th>מקור</th></tr>
+     <tr><td>אופיואידים חזקים (קודאין, מורפין, אוקסיקודון, פנטניל, בופרנורפין ועוד)</td><td>לא מומלץ</td><td>${has(25,'R.74')}${afp('management')}</td></tr>
+     <tr><td>NSAIDs כטיפול קבוע, סטרואידים, מרפי שרירים</td><td>לא מומלץ</td><td>${has(25,'R.69, R.75')}</td></tr>
+     <tr><td>SSRI לכאב</td><td>לא מומלץ; מתאים לחרדה או דיכאון נלווים</td><td>${has(26,'R.80')}${afp('management')}</td></tr>
+     <tr><td>קרבמזפין, למוטריג׳ין, טופירמט, קלונזפאם</td><td>לא מומלץ</td><td>${has(27,'R.83')}</td></tr>
+     <tr><td>קטמין, לידוקאין תוך-ורידי, L-קרניטין, מלטונין</td><td>לא מומלץ</td><td>${has(27,'R.86, R.88, R.90–R.91')}</td></tr>
+     <tr><td>הומאופתיה, מזותרפיה, חמצן היפרברי</td><td>לא מומלץ</td><td>${has(28,'R.92–R.93')}${has(30,'R.109')}</td></tr>
+     <tr><td>EMDR</td><td>רק ב-PTSD נלווה</td><td>${has(31,'R.111')}</td></tr>
+     <tr><td>מירטזפין, MAOI, קווטיאפין, ממנטין, לידוקאין מקומי</td><td>אין די ראיות</td><td>${has(26,'R.79, R.81')}${has(27,'R.87, R.89')}</td></tr>
+     <tr><td>קנבינואידים ומוצרי CBD</td><td>אין די ראיות</td><td>${has(27,'R.84')}${afp('management')}</td></tr>
+     <tr><td>נלטרקסון במינון נמוך</td><td>תועלת אפשרית במחקרים; המינון אינו זמין בצרפת והקבוצה ללא ניסיון</td><td>${has(27,'R.85')}</td></tr>
+     <tr><td>דיקור</td><td>HAS: אי אפשר להמליץ. AFP: שיפור קצר טווח לעומת טיפול רגיל, לא עקבית מול דיקור מדומה</td><td>${has(30,'R.106')}${afp('management')}</td></tr>
+     <tr><td>עיסוי, אוסטאופתיה, כירופרקטיקה</td><td>HAS: אי אפשר לקבוע; חלק מהמטופלים לא סובלים מגע בגלל אלודיניה. AFP: שחרור מיופסציאלי עשוי להפחית תסמינים</td><td>${has(30,'R.110')}${afp('management')}</td></tr>
+     <tr><td>קריותרפיה, גירוי עצב הוואגוס</td><td>אי אפשר לקבוע</td><td>${has(29,'R.101')}${has(30,'R.108')}</td></tr>
+    </table></details>
+   <details class="panel"><summary>נקודות מחלוקת בין המקורות</summary>
+    <table class="ref"><tr><th>נושא</th><th>HAS 2025</th><th>AFP</th></tr>
+     <tr><td>גבפנטינואיד ראשון</td><td>גבפנטין קודם, בגלל סיכון שימוש לרעה בפרגבלין ${has(26,'R.82')}</td><td>פרגבלין רשום ב-FDA ומבוסס ראיות; אין די ראיות לגבפנטין ${afp('management')}</td></tr>
+     <tr><td>מינון דולוקסטין</td><td>60–120 מ״ג ${has(26,'R.78')}</td><td>יעד 60 מ״ג ${afp(T5)}</td></tr>
+     <tr><td>ציקלובנזפרין</td><td>מרפי שרירים לא מומלצים ${has(25,'R.75')}</td><td>חלופה לאמיטריפטילין (A) ${afp('afp20230200p137-ut1','SORT')}</td></tr>
+     <tr><td>מקום התרופות</td><td>קו שני, אחרי יישום והערכה של הקו הראשון ${has(24,'R.61')}</td><td>גישה רב-מרכיבית; תרופות כשהטיפול הלא-תרופתי אינו מספק ${afp('management')}</td></tr>
+     <tr><td>משך טיפול</td><td>הערכה בכל ביקור; מגבלות רגולטוריות צרפתיות (פרגבלין 6 חודשים, טרמדול 3 חודשים) ${has(26,'R.82')}</td><td>ניסיון 3 חודשים, המשך 12 חודשים לפחות אם יש תגובה ${afp('management')}</td></tr>
+     <tr><td>מעבדה</td><td>ספירת דם, CRP, TSH, CPK, טרנסאמינזות לכולם ${has(10,'R.9')}</td><td>לא נדרשת כשגרה; לשקול ספירת דם, כימיה ו-TSH ${afp('testing')}</td></tr>
+     <tr><td>דיקור ועיסוי</td><td>לא ניתן להמליץ / לקבוע ${has(30,'R.106, R.110')}</td><td>תועלת אפשרית מוגבלת ${afp('management')}</td></tr>
+    </table></details>
+  </div>`);
+  // tier 3
+  o.push(`<div class="tier t3" data-n="3"><h3>קו שלישי: לאחר הערכה מחודשת וחוות דעת</h3><p class="lead">בנוסף לקו הראשון, ובמידת הצורך לשני. ${has(15,'אלגוריתם')}</p>${T3.map(itemHtml).join('')}</div>`);
+  o.push(`<div class="tier t3" data-n="↻"><h3>מעקב</h3>${itemHtml(FU)}</div>`);
+  document.getElementById('txOut').innerHTML=o.join('');
+}
+
+/* ---------- SOAP ---------- */
+function buildSoap(){
+  const a=acr(), f=firstScore(), b=bmi();
+  const out=[];
+  // S
+  const s=[];
+  const who=S.sex==='f'?'בת':S.sex==='m'?'בן':'';
+  const pt=S.sex==='f'?'מטופלת':S.sex==='m'?'מטופל':'מטופל/ת';
+  s.push(`${pt}${S.age?` ${who?who+' ':'בגיל '}${S.age}`:''}, פנייה בשל כאבים מפושטים${S.dur==='ge3'?' הנמשכים 3 חודשים ומעלה':S.dur==='lt3'?' הנמשכים פחות מ-3 חודשים':''}${S.pain.has('fluct')?', משתנים בעוצמה ובמיקום':''}.`);
+  if(S.sites.size) s.push(`אזורי כאב בשבוע האחרון: ${SITES.filter(x=>S.sites.has(x.id)).map(x=>x.he).join(', ')}.`);
+  const sv=[['עייפות',S.fat],['יקיצה לא מרעננת',S.unref],['קשיים קוגניטיביים',S.cog]].filter(x=>x[1]!==null).map(x=>`${x[0]} ${x[1]}/3`);
+  if(sv.length) s.push(`תסמינים נלווים: ${sv.join(', ')}.`);
+  const sy=[['כאבי ראש',S.ha],['כאב בבטן התחתונה',S.abd],['דיכאון',S.dep]];
+  const yes=sy.filter(x=>x[1]===1).map(x=>x[0]), no=sy.filter(x=>x[1]===0).map(x=>x[0]);
+  if(yes.length||no.length) s.push(`ב-6 החודשים האחרונים: ${yes.length?listHe(yes):''}${yes.length&&no.length?'; ':''}${no.length?'ללא '+listHe(no):''}.`);
+  if(f.a===6) s.push(`FiRST ‏${f.n}/6 (${f.pos?'חיובי':'שלילי'}).`); else if(f.a) s.push(`FiRST חלקי: ${f.n} חיוביות מתוך ${f.a}.`);
+  const m=[]; if(S.nrs!==null) m.push(`כאב NRS ‏${S.nrs}/10`); if(S.fiq!==null) m.push(`FIQ ‏${S.fiq}`);
+  if(m.length) s.push(m.join(', ')+'.');
+  if(S.sleep.size) s.push(`שינה: ${[...S.sleep].map(v=>LABEL[v]).join(', ')}.`);
+  const md=[]; if(S.phq!==null) md.push(`PHQ-9 ‏${S.phq} (${phqBand(S.phq)})`);
+  if(S.si==='no') md.push(g('שולל מחשבות אובדניות','שוללת מחשבות אובדניות','שולל/ת מחשבות אובדניות'));
+  if(S.si==='yes') md.push(g('מדווח על מחשבות אובדניות','מדווחת על מחשבות אובדניות','מדווח/ת על מחשבות אובדניות'));
+  if(md.length) s.push(`מצב רוח: ${md.join('; ')}.`);
+  const fn=[]; if(S.pa) fn.push(LABEL[S.pa].replace('עומד/ת',g('עומד','עומדת','עומד/ת'))); if(S.work) fn.push(LABEL[S.work].replace('עובד/ת',g('עובד','עובדת','עובד/ת')).replace('לא עובד/ת',g('לא עובד','לא עובדת','לא עובד/ת')));
+  if(fn.length) s.push(`תפקוד: ${fn.join('; ')}.`);
+  if(S.cope.size) s.push(`דפוסי התמודדות: ${[...S.cope].map(v=>LABEL[v]).join(', ')}.`);
+  if(S.vuln.size) s.push(`גורמי פגיעות: ${[...S.vuln].map(v=>LABEL[v]).join(', ')}.`);
+  if(S.prio.size) s.push(`מפריע יותר מכל: ${[...S.prio].map(v=>LABEL[v]).join(', ')}.`);
+  if(S.bg.size) s.push(`ברקע: ${[...S.bg].map(v=>LABEL[v]).join(', ')}.`);
+  const rx=[...S.meds,...S.cur].filter(v=>v!=='refr').map(v=>LABEL[v]);
+  if(rx.length) s.push(`טיפול נוכחי רלוונטי: ${rx.join(', ')}.`);
+  if(S.cur.has('refr')) s.push('ללא תגובה מספקת לטיפולי קו ראשון ושני.');
+  out.push('S:\n'+s.join('\n'));
+  // O
+  const o=[document.getElementById('examTpl').value.trim()];
+  const abn=OPT.examAbn.filter(x=>S.exam.has(x[0])).map(x=>x[1]), sup=OPT.examSup.filter(x=>S.exam.has(x[0])).map(x=>x[1]);
+  if(abn.length) o.push(`ממצאים חריגים: ${abn.join(', ')}.`);
+  if(sup.length) o.push(`${sup.join(', ')}.`);
+  if(b) o.push(`משקל ${S.wt} ק״ג, גובה ${S.ht} ס״מ, BMI ‏${b.toFixed(1)}.`);
+  const lbs=st=>LABS.filter(l=>S.labs[l.id]===st).map(l=>l.he);
+  const lb=[lbs('n').length&&'תקינים: '+lbs('n').join(', '),lbs('abn').length&&'חריגים: '+lbs('abn').join(', '),lbs('nd').length&&'לא נבדקו: '+lbs('nd').join(', ')].filter(Boolean);
+  if(lb.length) o.push(`מעבדה — ${lb.join('; ')}.`);
+  if(a.any) o.push(`ACR 2016: WPI ‏${a.wpi}/19, SSS ‏${a.known?a.sss:'—'}/12${a.known&&a.known<6?' (חלקי)':''}, FS ‏${a.fs}/31${a.known===6?` (דרגת חומרה: ${a.band})`:''}; כאב מוכלל ב-${a.regs.size}/5 אזורים.`);
+  out.push('O:\n'+o.filter(Boolean).join('\n'));
+  // A
+  const A=[];
+  if(a.verdict==='met') A.push(`תסמונת פיברומיאלגיה — ${g('עומד','עומדת','עומד/ת')} בקריטריוני ACR 2016.`);
+  else if(a.verdict==='not'){const miss=[a.c1===false&&'סף WPI/SSS',a.c2===false&&'כאב מוכלל',a.c3===false&&'משך 3 חודשים'].filter(Boolean);A.push(`כאב מפושט — ${g('אינו עומד','אינה עומדת','אינו/ה עומד/ת')} בקריטריוני ACR 2016${miss.length?` (חסר: ${miss.join(', ')})`:''}.`)}
+  else A.push(f.pos?'חשד לפיברומיאלגיה (FiRST חיובי) — טרם הושלם אישור בקריטריוני ACR 2016.':'כאב מפושט — בבירור.');
+  const fl=ddxFlags().filter(x=>x[0]==='bad').map(x=>x[1].replace(/<[^>]+>/g,''));
+  if(fl.length) A.push('ממצאים הדורשים בירור:\n'+fl.map(x=>'- '+x).join('\n'));
+  if(S.phq!==null&&S.phq>=10) A.push(`חשד לאפיזודה דיכאונית (PHQ-9 ‏${S.phq}).`);
+  if(S.si==='yes') A.push('מחשבות אובדניות.');
+  out.push('A:\n'+A.join('\n'));
+  // P
+  const P=[];
+  [...T1].forEach(it=>{if(S.plan.has(it.id)) P.push(it.soap)});
+  [...RX,...RX_INC].forEach(r=>{if(S.plan.has('rx_'+r.id)) P.push(r.soap)});
+  if([...RX].some(r=>S.plan.has('rx_'+r.id))) P.push('הוסבר שהתועלת צפויה להיות צנועה; הערכת יעילות, סבילות ושימוש לרעה בכל ביקור; הפחתה הדרגתית בהפסקה.');
+  T3.forEach(it=>{if(S.plan.has(it.id)) P.push(it.soap)});
+  if(S.plan.has('fu')) P.push(FU.soap);
+  const gP=x=>x.replace(/הודרכ\/ה/g,g('הודרך','הודרכה','הודרכ/ה'));
+  out.push('P:\n'+(P.length?P.map((x,i)=>`${i+1}. ${gP(x)}`).join('\n'):'___'));
+  return out.join('\n\n');
+}
+function renderSoap(force){
+  const ta=document.getElementById('soapOut'), msg=document.getElementById('soapMsg');
+  if(soapDirty&&!force){msg.textContent='הסיכום נערך ידנית — לחצו "בנייה מחדש" כדי לעדכן מהנתונים';return}
+  ta.value=buildSoap(); soapDirty=false; msg.textContent='';
+}
+
+/* ---------- sync + update ---------- */
+function syncChips(){
+  document.querySelectorAll('.chips[data-single]').forEach(box=>{
+    const v=getK(box.dataset.single);
+    box.querySelectorAll('.chip').forEach(c=>{let cv=c.dataset.v; if(/^\d+$/.test(cv)) cv=+cv; c.setAttribute('aria-pressed',String(v===cv))});
+  });
+  document.querySelectorAll('.chips[data-multi]').forEach(box=>{
+    const set=getK(box.dataset.multi);
+    box.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(set.has(c.dataset.v))));
+  });
+  document.querySelectorAll('[data-site]').forEach(el=>{
+    const on=S.sites.has(el.dataset.site);
+    if(el.tagName.toLowerCase()==='circle') el.classList.toggle('on',on); else el.setAttribute('aria-pressed',String(on));
+  });
+}
+function update(){
+  syncChips(); renderFirst(); renderAcr(); renderDdx(); renderImpact(); renderTx(); renderSoap(false);
+}
+
+document.addEventListener('click',e=>{
+  const site=e.target.closest('[data-site]');
+  if(site){const id=site.dataset.site;S.sites.has(id)?S.sites.delete(id):S.sites.add(id);S.sitesTouched=true;update();return}
+  const c=e.target.closest('.chip'); if(!c) return;
+  const box=c.parentElement;
+  if(box.dataset.single){let v=c.dataset.v; if(/^\d+$/.test(v)) v=+v; setK(box.dataset.single,getK(box.dataset.single)===v?null:v); update();}
+  else if(box.dataset.multi){
+    const set=getK(box.dataset.multi), v=c.dataset.v, max=+box.dataset.max||0;
+    if(set.has(v)) set.delete(v); else { if(max&&set.size>=max){ set.delete([...set][0]); } set.add(v); }
+    update();
+  }
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.num){const v=t.value.trim();S[t.dataset.num]=v===''||isNaN(+v)?null:+v;update()}
+  else if(t.id==='examTpl'){renderSoap(false)}
+  else if(t.id==='soapOut'){soapDirty=true}
+});
+document.addEventListener('change',e=>{
+  const t=e.target; if(!t.dataset.plan) return;
+  t.checked?S.plan.add(t.dataset.plan):S.plan.delete(t.dataset.plan); renderSoap(false);
+});
+document.getElementById('clearSites').onclick=()=>{S.sites.clear();S.sitesTouched=false;update()};
+document.getElementById('markRel').onclick=()=>{[...T1,...T3,FU].forEach(it=>{if(it.rel()) S.plan.add(it.id)});update()};
+document.getElementById('rebuildSoap').onclick=()=>renderSoap(true);
+document.getElementById('resetAll').onclick=()=>{if(confirm('לאפס את כל הנתונים?')) location.reload()};
+document.getElementById('copySoap').onclick=async()=>{
+  const ta=document.getElementById('soapOut'), msg=document.getElementById('soapMsg');
+  try{await navigator.clipboard.writeText(ta.value)}catch(err){ta.select();document.execCommand('copy')}
+  msg.textContent='הועתק ללוח'; setTimeout(()=>{if(msg.textContent==='הועתק ללוח') msg.textContent=''},2000);
+};
+update();
+</script>
+</body>
+</html>
