@@ -264,6 +264,152 @@ function repeatYesterday(){
   y.forEach(e => logOf(S.date).push({ ...e, id: uid(), date: S.date }));
   saveLog(S.date); render();
 }
+/* ============ ניתוח מתכון ============
+   שני מעברים: (1) קריאת המתכון מהקובץ -> רכיבים וכמויות,
+   (2) התאמה לצמרת לפי אינדקס בלבד. כל החישוב נעשה כאן. */
+let R = null;
+
+function sheetRecipe(){
+  if (!S.key) return sheetLabel();
+  sheet('ניתוח מתכון', `
+    <p class="sm mut" style="margin-bottom:12px">צילום, תמונה או PDF של מתכון.
+    יחולצו הרכיבים והכמויות, יותאמו לצמרת, ויחושבו ערכים למנה אחת.</p>
+    <input type="file" accept="image/*,application/pdf" onchange="analyzeRecipe(this.files[0])">
+    <div id="rout" class="sm mut" style="margin-top:12px"></div>`);
+}
+
+async function askClaude(content, maxTok){
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': cleanKey(),
+      'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: maxTok,
+      messages: [{ role: 'user', content }] })
+  });
+  if (!r.ok) throw new Error('שגיאה ' + r.status + ': ' + (await r.text()).slice(0, 200));
+  const d = await r.json();
+  const txt = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  return JSON.parse(txt.replace(/```json|```/g, '').trim());
+}
+
+async function fileB64(file){
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result).split(',')[1]);
+    fr.onerror = () => rej(new Error('לא הצלחתי לקרוא את הקובץ'));
+    fr.readAsDataURL(file);
+  });
+}
+
+async function analyzeRecipe(file){
+  if (!file) return;
+  const out = $('#rout');
+  try {
+    out.textContent = 'קורא את המתכון…';
+    const isPdf = /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name);
+    const block = isPdf
+      ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: await fileB64(file) } }
+      : { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await prepImage(file) } };
+
+    const p1 = await askClaude([block, { type: 'text', text:
+      'זהו מתכון. חלץ ממנו את הרכיבים והכמויות, והמר כל כמות לגרמים.\n'
+      + 'כוסות, כפות ויחידות יש להמיר להערכת משקל סבירה.\n'
+      + 'אם מספר המנות לא מצוין, הערך אותו לפי גודל המתכון.\n'
+      + 'החזר JSON בלבד, בלי טקסט נוסף ובלי סימוני קוד:\n'
+      + '{"title":"שם המתכון","servings":מספר,"ingredients":[{"name":"שם הרכיב בעברית","grams":מספר}]}' }], 1500);
+
+    if (!p1 || !Array.isArray(p1.ingredients) || !p1.ingredients.length)
+      throw new Error('לא זוהו רכיבים בקובץ');
+
+    out.textContent = 'מתאים לצמרת…';
+    const cands = p1.ingredients.map(ing => dbSearch(ing.name, 8));
+    const blocks = p1.ingredients.map((ing, i) => cands[i].length
+      ? `רכיב ${i}: ${ing.name}\n` + cands[i].map((c, n) => `  ${n}. ${c.row[0]}`).join('\n')
+      : `רכיב ${i}: ${ing.name}\n  (אין מועמדים)`).join('\n\n');
+
+    const p2 = await askClaude([{ type: 'text', text:
+      'לכל רכיב, בחר מהרשימה שלו את הפריט הקרוב ביותר.\n'
+      + 'אם אף פריט לא מתאים, החזר null עבור אותו רכיב.\n\n' + blocks
+      + '\n\nהחזר JSON בלבד: {"matches":[{"ingredient":מספר,"candidateIndex":מספר או null}]}' }], 1000);
+
+    const pick = {};
+    (p2.matches || []).forEach(m => { pick[m.ingredient] = m.candidateIndex; });
+
+    R = { title: p1.title || 'מתכון', servings: Math.max(1, parseFloat(p1.servings) || 1),
+      items: p1.ingredients.map((ing, i) => {
+        const ci = pick[i], c = (ci === null || ci === undefined) ? null : cands[i][ci];
+        return { name: ing.name, grams: Math.max(0, parseFloat(ing.grams) || 0),
+          src: c ? c.row[0] : null, k100: c ? c.row[1] : 0, p100: c ? c.row[2] : 0 };
+      }) };
+    drawRecipe();
+  } catch (e){
+    out.innerHTML = '<b style="color:var(--warn)">הניתוח נכשל.</b> ' + esc(e.message || '');
+  }
+}
+
+function recipeTotals(r){
+  const t = r.items.reduce((a, it) => ({
+    k: a.k + it.k100 * (it.grams/100), p: a.p + it.p100 * (it.grams/100) }), { k:0, p:0 });
+  const s = Math.max(1, parseFloat(r.servings) || 1);
+  return { k: t.k/s, p: t.p/s, tk: t.k, tp: t.p };
+}
+
+function drawRecipe(){
+  const t = recipeTotals(R);
+  const miss = R.items.filter(it => !it.src).length;
+  sheet('מתכון: בדיקה לפני שמירה', `
+    <label class="f"><span>שם</span>
+      <input value="${esc(R.title)}" oninput="R.title=this.value"></label>
+    <label class="f"><span>מספר מנות</span>
+      <input type="number" inputmode="decimal" min="1" style="direction:ltr"
+        value="${R.servings}" oninput="R.servings=this.value;drawRecipe()"></label>
+    <div class="sm mut" style="margin-bottom:6px">רכיבים</div>
+    <div class="list" style="margin-bottom:12px">${R.items.map((it, i) => `
+      <div class="item">
+        <div style="min-width:0">
+          <div class="sm">${esc(it.name)}</div>
+          <div class="xs mut">${it.src ? esc(it.src) : '<span style="color:var(--warn)">לא הותאם — לא נספר</span>'}</div>
+        </div>
+        <div class="flex" style="align-items:center">
+          <input type="number" inputmode="decimal" style="width:76px;direction:ltr"
+            value="${it.grams}" oninput="R.items[${i}].grams=parseFloat(this.value)||0;drawRecipe()">
+          <span class="xs mut">ג׳</span>
+          <button class="del" onclick="R.items.splice(${i},1);drawRecipe()">×</button>
+        </div>
+      </div>`).join('')}</div>
+    ${miss ? `<div class="card sm" style="padding:12px;border-color:var(--warn)">
+      <b style="color:var(--warn)">${miss} רכיבים לא הותאמו</b>
+      <div class="xs mut" style="margin-top:4px">הם לא נכללים בחישוב. אפשר למחוק אותם או להתעלם.</div></div>` : ''}
+    <div class="card row" style="padding:12px;margin:12px 0">
+      <span class="sm mut">למנה אחת</span>
+      <span class="sm num"><b style="color:var(--pro)">${r0(t.p)} ג׳ חלבון</b>
+      <span class="mut"> · </span><span style="color:var(--kcal)">${r0(t.k)} קק״ל</span></span></div>
+    <div class="xs mut" style="margin-bottom:12px">כל המתכון: ${r0(t.tk)} קק״ל · ${r0(t.tp)} ג׳ חלבון</div>
+    <button class="full solid" onclick="saveRecipe()">שמירה כמאכל</button>`);
+}
+
+function saveRecipe(){
+  const t = recipeTotals(R);
+  const payload = { servings: Math.max(1, parseFloat(R.servings) || 1),
+                    items: R.items.map(it => ({ ...it })) };
+  if (R.id){
+    Object.assign(S.foods.find(x => x.id === R.id),
+      { name: R.title, kcal: r0(t.k), protein: r0(t.p), recipe: payload });
+  } else {
+    S.foods.push({ id: uid(), name: R.title, unit: 'unit', qty: 1,
+      kcal: r0(t.k), protein: r0(t.p), uses: 0, est: 'מתכון', recipe: payload });
+  }
+  save('foods', S.foods); R = null; closeSheet(); render();
+  toast('המתכון נשמר כמאכל');
+}
+
+function editRecipe(id){
+  const f = S.foods.find(x => x.id === id);
+  if (!f || !f.recipe) return;
+  R = { id, title: f.name, servings: f.recipe.servings, items: f.recipe.items.map(it => ({ ...it })) };
+  drawRecipe();
+}
+
 /* ============ מאכל מורכב ============
    parts הוא מקור האמת. הערכים נגזרים ממנו בכל רינדור, כך ששינוי כמות
    של רכיב מתעדכן מיד בכל המאכלים המורכבים שמכילים אותו.
@@ -464,6 +610,7 @@ function viewFoods(){
     <input id="aiq" placeholder="למשל: כנף עוף אחת בתנור עם עור"
            onkeydown="if(event.key==='Enter')aiEstimate()">
     <button class="full sm" style="margin-top:8px" onclick="aiEstimate()">✨ מלא אוטומטית מצמרת</button>
+    <button class="full sm" style="margin-top:8px" onclick="sheetRecipe()">📄 ניתוח מתכון מקובץ או מצילום</button>
     <div id="aiout" class="sm mut" style="margin-top:8px"></div>
   </div>
   <div class="flex" style="margin-bottom:16px">
@@ -476,7 +623,8 @@ function viewFoods(){
     <div class="item">
       <div style="min-width:0">
         <div>${esc(f.name)}${f.est ? ' <span class="xs" style="color:var(--kcal)">הערכה</span>' : ''}${
-          f.parts ? ' <span class="xs" style="color:var(--pro)">מורכב</span>' : ''}</div>
+          f.parts ? ' <span class="xs" style="color:var(--pro)">מורכב</span>' : ''}${
+          f.recipe ? ' <span class="xs" style="color:var(--kcal)">מתכון · מנה</span>' : ''}</div>
         <div class="xs mut num">${f.kcal} קק״ל · ${f.protein} ג׳ חלבון ${f.unit === '100g' ? 'ל־100 ג׳' : 'ליחידה'} ·
         מנה ${f.qty}${f.unit === '100g' ? ' ג׳' : ' יח׳'}</div>
       </div>
@@ -486,7 +634,7 @@ function viewFoods(){
              : `<button class="sm" style="${sel.includes(f.id)
                   ? 'background:var(--pro);color:#0E1114;font-weight:700' : ''}"
                 onclick="toggleSel('${f.id}')">${sel.includes(f.id) ? '✓' : '+'}</button>`)
-          : `<button class="sm" onclick="${f.parts ? `editCompose('${f.id}')` : `sheetFood('${f.id}')`}">עריכה</button>`}
+          : `<button class="sm" onclick="${f.recipe ? `editRecipe('${f.id}')` : f.parts ? `editCompose('${f.id}')` : `sheetFood('${f.id}')`}">עריכה</button>`}
       </div>
     </div>`).join('')}</div>`
     : `<div class="card sm mut" style="text-align:center;border-style:dashed">
@@ -864,7 +1012,7 @@ async function aiEstimate(){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-13c';
+const BUILD = '2026-09-13d';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
