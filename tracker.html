@@ -278,18 +278,27 @@ function sheetRecipe(){
     <div id="rout" class="sm mut" style="margin-top:12px"></div>`);
 }
 
+/* prefill של '{' מכריח פתיחת JSON מיידית ומונע טקסט מקדים,
+   stop_reason חושף תשובה שנקטעה, וחילוץ מהסוגר הראשון לאחרון
+   סופג שאריות. שלושתם יחד — כי כל אחד לבדו עדיין נשבר. */
 async function askClaude(content, maxTok){
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': cleanKey(),
       'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
     body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: maxTok,
-      messages: [{ role: 'user', content }] })
+      messages: [{ role: 'user', content }, { role: 'assistant', content: '{' }] })
   });
   if (!r.ok) throw new Error('שגיאה ' + r.status + ': ' + (await r.text()).slice(0, 200));
   const d = await r.json();
-  const txt = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  return JSON.parse(txt.replace(/```json|```/g, '').trim());
+  const body = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  if (d.stop_reason === 'max_tokens')
+    throw new Error('התשובה נקטעה באמצע. נסה מתכון קצר יותר, או צלם רק את רשימת הרכיבים.');
+  const clean = body.replace(/```json|```/g, '');
+  const txt = clean.trimStart().startsWith('{') ? clean : '{' + clean;
+  const a = txt.indexOf('{'), b = txt.lastIndexOf('}');
+  if (a < 0 || b <= a) throw new Error('לא התקבל JSON תקין');
+  return JSON.parse(txt.slice(a, b + 1));
 }
 
 async function fileB64(file){
@@ -316,7 +325,7 @@ async function analyzeRecipe(file){
       + 'כוסות, כפות ויחידות יש להמיר להערכת משקל סבירה.\n'
       + 'אם מספר המנות לא מצוין, הערך אותו לפי גודל המתכון.\n'
       + 'החזר JSON בלבד, בלי טקסט נוסף ובלי סימוני קוד:\n'
-      + '{"title":"שם המתכון","servings":מספר,"ingredients":[{"name":"שם הרכיב בעברית","grams":מספר}]}' }], 1500);
+      + '{"title":"שם המתכון","servings":מספר,"ingredients":[{"name":"שם הרכיב בעברית","grams":מספר}]}' }], 3000);
 
     if (!p1 || !Array.isArray(p1.ingredients) || !p1.ingredients.length)
       throw new Error('לא זוהו רכיבים בקובץ');
@@ -330,7 +339,7 @@ async function analyzeRecipe(file){
     const p2 = await askClaude([{ type: 'text', text:
       'לכל רכיב, בחר מהרשימה שלו את הפריט הקרוב ביותר.\n'
       + 'אם אף פריט לא מתאים, החזר null עבור אותו רכיב.\n\n' + blocks
-      + '\n\nהחזר JSON בלבד: {"matches":[{"ingredient":מספר,"candidateIndex":מספר או null}]}' }], 1000);
+      + '\n\nהחזר JSON בלבד, בלי הסברים: {"matches":[{"ingredient":מספר,"candidateIndex":מספר או null}]}' }], 3000);
 
     const pick = {};
     (p2.matches || []).forEach(m => { pick[m.ingredient] = m.candidateIndex; });
@@ -1012,7 +1021,7 @@ async function aiEstimate(){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-13d';
+const BUILD = '2026-09-13e';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
