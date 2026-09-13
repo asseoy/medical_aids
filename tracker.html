@@ -278,16 +278,18 @@ function sheetRecipe(){
     <div id="rout" class="sm mut" style="margin-top:12px"></div>`);
 }
 
-/* prefill של '{' מכריח פתיחת JSON מיידית ומונע טקסט מקדים,
-   stop_reason חושף תשובה שנקטעה, וחילוץ מהסוגר הראשון לאחרון
-   סופג שאריות. שלושתם יחד — כי כל אחד לבדו עדיין נשבר. */
+/* claude-sonnet-5 לא תומך ב-prefill של תור assistant, ולכן ההנחיה
+   לפורמט יושבת ב-system. stop_reason חושף תשובה שנקטעה, והחילוץ
+   מהסוגר הראשון לאחרון סופג טקסט מקדים או סימוני קוד אם בכל זאת יופיעו. */
 async function askClaude(content, maxTok){
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': cleanKey(),
       'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
     body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: maxTok,
-      messages: [{ role: 'user', content }, { role: 'assistant', content: '{' }] })
+      system: 'You reply with raw JSON only. No preamble, no explanation, '
+        + 'no markdown code fences. Your entire response must begin with { and end with }.',
+      messages: [{ role: 'user', content }] })
   });
   if (!r.ok) throw new Error('שגיאה ' + r.status + ': ' + (await r.text()).slice(0, 200));
   const d = await r.json();
@@ -1021,7 +1023,7 @@ async function aiEstimate(){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-13e';
+const BUILD = '2026-09-13f';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
