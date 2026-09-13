@@ -612,26 +612,18 @@ function viewFoods(){
   const list = [...S.foods].sort((a,b) => (b.uses||0)-(a.uses||0));
   const sel = S.sel || [];
   return `<h2>המאכלים שלי</h2>
-  <div class="flex" style="margin-bottom:8px">
-    <button class="solid" style="flex:1" onclick="sheetLabel()">צילום תווית</button>
-    <button style="flex:1" onclick="sheetFood(null)">הוספה ידנית</button>
-  </div>
-  <button class="full" style="margin-bottom:8px" onclick="sheetDb()">מאגר מזון (${DB.length.toLocaleString('he-IL')} פריטים)</button>
-  <div class="card" style="margin-bottom:16px">
-    <input id="aiq" placeholder="למשל: כנף עוף אחת בתנור עם עור"
-           onkeydown="if(event.key==='Enter')aiEstimate()">
-    <button class="full sm" style="margin-top:8px" onclick="aiEstimate()">✨ מלא אוטומטית מצמרת</button>
-    <button class="full sm" style="margin-top:8px" onclick="sheetRecipe()">📄 ניתוח מתכון מקובץ או מצילום</button>
-    <div id="aiout" class="sm mut" style="margin-top:8px"></div>
-  </div>
-  <div class="flex" style="margin-bottom:16px">
-    <button style="flex:1" onclick="S.selMode=!S.selMode;S.sel=[];render()">
-      ${S.selMode ? 'ביטול בחירה' : 'איחוד מאכלים'}</button>
-    ${S.selMode ? `<button class="solid" style="flex:1" ${sel.length > 1 ? '' : 'disabled'}
-      onclick="startCompose()">אחד ל־${sel.length || 0} פריטים</button>` : ''}
-  </div>
-  ${list.length ? `<div class="list">${list.map(f => `
-    <div class="item">
+  <input id="fq" placeholder="חיפוש במאכלים שלי" oninput="filterFoods()"
+         style="margin-bottom:8px">
+  ${S.selMode
+    ? `<div class="flex" style="margin-bottom:16px">
+        <button style="flex:1" onclick="S.selMode=false;S.sel=[];render()">ביטול</button>
+        <button class="solid" style="flex:1" ${sel.length > 1 ? '' : 'disabled'}
+          onclick="startCompose()">איחוד ${sel.length || ''} פריטים</button>
+      </div>`
+    : `<button class="full solid" style="margin-bottom:16px" onclick="sheetAddFood()">+ הוספת מאכל</button>`}
+  <div id="aiout" class="sm mut" style="margin-bottom:8px"></div>
+  ${list.length ? `<div class="list" id="foodlist">${list.map(f => `
+    <div class="item" data-n="${esc(String(f.name).toLowerCase())}">
       <div style="min-width:0">
         <div>${esc(f.name)}${f.est ? ' <span class="xs" style="color:var(--kcal)">הערכה</span>' : ''}${
           f.parts ? ' <span class="xs" style="color:var(--pro)">מורכב</span>' : ''}${
@@ -641,15 +633,65 @@ function viewFoods(){
       </div>
       <div class="flex">
         ${S.selMode
-          ? (f.parts ? '<span class="xs mut">מורכב</span>'
+          ? (f.parts || f.recipe ? '<span class="xs mut">—</span>'
              : `<button class="sm" style="${sel.includes(f.id)
                   ? 'background:var(--pro);color:#0E1114;font-weight:700' : ''}"
                 onclick="toggleSel('${f.id}')">${sel.includes(f.id) ? '✓' : '+'}</button>`)
           : `<button class="sm" onclick="${f.recipe ? `editRecipe('${f.id}')` : f.parts ? `editCompose('${f.id}')` : `sheetFood('${f.id}')`}">עריכה</button>`}
       </div>
-    </div>`).join('')}</div>`
+    </div>`).join('')}</div>
+    <div id="nores" class="card sm mut" style="display:none;text-align:center;border-style:dashed">
+      <div style="margin-bottom:10px">אין התאמה במאכלים שלי.</div>
+      <div class="flex">
+        <button class="sm" style="flex:1" onclick="aiEstimate($('#fq').value)">✨ הערכה מצמרת</button>
+        <button class="sm" style="flex:1" onclick="sheetDb($('#fq').value)">חיפוש במאגר</button>
+      </div>
+    </div>`
     : `<div class="card sm mut" style="text-align:center;border-style:dashed">
        כאן נשמרים המאכלים החוזרים, עם המנה הרגילה שלהם.</div>`}`;
+}
+
+/* סינון בצד הלקוח, בלי render מחדש — כדי שהמיקוד בשדה החיפוש לא יאבד בהקלדה */
+function filterFoods(){
+  const q = ($('#fq').value || '').trim().toLowerCase();
+  const rows = document.querySelectorAll('#foodlist .item');
+  let shown = 0;
+  rows.forEach(r => {
+    const hit = !q || (r.dataset.n || '').includes(q);
+    r.style.display = hit ? '' : 'none';
+    if (hit) shown++;
+  });
+  const nr = $('#nores');
+  if (nr) nr.style.display = (q && !shown) ? '' : 'none';
+  const fl = $('#foodlist');
+  if (fl) fl.style.display = shown ? '' : 'none';
+}
+
+function sheetAddFood(){
+  sheet('הוספת מאכל', `
+    <button class="full" style="margin-bottom:8px;text-align:right" onclick="closeSheet();sheetLabel()">
+      📷 צילום תווית<div class="xs mut">קריאת טבלת הערכים מהאריזה</div></button>
+    <button class="full" style="margin-bottom:8px;text-align:right" onclick="closeSheet();sheetDb()">
+      🔍 מאגר צמרת<div class="xs mut">${DB.length.toLocaleString('he-IL')} פריטים</div></button>
+    <button class="full" style="margin-bottom:8px;text-align:right" onclick="closeSheet();sheetAsk()">
+      ✨ הערכה מתיאור חופשי<div class="xs mut">למשל: כנף עוף אחת בתנור עם עור</div></button>
+    <button class="full" style="margin-bottom:8px;text-align:right" onclick="closeSheet();sheetRecipe()">
+      📄 ניתוח מתכון<div class="xs mut">מצילום, תמונה או PDF</div></button>
+    <button class="full" style="margin-bottom:8px;text-align:right" onclick="closeSheet();sheetFood(null)">
+      ✎ הוספה ידנית<div class="xs mut">הזנת הערכים בעצמך</div></button>
+    ${S.foods.filter(f => !f.parts && !f.recipe).length > 1
+      ? `<button class="full" style="text-align:right" onclick="closeSheet();S.selMode=true;S.sel=[];render()">
+          ⧉ איחוד מאכלים<div class="xs mut">צירוף כמה פריטים למאכל אחד</div></button>` : ''}`);
+}
+
+function sheetAsk(){
+  sheet('הערכה מתיאור חופשי', `
+    <p class="sm mut" style="margin-bottom:12px">תיאור חופשי של המאכל והכמות.
+    הערכים יילקחו מצמרת, המשקל יוערך.</p>
+    <input id="aiq" placeholder="כנף עוף אחת בתנור עם עור"
+           onkeydown="if(event.key==='Enter')aiEstimate()">
+    <button class="full solid" style="margin-top:12px" onclick="aiEstimate()">✨ הערכה</button>
+    <div id="aiout" class="sm mut" style="margin-top:12px"></div>`);
 }
 
 /* ============ מסך: משקל ============ */
@@ -851,14 +893,15 @@ function myList(){
 }
 
 let dbGroup = 'הכול';
-function sheetDb(){
+function sheetDb(seed){
   const groups = ['הכול', ...new Set(DB.map(x => x[3]))];
+  const q0 = typeof seed === 'string' ? seed : '';
   sheet('מאגר מזון', `
     <p class="sm mut">${DB.length.toLocaleString('he-IL')} פריטים ממאגר התזונה הלאומי, ל־100 גרם.
       למוצר ארוז עדיף לצלם תווית.</p>
-    <label class="f"><span>חיפוש</span><input id="dq" oninput="dbList()" placeholder="חזה עוף"></label>
+    <label class="f"><span>חיפוש</span><input id="dq" oninput="dbList()" placeholder="חזה עוף" value="${esc(q0)}"></label>
     <div class="chips">${groups.map(g => `<button class="${g === dbGroup ? 'on' : ''}"
-      onclick="dbGroup='${g}';sheetDb()">${g}</button>`).join('')}</div>
+      onclick="dbGroup='${g}';sheetDb(($('#dq')||{}).value||'')">${g}</button>`).join('')}</div>
     <div id="dbres"></div>
     <p class="xs mut">נא מול מבושל: 100 גרם חזה עוף נא הם 22.5 גרם חלבון, ואחרי בישול 31 —
       הבשר מאבד מים, לא חלבון. שקול תמיד באותו מצב.</p>`);
@@ -970,8 +1013,8 @@ function dbSearch(q, n){
   }).filter(x => x.sc > 0).sort((a,b) => b.sc - a.sc).slice(0, n);
 }
 
-async function aiEstimate(){
-  const q = ($('#aiq').value || '').trim();
+async function aiEstimate(qArg){
+  const q = String(qArg !== undefined ? qArg : (($('#aiq') || {}).value || '')).trim();
   const out = $('#aiout');
   if (!q) return;
   if (!S.key) return sheetLabel();
@@ -1023,7 +1066,7 @@ async function aiEstimate(){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-13f';
+const BUILD = '2026-09-13g';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
