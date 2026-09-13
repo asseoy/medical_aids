@@ -264,10 +264,128 @@ function repeatYesterday(){
   y.forEach(e => logOf(S.date).push({ ...e, id: uid(), date: S.date }));
   saveLog(S.date); render();
 }
+/* ============ מאכל מורכב ============
+   parts הוא מקור האמת. הערכים נגזרים ממנו בכל רינדור, כך ששינוי כמות
+   של רכיב מתעדכן מיד בכל המאכלים המורכבים שמכילים אותו.
+   רישומים שכבר נשמרו ביומן שומרים עותק משלהם ולא משתנים למפרע. */
+function partVals(p){
+  const f = S.foods.find(x => x.id === p.foodId);
+  if (!f || f.parts) return { k:0, p:0, name:'(רכיב חסר)', unit:'ג׳' };
+  const q = parseFloat(p.qty) || 0;
+  const fac = f.unit === '100g' ? q/100 : q;
+  return { k: f.kcal*fac, p: f.protein*fac, name: f.name,
+           unit: f.unit === '100g' ? 'ג׳' : 'יח׳' };
+}
+function compTotals(f){
+  return (f.parts || []).reduce((a, p) => {
+    const v = partVals(p); return { k: a.k + v.k, p: a.p + v.p };
+  }, { k:0, p:0 });
+}
+function recalcComposites(){
+  let changed = false;
+  S.foods.forEach(f => {
+    if (!f.parts) return;
+    const t = compTotals(f);
+    if (f.kcal !== r0(t.k) || f.protein !== r0(t.p) || f.unit !== 'unit' || f.qty !== 1){
+      f.kcal = r0(t.k); f.protein = r0(t.p); f.unit = 'unit'; f.qty = 1;
+      changed = true;
+    }
+  });
+  if (changed) save('foods', S.foods);
+}
+
+function toggleSel(id){
+  S.sel = S.sel || [];
+  const i = S.sel.indexOf(id);
+  if (i > -1) S.sel.splice(i, 1);
+  else if (S.sel.length < 5) S.sel.push(id);
+  else return toast('אפשר לאחד עד 5 פריטים');
+  render();
+}
+function startCompose(){
+  const picked = (S.sel || []).map(id => S.foods.find(x => x.id === id)).filter(Boolean);
+  if (picked.length < 2) return toast('בחר לפחות שני פריטים');
+  D = { name: picked.map(f => f.name.split(',')[0].trim()).join(' עם '),
+        parts: picked.map(f => ({ foodId: f.id, qty: f.qty })) };
+  drawCompose();
+}
+function editCompose(id){
+  const f = S.foods.find(x => x.id === id);
+  if (!f) return;
+  D = { id, name: f.name, parts: f.parts.map(p => ({ ...p })) };
+  drawCompose();
+}
+function drawCompose(){
+  const t = compTotals(D);
+  sheet(D.id ? 'עריכת מאכל מורכב' : 'מאכל מורכב חדש', `
+    <label class="f"><span>שם</span>
+      <input value="${esc(D.name||'')}" oninput="D.name=this.value"></label>
+    <div class="sm mut" style="margin-bottom:6px">מרכיבים</div>
+    <div class="list" style="margin-bottom:12px">${D.parts.map((p, i) => {
+      const v = partVals(p);
+      return `<div class="item">
+        <div style="min-width:0"><div class="sm">${esc(v.name)}</div>
+          <div class="xs mut num">${r0(v.k)} קק״ל · ${r0(v.p)} ג׳ חלבון</div></div>
+        <div class="flex" style="align-items:center">
+          <input type="number" inputmode="decimal" style="width:78px;direction:ltr"
+                 value="${p.qty}" oninput="D.parts[${i}].qty=this.value;drawCompose()">
+          <span class="xs mut">${v.unit}</span>
+          <button class="del" onclick="D.parts.splice(${i},1);drawCompose()">×</button>
+        </div></div>`;
+    }).join('')}</div>
+    <div class="card row" style="padding:12px;margin-bottom:12px"><span class="sm mut">סה״כ למנה</span>
+      <span class="sm num"><b style="color:var(--pro)">${r0(t.p)} ג׳ חלבון</b>
+      <span class="mut"> · </span><span style="color:var(--kcal)">${r0(t.k)} קק״ל</span></span></div>
+    ${S.key ? `<button class="full sm" style="margin-bottom:12px" onclick="aiName()">✨ הצע שם</button>
+      <div id="anout" class="sm mut" style="margin-bottom:12px"></div>` : ''}
+    <div class="flex">
+      <button class="solid" style="flex:1" ${D.parts.length && String(D.name||'').trim() ? '' : 'disabled'}
+        onclick="saveCompose()">שמירה</button>
+      ${D.id ? '<button class="danger" onclick="delCompose()">מחיקה</button>' : ''}
+    </div>`);
+}
+async function aiName(){
+  const out = $('#anout');
+  out.textContent = 'חושב…';
+  const items = D.parts.map(p => { const v = partVals(p); return v.name + ' ' + p.qty + ' ' + v.unit; });
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-api-key': cleanKey(),
+        'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 100, messages: [{ role: 'user',
+        content: 'תן שם קצר וטבעי בעברית למנה שמורכבת מ: ' + items.join(', ')
+          + '\nהחזר את השם בלבד, בלי מרכאות ובלי הסבר.' }] })
+    });
+    if (!r.ok) throw new Error('שגיאה ' + r.status);
+    const d = await r.json();
+    const name = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    if (name){ D.name = name; drawCompose(); }
+  } catch (e){ out.innerHTML = '<b style="color:var(--warn)">לא הצלחתי.</b> ' + esc(e.message || ''); }
+}
+function saveCompose(){
+  const parts = D.parts.filter(p => (parseFloat(p.qty) || 0) > 0)
+                       .map(p => ({ foodId: p.foodId, qty: parseFloat(p.qty) }));
+  if (!parts.length) return toast('אין מרכיבים');
+  if (D.id){
+    Object.assign(S.foods.find(x => x.id === D.id), { name: D.name, parts });
+  } else {
+    S.foods.push({ id: uid(), name: D.name, parts, unit: 'unit', qty: 1,
+                   kcal: 0, protein: 0, uses: 0 });
+  }
+  save('foods', S.foods); recalcComposites();
+  S.sel = []; closeSheet(); render();
+}
+function delCompose(){
+  S.foods = S.foods.filter(x => x.id !== D.id);
+  save('foods', S.foods); closeSheet(); render();
+}
+
 function addFood(f){ S.foods.push(f); save('foods', S.foods); }
 
 /* ============ מסך: היום ============ */
 function viewDay(){
+  recalcComposites();
   mergeDay(S.date);
   const t = totals(S.date), st = S.settings;
   const favs = [...S.foods].sort((a,b) => (b.uses||0)-(a.uses||0)).slice(0, 8);
@@ -333,22 +451,42 @@ function go(n){ const d = shift(S.date, n); if (d <= today()) { S.date = d; rend
 
 /* ============ מסך: מאכלים ============ */
 function viewFoods(){
+  recalcComposites();
   const list = [...S.foods].sort((a,b) => (b.uses||0)-(a.uses||0));
+  const sel = S.sel || [];
   return `<h2>המאכלים שלי</h2>
   <div class="flex" style="margin-bottom:8px">
     <button class="solid" style="flex:1" onclick="sheetLabel()">צילום תווית</button>
     <button style="flex:1" onclick="sheetFood(null)">הוספה ידנית</button>
   </div>
-  <button class="full" style="margin-bottom:16px" onclick="sheetDb()">מאגר מזון (${DB.length.toLocaleString('he-IL')} פריטים)</button>
+  <button class="full" style="margin-bottom:8px" onclick="sheetDb()">מאגר מזון (${DB.length.toLocaleString('he-IL')} פריטים)</button>
+  <div class="card" style="margin-bottom:16px">
+    <input id="aiq" placeholder="למשל: כנף עוף אחת בתנור עם עור"
+           onkeydown="if(event.key==='Enter')aiEstimate()">
+    <button class="full sm" style="margin-top:8px" onclick="aiEstimate()">✨ מלא אוטומטית מצמרת</button>
+    <div id="aiout" class="sm mut" style="margin-top:8px"></div>
+  </div>
+  <div class="flex" style="margin-bottom:16px">
+    <button style="flex:1" onclick="S.selMode=!S.selMode;S.sel=[];render()">
+      ${S.selMode ? 'ביטול בחירה' : 'איחוד מאכלים'}</button>
+    ${S.selMode ? `<button class="solid" style="flex:1" ${sel.length > 1 ? '' : 'disabled'}
+      onclick="startCompose()">אחד ל־${sel.length || 0} פריטים</button>` : ''}
+  </div>
   ${list.length ? `<div class="list">${list.map(f => `
     <div class="item">
       <div style="min-width:0">
-        <div>${esc(f.name)}</div>
+        <div>${esc(f.name)}${f.est ? ' <span class="xs" style="color:var(--kcal)">הערכה</span>' : ''}${
+          f.parts ? ' <span class="xs" style="color:var(--pro)">מורכב</span>' : ''}</div>
         <div class="xs mut num">${f.kcal} קק״ל · ${f.protein} ג׳ חלבון ${f.unit === '100g' ? 'ל־100 ג׳' : 'ליחידה'} ·
         מנה ${f.qty}${f.unit === '100g' ? ' ג׳' : ' יח׳'}</div>
       </div>
       <div class="flex">
-        <button class="sm" onclick="sheetFood('${f.id}')">עריכה</button>
+        ${S.selMode
+          ? (f.parts ? '<span class="xs mut">מורכב</span>'
+             : `<button class="sm" style="${sel.includes(f.id)
+                  ? 'background:var(--pro);color:#0E1114;font-weight:700' : ''}"
+                onclick="toggleSel('${f.id}')">${sel.includes(f.id) ? '✓' : '+'}</button>`)
+          : `<button class="sm" onclick="${f.parts ? `editCompose('${f.id}')` : `sheetFood('${f.id}')`}">עריכה</button>`}
       </div>
     </div>`).join('')}</div>`
     : `<div class="card sm mut" style="text-align:center;border-style:dashed">
@@ -598,6 +736,10 @@ function drawFood(){
   const ok = String(D.name||'').trim() && q > 0;
   sheet(D.id ? 'עריכת מאכל' : (D.keep ? 'מאכל חדש' : 'רישום חד־פעמי'), `
     ${D.fromLabel ? '<div class="card sm mut" style="padding:12px">הערכים נקראו מהתווית. בדוק אותם לפני השמירה.</div>' : ''}
+    ${D.fromAI ? `<div class="card sm" style="padding:12px;border-color:var(--kcal)">
+      <b style="color:var(--kcal)">⚠️ הערכה</b>
+      <div class="xs mut" style="margin-top:6px">הערכים ל-100 ג׳ מגיעים כלשונם מצמרת:
+        ${esc(D.aiSource || '')}. המשקל הוערך${D.aiNote ? ' — ' + esc(D.aiNote) : ''}.</div></div>` : ''}
     <label class="f"><span>שם</span><input id="fn" value="${esc(D.name||'')}" oninput="D.name=this.value;chk()"></label>
     <div class="flex" style="margin-bottom:12px">
       <button style="flex:1${D.unit === '100g' ? ';background:var(--pro);color:#0E1114;font-weight:700' : ''}"
@@ -639,7 +781,8 @@ function saveFood(alsoLog){
   let fid = null;
   if (D.keep){
     fid = uid();
-    addFood({ id: fid, name: D.name, unit: D.unit, kcal, protein, qty, uses: 0 });
+    addFood({ id: fid, name: D.name, unit: D.unit, kcal, protein, qty, uses: 0,
+              est: D.fromAI ? (D.aiSource || true) : undefined });
   }
   if (alsoLog){
     addEntry({ name: D.name, qty: qty + (D.unit === '100g' ? ' ג׳' : ' יח׳'),
@@ -652,8 +795,76 @@ function delFood(){
   save('foods', S.foods); closeSheet(); render();
 }
 
+/* ============ מילוי אוטומטי מצמרת ============
+   חלוקת התפקידים: צמרת = הנתונים, Claude = בחירת פריט והערכת משקל,
+   האפליקציה = החישוב. Claude לא מחזיר ולו מספר תזונתי אחד — רק אינדקס
+   מתוך הרשימה שנשלחה אליו, ומשקל בגרמים. */
+function dbSearch(q, n){
+  const toks = String(q).toLowerCase().split(/[\s,]+/).filter(t => t.length > 1);
+  if (!toks.length) return [];
+  return DB.map((row, i) => {
+    const name = row[0].toLowerCase();
+    let sc = 0;
+    toks.forEach(t => { if (name.includes(t)) sc += t.length; });
+    if (sc && name.startsWith(toks[0])) sc += 3;
+    return { i, row, sc };
+  }).filter(x => x.sc > 0).sort((a,b) => b.sc - a.sc).slice(0, n);
+}
+
+async function aiEstimate(){
+  const q = ($('#aiq').value || '').trim();
+  const out = $('#aiout');
+  if (!q) return;
+  if (!S.key) return sheetLabel();
+  const cands = dbSearch(q, 18);
+  if (!cands.length){
+    out.innerHTML = '<b style="color:var(--warn)">לא נמצאו התאמות במאגר.</b> נסה ניסוח אחר או הוסף ידנית.';
+    return;
+  }
+  out.textContent = 'מחפש התאמה…';
+  const list = cands.map((c, n) =>
+    `${n}. ${c.row[0]} | ${c.row[1]} קק״ל ו-${c.row[2]} ג׳ חלבון ל-100 ג׳ | מנה רגילה ${c.row[4]} ג׳`).join('\n');
+  const prompt = 'המשתמש תיאר מאכל. בחר מהרשימה את הפריט הקרוב ביותר והערך את המשקל בגרמים.\n'
+    + 'התיאור: ' + q + '\n\nהרשימה:\n' + list
+    + '\n\nהשתמש ב"מנה רגילה" כעוגן למשקל, והתאם אותו אם התיאור מרמז על גודל אחר.\n'
+    + 'אם שום פריט לא מתאים, החזר candidateIndex: null.\n'
+    + 'החזר JSON בלבד, בלי טקסט נוסף ובלי סימוני קוד:\n'
+    + '{"candidateIndex": מספר או null, "grams": מספר, "name": "שם קצר בעברית למאכל", "note": "משפט קצר על אופן ההערכה"}';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': cleanKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 400,
+        messages: [{ role: 'user', content: prompt }] })
+    });
+    if (!r.ok) throw new Error('שגיאה ' + r.status + ': ' + (await r.text()).slice(0, 200));
+    const data = await r.json();
+    const txt = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const j = JSON.parse(txt.replace(/```json|```/g, '').trim());
+
+    if (j.candidateIndex === null || j.candidateIndex === undefined)
+      throw new Error('לא נמצאה התאמה מתאימה. ' + esc(j.note || ''));
+    const c = cands[j.candidateIndex];
+    if (!c) throw new Error('התקבל אינדקס לא חוקי');
+    const g = parseFloat(j.grams);
+    if (!isFinite(g) || g <= 0) throw new Error('התקבל משקל לא חוקי');
+
+    out.textContent = '';
+    sheetFood(null, { name: j.name || c.row[0], unit: '100g',
+      kcal: c.row[1], protein: c.row[2], qty: Math.round(g),
+      fromAI: true, aiSource: c.row[0], aiNote: j.note || '' });
+  } catch (e){
+    out.innerHTML = '<b style="color:var(--warn)">ההערכה נכשלה.</b> ' + esc(e.message || '');
+  }
+}
+
 /* --- צילום תווית --- */
-const BUILD = '2026-09-13b';
+const BUILD = '2026-09-13c';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
