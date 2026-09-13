@@ -183,6 +183,35 @@ function qtyParts(e){
   const num = parseFloat(String(e.qty || '').replace(',', '.'));
   return { num: isFinite(num) ? num : 0, unit: /יח/.test(e.qty || '') ? 'יח׳' : 'ג׳' };
 }
+/* מאחד רישומים זהים (אותו שם, אותה ארוחה, אותה יחידה) לשורה אחת.
+   base מחושב מחדש מהסכום, כך שעריכת כמות אחריו עדיין עובדת ביחס ישר.
+   הפונקציה כותבת רק כשבאמת היה שינוי, ולכן אפשר לקרוא לה בכל רינדור. */
+function mergeDay(d){
+  const m = mk(d), arr = S.logs[m];
+  if (!arr) return false;
+  const seen = new Map(), out = [];
+  let changed = false;
+  for (const e of arr){
+    if (e.date !== d){ out.push(e); continue; }
+    const p = qtyParts(e);
+    const key = mealOf(e) + '|' + e.name + '|' + p.unit;
+    const prev = p.num ? seen.get(key) : null;
+    if (prev){
+      const q = qtyParts(prev).num + p.num;
+      prev.qty = q + ' ' + p.unit;
+      prev.kcal = r0(prev.kcal + e.kcal);
+      prev.protein = r0(prev.protein + e.protein);
+      prev.base = { q, k: prev.kcal, p: prev.protein };
+      changed = true;
+    } else {
+      if (p.num) seen.set(key, e);
+      out.push(e);
+    }
+  }
+  if (changed){ S.logs[m] = out; saveLog(d); }
+  return changed;
+}
+
 function sheetQty(id){
   const e = entries(S.date).find(x => x.id === id);
   if (!e) return;
@@ -239,6 +268,7 @@ function addFood(f){ S.foods.push(f); save('foods', S.foods); }
 
 /* ============ מסך: היום ============ */
 function viewDay(){
+  mergeDay(S.date);
   const t = totals(S.date), st = S.settings;
   const favs = [...S.foods].sort((a,b) => (b.uses||0)-(a.uses||0)).slice(0, 8);
   const rail = (v, target, col) => target > 0
@@ -623,7 +653,7 @@ function delFood(){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-13a';
+const BUILD = '2026-09-13b';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
