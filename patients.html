@@ -5,20 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#8C4A5E">
 <meta name="description" content="כלים קצרים שעוזרים להתכונן לביקור אצל הרופא/ה">
-<link rel="icon" href="patients-icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="patients-180.png">
-<link rel="manifest" href="manifest-patients.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="מוכנים">
-<meta name="mobile-web-app-capable" content="yes">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://asseoy.github.io/medical_aids/patients.html">
-<meta property="og:title" content="להגיע לביקור מוכנים">
-<meta property="og:description" content="כלים קצרים שעוזרים להתכונן לביקור אצל הרופא/ה">
-<meta property="og:image" content="https://asseoy.github.io/medical_aids/patients-og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
 <title>כלים למטופלים</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +15,7 @@
   --paper:#FAF6F5; --surface:#FFFFFF; --line:#E9DDE0;
   --rose:#8C4A5E; --rose-soft:#F5E9EC;
   --teal:#155E75; --teal-soft:#E7F3F7;
+  --green:#2F6B4F; --green-soft:#E8F1EC;
   --r:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -115,10 +102,32 @@ footer a{color:var(--muted)}
   <span class="start">התחלת השאלון</span>
 </a>
 
+<div class="sec">כלי מעקב</div>
+
+<a class="card" href="tracker.html" style="--accent:var(--green);--chip-bg:var(--green-soft)">
+  <h3>מעקב תזונה — קלוריות, חלבון ומשקל</h3>
+  <p class="desc">כלי יומיומי לרישום מה שאוכלים ולמעקב אחרי משקל. רושמים בלחיצה מתוך רשימת המאכלים
+  החוזרים שלכם, ומקבלים סיכום יומי, שבועי וחודשי של קלוריות וחלבון. המשקל מוצג כממוצע נע של שבעה
+  ימים — המדידה היומית מושפעת מנוזלים, והמגמה אומרת יותר מכל שקילה בודדת.</p>
+  <p class="desc">בתוך הכלי מובנה מאגר התזונה הלאומי של משרד הבריאות (״צמרת״): כ-4,600 פריטי מזון עם
+  ערכים ל-100 גרם, כולל כ-1,400 מתכונים של תבשילים הנאכלים בארץ — כך שגם מג׳דרה או שקשוקה נמצאות שם,
+  ולא רק חומרי גלם. חלק מהערכים מגיעים מ-USDA, חלק מהצהרות היצרנים בישראל וחלק מחישוב מתכונים,
+  והמאגר עודכן לאחרונה ב-2022. לכן למוצר ארוז כדאי להציץ בתווית עצמה, ולמזון גולמי המספרים טובים.</p>
+  <div class="meta">
+    <span class="chip">שימוש יומיומי</span>
+    <span class="chip">כ-4,600 מזונות</span>
+    <span class="chip">עובד גם בלי אינטרנט</span>
+  </div>
+  <span class="start">פתיחת הכלי</span>
+</a>
+
 <div class="privacy">
   <h2>הפרטיות שלך</h2>
   <p>התשובות נשארות במכשיר שלך בלבד. הן לא נשלחות לשום מקום, לא נשמרות בשום שרת, ואף אחד — כולל הרופא/ה — לא רואה אותן אלא אם תבחרו להראות את הסיכום.</p>
   <p>אין צורך להירשם ואין צורך למסור שם או פרטים מזהים.</p>
+  <p>בכלי מעקב התזונה, שבו נשמרים נתונים לאורך זמן, הרישומים נשמרים בזיכרון הדפדפן של המכשיר ולא
+  עוברים לשום שרת. המשמעות היא גם שמחיקת נתוני הדפדפן או מעבר למכשיר אחר מוחקים אותם — בתוך הכלי
+  יש כפתורי ייצוא ושחזור גיבוי לשם כך.</p>
 </div>
 
 <a class="contact" href="mailto:asseoy@gmail.com?subject=%D7%9B%D7%9C%D7%99%D7%9D%20%D7%9C%D7%9E%D7%98%D7%95%D7%A4%D7%9C%D7%99%D7%9D%20%E2%80%94%20%D7%94%D7%A2%D7%A8%D7%94%20%D7%90%D7%95%20%D7%91%D7%A7%D7%A9%D7%94">

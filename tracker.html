@@ -68,6 +68,21 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
 .toast{position:fixed;inset-inline:0;bottom:96px;display:flex;justify-content:center;z-index:60}
 .toast div{background:var(--surf2);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-size:14px}
 .hide{display:none}
+
+#print{display:none}
+@media print{
+  #app,.tabs,#sheet,#toast{display:none !important}
+  #print{display:block;color:#000;background:#fff;font-size:12pt}
+  #print h1{font-size:18pt;margin:0 0 4pt}
+  #print .sub{color:#555;font-size:10pt;margin-bottom:14pt}
+  #print table{width:100%;border-collapse:collapse;margin-bottom:14pt}
+  #print th,#print td{border:1px solid #bbb;padding:5pt 7pt;text-align:right}
+  #print th{background:#eee;font-weight:700}
+  #print td.n{font-variant-numeric:tabular-nums}
+  #print tr.tot td{font-weight:700;background:#f4f4f4}
+  #print h2{font-size:13pt;margin:12pt 0 5pt;page-break-after:avoid}
+  @page{margin:14mm}
+}
 </style>
 </head>
 <body>
@@ -75,6 +90,7 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
 <div class="tabs"><div id="tabs"></div></div>
 <div id="sheet"></div>
 <div id="toast"></div>
+<div id="print"></div>
 
 <script>
 /* ============ מאגר מזון מובנה — מאגר התזונה הלאומי (צמרת) ============ */
@@ -126,10 +142,28 @@ function toast(msg){
   clearTimeout(toastT); toastT = setTimeout(() => $('#toast').innerHTML = '', 2400);
 }
 
+/* ============ ארוחות ============ */
+const MEALS = [['breakfast','ארוחת בוקר'],['lunch','ארוחת צהריים'],
+               ['dinner','ארוחת ערב'],['snack','ביניים'],['other','ללא שיוך']];
+const mealName = k => (MEALS.find(m => m[0] === k) || MEALS[4])[1];
+function mealNow(){
+  const h = new Date().getHours();
+  return h < 11 ? 'breakfast' : h < 16 ? 'lunch' : h < 21 ? 'dinner' : 'snack';
+}
+const mealOf = e => MEALS.some(m => m[0] === e.meal) ? e.meal : 'other';
+function setMeal(id, meal){
+  const d = S.date, e = (S.logs[mk(d)] || []).find(x => x.id === id);
+  if (!e) return;
+  e.meal = meal; saveLog(d);
+  MEALS.forEach(([k]) => { const b = $('#m_'+k); if (b) b.className = k === meal ? 'sm on' : 'sm'; });
+  render();
+}
+
 /* ============ פעולות ============ */
 function addEntry({ name, qty, kcal, protein, foodId }){
   const d = S.date;
-  logOf(d).push({ id: uid(), date: d, name, qty, kcal: r0(kcal), protein: r0(protein), foodId: foodId || null });
+  logOf(d).push({ id: uid(), date: d, name, qty, kcal: r0(kcal), protein: r0(protein),
+                  foodId: foodId || null, meal: mealNow() });
   saveLog(d);
   if (foodId){
     const f = S.foods.find(x => x.id === foodId);
@@ -141,6 +175,53 @@ function quickAdd(f){
   const q = f.qty || 100, factor = f.unit === '100g' ? q/100 : q;
   addEntry({ name: f.name, qty: q + (f.unit === '100g' ? ' ג׳' : ' יח׳'),
              kcal: f.kcal*factor, protein: f.protein*factor, foodId: f.id });
+}
+/* עריכת כמות. base נשמר ברישום בפעם הראשונה, כדי שעריכות חוזרות
+   יחושבו תמיד מהמקור ולא יצברו שגיאות עיגול. */
+function qtyParts(e){
+  const num = parseFloat(String(e.qty || '').replace(',', '.'));
+  return { num: isFinite(num) ? num : 0, unit: /יח/.test(e.qty || '') ? 'יח׳' : 'ג׳' };
+}
+function sheetQty(id){
+  const e = entries(S.date).find(x => x.id === id);
+  if (!e) return;
+  const p = qtyParts(e);
+  if (!p.num) return toast('לרישום הזה אין כמות מספרית לעריכה');
+  sheet('עריכת רישום', `
+    <div class="sm" style="margin-bottom:12px">${esc(e.name)}</div>
+    <input id="qIn" type="number" inputmode="decimal" step="any" min="0"
+           value="${p.num}" style="direction:ltr">
+    <div class="sm mut" style="margin:8px 0 4px">${p.unit}</div>
+    <div id="qPrev" class="sm" style="margin-bottom:16px"></div>
+    <div class="sm mut" style="margin-bottom:6px">שיוך לארוחה</div>
+    <div class="flex" style="flex-wrap:wrap;gap:6px;margin-bottom:16px">${MEALS.map(([k, l]) =>
+      `<button id="m_${k}" class="sm${mealOf(e) === k ? ' on' : ''}"
+        onclick="setMeal('${e.id}','${k}')">${l}</button>`).join('')}</div>
+    <button class="full solid" onclick="applyQty('${e.id}')">שמירה</button>`);
+  const el = $('#qIn');
+  const upd = () => {
+    const b = e.base || { q: p.num, k: e.kcal, p: e.protein };
+    const v = parseFloat(el.value);
+    $('#qPrev').innerHTML = (isFinite(v) && v > 0 && b.q)
+      ? '<b class="num" style="color:var(--kcal)">' + r0(b.k * v / b.q) + '</b> קק״ל · '
+        + '<b class="num" style="color:var(--pro)">' + r0(b.p * v / b.q) + '</b> ג׳ חלבון'
+      : '<span class="mut">הזן כמות</span>';
+  };
+  el.oninput = upd; upd(); el.focus();
+}
+function applyQty(id){
+  const d = S.date, arr = S.logs[mk(d)] || [];
+  const e = arr.find(x => x.id === id);
+  if (!e) return;
+  const v = parseFloat($('#qIn').value);
+  if (!isFinite(v) || v <= 0) return toast('כמות לא תקינה');
+  const p = qtyParts(e);
+  if (!e.base) e.base = { q: p.num, k: e.kcal, p: e.protein };
+  if (!e.base.q) return toast('אין כמות מקורית לחישוב');
+  e.kcal = r0(e.base.k * v / e.base.q);
+  e.protein = r0(e.base.p * v / e.base.q);
+  e.qty = v + ' ' + p.unit;
+  saveLog(d); closeSheet(); render();
 }
 function delEntry(id){
   const d = S.date, m = mk(d);
@@ -196,17 +277,25 @@ function viewDay(){
   </div>
 
   <div class="sm mut" style="margin-bottom:8px">מה נרשם ${pretty(S.date) === 'היום' ? 'היום' : 'ביום זה'}</div>
-  ${entries(S.date).length ? `<div class="list">${entries(S.date).map(e => `
-    <div class="item">
-      <div style="min-width:0">
-        <div>${esc(e.name)}</div>
-        <div class="xs mut num">${esc(e.qty || '')} · ${e.kcal} קק״ל</div>
-      </div>
-      <div class="flex" style="align-items:center">
-        <b class="num" style="color:var(--pro)">${e.protein}</b>
-        <button class="del" onclick="delEntry('${e.id}')">×</button>
-      </div>
-    </div>`).join('')}</div>`
+  ${entries(S.date).length ? MEALS.map(([k, label]) => {
+      const list = entries(S.date).filter(e => mealOf(e) === k);
+      if (!list.length) return '';
+      const mk_ = list.reduce((a, e) => ({ k: a.k + e.kcal, p: a.p + e.protein }), { k:0, p:0 });
+      return `<div class="row" style="margin:14px 0 6px">
+        <span class="sm" style="font-weight:700">${label}</span>
+        <span class="xs mut num">${r0(mk_.k)} קק״ל · ${r0(mk_.p)} ג׳</span></div>
+      <div class="list">${list.map(e => `
+        <div class="item">
+          <div style="min-width:0;cursor:pointer" onclick="sheetQty('${e.id}')">
+            <div>${esc(e.name)}</div>
+            <div class="xs mut num">${esc(e.qty || '')} · ${e.kcal} קק״ל <span class="mut">✎</span></div>
+          </div>
+          <div class="flex" style="align-items:center">
+            <b class="num" style="color:var(--pro)">${e.protein}</b>
+            <button class="del" onclick="delEntry('${e.id}')">×</button>
+          </div>
+        </div>`).join('')}</div>`;
+    }).join('')
     : `<div class="card sm mut" style="text-align:center;border-style:dashed">עדיין לא נרשם כלום.</div>`}`;
 }
 function go(n){ const d = shift(S.date, n); if (d <= today()) { S.date = d; render(); } }
@@ -300,23 +389,17 @@ function viewSum(){
         <div class="num" style="font-size:20px">${s.dw > 0 ? '+' : ''}${s.dw.toFixed(1)} ק״ג</div></div>` : ''}
     </div>${s.n < s.span ? '<div class="xs mut" style="margin-top:14px">הממוצעים מחושבים על הימים שנרשמו בלבד.</div>' : ''}`
     : '<div class="sm mut">אין רישומים בתקופה הזו.</div>'}</div>`;
-  /* הסיכומים מסתיימים אתמול — יום שעדיין נרשם חלקית מטה את הממוצע */
-  const end = shift(today(), -1), first = today().slice(0,8) + '01';
-  const monthBox = end >= first
-    ? box('החודש עד אתמול', stat(first, end))
-    : `<div class="card sm mut">החודש רק התחיל — אין עדיין ימים מלאים.</div>`;
+  const t = today();
   return `<h2>סיכומים</h2>
-    <p class="xs mut" style="margin-top:-8px">הסיכומים מסתיימים אתמול, כדי שיום שעדיין באמצע לא ימשוך את הממוצע למטה.</p>
-    ${box('שבעה ימים אחרונים, עד אתמול', stat(shift(end,-6), end))}
-    ${monthBox}
-    <div class="flex">
+    ${box('שבעת הימים האחרונים', stat(shift(t,-6), t))}
+    ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', t))}
+    <div class="flex" style="margin-bottom:8px">
       <button style="flex:1" onclick="exportAll()">ייצוא גיבוי</button>
-      <button style="flex:1" onclick="document.getElementById('imp').click()">שחזור מגיבוי</button>
+      <button style="flex:1" onclick="sheetImport()">שחזור מגיבוי</button>
     </div>
-    <input id="imp" type="file" accept=".json,application/json" class="hide" onchange="importAll(this.files[0])">
-    <div id="impmsg" class="sm" style="margin-top:10px"></div>
-    <p class="xs mut">הנתונים נשמרים במכשיר הזה בלבד. כדאי לייצא גיבוי מדי פעם.
-      שחזור מוסיף למה שקיים ולא מוחק — רישום שכבר נמצא לא יוכפל.</p>`;
+    <button class="full" style="margin-bottom:8px" onclick="printWeek()">דו״ח שבועי להדפסה / PDF</button>
+    <p class="xs mut">הנתונים נשמרים במכשיר הזה בלבד, וספארי מוחק אותם אחרי שבוע ללא כניסה לאתר.
+    כדאי לייצא גיבוי מדי פעם, ולהוסיף את הכלי למסך הבית — שם המחיקה לא חלה.</p>`;
 }
 function exportAll(){
   const logs = {};
@@ -329,43 +412,78 @@ function exportAll(){
   URL.revokeObjectURL(a.href);
 }
 
+/* דו”ח שבועי. משתמש במנגנון ההדפסה של הדפדפן:
+   באייפון, שיתוף > הדפסה > שמירה לקבצים מייצרת PDF עם עברית תקינה. */
+function printWeek(){
+  const to = S.date, from = shift(to, -6);
+  const st = S.settings;
+  const days = [];
+  for (let i = 0; i < 7; i++){
+    const d = shift(from, i), es = entries(d);
+    const t = es.reduce((a,e) => ({ k: a.k+e.kcal, p: a.p+e.protein }), { k:0, p:0 });
+    days.push({ d, es, ...t });
+  }
+  const logged = days.filter(x => x.es.length);
+  const avg = k => logged.length ? r0(logged.reduce((a,x) => a+x[k], 0)/logged.length) : 0;
+  const wRow = S.weights.filter(x => x.date >= from && x.date <= to)
+                        .sort((a,b) => a.date < b.date ? -1 : 1);
+
+  const byMeal = es => MEALS.map(([k, label]) => {
+    const l = es.filter(e => mealOf(e) === k);
+    if (!l.length) return '';
+    return `<tr><td colspan="3" style="background:#fafafa"><i>${label}</i></td></tr>`
+      + l.map(e => `<tr><td>${esc(e.name)} <span style="color:#666">${esc(e.qty||'')}</span></td>
+          <td class="n">${e.kcal}</td><td class="n">${e.protein}</td></tr>`).join('');
+  }).join('');
+
+  $('#print').innerHTML = `
+    <h1>דו״ח תזונה שבועי</h1>
+    <div class="sub">${from} — ${to} · ${logged.length} ימים נרשמו · הופק ${today()}</div>
+    <table>
+      <tr><th>יום</th><th>קלוריות</th><th>חלבון (ג׳)</th></tr>
+      ${days.map(x => `<tr><td>${x.d}</td>
+        <td class="n">${x.es.length ? r0(x.k) : '—'}</td>
+        <td class="n">${x.es.length ? r0(x.p) : '—'}</td></tr>`).join('')}
+      <tr class="tot"><td>ממוצע יומי</td><td class="n">${avg('k')}</td><td class="n">${avg('p')}</td></tr>
+      ${st.kcalTarget || st.proteinTarget ? `<tr><td>יעד</td>
+        <td class="n">${st.kcalTarget || '—'}</td><td class="n">${st.proteinTarget || '—'}</td></tr>` : ''}
+    </table>
+    ${wRow.length ? `<h2>משקל</h2><table>
+      <tr><th>תאריך</th><th>ק״ג</th></tr>
+      ${wRow.map(w => `<tr><td>${w.date}</td><td class="n">${w.kg}</td></tr>`).join('')}
+    </table>` : ''}
+    <h2>פירוט יומי</h2>
+    ${days.filter(x => x.es.length).map(x => `
+      <h2>${x.d} — ${r0(x.k)} קק״ל · ${r0(x.p)} ג׳ חלבון</h2>
+      <table><tr><th>פריט</th><th>קק״ל</th><th>חלבון</th></tr>${byMeal(x.es)}</table>`).join('')}`;
+  closeSheet();
+  setTimeout(() => window.print(), 120);
+}
+
+function sheetImport(){
+  sheet('שחזור מגיבוי', `
+    <p class="sm mut" style="margin-bottom:12px">בחירת קובץ גיבוי שיוצא מהכלי.
+    הרישומים, המאכלים והמשקלים הקיימים במכשיר יוחלפו. מפתח ה-API יישאר.</p>
+    <input type="file" accept="application/json,.json" onchange="importAll(this.files[0])">
+    <div id="imp" class="sm mut" style="margin-top:12px"></div>`);
+}
 async function importAll(file){
   if (!file) return;
-  const msg = $('#impmsg');
+  const out = $('#imp');
   try {
     const d = JSON.parse(await file.text());
-    let addedE = 0, addedF = 0, addedW = 0;
-
-    /* מאכלים — לפי שם, בלי לדרוס מה שכבר קיים */
-    const haveF = new Set(S.foods.map(f => f.name));
-    (d.foods || []).forEach(f => {
-      if (!haveF.has(f.name)) { S.foods.push({ ...f, id: f.id || uid() }); haveF.add(f.name); addedF++; }
-    });
-    if (addedF) save('foods', S.foods);
-
-    /* רישומים — מיזוג לפי מזהה */
-    Object.entries(d.logs || {}).forEach(([m, rows]) => {
-      const cur = load('log.' + m, []);
-      const ids = new Set(cur.map(e => e.id));
-      rows.forEach(e => { if (!ids.has(e.id)) { cur.push(e); ids.add(e.id); addedE++; } });
-      save('log.' + m, cur);
-      S.logs[m] = cur;
-    });
-
-    /* משקל — יום אחד, מדידה אחת */
-    const haveW = new Set(S.weights.map(w => w.date));
-    (d.weights || []).forEach(w => { if (!haveW.has(w.date)) { S.weights.push(w); haveW.add(w.date); addedW++; } });
-    if (addedW) save('weights', S.weights);
-
-    /* יעדים — רק אם עדיין לא הוגדרו כאן */
-    if (d.settings && !S.settings.proteinTarget && !S.settings.kcalTarget) {
-      S.settings = d.settings; save('settings', S.settings);
-    }
-
-    render();
-    $('#impmsg').innerHTML = `<span style="color:var(--pro)">שוחזר: ${addedE} רישומים, ${addedF} מאכלים, ${addedW} מדידות משקל.</span>`;
-  } catch (e) {
-    msg.innerHTML = `<span style="color:var(--warn)">הקובץ אינו קובץ גיבוי תקין (${esc(e.message || e)}).</span>`;
+    if (!d || typeof d !== 'object' || typeof d.logs !== 'object') throw new Error('הקובץ אינו גיבוי של הכלי');
+    const days = Object.values(d.logs).reduce((a, v) => a + (Array.isArray(v) ? v.length : 0), 0);
+    Object.keys(localStorage).filter(k => k.startsWith(K) && k !== K + 'apikey')
+      .forEach(k => localStorage.removeItem(k));
+    save('foods', Array.isArray(d.foods) ? d.foods : []);
+    save('weights', Array.isArray(d.weights) ? d.weights : []);
+    save('settings', d.settings || { kcalTarget: 0, proteinTarget: 0 });
+    Object.entries(d.logs).forEach(([m, v]) => { if (Array.isArray(v)) save('log.' + m, v); });
+    out.textContent = 'שוחזרו ' + days + ' רישומים. טוען מחדש…';
+    setTimeout(() => location.reload(), 800);
+  } catch (e){
+    out.innerHTML = '<b style="color:var(--warn)">השחזור נכשל.</b> ' + esc(e.message || '');
   }
 }
 
@@ -504,36 +622,123 @@ function delFood(){
 }
 
 /* --- צילום תווית --- */
+const BUILD = '2026-09-12m';
+
+/* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
+   ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
+/* חילוץ המפתח מתוך ההדבקה, בשני שלבים:
+   1. התאמה על המחרוזת הגולמית — רווח או שורה חדשה משמשים כגבול טבעי.
+   2. הסרת סיומת גרסה שנצמדה בלי רווח (ספרות ומקפים הם חלק מתווי המפתח,
+      ולכן שלב 1 לבדו בולע אותה). */
+const KEYLEN = 108;
+function cleanKey(src){
+  const raw = String(src === undefined ? (S.key || '') : src);
+  const m = raw.match(/sk-ant-[A-Za-z0-9_-]+/);
+  let v = m ? m[0]
+            : raw.replace(/[^\x21-\x7E]/g, '').replace(/^["'`]+|["'`]+$/g, '');
+  const junk = /(?:[?&]\w+=)?\d{4}-\d{2}-\d{2}[a-z]?$/;
+  for (let i = 0; i < 5 && junk.test(v); i++) v = v.replace(junk, '');
+  /* גיזום אחרון לאורך הידוע. פועל רק על מפתח ארוך מדי, ותמיד מדווח. */
+  if (/^sk-ant-api03-/.test(v) && v.length > KEYLEN) v = v.slice(0, KEYLEN);
+  return v;
+}
+
+/* בדיקה מינימלית: טקסט בלבד, בלי תמונה. מבודדת רשת/CORS מטיפול בתמונה. */
+async function testApi(){
+  const out = $('#lbl');
+  const raw = S.key || '', k = cleanKey();
+  const stripped = raw.length - k.length;
+  const note = 'מפתח: ' + k.length + ' תווים'
+    + (stripped ? ' · הוסרו ' + stripped + ' תווים בלתי־חוקיים' : ' · נקי')
+    + '<br><span style="direction:ltr;display:inline-block">'
+    + esc(k.slice(0, 13)) + ' … ' + esc(k.slice(-12)) + '</span><br>';
+  out.innerHTML = note + 'בודק…';
+  const t0 = Date.now();
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': cleanKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 4,
+        messages: [{ role: 'user', content: 'hi' }] })
+    });
+    const body = (await r.text()).slice(0, 300);
+    out.innerHTML = note + '<b>הבקשה הגיעה לשרת.</b><br>status ' + r.status
+      + ' · ' + (Date.now() - t0) + 'ms<br><span style="direction:ltr;display:inline-block">'
+      + esc(body) + '</span>';
+  } catch (e){
+    out.innerHTML = note + '<b style="color:var(--warn)">הבקשה לא יצאה מהדפדפן.</b><br>'
+      + esc((e.name || '') + ': ' + (e.message || '')) + '<br>'
+      + (Date.now() - t0) + 'ms · origin: ' + esc(location.origin || 'null')
+      + '<br>build ' + BUILD;
+  }
+}
+
 function sheetLabel(){
   sheet('צילום תווית', `
     <p class="sm mut">צלם את טבלת הערכים התזונתיים, לא את חזית האריזה.
       הערכים ייפתחו לבדיקה לפני השמירה.</p>
     ${S.key ? '' : `<label class="f"><span>מפתח API של Anthropic (נשמר במכשיר בלבד)</span>
-      <input id="ak" placeholder="sk-ant-..." style="direction:ltr"></label>
+      <input id="ak" placeholder="sk-ant-..." style="direction:ltr" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off"></label>
+      <div id="akerr" class="sm" style="margin-bottom:12px"></div>
       <button class="full" style="margin-bottom:16px" onclick="saveKey()">שמירת המפתח</button>`}
     <input id="pic" type="file" accept="image/*" capture="environment" class="hide" onchange="readLabel(this.files[0])">
     <button class="solid full" ${S.key ? '' : 'disabled'} onclick="document.getElementById('pic').click()">
       ${S.key ? 'צילום או בחירת תמונה' : 'נדרש מפתח API'}</button>
     <div id="lbl" class="sm mut" style="margin-top:12px"></div>
-    ${S.key ? '<button class="ghost sm" style="margin-top:12px" onclick="resetKey()">החלפת מפתח ה-API</button>' : ''}`);
+    ${S.key ? `<button class="ghost sm" style="margin-top:12px" onclick="showKey()">הצגת המפתח השמור</button>
+      <button class="ghost sm" style="margin-top:12px" onclick="testApi()">בדיקת חיבור ל-API</button>
+      <button class="ghost sm" style="margin-top:12px" onclick="resetKey()">החלפת מפתח ה-API</button>` : ''}
+    <p class="xs mut" style="margin-top:16px;direction:ltr;text-align:left">build ${BUILD}</p>`);
 }
 function saveKey(){
-  const v = $('#ak').value.trim();
+  const typed = $('#ak').value || '';
+  const v = cleanKey(typed);
   if (!v) return;
-  S.key = v; save('apikey', v); sheetLabel();
+  const bad = !/^sk-ant-/.test(v) ? 'המפתח חייב להתחיל ב-sk-ant-' : '';
+  if (bad){
+    $('#akerr').innerHTML = '<b style="color:var(--warn)">לא נשמר.</b> ' + esc(bad)
+      + '<br>העתק מ-console.anthropic.com בכפתור ההעתקה, לא בסימון הטקסט.';
+    return;
+  }
+  S.key = v; save('apikey', v);
+  const cut = typed.trim().length - v.length;
+  sheetLabel();
+  if (cut > 0) $('#lbl').innerHTML = 'נשמר. הוסרו ' + cut + ' תווים מיותרים. '
+    + 'אורך סופי: ' + v.length + (v.length === KEYLEN ? ' — תקין.' : ' — חריג!');
+}
+/* תמונה מהאייפון היא 12MP ולעיתים HEIC — שולחים JPEG מוקטן.
+   בקשה גדולה מדי נחתכת לפני שהשרת עונה, והדפדפן מדווח על כך כ-TypeError. */
+async function prepImage(file){
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => rej(new Error('לא הצלחתי לפתוח את התמונה'));
+      i.src = url;
+    });
+    const MAX = 1400;
+    const s = Math.min(1, MAX / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * s);
+    c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.8).split(',')[1];
+  } finally { URL.revokeObjectURL(url); }
 }
 async function readLabel(file){
   if (!file) return;
   const out = $('#lbl');
   out.textContent = 'קורא את התווית…';
-  let stage = 'קריאת התמונה';
+  let stage = 'הכנת התמונה';
   try {
-    const b64 = await new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result.split(',')[1]);
-      r.onerror = () => rej(new Error('לא הצלחתי לקרוא את קובץ התמונה'));
-      r.readAsDataURL(file);
-    });
+    const b64 = await prepImage(file);
+    if (b64.length > 4.5e6) throw new Error('התמונה גדולה מדי גם אחרי הקטנה. צלם קרוב יותר לטבלה בלבד.');
 
     stage = 'פנייה ל-API';
     let resp;
@@ -543,14 +748,14 @@ async function readLabel(file){
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          'x-api-key': (S.key || '').trim(),
+          'x-api-key': cleanKey(),
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
           model: 'claude-sonnet-5', max_tokens: 1000,
           messages: [{ role: 'user', content: [
-            { type: 'image', source: { type: 'base64', media_type: file.type || 'image/jpeg', data: b64 } },
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
             { type: 'text', text: 'זו תווית ערכים תזונתיים. החזר JSON בלבד, בלי טקסט נוסף ובלי סימני קוד: '
               + '{"name":"שם המוצר בעברית","kcal100":number,"protein100":number,"packageGrams":number|null,"servingGrams":number|null}. '
               + 'הערכים ל-100 גרם; אם התווית נותנת ערכים למנה בלבד, המר. אל תנחש ערך שאינו מופיע — החזר null.' }
@@ -559,7 +764,7 @@ async function readLabel(file){
       });
     } catch (netErr) {
       throw new Error('הבקשה לא יצאה לדרך (' + (netErr.name || 'שגיאה') + ': ' + (netErr.message || '') + '). '
-        + 'בדוק חיבור לאינטרנט; אם אתה על רשת של מקום עבודה ייתכן שהיא חוסמת את api.anthropic.com.');
+        + 'סיבות אפשריות: חוסם תוכן בספארי, רשת שחוסמת את api.anthropic.com, או תמונה גדולה מדי.');
     }
 
     stage = 'תשובת השרת';
@@ -588,6 +793,13 @@ async function readLabel(file){
   }
 }
 
+/* מציג את הערך הגולמי מהאחסון, בלי שום עיבוד — להשוואה מול הקונסולה. */
+function showKey(){
+  const raw = S.key || '';
+  $('#lbl').innerHTML = 'המפתח כפי שנשמר (' + raw.length + ' תווים):'
+    + '<br><span style="direction:ltr;display:inline-block;word-break:break-all;'
+    + 'font-family:monospace;font-size:11px">' + esc(String(raw)) + '</span>';
+}
 function resetKey(){ S.key = ''; save('apikey', ''); sheetLabel(); }
 
 /* --- יעדים --- */
