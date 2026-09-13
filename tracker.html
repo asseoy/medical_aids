@@ -71,6 +71,7 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
 
 #print{display:none}
 @media print{
+  html,body{background:#fff !important;color:#000 !important}
   #app,.tabs,#sheet,#toast{display:none !important}
   #print{display:block;color:#000;background:#fff;font-size:12pt}
   #print h1{font-size:18pt;margin:0 0 4pt}
@@ -622,7 +623,7 @@ function delFood(){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-12m';
+const BUILD = '2026-09-13a';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
