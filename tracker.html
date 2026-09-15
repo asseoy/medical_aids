@@ -1289,6 +1289,12 @@ function render(){
   $('#app').innerHTML = warn + { day: viewDay, foods: viewFoods, weight: viewWeight, sum: viewSum }[S.tab]();
   $('#tabs').innerHTML = TABS.map(([id,l]) =>
     `<button class="${S.tab === id ? 'on' : ''}" onclick="S.tab='${id}';render()">${l}</button>`).join('');
+  /* עוקף באג ריפיינט ב-WebKit (נצפה מ-iOS 27 באפליקציית מסך-בית): ה-DOM מתעדכן
+     אבל המסך לא מצויר מחדש. כפיית reflow קטן פותרת את זה. */
+  const app = $('#app');
+  app.style.display = 'none';
+  void app.offsetHeight;
+  app.style.display = '';
 }
 render();
 </script>
