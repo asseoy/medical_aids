@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>לקראת ביקור בנושא מעי רגיש</title>
+<meta name="description" content="שאלון הכנה לביקור אצל רופא או רופאת המשפחה בנושא תסמינים של מעי רגיש">
+<meta name="theme-color" content="#0F7A5A">
+<style>
+:root{
+  --paper:#F6F9F7; --card:#FFFFFF; --ink:#13221C; --mut:#5C6F68;
+  --em:#0F7A5A; --em-soft:#E4F1EB; --em-line:#BFDCD0;
+  --flag:#A8331F; --flag-soft:#FBEAE6;
+  --line:#DCE6E1; --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:17px; line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 64px}
+
+/* כותרת */
+header{padding:22px 0 8px}
+.back{display:inline-block;color:var(--em);text-decoration:none;font-size:15px;margin-bottom:14px}
+.back:hover{text-decoration:underline}
+h1{font-size:26px;line-height:1.25;margin:0 0 8px;font-weight:700;letter-spacing:-0.01em}
+.lede{color:var(--mut);margin:0;font-size:16px}
+
+/* מונה שלבים דביק */
+.counter{
+  position:sticky; top:0; z-index:20; background:var(--paper);
+  padding:10px 0 8px; border-bottom:1px solid var(--line);
+  font-size:14px; color:var(--mut);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.counter b{color:var(--em);font-weight:600}
+.counter a{color:var(--em);text-decoration:none;font-weight:600}
+
+section{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  padding:18px; margin-top:16px;
+}
+section h2{font-size:19px;margin:0 0 4px;font-weight:700}
+section .hint{color:var(--mut);font-size:15px;margin:0 0 14px}
+.q{margin-top:18px}
+.q:first-of-type{margin-top:6px}
+.q > label, .q > .lbl{display:block;font-weight:600;margin-bottom:8px}
+.q .sub{display:block;color:var(--mut);font-size:14px;font-weight:400;margin-top:2px}
+[hidden]{display:none!important}
+
+/* בחירה */
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{
+  flex:1 1 auto; min-width:96px; min-height:48px;
+  background:#fff; color:var(--ink); border:1.5px solid var(--line);
+  border-radius:10px; padding:10px 14px; font:inherit; font-size:16px;
+  cursor:pointer; text-align:center;
+}
+.opts button:hover{border-color:var(--em-line)}
+.opts button[aria-pressed="true"]{
+  background:var(--em-soft); border-color:var(--em); color:var(--em); font-weight:600;
+}
+.opts button:focus-visible{outline:3px solid var(--em);outline-offset:2px}
+.opts.col{flex-direction:column}
+.opts.col button{text-align:right;flex:none}
+.opts.flags button[aria-pressed="true"]{background:var(--flag-soft);border-color:var(--flag);color:var(--flag)}
+.opts .none{color:var(--mut)}
+
+input[type="number"]{
+  width:110px; font:inherit; padding:11px 12px; border:1.5px solid var(--line);
+  border-radius:10px; background:#fff; color:var(--ink); direction:ltr; text-align:center;
+}
+input[type="number"]:focus-visible{outline:3px solid var(--em);outline-offset:2px;border-color:var(--em)}
+
+/* מחוון אחוזים */
+.slider{display:flex;align-items:center;gap:12px;margin-top:4px}
+.slider input[type="range"]{flex:1;accent-color:var(--em);height:34px}
+.slider output{
+  min-width:56px;text-align:center;font-weight:700;color:var(--em);
+  font-variant-numeric:tabular-nums;
+}
+.scalenote{color:var(--mut);font-size:14px;margin-top:6px}
+
+/* מה נוסה — שורת השפעה לכל פריט */
+.tried{display:flex;flex-direction:column;gap:8px}
+.titem{border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.titem > button{
+  width:100%;min-height:48px;background:none;border:0;padding:10px 14px;
+  font:inherit;font-size:16px;color:var(--ink);text-align:right;cursor:pointer;border-radius:10px
+}
+.titem > button:focus-visible{outline:3px solid var(--em);outline-offset:2px}
+.titem.on{border-color:var(--em);background:var(--em-soft)}
+.titem.on > button{color:var(--em);font-weight:600}
+.titem .eff{display:none;gap:6px;padding:0 10px 10px;flex-wrap:wrap}
+.titem.on .eff{display:flex}
+.titem .eff span{font-size:14px;color:var(--mut);align-self:center;margin-inline-end:4px}
+.titem .eff button{
+  min-height:38px;padding:6px 12px;border-radius:8px;border:1.5px solid var(--em-line);
+  background:#fff;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer
+}
+.titem .eff button[aria-pressed="true"]{background:var(--em);border-color:var(--em);color:#fff;font-weight:600}
+.titem .eff button:focus-visible{outline:3px solid var(--em);outline-offset:2px}
+
+/* התראות */
+.urgent{
+  border:1.5px solid var(--flag);background:var(--flag-soft);color:var(--flag);
+  border-radius:10px;padding:12px 14px;font-size:15.5px;margin-top:14px
+}
+.urgent b{display:block;margin-bottom:2px}
+.static-urgent{border-style:dashed;background:#fff}
+
+/* סיכום */
+#s-sum{border-color:var(--em-line)}
+textarea#sumText{
+  width:100%;min-height:320px;font:inherit;font-size:15.5px;line-height:1.7;
+  border:1.5px solid var(--line);border-radius:10px;padding:12px;color:var(--ink);background:#FBFDFC;resize:vertical
+}
+textarea#sumText:focus-visible{outline:3px solid var(--em);outline-offset:1px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.actions button{
+  flex:1 1 120px;min-height:48px;border-radius:10px;border:1.5px solid var(--em);
+  background:#fff;color:var(--em);font:inherit;font-weight:600;cursor:pointer
+}
+.actions button.primary{background:var(--em);color:#fff}
+.actions button:focus-visible{outline:3px solid var(--em);outline-offset:2px}
+.toast{min-height:22px;color:var(--em);font-size:14.5px;margin-top:8px}
+.missing{color:var(--mut);font-size:14.5px;margin:0 0 12px}
+#printOut{display:none}
+.nodx{color:var(--mut);font-size:14.5px;margin-top:12px}
+
+.privacy{color:var(--mut);font-size:14px;margin-top:18px;text-align:center}
+@media (prefers-reduced-motion:no-preference){
+  section{transition:border-color .15s ease}
+}
+@media print{
+  body{background:#fff}
+  header,.counter,section:not(#s-sum),.actions,.toast,.privacy,.missing,#s-sum .hint{display:none!important}
+  #s-sum{border:0;padding:0;margin:0}
+  textarea#sumText{display:none!important}
+  #printOut{display:block!important;white-space:pre-wrap;font-size:15px;line-height:1.8}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="back" href="patients.html">→ חזרה לכלים למטופלים</a>
+  <h1>לקראת ביקור בנושא מעי רגיש</h1>
+  <p class="lede">כמה שאלות על התסמינים, כדי שתגיעו לביקור עם תמונה מסודרת.
+  בסוף יתקבל סיכום שאפשר להראות בביקור. אין כאן אבחנה.</p>
+</header>
+
+<div class="counter">
+  <span><b id="cdone">0</b> מתוך <span id="ctot">8</span> חלקים הושלמו</span>
+  <a href="#s-sum">לסיכום</a>
+</div>
+
+<!-- 1 -->
+<section id="s1">
+  <h2>קצת עליכם</h2>
+  <p class="hint">שתי שאלות שמשפיעות על מה שכדאי לבדוק.</p>
+
+  <div class="q">
+    <label for="age">גיל</label>
+    <input type="number" id="age" min="16" max="120" inputmode="numeric"
+           oninput="set('age', this.value)">
+  </div>
+
+  <div class="q">
+    <span class="lbl">מין</span>
+    <div class="opts" id="sex">
+      <button type="button" onclick="pick('sex','f',this)">אישה</button>
+      <button type="button" onclick="pick('sex','m',this)">גבר</button>
+    </div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <h2>כאב או אי־נוחות בבטן</h2>
+  <p class="hint">התייחסו לשלושת החודשים האחרונים.</p>
+
+  <div class="q">
+    <span class="lbl">באיזו תדירות יש כאב או אי־נוחות בבטן?</span>
+    <div class="opts col" id="painFreq">
+      <button type="button" onclick="pick('painFreq','none',this)">כמעט אף פעם</button>
+      <button type="button" onclick="pick('painFreq','lt1',this)">פחות מיום אחד בשבוע</button>
+      <button type="button" onclick="pick('painFreq','1w',this)">בערך יום אחד בשבוע</button>
+      <button type="button" onclick="pick('painFreq','2_3w',this)">יומיים־שלושה בשבוע</button>
+      <button type="button" onclick="pick('painFreq','most',this)">רוב ימות השבוע</button>
+    </div>
+  </div>
+
+  <div id="painMore">
+    <div class="q">
+      <span class="lbl">הכאב בא והולך, או קבוע כל הזמן?</span>
+      <div class="opts" id="painCont">
+        <button type="button" onclick="pick('painCont','episodic',this)">בא והולך</button>
+        <button type="button" onclick="pick('painCont','constant',this)">קבוע כמעט כל הזמן</button>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="lbl">מה קורה לכאב אחרי יציאה?<span class="sub">מה שקורה ברוב הפעמים</span></span>
+      <div class="opts col" id="painBM">
+        <button type="button" onclick="pick('painBM','better',this)">בדרך כלל מוקל</button>
+        <button type="button" onclick="pick('painBM','worse',this)">בדרך כלל מחמיר</button>
+        <button type="button" onclick="pick('painBM','same',this)">לא משתנה</button>
+        <button type="button" onclick="pick('painBM','unsure',this)">לא שמתי לב</button>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="lbl">כשהכאב התחיל, השתנתה גם תדירות היציאות?<span class="sub">יותר או פחות יציאות מהרגיל</span></span>
+      <div class="opts" id="painFreqChange">
+        <button type="button" onclick="pick('painFreqChange','yes',this)">כן</button>
+        <button type="button" onclick="pick('painFreqChange','no',this)">לא</button>
+        <button type="button" onclick="pick('painFreqChange','unsure',this)">לא ברור לי</button>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="lbl">וכשהכאב התחיל, השתנתה צורת היציאות?<span class="sub">קשות יותר או רכות יותר מהרגיל</span></span>
+      <div class="opts" id="painFormChange">
+        <button type="button" onclick="pick('painFormChange','yes',this)">כן</button>
+        <button type="button" onclick="pick('painFormChange','no',this)">לא</button>
+        <button type="button" onclick="pick('painFormChange','unsure',this)">לא ברור לי</button>
+      </div>
+    </div>
+
+    <div class="q" id="qMenses" hidden>
+      <span class="lbl">הכאב מופיע רק בימים שסביב הווסת?</span>
+      <div class="opts col" id="menses">
+        <button type="button" onclick="pick('menses','only',this)">כן, רק סביב הווסת</button>
+        <button type="button" onclick="pick('menses','other',this)">לא, גם בימים אחרים</button>
+        <button type="button" onclick="pick('menses','na',this)">אין לי וסת כיום</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <h2>דפוס היציאות</h2>
+  <p class="hint">חשבו על ימים שבהם היציאות אינן כרגיל.
+  מתוך אותם ימים, איזה חלק נראה כך?</p>
+
+  <div class="q">
+    <label for="hard">יציאות קשות, יבשות או גושיות</label>
+    <div class="slider">
+      <input type="range" id="hard" min="0" max="100" step="5" value="0"
+             oninput="setPct('hard', this.value)">
+      <output id="hardOut">0%</output>
+    </div>
+    <p class="scalenote">כדורים קטנים ונפרדים, או נקניק גושי שקשה להוציא.</p>
+  </div>
+
+  <div class="q">
+    <label for="loose">יציאות רכות, דייסתיות או מימיות</label>
+    <div class="slider">
+      <input type="range" id="loose" min="0" max="100" step="5" value="0"
+             oninput="setPct('loose', this.value)">
+      <output id="looseOut">0%</output>
+    </div>
+    <p class="scalenote">פתיתים רכים, דייסה, או נוזל ללא חלקים מוצקים.</p>
+  </div>
+
+  <div class="q">
+    <span class="lbl">כמה ימים בשבוע היציאות אינן כרגיל?</span>
+    <div class="opts" id="abnDays">
+      <button type="button" onclick="pick('abnDays','lt1',this)">פחות מיום</button>
+      <button type="button" onclick="pick('abnDays','1_2',this)">1–2</button>
+      <button type="button" onclick="pick('abnDays','3_4',this)">3–4</button>
+      <button type="button" onclick="pick('abnDays','5_7',this)">5–7</button>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <h2>מתי זה התחיל</h2>
+  <p class="hint">מועד ההתחלה ואופייה עוזרים להבדיל בין מצבים שונים.</p>
+
+  <div class="q">
+    <span class="lbl">כמה זמן התסמינים נמשכים?</span>
+    <div class="opts col" id="dur">
+      <button type="button" onclick="pick('dur','lt3',this)">פחות משלושה חודשים</button>
+      <button type="button" onclick="pick('dur','3_6',this)">שלושה עד שישה חודשים</button>
+      <button type="button" onclick="pick('dur','6_12',this)">חצי שנה עד שנה</button>
+      <button type="button" onclick="pick('dur','gt1y',this)">יותר משנה</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="lbl">איך התחילו?</span>
+    <div class="opts" id="onset">
+      <button type="button" onclick="pick('onset','gradual',this)">בהדרגה</button>
+      <button type="button" onclick="pick('onset','abrupt',this)">בבת אחת</button>
+      <button type="button" onclick="pick('onset','unsure',this)">לא זכור לי</button>
+    </div>
+  </div>
+
+  <div class="q" id="qOnset50" hidden>
+    <span class="lbl">התסמינים הופיעו לראשונה אחרי גיל 50?</span>
+    <div class="opts" id="onset50">
+      <button type="button" onclick="pick('onset50','yes',this)">כן</button>
+      <button type="button" onclick="pick('onset50','no',this)">לא, היו כבר קודם</button>
+      <button type="button" onclick="pick('onset50','unsure',this)">לא זכור לי</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="lbl">קרה משהו סמוך להתחלה?<span class="sub">אפשר לבחור כמה</span></span>
+    <div class="opts col" id="trigger">
+      <button type="button" onclick="toggle('trigger','gastro',this)">מחלת קיבה או שלשול חריף</button>
+      <button type="button" onclick="toggle('trigger','abx',this)">טיפול באנטיביוטיקה</button>
+      <button type="button" onclick="toggle('trigger','stress',this)">אירוע חיים מלחיץ</button>
+      <button type="button" onclick="toggle('trigger','surgery',this)">ניתוח או אשפוז</button>
+      <button type="button" class="none" onclick="toggle('trigger','none',this)">לא, שום דבר מיוחד</button>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <h2>תסמינים נוספים ומה מחמיר</h2>
+  <p class="hint">אפשר לבחור כמה תשובות בכל שאלה.</p>
+
+  <div class="q">
+    <span class="lbl">מה עוד מורגש, מלבד הכאב והשינוי ביציאות?</span>
+    <div class="opts col" id="assoc">
+      <button type="button" onclick="toggle('assoc','bloat',this)">נפיחות או תחושת מתיחה בבטן</button>
+      <button type="button" onclick="toggle('assoc','gas',this)">הרבה גזים</button>
+      <button type="button" onclick="toggle('assoc','urgency',this)">דחיפות, או קושי להתאפק עד השירותים</button>
+      <button type="button" onclick="toggle('assoc','incomplete',this)">תחושה שהמעי לא התרוקן עד הסוף</button>
+      <button type="button" onclick="toggle('assoc','upper',this)">צרבת, שובע מהיר או כאב בבטן העליונה</button>
+      <button type="button" class="none" onclick="toggle('assoc','none',this)">שום דבר מאלה</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="lbl">מה מחמיר את התסמינים?</span>
+    <div class="opts col" id="worse">
+      <button type="button" onclick="toggle('worse','meals',this)">אכילה — סמוך לארוחות</button>
+      <button type="button" onclick="toggle('worse','foods',this)">מאכלים מסוימים, למשל מוצרי חלב, קטניות או לחם</button>
+      <button type="button" onclick="toggle('worse','stress',this)">מתח ולחץ</button>
+      <button type="button" onclick="toggle('worse','cycle',this)" data-female>ימי הווסת</button>
+      <button type="button" class="none" onclick="toggle('worse','none',this)">לא שמתי לב לקשר מסוים</button>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+  <h2>שאלות בטיחות</h2>
+  <p class="hint">ברוב המקרים התשובה לכל אלה שלילית. הן כאן כדי לא לפספס מצב שדורש בירור מהיר יותר.</p>
+
+  <div class="q">
+    <span class="lbl">האם אחד מאלה נכון לגביכם?</span>
+    <div class="opts col flags" id="flags">
+      <button type="button" onclick="toggle('flags','weight',this)">ירידה במשקל בלי שניסיתם לרדת</button>
+      <button type="button" onclick="toggle('flags','blood',this)">דם בצואה, או צואה שחורה</button>
+      <button type="button" onclick="toggle('flags','anemia',this)">נמצאה אנמיה (חוסר דם) או חוסר ברזל</button>
+      <button type="button" onclick="toggle('flags','night',this)">כאבים או יציאות שמעירים משינה</button>
+      <button type="button" onclick="toggle('flags','fever',this)">חום שחוזר בלי הסבר אחר</button>
+      <button type="button" onclick="toggle('flags','progressive',this)">התסמינים הולכים ומחמירים כל הזמן</button>
+      <button type="button" onclick="toggle('flags','famcrc',this)">הורה, אח, אחות או ילד שחלו בסרטן המעי הגס</button>
+      <button type="button" onclick="toggle('flags','famibd',this)">קרוב משפחה עם קרוהן, קוליטיס או צליאק</button>
+      <button type="button" class="none" onclick="toggle('flags','none',this)">אף אחד מאלה</button>
+    </div>
+  </div>
+
+  <div class="urgent" id="flagAlert" hidden>
+    <b>סימנתם ממצא שדורש בירור.</b>
+    כדאי לקבוע תור בהקדם, בלי לחכות לביקור שגרתי, ולציין את הממצא כבר בתחילת הביקור.
+  </div>
+
+  <div class="q">
+    <span class="lbl">רקע שחשוב לרופא או לרופאה לדעת</span>
+    <div class="opts col" id="bg">
+      <button type="button" onclick="toggle('bg','surgery',this)">ניתוח בבטן בעבר, כולל הוצאת כיס מרה</button>
+      <button type="button" onclick="toggle('bg','preg',this)" data-female>היריון עכשיו, או תכנון היריון</button>
+      <button type="button" class="none" onclick="toggle('bg','none',this)">אין</button>
+    </div>
+  </div>
+
+  <div class="urgent static-urgent">
+    <b>מתי לא לחכות לביקור</b>
+    דימום רב מפי הטבעת, צואה שחורה עם חולשה או סחרחורת, או כאב בטן חזק שאינו חולף — פנו מיד למוקד חירום או לחדר מיון.
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="s7">
+  <h2>מה כבר ניסיתם</h2>
+  <p class="hint">בחרו כל מה שניסיתם, ולכל פריט סמנו אם עזר.</p>
+
+  <div class="tried" id="tried"></div>
+</section>
+
+<!-- 8 -->
+<section id="s8">
+  <h2>השפעה על היומיום</h2>
+
+  <div class="q">
+    <span class="lbl">עד כמה התסמינים משפיעים על החיים?</span>
+    <div class="opts col" id="impact">
+      <button type="button" onclick="pick('impact','mild',this)">מעט — מפריע, אבל מסתדרים</button>
+      <button type="button" onclick="pick('impact','moderate',this)">בינוני — לפעמים משנים תוכניות בגלל זה</button>
+      <button type="button" onclick="pick('impact','severe',this)">הרבה — פוגע בשגרה באופן קבוע</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="lbl">על מה זה משפיע?<span class="sub">אפשר לבחור כמה</span></span>
+    <div class="opts col" id="areas">
+      <button type="button" onclick="toggle('areas','work',this)">עבודה או לימודים</button>
+      <button type="button" onclick="toggle('areas','out',this)">יציאה מהבית, נסיעות ובילויים</button>
+      <button type="button" onclick="toggle('areas','sleep',this)">שינה</button>
+      <button type="button" onclick="toggle('areas','eating',this)">אכילה — הימנעות ממאכלים או מארוחות</button>
+      <button type="button" onclick="toggle('areas','mood',this)">מצב הרוח</button>
+      <button type="button" class="none" onclick="toggle('areas','none',this)">אין השפעה מיוחדת</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="lbl">עד כמה מדאיג אתכם שמדובר במשהו חמור?</span>
+    <div class="opts" id="worry">
+      <button type="button" onclick="pick('worry','no',this)">לא מדאיג</button>
+      <button type="button" onclick="pick('worry','some',this)">קצת</button>
+      <button type="button" onclick="pick('worry','much',this)">מאוד</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <span class="lbl">מה הכי חשוב לכם לברר בביקור?<span class="sub">עד שלוש בחירות</span></span>
+    <div class="opts col" id="ask">
+      <button type="button" onclick="toggleMax('ask','danger',this,3)">האם זה משהו מסוכן</button>
+      <button type="button" onclick="toggleMax('ask','tests',this,3)">האם צריך בדיקות, ואילו</button>
+      <button type="button" onclick="toggleMax('ask','relief',this,3)">מה אפשר לעשות כדי להקל</button>
+      <button type="button" onclick="toggleMax('ask','food',this,3)">מה לאכול וממה להימנע</button>
+      <button type="button" onclick="toggleMax('ask','meds',this,3)">טיפול תרופתי</button>
+      <button type="button" onclick="toggleMax('ask','cope',this,3)">איך מתמודדים עם זה לאורך זמן</button>
+    </div>
+  </div>
+</section>
+
+<!-- סיכום -->
+<section id="s-sum">
+  <h2>הסיכום שלכם</h2>
+  <p class="hint">הסיכום מתעדכן תוך כדי מילוי. אפשר לערוך אותו לפני ההעתקה או ההדפסה.</p>
+  <p class="missing" id="missing"></p>
+  <div class="urgent" id="sumAlert" hidden></div>
+  <textarea id="sumText" aria-label="סיכום לביקור" oninput="edited=true"></textarea>
+  <div class="actions">
+    <button type="button" class="primary" onclick="copySum()">העתקה</button>
+    <button type="button" id="btnShare" onclick="shareSum()" hidden>שיתוף</button>
+    <button type="button" onclick="window.print()">הדפסה</button>
+    <button type="button" onclick="rebuild()">בנייה מחדש מהתשובות</button>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="printOut"></div>
+  <p class="nodx">אין כאן אבחנה ואין המלצה לטיפול. את התשובות יבחנו הרופא או הרופאה בביקור.</p>
+</section>
+
+<p class="privacy">התשובות נשארות במכשיר ואינן נשלחות לשום מקום. סגירת הדף מוחקת אותן.</p>
+
+</div>
+
+<script>
+/* מצב בזיכרון בלבד — בלי אחסון, בלי שליחה */
+const A = { trigger: [], assoc: [], worse: [], flags: [], bg: [], areas: [], ask: [], tried: {} };
+let edited = false;
+
+function set(k, v){ A[k] = v; update(); }
+
+function pick(k, v, el){
+  A[k] = v;
+  el.parentElement.querySelectorAll('button')
+    .forEach(b => b.setAttribute('aria-pressed', b === el ? 'true' : 'false'));
+  update();
+}
+
+/* בחירה מרובה; הכפתור עם class="none" סותר את השאר */
+function toggle(k, v, el){
+  A[k] = A[k] || [];
+  const box = el.parentElement;
+  if (v === 'none'){
+    const on = A[k].includes('none');
+    A[k] = on ? [] : ['none'];
+    box.querySelectorAll('button').forEach(b =>
+      b.setAttribute('aria-pressed', (!on && b === el) ? 'true' : 'false'));
+  } else {
+    A[k] = A[k].filter(x => x !== 'none');
+    const i = A[k].indexOf(v);
+    if (i > -1) A[k].splice(i, 1); else A[k].push(v);
+    const n = box.querySelector('button.none');
+    if (n) n.setAttribute('aria-pressed','false');
+    el.setAttribute('aria-pressed', A[k].includes(v) ? 'true' : 'false');
+  }
+  update();
+}
+
+function toggleMax(k, v, el, max){
+  const i = A[k].indexOf(v);
+  if (i > -1) A[k].splice(i, 1);
+  else {
+    if (A[k].length >= max){ toast('אפשר לבחור עד ' + max + '. בטלו בחירה אחרת קודם.'); return; }
+    A[k].push(v);
+  }
+  el.setAttribute('aria-pressed', A[k].includes(v) ? 'true' : 'false');
+  update();
+}
+
+/* שני המחוונים מתארים את אותם ימים, ולכן הסכום לא יכול לעבור 100 */
+function setPct(k, v){
+  A[k] = +v;
+  const other = k === 'hard' ? 'loose' : 'hard';
+  if ((A.hard || 0) + (A.loose || 0) > 100){
+    A[other] = 100 - A[k];
+    document.getElementById(other).value = A[other];
+  }
+  document.getElementById('hardOut').textContent  = (A.hard  || 0) + '%';
+  document.getElementById('looseOut').textContent = (A.loose || 0) + '%';
+  update();
+}
+
+/* ---------- מה כבר ניסיתם ---------- */
+const TRIED = [
+  ['diet',      'שינויים בתזונה, ביוזמה אישית'],
+  ['fodmap',    'דיאטה דלת FODMAP'],
+  ['dietitian', 'פגישה עם דיאטנית או דיאטן'],
+  ['fiber',     'תוסף סיבים תזונתיים, למשל פסיליום'],
+  ['colpermin', 'קולפרמין (שמן מנטה)'],
+  ['notensyl',  'נוטנסיל'],
+  ['imodium',   'אימודיום או סטופית'],
+  ['peg',       'פגלקס או נורמלקס'],
+  ['gelsectan', 'ג׳לסקטן'],
+  ['probiotic', 'פרוביוטיקה'],
+  ['rx',        'תרופה במרשם רופא'],
+  ['psych',     'טיפול פסיכולוגי או היפנוזה'],
+];
+const EFF = [['yes','עזר'],['part','עזר חלקית'],['no','לא עזר']];
+const TNONE = 'עדיין לא ניסיתי שום דבר';
+
+function buildTried(){
+  const box = document.getElementById('tried');
+  const rows = TRIED.map(([k, t]) => `
+    <div class="titem" data-k="${k}">
+      <button type="button" aria-pressed="false" onclick="triedToggle('${k}')">${t}</button>
+      <div class="eff" role="group" aria-label="השפעה: ${t}">
+        <span>האם עזר?</span>
+        ${EFF.map(([e, et]) => `<button type="button" aria-pressed="false" onclick="triedEff('${k}','${e}',this)">${et}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  box.innerHTML = rows + `
+    <div class="titem" data-k="none">
+      <button type="button" aria-pressed="false" onclick="triedToggle('none')">${TNONE}</button>
+    </div>`;
+}
+function paintTried(){
+  document.querySelectorAll('#tried .titem').forEach(d => {
+    const on = d.dataset.k in A.tried;
+    d.classList.toggle('on', on);
+    d.firstElementChild.setAttribute('aria-pressed', on ? 'true' : 'false');
+    d.querySelectorAll('.eff button').forEach((b, i) =>
+      b.setAttribute('aria-pressed', on && A.tried[d.dataset.k] === EFF[i][0] ? 'true' : 'false'));
+  });
+}
+function triedToggle(k){
+  if (k === 'none'){
+    A.tried = ('none' in A.tried) ? {} : { none: null };
+  } else {
+    delete A.tried.none;
+    if (k in A.tried) delete A.tried[k]; else A.tried[k] = null;
+  }
+  paintTried(); update();
+}
+function triedEff(k, e){
+  A.tried[k] = A.tried[k] === e ? null : e;
+  paintTried(); update();
+}
+
+/* ---------- תנאים ותצוגה מותנית ---------- */
+const female   = () => A.sex === 'f';
+const hasPain  = () => A.painFreq && A.painFreq !== 'none';
+const age50    = () => +A.age >= 50;
+const listed   = k => A[k].length > 0;
+const val      = k => A[k] !== undefined && A[k] !== '';
+
+/* שדה נסתר מאבד את ערכו, כדי שלא ייכנס לסיכום */
+function clearPick(k){
+  delete A[k];
+  document.querySelectorAll('#' + k + ' button').forEach(b => b.setAttribute('aria-pressed','false'));
+}
+function clearFemaleOnly(){
+  document.querySelectorAll('[data-female]').forEach(b => {
+    const k = b.parentElement.id;
+    const v = (b.getAttribute('onclick').match(/'([^']+)',this/) || [])[1];
+    b.hidden = !female();
+    if (!female() && v && A[k].includes(v)){
+      A[k] = A[k].filter(x => x !== v);
+      b.setAttribute('aria-pressed','false');
+    }
+  });
+}
+function applyConditions(){
+  document.getElementById('painMore').hidden = !hasPain();
+  document.getElementById('qMenses').hidden  = !(hasPain() && female());
+  document.getElementById('qOnset50').hidden = !age50();
+  if (!hasPain()) ['painCont','painBM','painFreqChange','painFormChange','menses'].forEach(k => val(k) && clearPick(k));
+  if (!female() && val('menses')) clearPick('menses');
+  if (!age50() && val('onset50')) clearPick('onset50');
+  clearFemaleOnly();
+}
+
+/* חלק נחשב שהושלם כשכל שדותיו הנראים מלאים */
+const PARTS = [
+  ['קצת עליכם',          () => val('age') && val('sex')],
+  ['כאב או אי־נוחות',    () => val('painFreq') && (!hasPain() ||
+                              (['painCont','painBM','painFreqChange','painFormChange'].every(val) && (!female() || val('menses'))))],
+  ['דפוס היציאות',        () => val('abnDays')],
+  ['מתי זה התחיל',        () => val('dur') && val('onset') && listed('trigger') && (!age50() || val('onset50'))],
+  ['תסמינים נוספים',      () => listed('assoc') && listed('worse')],
+  ['שאלות בטיחות',        () => listed('flags') && listed('bg')],
+  ['מה כבר ניסיתם',       () => Object.keys(A.tried).length > 0],
+  ['השפעה על היומיום',    () => val('impact') && listed('areas') && val('worry')],
+];
+
+/* ---------- ניסוח הסיכום ---------- */
+const T = {
+  painFreq: {lt1:'פחות מיום אחד בשבוע', '1w':'בערך יום אחד בשבוע', '2_3w':'יומיים־שלושה בשבוע', most:'ברוב ימות השבוע'},
+  painCont: {episodic:'בא והולך', constant:'קבוע כמעט כל הזמן'},
+  painBM:   {better:'אחרי יציאה הכאב בדרך כלל מוקל', worse:'אחרי יציאה הכאב בדרך כלל מחמיר', same:'יציאה אינה משנה את הכאב', unsure:'לא ידוע אם יציאה משנה את הכאב'},
+  abnDays:  {lt1:'פחות מיום בשבוע', '1_2':'יום־יומיים בשבוע', '3_4':'3–4 ימים בשבוע', '5_7':'5–7 ימים בשבוע'},
+  dur:      {lt3:'פחות משלושה חודשים', '3_6':'שלושה עד שישה חודשים', '6_12':'חצי שנה עד שנה', gt1y:'יותר משנה'},
+  onset:    {gradual:'התחלה הדרגתית', abrupt:'התחלה פתאומית', unsure:'אופן ההתחלה לא זכור'},
+  trigger:  {gastro:'מחלת קיבה או שלשול חריף', abx:'טיפול באנטיביוטיקה', stress:'אירוע חיים מלחיץ', surgery:'ניתוח או אשפוז'},
+  assoc:    {bloat:'נפיחות בבטן', gas:'ריבוי גזים', urgency:'דחיפות או קושי להתאפק', incomplete:'תחושת התרוקנות לא מלאה', upper:'צרבת, שובע מהיר או כאב בבטן העליונה'},
+  worse:    {meals:'אכילה', foods:'מאכלים מסוימים', stress:'מתח ולחץ', cycle:'ימי הווסת'},
+  flags:    {weight:'ירידה במשקל שלא במכוון', blood:'דם בצואה או צואה שחורה', anemia:'אנמיה או חוסר ברזל', night:'תסמינים שמעירים משינה',
+             fever:'חום חוזר ללא הסבר', progressive:'החמרה מתמשכת', famcrc:'סרטן המעי הגס בקרוב משפחה מדרגה ראשונה', famibd:'קרוהן, קוליטיס או צליאק במשפחה'},
+  bg:       {surgery:'ניתוח בטני בעבר (כולל הוצאת כיס מרה)', preg:'היריון או תכנון היריון'},
+  impact:   {mild:'מעטה', moderate:'בינונית — לעיתים משנים תוכניות', severe:'רבה — פגיעה קבועה בשגרה'},
+  areas:    {work:'עבודה או לימודים', out:'יציאה מהבית ובילויים', sleep:'שינה', eating:'הימנעות ממאכלים או מארוחות', mood:'מצב הרוח'},
+  worry:    {no:'אין דאגה מיוחדת', some:'דאגה מסוימת', much:'דאגה רבה'},
+  ask:      {danger:'האם זה משהו מסוכן', tests:'האם צריך בדיקות, ואילו', relief:'מה אפשר לעשות כדי להקל', food:'מה לאכול וממה להימנע', meds:'טיפול תרופתי', cope:'התמודדות לאורך זמן'},
+};
+const join = arr => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' ו' + arr[arr.length - 1];
+const names = (k) => A[k].filter(x => x !== 'none').map(x => T[k][x]);
+
+function activeFlags(){
+  const f = names('flags');
+  if (A.onset50 === 'yes') f.unshift('הופעה ראשונה של התסמינים אחרי גיל 50');
+  return f;
+}
+
+function buildText(){
+  const L = ['שאלון הכנה לביקור — מעי רגיש', ''];
+
+  const who = [];
+  if (val('age')) who.push('גיל ' + A.age);
+  if (val('sex')) who.push(A.sex === 'f' ? 'אישה' : 'גבר');
+  if (who.length) L.push(who.join(', ') + '.');
+
+  if (A.painFreq === 'none') L.push('כאב או אי־נוחות בבטן: כמעט אף פעם.');
+  else if (hasPain()){
+    let s = 'כאב או אי־נוחות בבטן: ' + T.painFreq[A.painFreq];
+    if (val('painCont')) s += ', ' + T.painCont[A.painCont];
+    s += '.';
+    if (val('painBM')) s += ' ' + T.painBM[A.painBM] + '.';
+    const ch = [];
+    if (A.painFreqChange === 'yes') ch.push('תדירות היציאות');
+    if (A.painFormChange === 'yes') ch.push('צורת היציאות');
+    if (ch.length) s += ' עם תחילת הכאב ' + (ch.length > 1 ? 'השתנו ' : 'השתנתה ') + join(ch) + '.';
+    const no = [];
+    if (A.painFreqChange === 'no') no.push('בתדירות היציאות');
+    if (A.painFormChange === 'no') no.push('בצורת היציאות');
+    if (no.length) s += ' לא היה שינוי ' + join(no) + ' עם תחילת הכאב.';
+    if (A.menses === 'only')  s += ' הכאב מופיע רק סביב הווסת.';
+    if (A.menses === 'other') s += ' הכאב אינו מוגבל לימי הווסת.';
+    if (A.menses === 'na')    s += ' אין וסת כיום.';
+    L.push(s);
+  }
+
+  if (val('abnDays') || A.hard || A.loose){
+    let s = 'יציאות:';
+    if (val('abnDays')) s += ' יציאות חריגות ' + T.abnDays[A.abnDays] + '.';
+    if (A.hard || A.loose) s += ' מתוך הימים החריגים — כ-' + (A.hard || 0) + '% יציאות קשות או גושיות, וכ-' + (A.loose || 0) + '% רכות או מימיות.';
+    L.push(s);
+  }
+
+  if (val('dur') || val('onset')){
+    let s = 'משך:';
+    if (val('dur')) s += ' ' + T.dur[A.dur];
+    if (val('onset')) s += (val('dur') ? ', ' : ' ') + T.onset[A.onset];
+    s += '.';
+    const tr = names('trigger');
+    if (tr.length) s += ' סמוך להתחלה: ' + join(tr) + '.';
+    else if (A.trigger.includes('none')) s += ' ללא אירוע מיוחד סמוך להתחלה.';
+    L.push(s);
+  }
+
+  const as = names('assoc');
+  if (as.length) L.push('תסמינים נוספים: ' + join(as) + '.');
+  else if (A.assoc.includes('none')) L.push('תסמינים נוספים: ללא.');
+  const wo = names('worse');
+  if (wo.length) L.push('מחמיר: ' + join(wo) + '.');
+
+  const fl = activeFlags();
+  if (fl.length) L.push('סימני אזהרה שסומנו: ' + join(fl) + '.');
+  else if (A.flags.includes('none')) L.push('סימני אזהרה: לא סומנו.');
+
+  const bg = names('bg');
+  if (bg.length) L.push('רקע: ' + join(bg) + '.');
+
+  const tk = Object.keys(A.tried);
+  if (tk.includes('none')) L.push('טיפולים שנוסו: עדיין לא נוסה דבר.');
+  else if (tk.length){
+    const effTxt = {yes:'עזר', part:'עזר חלקית', no:'לא עזר'};
+    const items = TRIED.filter(([k]) => k in A.tried)
+      .map(([k, t]) => {
+        return A.tried[k] ? t + ' — ' + effTxt[A.tried[k]] : t;
+      });
+    L.push('טיפולים שנוסו: ' + items.join('; ') + '.');
+  }
+
+  if (val('impact') || listed('areas') || val('worry')){
+    let s = 'השפעה על היומיום:';
+    if (val('impact')) s += ' ' + T.impact[A.impact] + '.';
+    const ar = names('areas');
+    if (ar.length) s += ' משפיע על ' + join(ar) + '.';
+    else if (A.areas.includes('none')) s += ' ללא השפעה מיוחדת על תחומי חיים.';
+    if (val('worry')) s += ' ' + T.worry[A.worry] + ' שמדובר במשהו חמור.';
+    L.push(s);
+  }
+
+  const ak = names('ask');
+  if (ak.length) L.push('', 'מה חשוב לברר בביקור:', ...ak.map(a => '• ' + a));
+
+  return L.join('\n');
+}
+
+/* ---------- עדכון כללי ---------- */
+function update(){
+  applyConditions();
+
+  const doneParts = PARTS.filter(([, f]) => f());
+  document.getElementById('cdone').textContent = doneParts.length;
+  document.getElementById('ctot').textContent  = PARTS.length;
+
+  const miss = PARTS.filter(([, f]) => !f()).map(([n]) => n);
+  document.getElementById('missing').textContent = miss.length
+    ? 'חלקים שעוד לא הושלמו: ' + miss.join(', ') + '.'
+    : 'כל החלקים הושלמו.';
+
+  const fl = activeFlags();
+  document.getElementById('flagAlert').hidden = fl.length === 0;
+  const sa = document.getElementById('sumAlert');
+  sa.hidden = fl.length === 0;
+  sa.innerHTML = '<b>יש ממצא שדורש בירור בהקדם.</b>כדאי לקבוע תור קרוב ולא לחכות לביקור שגרתי.';
+
+  if (!edited) document.getElementById('sumText').value = buildText();
+}
+
+function rebuild(){
+  edited = false;
+  update();
+  toast('הסיכום נבנה מחדש מהתשובות.');
+}
+
+/* ---------- העתקה, שיתוף ---------- */
+function toast(m){
+  const t = document.getElementById('toast');
+  t.textContent = m;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.textContent = '', 3500);
+}
+function copySum(){
+  const t = document.getElementById('sumText');
+  const fallback = () => {
+    t.select();
+    try { document.execCommand('copy'); toast('הסיכום הועתק.'); }
+    catch(e){ toast('הטקסט סומן — אפשר להעתיק ידנית.'); }
+  };
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(t.value).then(() => toast('הסיכום הועתק.'), fallback);
+  } else fallback();
+}
+function shareSum(){
+  navigator.share({ title: 'הכנה לביקור — מעי רגיש', text: document.getElementById('sumText').value })
+    .catch(() => {});
+}
+if (navigator.share) document.getElementById('btnShare').hidden = false;
+
+window.addEventListener('beforeprint', () =>
+  document.getElementById('printOut').textContent = document.getElementById('sumText').value);
+
+buildTried();
+update();
+</script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>אסתמה — כלי החלטה לרופא</title>
+<meta name="theme-color" content="#0B5C7A">
+<style>
+:root{
+  --paper:#F4F8FA; --card:#fff; --ink:#0F1D24; --mut:#5A7280;
+  --pri:#0B5C7A; --pri-soft:#E2EFF4; --pri-line:#B6D5E1;
+  --warn:#A6401F; --warn-soft:#FBEDE8;
+  --ok:#1C6B4B; --ok-soft:#E4F1EB;
+  --line:#DAE5EA; --r:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.6}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px 80px}
+header{padding:20px 0 10px}
+.back{color:var(--pri);text-decoration:none;font-size:14px}
+h1{font-size:25px;margin:10px 0 6px;letter-spacing:-.01em}
+.lede{color:var(--mut);font-size:15px;margin:0}
+nav{position:sticky;top:0;z-index:30;background:var(--paper);
+  border-bottom:1px solid var(--line);padding:8px 0;display:flex;gap:6px;overflow-x:auto}
+nav a{flex:0 0 auto;font-size:14px;text-decoration:none;color:var(--pri);
+  background:var(--pri-soft);border-radius:999px;padding:6px 13px;white-space:nowrap}
+section{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;margin-top:16px;scroll-margin-top:60px}
+h2{font-size:19px;margin:0 0 4px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 14px}
+h3{font-size:16px;margin:18px 0 6px}
+.q{margin-top:14px}
+.q>label{display:block;font-weight:600;margin-bottom:6px;font-size:15px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button{flex:1 1 auto;min-width:86px;min-height:42px;background:#fff;color:var(--ink);
+  border:1.5px solid var(--line);border-radius:9px;padding:8px 12px;font:inherit;font-size:15px;cursor:pointer}
+.opts button[aria-pressed="true"]{background:var(--pri-soft);border-color:var(--pri);color:var(--pri);font-weight:600}
+.opts button:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.opts.col{flex-direction:column}.opts.col button{text-align:right}
+.out{border-radius:var(--r);padding:14px;margin-top:14px;border:1px solid var(--pri-line);background:var(--pri-soft)}
+.out.warn{border-color:var(--warn);background:var(--warn-soft)}
+.out.ok{border-color:var(--ok);background:var(--ok-soft)}
+.out b{display:block;font-size:17px;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:right;vertical-align:top}
+th{background:var(--pri-soft);font-weight:700}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cite{color:var(--mut);font-size:12px}
+.step{border-right:3px solid var(--pri);padding:2px 12px;margin:12px 0}
+.step b{color:var(--pri)}
+.tag{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--warn-soft);
+  color:var(--warn);border:1px solid var(--warn);white-space:nowrap}
+.tag.ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+.note{background:#fff;border:1px dashed var(--pri-line);border-radius:var(--r);padding:12px;margin-top:12px;font-size:14px}
+.pending{border:1px dashed var(--pri-line);background:var(--pri-soft);border-radius:var(--r);
+  padding:14px;margin-top:16px;color:var(--mut);font-size:14px}
+textarea{width:100%;font:inherit;font-size:14px;padding:10px;border:1.5px solid var(--line);
+  border-radius:9px;background:#fff;color:var(--ink);line-height:1.5}
+textarea:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+footer{color:var(--mut);font-size:13px;margin-top:24px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="back" href="doctors.html">→ חזרה לכלים לרופאים</a>
+  <h1>אסתמה — אבחון, איזון וטיפול</h1>
+  <p class="lede">מבוגרים, מתבגרים וילדים 6–11. מבוסס על GINA 2026 Summary Guide,
+  עם שמות מסחריים הנהוגים בישראל.</p>
+</header>
+
+<nav>
+  <a href="#sec-in">נתוני מטופל</a>
+  <a href="#sec-ctrl">רמת איזון</a>
+  <a href="#sec-tx">טיפול כרוני</a>
+  <a href="#sec-acute">התקף חריף</a>
+  <a href="#sec-worse">החמרה</a>
+  <a href="#sec-drug">תרופות בישראל</a>
+  <a href="#sec-soap">סיכום</a>
+</nav>
+
+<!-- ========== נתוני מטופל ========== -->
+<section id="sec-in">
+  <h2>נתוני מטופל</h2>
+  <p class="sub">ההערכה בהמשך העמוד מתעדכנת לפי מה שנבחר כאן.</p>
+
+  <div class="q">
+    <label>קבוצת גיל</label>
+    <div class="opts" id="age">
+      <button onclick="pick('age','adult',this)">מבוגר 18+</button>
+      <button onclick="pick('age','teen',this)">מתבגר 12–17</button>
+      <button onclick="pick('age','child',this)">ילד 6–11</button>
+    </div>
+  </div>
+
+  <div class="q">
+    <label>טיפול נוכחי</label>
+    <div class="opts col" id="cur">
+      <button onclick="pick('cur','none',this)">ללא טיפול</button>
+      <button onclick="pick('cur','saba',this)">SABA בלבד</button>
+      <button onclick="pick('cur','air',this)">ICS-פורמוטרול לפי צורך (AIR)</button>
+      <button onclick="pick('cur','ics',this)">ICS יומי במינון נמוך</button>
+      <button onclick="pick('cur','mart_low',this)">MART מינון נמוך</button>
+      <button onclick="pick('cur','mart_med',this)">MART מינון בינוני</button>
+      <button onclick="pick('cur','icslaba_low',this)">ICS-LABA יומי, מינון נמוך</button>
+      <button onclick="pick('cur','icslaba_med',this)">ICS-LABA יומי, מינון בינוני/גבוה</button>
+    </div>
+  </div>
+
+  <h3>איזון תסמינים — ארבעה שבועות אחרונים</h3>
+  <p class="sub">בחולה שהמשאף להקלה שלו הוא ICS-פורמוטרול, שאלת השימוש בו אינה נספרת.
+  אין לספור שאיפה שניטלה לפני מאמץ. <span class="cite">GINA 2026, טבלה 2A, עמ׳ 12</span></p>
+
+  <div class="q"><label>תסמינים ביום יותר מפעמיים בשבוע</label>
+    <div class="opts" id="c1">
+      <button onclick="pick('c1',1,this)">כן</button><button onclick="pick('c1',0,this)">לא</button></div></div>
+
+  <div class="q"><label>יקיצה לילית כלשהי עקב אסתמה</label>
+    <div class="opts" id="c2">
+      <button onclick="pick('c2',1,this)">כן</button><button onclick="pick('c2',0,this)">לא</button></div></div>
+
+  <div class="q"><label>שימוש במשאף להקלה מסוג SABA יותר מפעמיים בשבוע</label>
+    <div class="opts" id="c3">
+      <button onclick="pick('c3',1,this)">כן</button><button onclick="pick('c3',0,this)">לא</button>
+      <button onclick="pick('c3',0,this)">משאף להקלה עם ICS-פורמוטרול</button></div></div>
+
+  <div class="q"><label>הגבלת פעילות כלשהי עקב אסתמה</label>
+    <div class="opts" id="c4">
+      <button onclick="pick('c4',1,this)">כן</button><button onclick="pick('c4',0,this)">לא</button></div></div>
+
+  <h3>גורמי סיכון להחמרות</h3>
+  <p class="sub">מעלים סיכון גם כשהתסמינים מעטים. <span class="cite">GINA 2026, טבלה 2B, עמ׳ 12</span></p>
+  <div class="opts col" id="risk">
+    <button onclick="tog('risk','saba3',this)">≥3 מיכלי SABA בשנה</button>
+    <button onclick="tog('risk','noics',this)">ללא ICS, היענות נמוכה או טכניקת שאיפה שגויה</button>
+    <button onclick="tog('risk','exac',this)">החמרה קשה בשנה האחרונה</button>
+    <button onclick="tog('risk','icu',this)">אי פעם הנשמה או אשפוז בטיפול נמרץ בשל אסתמה</button>
+    <button onclick="tog('risk','fev',this)">FEV₁ נמוך, במיוחד מתחת ל-60% מהחזוי</button>
+    <button onclick="tog('risk','smoke',this)">עישון, אידוי או חשיפה לזיהום אוויר</button>
+    <button onclick="tog('risk','comorb',this)">השמנה, רינוסינוסיטיס כרונית, ריפלוקס או אלרגיה מאומתת למזון</button>
+    <button onclick="tog('risk','preg',this)">הריון</button>
+    <button onclick="tog('risk','t2',this)">אאוזינופיליה בדם או FeNO גבוה</button>
+    <button onclick="tog('risk','psych',this)">קשיים נפשיים או סוציו־אקונומיים משמעותיים</button>
+  </div>
+</section>
+
+<!-- ========== רמת איזון ========== -->
+<section id="sec-ctrl">
+  <h2>רמת איזון וסיכון</h2>
+  <p class="sub">האיזון נקבע לפי מספר הפריטים החיוביים מתוך הארבעה.</p>
+  <div id="ctrlOut" class="out"><b>בחר תשובות בסעיף הקודם</b>
+    <span class="cite">אף אחד מהארבעה — מאוזן; 1–2 — מאוזן חלקית; 3–4 — לא מאוזן.</span></div>
+  <div id="riskOut"></div>
+  <div class="note">איזון ירוד אינו בהכרח כישלון תרופתי. לפני העלאת מדרגה יש לבדוק טכניקת
+  שאיפה, היענות, גורמי סיכון ומחלות נלוות, ולוודא שהאבחנה נכונה — בקהילה, כרבע עד שליש
+  מהמאובחנים כאסתמה אינם עונים לקריטריונים. <span class="cite">GINA 2026, עמ׳ 9, 14</span></div>
+</section>
+
+<!-- ========== טיפול כרוני ========== -->
+<section id="sec-tx">
+  <h2>טיפול כרוני</h2>
+  <p class="sub">כל מטופל מגיל 6 ומעלה מקבל טיפול הכולל ICS. אין לטפל ב-SABA בלבד.
+  <span class="cite">GINA 2026, עמ׳ 15</span></p>
+
+  <div id="txOut"></div>
+
+  <h3>מסלול 1 — המועדף</h3>
+  <p class="sub">המשאף להקלה הוא ICS-פורמוטרול במינון נמוך בכל המדרגות. משאף אחד, טכניקה אחת,
+  ופחות החמרות קשות בהשוואה למשאף להקלה מסוג SABA.</p>
+
+  <div class="step"><b>מדרגות 1–2</b> — שאיפה אחת לפי הצורך בלבד (AIR).</div>
+  <div class="step"><b>מדרגה 3</b> — שאיפה אחת פעמיים ביום (או פעם ביום) ועוד אחת לפי צורך (MART).</div>
+  <div class="step"><b>מדרגה 4</b> — שתי שאיפות פעמיים ביום ועוד אחת לפי צורך (MART).</div>
+  <div class="step"><b>מדרגה 5</b> — הפניה להערכת פנוטיפ, שקילת LAMA וטיפול ביולוגי.</div>
+
+  <table>
+    <tr><th>גיל</th><th>תכשיר</th><th>תקרה ביממה</th></tr>
+    <tr><td>מבוגרים 18+<br>מתבגרים 12–17</td>
+        <td>בודזוניד-פורמוטרול 160/4.5<br>או בקלומתזון-פורמוטרול 100/6</td>
+        <td class="n">פנייה לרופא מעל 12 שאיפות</td></tr>
+    <tr><td>ילדים 6–11</td>
+        <td>בודזוניד-פורמוטרול 80/4.5<br>או בקלומתזון-פורמוטרול 100/6</td>
+        <td class="n">פנייה לרופא מעל 8 שאיפות</td></tr>
+  </table>
+  <p class="cite">GINA 2026, טבלה 7, עמ׳ 45. בילדים MART אינו מומלץ במדרגה 5.</p>
+
+  <h3>מסלול 2 — חלופי</h3>
+  <p class="sub">כאשר ICS-פורמוטרול אינו זמין או אינו מתאים, או במטופל יציב שכבר מאוזן
+  בטיפול קיים ומעדיף להמשיך בו.</p>
+  <div class="step"><b>מדרגה 1</b> — ICS בכל פעם שנלקח SABA.</div>
+  <div class="step"><b>מדרגה 2</b> — ICS יומי במינון נמוך.</div>
+  <div class="step"><b>מדרגה 3</b> — ICS-LABA יומי במינון נמוך.</div>
+  <div class="step"><b>מדרגה 4</b> — ICS-LABA יומי במינון בינוני.</div>
+  <div class="step"><b>מדרגה 5</b> — הפניה, כמו במסלול 1.</div>
+
+  <div class="note"><b>הערה ישראלית.</b> משאף משולב ICS-SABA (בודזוניד-סלבוטמול, Airsupra)
+  אינו משווק בישראל נכון לכתיבת הכלי. לכן מדרגה 1 במסלול 2 מתבצעת בשני משאפים נפרדים:
+  ונטולין לפי צורך, ומיד אחריו מנת ICS. זו הסיבה המעשית העיקרית להעדיף את מסלול 1 כאן.</div>
+
+  <h3>מינוני ICS יומיים — מבוגרים ומתבגרים</h3>
+  <table>
+    <tr><th>תכשיר</th><th>נמוך</th><th>בינוני</th><th>גבוה</th></tr>
+    <tr><td>בקלומתזון (pMDI רגיל)</td><td class="n">200–500</td><td class="n">500–1000</td><td class="n">&gt;1000</td></tr>
+    <tr><td>בקלומתזון (חלקיק עדין)</td><td class="n">100–200</td><td class="n">200–400</td><td class="n">&gt;400</td></tr>
+    <tr><td>בודזוניד</td><td class="n">200–400</td><td class="n">400–800</td><td class="n">&gt;800</td></tr>
+    <tr><td>ציקלסוניד</td><td class="n">80–160</td><td class="n">160–320</td><td class="n">&gt;320</td></tr>
+    <tr><td>פלוטיקזון פרופיונט</td><td class="n">100–250</td><td class="n">250–500</td><td class="n">&gt;500</td></tr>
+    <tr><td>פלוטיקזון פורואט (DPI)</td><td class="n">100</td><td class="n">—</td><td class="n">200</td></tr>
+    <tr><td>מומטזון (pMDI)</td><td class="n">200–400</td><td class="n">—</td><td class="n">400</td></tr>
+  </table>
+  <p class="cite">מק״ג ליממה, מינון מדוד. אלה אינם מינונים שווי־ערך ביניהם.
+  רוב התועלת מושגת במינון נמוך. GINA 2026, טבלה 6, עמ׳ 44.</p>
+
+  <h3>ירידה במדרגה</h3>
+  <p class="sub">לשקול אחרי 2–3 חודשי איזון טוב: הפחתת ICS ב-25–50%, בתזמון מתאים
+  (ללא זיהום נשימתי, לא בהריון, לא לפני נסיעה), עם תוכנית פעולה כתובה ומעקב.
+  אין להפסיק ICS לחלוטין במבוגר או מתבגר. <span class="cite">GINA 2026, עמ׳ 27</span></p>
+</section>
+
+<!-- ========== התקף חריף ========== -->
+<section id="sec-acute">
+  <h2>התקף חריף במרפאה</h2>
+  <p class="sub">הערכת חומרה תוך התחלת טיפול, לא לפניה.
+  <span class="cite">GINA 2026, איור 9, עמ׳ 36</span></p>
+
+  <div class="note"><b>לפני הכול — האם זו אסתמה?</b> לשקול חזה אוויר, אנפילקסיס,
+  חסימה גרונית מושרית, דלקת ריאות, אי ספיקת לב חריפה ותסחיף ריאתי.
+  בשילוב אנפילקסיס ואסתמה — אדרנלין תחילה.</p>
+
+  <div class="q">
+    <label>סיווג חומרה</label>
+    <div class="opts col" id="sev">
+      <button onclick="pick('sev','mild',this)">קלה — מדבר במשפטים, יכול לשכב, אינו נסער, SpO₂ ≥94%, PEF &gt;70%</button>
+      <button onclick="pick('sev','mod',this)">בינונית — מדבר במילים בודדות, מעדיף לשבת, נשימה ≤30, SpO₂ ≥92%, PEF 50–70%</button>
+      <button onclick="pick('sev','sev',this)">קשה — אינו מסוגל לדבר/לשתות/לשכב, SpO₂ &lt;92%, נשימה &gt;30, חזה שקט, PEF &lt;50%</button>
+      <button onclick="pick('sev','crit',this)">מסכנת חיים מיידית — ישנוני, מבולבל או כחול</button>
+    </div>
+  </div>
+  <div id="sevOut"></div>
+
+  <h3>מינונים</h3>
+  <table>
+    <tr><th>חומרה</th><th>מרחיב סימפונות</th><th>סטרואיד</th></tr>
+    <tr><td>קלה</td>
+      <td>סלבוטמול 4 שאיפות ב-pMDI עם מרווח,<br>או בודזוניד-פורמוטרול 160/4.5 שתי שאיפות.<br>
+      הערכה חוזרת, ובמידת הצורך חזרה אחת אחרי 30–60 דק׳</td>
+      <td>בדרך כלל לא נדרש</td></tr>
+    <tr><td>בינונית</td>
+      <td>סלבוטמול 4–6 שאיפות ב-pMDI עם מרווח (או 2.5 מ״ג באינהלציה),<br>
+      עד 3 פעמים במרווחי 20–30 דק׳.<br>
+      בתגובה חלקית — להוסיף איפרטרופיום 4 שאיפות עם כל מנה, עד 3 פעמים</td>
+      <td>להתחיל סטרואיד פומי</td></tr>
+    <tr><td>קשה או<br>מסכנת חיים</td>
+      <td>העברה דחופה. במקביל: סלבוטמול 6–10 שאיפות עם מרווח (או 5 מ״ג באינהלציה),<br>
+      חזרה כל 20–30 דק׳, בתוספת איפרטרופיום 4 שאיפות בכל מנה עד 3 פעמים.<br>
+      חמצן ליעד רוויון 92–95%. ניטור רציף</td>
+      <td>סטרואיד סיסטמי מיידי</td></tr>
+  </table>
+  <p class="cite">סלבוטמול 100 מק״ג לשאיפה, איפרטרופיום 20 מק״ג לשאיפה. לתת דרך מרווח
+  שאיפה אחת בכל פעם, ולנער את המשאף לפני כל שאיפה. GINA 2026, עמ׳ 35–36.</p>
+
+  <h3>סטרואיד פומי</h3>
+  <table>
+    <tr><th>אוכלוסייה</th><th>מינון</th><th>משך</th></tr>
+    <tr><td>מבוגרים</td><td class="n">פרדניזולון 40–50 מ״ג בבוקר</td><td class="n">5–7 ימים</td></tr>
+    <tr><td>ילדים</td><td class="n">פרדניזולון 1–2 מ״ג/ק״ג, עד 40 מ״ג</td><td class="n">3–5 ימים</td></tr>
+  </table>
+  <p class="cite">בטיפול קצר מ-14 יום אין צורך בהורדה מדורגת. GINA 2026, עמ׳ 34, 42.</p>
+
+  <div class="note"><b>מה לא לעשות.</b> לא לבצע צילום חזה או גזים בדם באופן שגרתי,
+  לא לתת אנטיביוטיקה שגרתית, ולא לתת תרופות הרגעה. יש להימנע מנבולייזר כשיש חשד
+  לזיהום נשימתי מדבק — עדיף pMDI עם מרווח. <span class="cite">GINA 2026, עמ׳ 33, 35</span></div>
+
+  <h3>קריטריונים לשחרור</h3>
+  <p class="sub">שיפור העונה להגדרת החומרה הקלה, ויציב 1–2 שעות אחרי מנת הסלבוטמול
+  האחרונה; רוויון ≥92% באוויר חדר; PEF משתפר ומעל 70% מהטוב האישי או מהחזוי;
+  ותנאים מספקים בבית.</p>
+  <p class="sub"><b>לפני שחרור:</b> להתחיל או להעלות טיפול הכולל ICS — מגיל 12 עדיף MART;
+  להסביר שהמשאף להקלה ניתן לפי צורך ולא באופן קבוע; לתרגל טכניקת שאיפה; להמשיך את הסטרואיד הפומי;
+  לתת תוכנית פעולה כתובה; ולוודא אספקת תרופות עד המעקב.</p>
+  <p class="sub"><b>מעקב:</b> מבוגרים תוך 2–7 ימים, ילדים תוך 2–5 ימים.
+  הפניה למומחה אם היה יותר ממחזור סטרואידים פומי אחד בשנה האחרונה.
+  <span class="cite">GINA 2026, עמ׳ 36–37</span></p>
+</section>
+
+<!-- ========== החמרה ========== -->
+<section id="sec-worse">
+  <h2>החמרה מודרגת ותוכנית פעולה</h2>
+  <p class="sub">מה המטופל עושה בבית, לפי סוג המשאף להקלה שלו.
+  <span class="cite">GINA 2026, עמ׳ 33–34</span></p>
+
+  <h3>הקלה ב-ICS-פורמוטרול (מסלול 1 או MART)</h3>
+  <p class="sub">שאיפות נוספות לפי הצורך. מי שעל MART ממשיך במקביל את מנות הטיפול המונע.
+  פנייה לרופא אם ההחמרה מהירה, אם אין שיפור תוך 2–3 ימים, או אם נדרשו מעל
+  12 שאיפות ביממה במבוגר ומתבגר, ומעל 8 בילד 6–11.</p>
+
+  <h3>הקלה ב-SABA</h3>
+  <p class="sub">סלבוטמול לפי צורך, ובמקביל העלאת הטיפול המונע הכולל ICS לשבוע–שבועיים.
+  במבוגרים ניתן לשקול הכפלת מינון ה-ICS פי ארבעה לתקופה זו.
+  פנייה לרופא אם נדרש סלבוטמול שוב בתוך שלוש שעות, או אם ההחמרה מתקדמת.</p>
+
+  <div class="note"><b>שתי מלכודות.</b> מטופל שהטיפול המונע שלו הוא ICS-LABA עם LABA
+  שאינו פורמוטרול — סרטייד או רלבר — <b>אינו</b> יכול להשתמש ב-ICS-פורמוטרול להקלה;
+  עבורו ההקלה היא בסלבוטמול. ומשאף ICS-SABA משולב אינו משווק בישראל, ולכן החלופה
+  הזו שמופיעה ב-GINA אינה ישימה כאן.</div>
+
+  <h3>מתי להוסיף סטרואיד פומי בתוכנית הפעולה</h3>
+  <p class="sub">החמרה מתמשכת מעל 2–3 ימים למרות הגברת המשאף להקלה; החמרה מהירה;
+  תפקוד ריאתי מתחת ל-60% מהחזוי או מהטוב האישי; או החמרה במטופל עם עבר של
+  התקפים קשים ופתאומיים. רצוי שהמטופל ייצור קשר עם הרופא לפני התחלת המחזור.
+  יש להסביר על הפרעות שינה, עלייה בתיאבון, צרבת ושינויי מצב רוח.</p>
+</section>
+
+<!-- ========== תרופות ========== -->
+<section id="sec-drug">
+  <h2>תרופות — שמות מסחריים בישראל</h2>
+  <p class="sub">פריטים המסומנים <span class="tag">לאימות</span> טעונים בדיקה מול מדריך
+  התרופות של הקופה או מאגר משרד הבריאות לפני הסתמכות — הרישום והשיווק משתנים.</p>
+
+  <h3>ICS-פורמוטרול — הקלה אנטי־דלקתית ו-MART</h3>
+  <table>
+    <tr><th>חומר</th><th>שם מסחרי</th><th>מכשיר</th><th></th></tr>
+    <tr><td>בודזוניד/פורמוטרול 80/4.5, 160/4.5</td><td>סימביקורט</td><td>טורבוהיילר</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>בקלומתזון/פורמוטרול 100/6</td><td>פוסטר</td><td>pMDI / נקסטהיילר</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>בודזוניד/פורמוטרול</td><td>דואורספ ספירומקס</td><td>DPI</td><td><span class="tag">לאימות</span></td></tr>
+  </table>
+
+  <h3>ICS-LABA שאינו לשימוש להקלה</h3>
+  <table>
+    <tr><th>חומר</th><th>שם מסחרי</th><th>מכשיר</th><th></th></tr>
+    <tr><td>פלוטיקזון פרופיונט/סלמטרול</td><td>סרטייד</td><td>דיסקוס / אבוהיילר</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>פלוטיקזון פורואט/וילנטרול</td><td>רלבר</td><td>אליפטה</td><td><span class="tag ok">מאומת</span></td></tr>
+  </table>
+
+  <h3>ICS בלבד</h3>
+  <table>
+    <tr><th>חומר</th><th>שם מסחרי</th><th></th></tr>
+    <tr><td>בודזוניד</td><td>בודיקורט, פולמיקורט</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>פלוטיקזון פרופיונט</td><td>פליקסוטייד</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>בקלומתזון חלקיק עדין</td><td>קיוואר</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>ציקלסוניד</td><td>אלווסקו</td><td><span class="tag">לאימות</span></td></tr>
+    <tr><td>מומטזון</td><td>אסמנקס</td><td><span class="tag">לאימות</span></td></tr>
+  </table>
+
+  <h3>משאפים להקלה, קצרי טווח</h3>
+  <table>
+    <tr><th>חומר</th><th>שם מסחרי</th><th></th></tr>
+    <tr><td>סלבוטמול</td><td>ונטולין</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>טרבוטלין</td><td>בריקניל</td><td><span class="tag">לאימות</span></td></tr>
+    <tr><td>איפרטרופיום</td><td>ארובנט</td><td><span class="tag">לאימות</span></td></tr>
+  </table>
+
+  <h3>תוספות במדרגה 5</h3>
+  <table>
+    <tr><th>קבוצה</th><th>שם מסחרי</th><th></th></tr>
+    <tr><td>טיוטרופיום (LAMA)</td><td>ספיריווה רספימט</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>ICS-LABA-LAMA</td><td>טרליג׳י אליפטה</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>ICS-LABA-LAMA</td><td>טרימבו</td><td><span class="tag">לאימות</span></td></tr>
+    <tr><td>אנטי-IgE</td><td>קסולייר</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>אנטי-IL5</td><td>נוקאלה, פאזנרה</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>אנטי-IL4Rα</td><td>דופיקסנט</td><td><span class="tag ok">מאומת</span></td></tr>
+    <tr><td>אנטי-TSLP</td><td>טזספיר</td><td><span class="tag">לאימות</span></td></tr>
+    <tr><td>אנטגוניסט ללויקוטריאנים</td><td>סינגולייר</td><td><span class="tag ok">מאומת</span></td></tr>
+  </table>
+  <p class="cite">מונטלוקסט — יש לדון עם המטופל או ההורים בסיכון לשינויי התנהגות ומצב רוח,
+  כולל מחשבות אובדניות. GINA 2026, עמ׳ 40.</p>
+</section>
+
+<!-- ========== סיכום ========== -->
+<section id="sec-soap">
+  <h2>סיכום להעתקה לתיק</h2>
+  <p class="sub">נבנה מהנתונים שהוזנו. הבדיקה הגופנית ניתנת לעריכה ידנית.</p>
+  <div class="q">
+    <label for="pe">בדיקה גופנית</label>
+    <textarea id="pe" rows="4" oninput="soap()"></textarea>
+  </div>
+  <textarea id="soapOut" rows="16" readonly></textarea>
+  <div class="opts" style="margin-top:10px">
+    <button onclick="copySoap()">העתקה</button>
+    <button onclick="resetPe()">איפוס הבדיקה</button>
+  </div>
+  <div id="copyMsg" class="cite"></div>
+</section>
+
+
+<footer>כלי עזר לרופאים. אינו תחליף לשיקול דעת קליני.<br>
+מבוסס על GINA 2026 Summary Guide — להורדה חופשית מ-ginasthma.org</footer>
+</div>
+
+<script>
+const A = { risk: [] };
+function pick(k,v,el){
+  A[k]=v;
+  el.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', b===el?'true':'false'));
+  calc();
+}
+function tog(k,v,el){
+  A[k]=A[k]||[];
+  const i=A[k].indexOf(v);
+  if(i>-1)A[k].splice(i,1); else A[k].push(v);
+  el.setAttribute('aria-pressed', A[k].includes(v)?'true':'false');
+  calc();
+}
+
+function calc(){
+  /* --- רמת איזון --- */
+  const keys=['c1','c2','c3','c4'];
+  const answered=keys.filter(k=>A[k]!==undefined).length;
+  const el=document.getElementById('ctrlOut');
+  if(answered<4){
+    el.className='out';
+    el.innerHTML='<b>ממתין ל-'+(4-answered)+' תשובות נוספות</b>'+
+      '<span class="cite">אף אחד מהארבעה — מאוזן; 1–2 — מאוזן חלקית; 3–4 — לא מאוזן.</span>';
+  } else {
+    const n=keys.reduce((a,k)=>a+(A[k]||0),0);
+    const lvl = n===0?['מאוזנת','ok']: n<=2?['מאוזנת חלקית','']:['לא מאוזנת','warn'];
+    el.className='out '+lvl[1];
+    el.innerHTML='<b>אסתמה '+lvl[0]+' — '+n+' מתוך 4</b>'+
+      (n===0?'שקול ירידה במדרגה אם האיזון נשמר 2–3 חודשים.'
+            :'איזון ירוד הוא בעצמו גורם סיכון מרכזי להחמרות.');
+  }
+
+  /* --- סיכון --- */
+  const r=A.risk||[], ro=document.getElementById('riskOut');
+  ro.innerHTML = r.length
+    ? '<div class="out '+(r.includes('icu')||r.includes('exac')?'warn':'')+'">'+
+      '<b>'+r.length+' גורמי סיכון סומנו</b>'+
+      (r.includes('icu')?'עבר של אירוע מסכן חיים מחייב מעקב תכוף ותוכנית פעולה כתובה. ':'')+
+      (r.includes('saba3')?'צריכת SABA גבוהה קשורה לעלייה בתמותה — מדד לאיזון ירוד, לא פתרון. ':'')+
+      (r.includes('preg')?'בהריון: להמשיך ICS, מעקב כל 4–6 שבועות. ':'')+
+      '</div>' : '';
+
+  /* --- חומרת התקף --- */
+  const so=document.getElementById('sevOut');
+  if(so){
+    const m={
+      mild:['','טיפול במרפאה. הערכה חוזרת אחרי המנה הראשונה.'],
+      mod:['','טיפול במרפאה כולל סטרואיד פומי. הערכה חוזרת תוך שעה. אם אין שיפור — העברה.'],
+      sev:['warn','להזמין העברה לטיפול דחוף עכשיו, ולהתחיל טיפול במקביל ולא אחריה.'],
+      crit:['warn','מצב מסכן חיים. העברה מיידית, חמצן, סטרואיד סיסטמי וניטור רציף.']
+    }[A.sev];
+    so.innerHTML = m ? '<div class="out '+m[0]+'"><b>חומרה '+
+      ({mild:'קלה',mod:'בינונית',sev:'קשה',crit:'מסכנת חיים'})[A.sev]+'</b>'+m[1]+'</div>' : '';
+  }
+
+  /* --- טיפול מוצע --- */
+  const t=document.getElementById('txOut');
+  if(!A.age||!A.cur||answered<4){ t.innerHTML=''; return; }
+  const n=keys.reduce((a,k)=>a+(A[k]||0),0);
+  const child = A.age==='child';
+  let msg;
+  if(A.cur==='none'||A.cur==='saba'){
+    msg = n===0 ? 'התחלה במסלול 1, מדרגות 1–2: ICS-פורמוטרול לפי צורך בלבד.'
+        : n<=2  ? 'התחלה במסלול 1, מדרגה 3: MART במינון נמוך.'
+                : 'התחלה במסלול 1, מדרגה 4: MART במינון בינוני.';
+    if(A.cur==='saba') msg += ' יש להפסיק טיפול ב-SABA בלבד — הוא מעלה סיכון להחמרות ולתמותה.';
+  } else if(n===0){
+    msg = 'איזון טוב. אם נשמר 2–3 חודשים — לשקול ירידה מדורגת, בלי להפסיק ICS.';
+  } else {
+    msg = 'לפני העלאת מדרגה: טכניקת שאיפה, היענות, גורמי סיכון ומחלות נלוות. '
+        + (A.cur==='air' ? 'אם נדרשת העלאה — מעבר ל-MART במינון נמוך.'
+          : A.cur==='ics' ? 'אם נדרשת העלאה — מעבר ל-MART במינון נמוך עדיף על הוספת LABA עם משאף להקלה מסוג SABA.'
+          : A.cur==='mart_low' ? 'אם נדרשת העלאה — MART במינון בינוני.'
+          : A.cur==='mart_med' ? 'מדרגה 4 מוצתה: הפניה להערכת פנוטיפ ולשקילת טיפול ביולוגי.'
+          : 'לשקול מעבר למסלול 1 (MART), שמפחית החמרות קשות לעומת משאף להקלה מסוג SABA.');
+  }
+  if(child && (A.cur==='mart_med')) msg += ' בילדים 6–11, מדרגה 4 מצדיקה הפניה לרופא ריאות ילדים.';
+  t.innerHTML='<div class="out"><b>כיוון טיפולי</b>'+msg+'</div>';
+}
+
+const SEV={mild:'קלה',mod:'בינונית',sev:'קשה',crit:'מסכנת חיים'};
+const CUR={none:'ללא טיפול',saba:'SABA בלבד',air:'ICS-פורמוטרול לפי צורך',
+  ics:'ICS יומי מינון נמוך',mart_low:'MART מינון נמוך',mart_med:'MART מינון בינוני',
+  icslaba_low:'ICS-LABA מינון נמוך',icslaba_med:'ICS-LABA מינון בינוני/גבוה'};
+const AGE={adult:'מבוגר 18+',teen:'מתבגר 12–17',child:'ילד 6–11'};
+const RISK={saba3:'≥3 מיכלי SABA בשנה',noics:'ICS לא מספק או היענות נמוכה',
+  exac:'החמרה קשה בשנה האחרונה',icu:'עבר של אירוע מסכן חיים',fev:'FEV₁ נמוך',
+  smoke:'עישון או חשיפה',comorb:'מחלות נלוות',preg:'הריון',t2:'סמני דלקת מסוג 2',
+  psych:'קשיים נפשיים או סוציו־אקונומיים'};
+const PE_DEF='מצב כללי: ___. דיבור: ___. קצב נשימה: ___. סטורציה: ___%. '+
+  'האזנה: ___. שימוש בשרירי עזר: ___. PEF: ___ (___% מהחזוי).';
+
+function resetPe(){ document.getElementById('pe').value=PE_DEF; soap(); }
+
+function soap(){
+  const keys=['c1','c2','c3','c4'];
+  const ans=keys.filter(k=>A[k]!==undefined).length;
+  const n=keys.reduce((a,k)=>a+(A[k]||0),0);
+  const lvl = ans<4?'לא הוערך': n===0?'מאוזנת': n<=2?'מאוזנת חלקית':'לא מאוזנת';
+  const r=(A.risk||[]).map(x=>RISK[x]).filter(Boolean);
+  const L=[];
+  L.push('S: '+(AGE[A.age]||'גיל לא צוין')+'. אסתמה ידועה. טיפול נוכחי: '+(CUR[A.cur]||'לא צוין')+'.');
+  if(ans===4) L.push('   איזון ארבעה שבועות: תסמיני יום '+(A.c1?'+':'−')+
+    ', יקיצות לילה '+(A.c2?'+':'−')+', שימוש במשאף להקלה '+(A.c3?'+':'−')+
+    ', הגבלת פעילות '+(A.c4?'+':'−')+'.');
+  if(A.sev) L.push('   פנייה נוכחית: החמרה חריפה בחומרה '+SEV[A.sev]+'.');
+  L.push('');
+  L.push('O: '+(document.getElementById('pe').value||PE_DEF));
+  L.push('');
+  L.push('A: אסתמה '+lvl+(ans===4?' ('+n+'/4)':'')+'.');
+  if(r.length) L.push('   גורמי סיכון להחמרות: '+r.join(', ')+'.');
+  if(A.sev) L.push('   החמרה חריפה, חומרה '+SEV[A.sev]+'.');
+  L.push('');
+  L.push('P:');
+  const p=[];
+  if(A.sev==='sev'||A.sev==='crit') p.push('העברה דחופה לטיפול נמרץ/מיון, טיפול מיידי במקום');
+  else if(A.sev==='mod') p.push('סלבוטמול במרווח עד 3 מנות, סטרואיד פומי, הערכה חוזרת בשעה');
+  else if(A.sev==='mild') p.push('סלבוטמול במרווח, הערכה חוזרת');
+  if(A.cur==='saba') p.push('הפסקת טיפול ב-SABA בלבד והתחלת טיפול הכולל ICS');
+  if(ans===4&&n>=1) p.push('בדיקת טכניקת שאיפה והיענות לפני שינוי מדרגה');
+  if(ans===4&&n===0) p.push('שקילת ירידה מדורגת אם האיזון נשמר 2–3 חודשים');
+  p.push('תוכנית פעולה כתובה');
+  p.push('מעקב: '+(A.sev?(A.age==='child'?'2–5 ימים':'2–7 ימים'):'1–3 חודשים'));
+  p.forEach((x,i)=>L.push('   '+(i+1)+'. '+x+'.'));
+  document.getElementById('soapOut').value=L.join('\n');
+}
+
+function copySoap(){
+  const t=document.getElementById('soapOut');
+  navigator.clipboard.writeText(t.value)
+    .then(()=>msg('הסיכום הועתק.'))
+    .catch(()=>{ t.select(); msg('הטקסט נבחר — העתק ידנית.'); });
+}
+function msg(m){
+  const e=document.getElementById('copyMsg');
+  e.textContent=m; setTimeout(()=>e.textContent='',2500);
+}
+
+const _calc=calc;
+calc=function(){ _calc(); soap(); };
+resetPe();
+calc();
+</script>
+</body>
+</html>
