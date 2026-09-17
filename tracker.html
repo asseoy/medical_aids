@@ -1024,7 +1024,8 @@ function printWeek(){
       <h2>${x.d} — ${r0(x.k)} קק״ל · ${r0(x.p)} ג׳ חלבון</h2>
       <table><tr><th>פריט</th><th>קק״ל</th><th>חלבון</th></tr>${byMeal(x.es)}</table>`).join('')}`;
   closeSheet();
-  setTimeout(() => window.print(), 120);
+  /* בדיקה: קריאה ישירה, בתוך הלחיצה עצמה (בעבר setTimeout של 120ms) */
+  window.print();
 }
 
 function sheetImport(){
@@ -1267,7 +1268,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-17b';
+const BUILD = '2026-09-17c';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
