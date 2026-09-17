@@ -70,6 +70,8 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
 .toast{position:fixed;inset-inline:0;bottom:96px;display:flex;justify-content:center;z-index:60}
 .toast div{background:var(--surf2);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-size:14px}
 .hide{display:none}
+.lowp{font-size:11px;color:var(--warn);border:1px solid currentColor;border-radius:999px;padding:0 6px;margin-inline-start:6px;opacity:.85}
+.axis{display:flex;justify-content:space-between;direction:ltr;font-size:11px;color:var(--mut);margin-top:2px}
 
 #print{display:none}
 @media print{
@@ -156,6 +158,68 @@ function renameInLogs(foodId, oldName, newName){
     if (hit) saveLog(m);
   });
   return n;
+}
+/* ============ ניתוחים ============ */
+const KCAL_PER_KG = 7700;   // קירוב מקובל; בשבועות הראשונים של שינוי חלק מהתנודה היא נוזלים
+const MEAL_PRO = 30;        // חלבון מינימלי לארוחה עיקרית, לפי ההסבר במסך היעדים
+const MAIN_MEALS = ['breakfast','lunch','dinner'];
+const dayNum = s => { const [y,m,d] = s.split('-').map(Number); return Math.round(Date.UTC(y,m-1,d) / 864e5); };
+/* סיכומי יום לטווח תאריכים — רק ימים שיש בהם רישום */
+function dayTotals(from, to){
+  const out = {}, m0 = from.slice(0,7), m1 = to.slice(0,7);
+  logMonths().filter(m => m >= m0 && m <= m1).forEach(m => logOf(m).forEach(e => {
+    if (e.date < from || e.date > to) return;
+    const t = out[e.date] = out[e.date] || { k:0, p:0 };
+    t.k += e.kcal; t.p += e.protein;
+  }));
+  return out;
+}
+/* שיפוע קו רגרסיה, בק״ג ליום */
+function slopeOf(ws){
+  const n = ws.length; if (n < 2) return null;
+  const xs = ws.map(w => dayNum(w.date)), mx = xs.reduce((a,b) => a+b, 0)/n;
+  const my = ws.reduce((a,w) => a+w.kg, 0)/n;
+  let num = 0, den = 0;
+  ws.forEach((w,i) => { num += (xs[i]-mx)*(w.kg-my); den += (xs[i]-mx)**2; });
+  return den ? num/den : null;
+}
+const sortedWeights = () => [...S.weights].sort((a,b) => a.date < b.date ? -1 : 1);
+/* מגמת משקל ב־28 הימים האחרונים. דורש 4 שקילות לפחות שפרושות על שבוע לפחות. */
+function weightTrend(){
+  const ws = sortedWeights().filter(w => w.date >= shift(today(), -27));
+  if (ws.length < 4 || dayNum(ws[ws.length-1].date) - dayNum(ws[0].date) < 7) return null;
+  return slopeOf(ws) * 7;
+}
+/* הערכת קלוריות תחזוקה: ממוצע הצריכה פחות האנרגיה ששינוי המשקל מייצג.
+   היום הנוכחי לא נספר בצריכה, כי הוא עדיין לא הסתיים. */
+const TDEE_DAYS = 10, TDEE_WEIGHTS = 6, TDEE_SPAN = 14;
+function tdeeEstimate(){
+  const end = shift(today(), -1), start = shift(end, -27);
+  const days = Object.values(dayTotals(start, end));
+  const ws = sortedWeights().filter(w => w.date >= start);
+  const span = ws.length > 1 ? dayNum(ws[ws.length-1].date) - dayNum(ws[0].date) : 0;
+  const r = { nDays: days.length, nW: ws.length,
+    needDays: Math.max(0, TDEE_DAYS - days.length), needW: Math.max(0, TDEE_WEIGHTS - ws.length),
+    needSpan: span < TDEE_SPAN };
+  if (r.needDays || r.needW || r.needSpan) return r;
+  r.intake = days.reduce((a,d) => a+d.k, 0) / days.length;
+  r.slope = slopeOf(ws);
+  r.tdee = r.intake - r.slope * KCAL_PER_KG;
+  return r;
+}
+const signed = (v, dig) => `<bdi dir="ltr" class="num">&lrm;${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(dig)}</bdi>`;
+/* גרף עמודות יומי. null = יום בלי רישום. העמודה האחרונה (היום) חיוורת כי היום עוד לא נגמר. */
+function barChart(vals, target, col){
+  const W = 300, H = 70, n = vals.length;
+  const max = Math.max(target || 0, ...vals.map(v => v || 0)) * 1.08 || 1;
+  const bw = W / n, y = v => (H - v / max * H).toFixed(1);
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:${H}px;display:block">
+    ${vals.map((v, i) => v == null ? '' : `<rect x="${(i*bw + bw*.18).toFixed(1)}" y="${y(v)}"
+      width="${(bw*.64).toFixed(1)}" height="${(v/max*H).toFixed(1)}" fill="${col}"
+      opacity="${i === n-1 ? .4 : .9}"/>`).join('')}
+    ${target ? `<line x1="0" x2="${W}" y1="${y(target)}" y2="${y(target)}" stroke="var(--ink)"
+      stroke-opacity=".5" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>` : ''}
+  </svg>`;
 }
 function renamedToast(n){ if (n) toast(n === 1 ? 'השם עודכן גם ברישום אחד ביומן' : `השם עודכן גם ב־${n} רישומים ביומן`); }
 
@@ -617,7 +681,9 @@ function viewDay(){
       const mk_ = list.reduce((a, e) => ({ k: a.k + e.kcal, p: a.p + e.protein }), { k:0, p:0 });
       return `<div class="row" style="margin:14px 0 6px">
         <span class="sm" style="font-weight:700">${label}</span>
-        <span class="xs mut num">${r0(mk_.k)} קק״ל · ${r0(mk_.p)} ג׳</span></div>
+        <span class="xs mut num">${r0(mk_.k)} קק״ל · ${r0(mk_.p)} ג׳${
+          MAIN_MEALS.includes(k) && mk_.p < MEAL_PRO && !(S.date === today() && k === mealNow())
+            ? `<span class="lowp">פחות מ־${MEAL_PRO} ג׳ חלבון</span>` : ''}</span></div>
       <div class="list">${list.map(e => `
         <div class="item">
           <div style="min-width:0;cursor:pointer" onclick="sheetQty('${e.id}')">
@@ -727,11 +793,20 @@ function viewWeight(){
   const w = [...S.weights].sort((a,b) => a.date < b.date ? -1 : 1);
   const last = w[w.length-1], rec = w.slice(-7);
   const avg = rec.length ? rec.reduce((s,x) => s+x.kg, 0)/rec.length : null;
-  const pts = w.slice(-30);
-  let path = '';
+  /* 30 הימים האחרונים, ציר זמן לפי תאריך. הקו הירוק הוא ממוצע נע של 7 ימים,
+     שמחושב גם משקילות שלפני תחילת החלון. */
+  const from = shift(today(), -29), x0 = dayNum(from);
+  const pts = w.filter(p => p.date >= from).map(p => {
+    const win = w.filter(q => q.date <= p.date && q.date >= shift(p.date, -6));
+    return { ...p, avg: win.reduce((a,q) => a+q.kg, 0) / win.length };
+  });
+  const trend = weightTrend();
+  let path = '', avgPath = '';
   if (pts.length > 1){
-    const mn = Math.min(...pts.map(p=>p.kg))-.5, mx = Math.max(...pts.map(p=>p.kg))+.5;
-    path = pts.map((p,i) => `${i?'L':'M'}${(i/(pts.length-1)*300).toFixed(1)},${(100-(p.kg-mn)/(mx-mn||1)*100).toFixed(1)}`).join(' ');
+    const all = pts.flatMap(p => [p.kg, p.avg]);
+    const mn = Math.min(...all)-.3, mx = Math.max(...all)+.3;
+    const line = key => pts.map((p,i) => `${i?'L':'M'}${((dayNum(p.date)-x0)/29*300).toFixed(1)},${(100-(p[key]-mn)/(mx-mn||1)*100).toFixed(1)}`).join(' ');
+    path = line('kg'); avgPath = line('avg');
   }
   return `<h2>משקל</h2>
   <div class="card">
@@ -740,8 +815,13 @@ function viewWeight(){
       <span class="mut" style="font-size:16px;font-weight:400">ק״ג</span></div>
     <div class="sm mut num" style="margin-top:6px">
       ${last ? `אחרונה: ${last.kg.toFixed(1)} · ${pretty(last.date)}` : 'עדיין אין מדידות'}</div>
-    ${path ? `<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:90px;margin-top:12px">
-      <path d="${path}" fill="none" stroke="var(--pro)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>` : ''}
+    ${trend !== null ? `<div class="sm" style="margin-top:6px">מגמה: ${signed(trend, 2)} ק״ג בשבוע
+      <span class="xs mut">(4 השבועות האחרונים)</span></div>` : ''}
+    ${path ? `<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:90px;margin-top:12px;display:block">
+      <path d="${path}" fill="none" stroke="var(--mut)" stroke-opacity=".6" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path d="${avgPath}" fill="none" stroke="var(--pro)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>
+      <div class="axis"><span>${pretty(from)}</span><span>היום</span></div>
+      <div class="xs mut" style="margin-top:6px">ירוק: ממוצע 7 ימים. אפור: השקילות עצמן.</div>` : ''}
   </div>
   <label class="f"><span>משקל היום (ק״ג)</span>
     <input id="wIn" type="number" inputmode="decimal" step="0.1" placeholder="0.0"></label>
@@ -789,8 +869,10 @@ function viewSum(){
     : '<div class="sm mut">אין רישומים בתקופה הזו.</div>'}</div>`;
   const t = today();
   return `<h2>סיכומים</h2>
+    ${tdeeCard()}
     ${box('שבעת הימים האחרונים', stat(shift(t,-6), t))}
     ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', t))}
+    ${monthCharts()}
     <div class="flex" style="margin-bottom:8px">
       <button style="flex:1" onclick="exportAll()">ייצוא גיבוי</button>
       <button style="flex:1" onclick="sheetImport()">שחזור מגיבוי</button>
@@ -803,6 +885,60 @@ function viewSum(){
       : `הנתונים נשמרים בדפדפן הזה בלבד, וספארי עלול למחוק אותם אחרי שבוע בלי כניסה לאתר.
          בכלי שנוסף למסך הבית המחיקה הזו לא חלה, אבל הוא מתחיל ריק:
          ייצא כאן גיבוי ושחזר אותו שם.`}</p>`;
+}
+function tdeeCard(){
+  const r = tdeeEstimate(), st = S.settings;
+  const head = `<div class="row" style="margin-bottom:10px"><b>קלוריות לשמירה על המשקל</b>
+    <span class="xs mut">הערכה</span></div>`;
+  if (r.tdee === undefined){
+    const miss = [];
+    if (r.needDays) miss.push(r.needDays === 1 ? 'עוד יום רישום אחד' : `עוד ${r.needDays} ימי רישום`);
+    if (r.needW) miss.push(r.needW === 1 ? 'עוד שקילה אחת' : `עוד ${r.needW} שקילות`);
+    if (!r.needW && r.needSpan) miss.push('שקילות שפרושות על שבועיים לפחות');
+    return `<div class="card">${head}
+      <div class="sm mut">החישוב נשען על 4 השבועות האחרונים. חסרים: ${miss.join(', ')}.</div></div>`;
+  }
+  const tk = Math.round(r.tdee / 10) * 10;
+  let proj = '';
+  if (st.kcalTarget){
+    const wk = (st.kcalTarget - r.tdee) * 7 / KCAL_PER_KG;
+    proj = Math.abs(wk) < 0.05
+      ? `ביעד של ${st.kcalTarget} קק״ל המשקל צפוי להישאר יציב.`
+      : `ביעד של ${st.kcalTarget} קק״ל: ${wk < 0 ? 'ירידה' : 'עלייה'} צפויה של כ־<bdi dir="ltr" class="num">${Math.abs(wk).toFixed(1)}</bdi> ק״ג בשבוע.`;
+  }
+  return `<div class="card">${head}
+    <div><span class="num" style="color:var(--kcal);font-size:36px;font-weight:800">${tk.toLocaleString('he-IL')}</span>
+      <span class="mut">קק״ל ליום</span></div>
+    <div class="xs mut num" style="margin-top:4px">צריכה ממוצעת ${r0(r.intake)} · שינוי משקל ${signed(r.slope * 7, 2)} ק״ג בשבוע ·
+      ${r.nDays} ימי רישום ו־${r.nW} שקילות</div>
+    ${proj ? `<div class="sm" style="margin-top:10px">${proj}</div>` : ''}
+    <div class="xs mut" style="margin-top:10px">ההנחה היא שכל מה שנאכל נרשם. ימים שנרשמו חלקית מורידים את ההערכה,
+      ובשבועיים הראשונים אחרי שינוי בתזונה חלק משינוי המשקל הוא נוזלים.</div></div>`;
+}
+function monthCharts(){
+  const t = today(), from = shift(t, -29), by = dayTotals(from, t), st = S.settings;
+  if (!Object.keys(by).length) return '';
+  const days = Array.from({ length: 30 }, (_, i) => shift(from, i));
+  const pro = days.map(d => by[d] ? by[d].p : null), kc = days.map(d => by[d] ? by[d].k : null);
+  /* ארוחות עיקריות של 7 הימים האחרונים, בלי היום */
+  const wFrom = shift(t, -7), wTo = shift(t, -1), meals = {};
+  logMonths().filter(m => m >= wFrom.slice(0,7) && m <= wTo.slice(0,7)).forEach(m => logOf(m).forEach(e => {
+    if (e.date < wFrom || e.date > wTo || !MAIN_MEALS.includes(mealOf(e))) return;
+    const key = e.date + mealOf(e); meals[key] = (meals[key] || 0) + e.protein;
+  }));
+  const mv = Object.values(meals), good = mv.filter(v => v >= MEAL_PRO).length;
+  const axis = `<div class="axis"><span>${pretty(from)}</span><span>היום</span></div>`;
+  return `<div class="card">
+    <b style="display:block;margin-bottom:14px">30 הימים האחרונים</b>
+    <div class="row xs" style="margin-bottom:4px"><span style="color:var(--pro)">חלבון ליום</span>
+      ${st.proteinTarget ? `<span class="mut">קו מקווקו: יעד ${st.proteinTarget} ג׳</span>` : ''}</div>
+    ${barChart(pro, st.proteinTarget, 'var(--pro)')}${axis}
+    <div class="row xs" style="margin:16px 0 4px"><span style="color:var(--kcal)">קלוריות ליום</span>
+      ${st.kcalTarget ? `<span class="mut">קו מקווקו: יעד ${st.kcalTarget}</span>` : ''}</div>
+    ${barChart(kc, st.kcalTarget, 'var(--kcal)')}${axis}
+    ${mv.length ? `<div class="sm" style="margin-top:16px">ארוחות עיקריות עם ${MEAL_PRO} ג׳ חלבון ומעלה בשבוע האחרון:
+      <b class="num">${good} מתוך ${mv.length}</b></div>` : ''}
+  </div>`;
 }
 function exportAll(){
   const logs = {};
@@ -1131,7 +1267,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-17a';
+const BUILD = '2026-09-17b';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
