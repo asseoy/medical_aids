@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>עייפות במבוגר — גישה במרפאה הראשונית | כלי לרופא/ה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F3F8; --card:#FFFFFF; --ink:#1D2136; --muted:#5C627E;
+  --ind:#3A459E; --ind-d:#252D6E; --ind-s:#E5E7F5; --line:#D5D9EA;
+  --dusk:#8C95CF;
+  --ok:#2E7A58; --ok-s:#E3F1EA; --warn:#94580F; --warn-s:#FBF0DF; --bad:#A23B37; --bad-s:#F8E4E2;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Assistant',system-ui,sans-serif;font-size:16.5px;line-height:1.55}
+h1,h2,h3{font-family:'Rubik','Assistant',sans-serif;font-weight:600;line-height:1.25}
+a{color:var(--ind)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+
+/* header: a dimming band — full energy on the right, fading leftward */
+header.top{color:#fff;padding:18px 0 24px;background:linear-gradient(to left,#2B347F 0%,#252D6E 55%,#1B2152 100%)}
+header.top .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+header.top .back{color:#CBD0F2;text-decoration:none;font-size:.92rem}
+header.top .back:hover{text-decoration:underline}
+header.top h1{font-size:2.05rem;margin:10px 0 4px;letter-spacing:-.01em}
+header.top .sub{margin:0;color:#DDE0F5;max-width:72ch}
+.btn-reset{font:inherit;font-size:.9rem;font-weight:600;color:#fff;background:transparent;border:1px solid #8C95CF;border-radius:8px;padding:4px 12px;cursor:pointer}
+.btn-reset:hover{background:rgba(255,255,255,.08)}
+
+nav.anchors{position:sticky;top:0;z-index:30;background:rgba(242,243,248,.97);border-bottom:1px solid var(--line)}
+.navin{display:flex;gap:4px;align-items:center;overflow-x:auto;padding:8px 16px;white-space:nowrap;max-width:980px;margin:0 auto}
+.navin a{text-decoration:none;color:var(--ink);padding:5px 10px;border-radius:6px;font-weight:600;font-size:.95rem}
+.navin a:hover{background:var(--ind-s)}
+.navstat{margin-inline-start:auto;font-size:.86rem;padding:4px 10px;border-radius:6px;background:var(--ind-s);color:var(--ind-d);font-weight:600}
+
+section.blk{padding:30px 0 6px;scroll-margin-top:52px}
+section.blk>h2{font-size:1.5rem;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 12px;max-width:74ch}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0}
+.panel>h3{font-size:1.08rem;margin:0 0 8px;color:var(--ind-d)}
+.q{margin:12px 0}
+.ql{font-weight:600;display:block;margin-bottom:6px}
+.hint{font-weight:400;color:var(--muted);font-size:.9rem}
+.sublbl{font-weight:700;font-size:.92rem;color:var(--ind-d);margin:12px 0 5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.95rem;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--ink);line-height:1.4;text-align:start}
+.chip:hover{border-color:var(--ind)}
+.chip[aria-pressed="true"]{background:var(--ind);border-color:var(--ind);color:#fff}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #9FA7E0;outline-offset:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px 22px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.hidden{display:none!important}
+.stepper{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.stepper button{font:inherit;font-size:1.15rem;font-weight:700;width:38px;border:0;background:var(--ind-s);color:var(--ind-d);cursor:pointer}
+.stepper button:hover{background:#D6DAF0}
+.stepper input{font:inherit;font-size:1.05rem;font-weight:600;width:64px;border:0;border-inline:1px solid var(--line);text-align:center;padding:5px 4px;-moz-appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.agewarn{font-size:.88rem;color:var(--bad);margin-inline-start:8px}
+
+/* clue table: category label + chips */
+.cat{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;align-items:start;padding:7px 0;border-bottom:1px solid #ECEEF6}
+.cat:last-child{border-bottom:0}
+.cat .cn{font-weight:700;font-size:.93rem;color:var(--ind-d);padding-top:4px}
+@media (max-width:560px){.cat{grid-template-columns:1fr}}
+
+/* duration track — the one signature element */
+.track{position:relative;display:grid;grid-template-columns:1fr 1.6fr 1.3fr;margin:26px 0 6px;border-radius:10px;overflow:visible}
+.track button{font:inherit;border:0;cursor:pointer;padding:10px 8px 8px;text-align:center;color:var(--ink);background:#E9EBF5;display:flex;flex-direction:column;gap:1px;align-items:center}
+.track button:first-child{border-radius:0 10px 10px 0;background:#EDEFF8}
+.track button:nth-child(2){background:#DCE0F1}
+.track button:nth-child(3){border-radius:10px 0 0 10px;background:#C9CEEA}
+.track button b{font-family:'Rubik',sans-serif;font-weight:600;font-size:1.02rem}
+.track button small{font-size:.8rem;color:var(--muted)}
+.track button[aria-pressed="true"]{background:var(--ind);color:#fff}
+.track button[aria-pressed="true"] small{color:#DDE0F5}
+.track .mark{position:absolute;top:-22px;bottom:-4px;inset-inline-start:calc((1 + 1.6) / 3.9 * 100%);border-inline-start:2px dashed var(--ind-d);pointer-events:none}
+.track .mark>span{position:absolute;top:0;inset-inline-start:6px;font-size:.78rem;font-weight:700;color:var(--ind-d);white-space:nowrap}
+@media (max-width:560px){.track .mark .long{display:none}}
+main{overflow-x:clip}
+
+.cite{unicode-bidi:isolate;font-size:.76rem;background:var(--ind-s);color:var(--ind-d);border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap;margin-inline-start:4px;font-weight:600;vertical-align:1px}
+.cite:hover{text-decoration:underline}
+.gen{unicode-bidi:isolate;font-size:.74rem;color:var(--muted);border:1px dashed #AEB3CC;border-radius:4px;padding:0 5px;white-space:nowrap;margin-inline-start:4px}
+.alert{border-inline-start:4px solid var(--ind);background:var(--ind-s);padding:9px 14px;border-radius:6px;margin:8px 0}
+.alert.ok{border-color:var(--ok);background:var(--ok-s)}
+.alert.warn{border-color:var(--warn);background:var(--warn-s)}
+.alert.bad{border-color:var(--bad);background:var(--bad-s)}
+
+/* screening */
+.scoreboard{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin:6px 0 12px}
+.sb{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px;text-decoration:none;color:var(--ink);display:block}
+.sb .t{font-size:.84rem;color:var(--muted);display:block}
+.sb .n{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:600;color:var(--ind-d);line-height:1.2}
+.sb .b{font-size:.82rem;font-weight:700}
+.lv0{color:var(--ok)} .lv1{color:var(--warn)} .lv2{color:var(--bad)} .lvu{color:var(--muted)}
+details.qn{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:10px 0;scroll-margin-top:60px}
+details.qn>summary{cursor:pointer;list-style:none;padding:11px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+details.qn>summary::-webkit-details-marker{display:none}
+details.qn>summary::before{content:'';width:8px;height:8px;border-inline-start:2px solid var(--ind);border-bottom:2px solid var(--ind);transform:rotate(45deg);transition:transform .15s}
+details.qn[open]>summary::before{transform:rotate(-45deg)}
+@media (prefers-reduced-motion:reduce){details.qn>summary::before{transition:none}}
+.qt{display:flex;flex-direction:column;flex:1;min-width:180px}
+.qt b{font-family:'Rubik',sans-serif;font-weight:600;font-size:1.05rem}
+.qt small{font-size:.8rem;color:var(--muted);direction:ltr;text-align:right}
+.pill{font-size:.85rem;font-weight:700;padding:3px 10px;border-radius:999px;background:#EEF0F7;white-space:nowrap}
+.pill.lv0{background:var(--ok-s)} .pill.lv1{background:var(--warn-s)} .pill.lv2{background:var(--bad-s)}
+.qbody{padding:0 16px 14px}
+.qbody .stem{color:var(--muted);font-size:.93rem;margin:0 0 6px}
+.item{display:grid;grid-template-columns:24px 1fr auto;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid #ECEEF6}
+.item:last-child{border-bottom:0}
+.item .no{color:var(--muted);font-size:.85rem;font-weight:700}
+@media (max-width:700px){.item{grid-template-columns:24px 1fr}.item .seg{grid-column:2}}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:.86rem;border:0;border-inline-start:1px solid var(--line);background:#fff;padding:4px 9px;cursor:pointer;color:var(--ink)}
+.seg button:first-child{border-inline-start:0}
+.seg button[aria-pressed="true"]{background:var(--ind);color:#fff}
+.seg button .v{font-weight:700;margin-inline-end:3px}
+.auto{font-size:.88rem;color:var(--muted)}
+.auto b{color:var(--ink)}
+.qfoot{margin-top:8px;font-size:.9rem}
+
+.stub{border:1px dashed var(--line);border-radius:10px;padding:18px;color:var(--muted);text-align:center;background:rgba(255,255,255,.5)}
+footer{color:var(--muted);font-size:.86rem;padding:28px 0 40px}
+footer p{margin:4px 0;max-width:80ch}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="bar">
+    <a class="back" href="doctors.html">חזרה לכלים לרופאים</a>
+    <button class="btn-reset" type="button" id="resetTop">איפוס</button>
+  </div>
+  <h1>עייפות במבוגר</h1>
+  <p class="sub">גישה במרפאה הראשונית: תשאול ממוקד, שאלוני סינון, בירור מכוון, סיווג העייפות וטיפול, עד סיכום לרשומה. מבוסס על סקירת American Family Physician (יולי 2023).</p>
+</div></header>
+
+<nav class="anchors" aria-label="ניווט בין חלקי הכלי"><div class="navin">
+  <a href="#sec-input">אנמנזה ובדיקה</a>
+  <a href="#sec-screen">שאלוני סינון</a>
+  <a href="#sec-workup">בירור</a>
+  <a href="#sec-class">סיווג</a>
+  <a href="#sec-tx">טיפול</a>
+  <a href="#sec-sort">המלצות מפתח</a>
+  <a href="#sec-soap">סיכום</a>
+  <span class="navstat" id="navDur">משך: לא נבחר</span>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ======================= INTAKE ======================= -->
+<section class="blk" id="sec-input">
+  <h2>אנמנזה ובדיקה</h2>
+  <p class="lead">כל השדות בלחיצה. הבחירות מזינות את שאלוני הסינון, את הבירור ואת הסיכום.</p>
+
+  <div class="panel">
+    <h3>רקע</h3>
+    <div class="grid2">
+      <div class="q"><span class="ql">מין</span><div class="chips" data-group="sex"></div></div>
+      <div class="q"><label class="ql" for="ageIn">גיל <span class="hint">(בשנים)</span></label>
+        <span class="stepper"><button type="button" id="ageDn" aria-label="הפחתת גיל">−</button><input id="ageIn" type="number" inputmode="numeric" min="18" max="110" step="1" placeholder="גיל"><button type="button" id="ageUp" aria-label="הוספת גיל">+</button></span>
+        <span class="agewarn" id="ageWarn" aria-live="polite"></span></div>
+    </div>
+    <div class="q" id="rowPreg"><span class="ql">האם ייתכן הריון?</span><div class="chips" data-group="preg"></div></div>
+    <div class="q"><span class="ql">מחלות רקע ידועות</span><div class="chips" data-group="bg"></div></div>
+  </div>
+
+  <div class="panel">
+    <h3>התלונה</h3>
+    <div class="q">
+      <span class="ql">מה בעיקר מתאר/ת <span data-g="patient">המטופל/ת</span>? <span id="citeType"></span></span>
+      <div class="chips" data-group="type"></div>
+      <p class="hint" style="margin:6px 0 0">עייפות היא תחושת תשישות שלא תמיד חולפת במנוחה; ישנוניות היא נטייה להירדם, והיא חולפת במנוחה. המונחים משמשים לעיתים לסירוגין ואינם סותרים זה את זה.</p>
+    </div>
+
+    <div class="q">
+      <span class="ql">משך התסמינים <span id="citeDur"></span></span>
+      <div class="track" data-group="dur" role="group" aria-label="משך התסמינים">
+        <span class="mark" aria-hidden="true"><span>6 חודשים<span class="long">: סף עייפות כרונית</span></span></span>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="q"><span class="ql">אופן הופעה</span><div class="chips" data-group="onset"></div></div>
+      <div class="q"><span class="ql">האם מנוחה מקלה?</span><div class="chips" data-group="rest"></div></div>
+    </div>
+    <div class="q"><span class="ql">גורם מקדים <span class="hint">(ניתן לבחור כמה)</span></span><div class="chips" data-group="trig"></div></div>
+    <div class="grid2">
+      <div class="q"><span class="ql">חומרת העייפות</span><div class="chips" data-group="sev"></div></div>
+      <div class="q"><span class="ql">ירידה משמעותית בתפקוד לעומת לפני המחלה?</span><div class="chips" data-group="decline"></div></div>
+    </div>
+    <div class="q"><span class="ql">התסמינים בעוצמה בינונית עד קשה, לפחות במחצית הזמן? <span id="citeHalf"></span></span><div class="chips" data-group="half"></div></div>
+  </div>
+
+  <div class="panel">
+    <h3>תחומי התשאול <span id="citeT2"></span></h3>
+    <p class="hint" style="margin:0 0 4px">סמנו רק את מה שקיים.</p>
+    <div class="sublbl">החמרה לאחר מאמץ</div><div class="chips" data-group="pem"></div>
+    <div class="sublbl">שינה</div><div class="chips" data-group="slp"></div>
+    <div class="sublbl">תפקוד קוגניטיבי</div><div class="chips" data-group="cog"></div>
+    <div class="sublbl">אי-סבילות לעמידה</div><div class="chips" data-group="ort"></div>
+  </div>
+
+  <div class="panel">
+    <h3>הרגלי חיים <span id="citeHab"></span></h3>
+    <div class="chips" data-group="hab"></div>
+  </div>
+
+  <div class="panel">
+    <h3>תרופות וחומרים <span id="citeMed"></span></h3>
+    <div class="q"><span class="ql">תרופות שעלולות לגרום לעייפות <span id="genMed"></span></span><div class="chips" data-group="med"></div></div>
+    <div class="q"><span class="ql">חומרים</span><div class="chips" data-group="sub"></div></div>
+  </div>
+
+  <div class="panel">
+    <h3>תסמינים נלווים לפי מערכת <span id="citeT1"></span></h3>
+    <div id="clueRows"></div>
+  </div>
+
+  <div class="panel">
+    <h3>ממצאים בבדיקה גופנית <span id="citeExam"></span></h3>
+    <div id="examRows"></div>
+  </div>
+</section>
+
+<!-- ======================= SCREENING ======================= -->
+<section class="blk" id="sec-screen">
+  <h2>שאלוני סינון</h2>
+  <p class="lead">יש לשלול הפרעות שינה, מצב רוח ושימוש בחומרים באמצעות כלים מתוקפים. <span id="citeScr"></span> ספי הציון הם ידע כללי. <span id="genCut"></span></p>
+  <div id="safety"></div>
+  <div class="scoreboard" id="scoreboard"></div>
+  <div id="qnWrap"></div>
+</section>
+
+<!-- ======================= LATER STAGES ======================= -->
+<section class="blk" id="sec-workup"><h2>בירור</h2><div class="stub">ייבנה בשלב 2: בדיקות בסיס, בדיקות מכוונות לפי הממצאים, והערות על תפוקת הבירור.</div></section>
+<section class="blk" id="sec-class"><h2>סיווג העייפות</h2><div class="stub">ייבנה בשלב 2: עייפות פיזיולוגית / משנית / כרונית, בדיקת קריטריונים לתסמונת העייפות הכרונית, וסימני אזהרה.</div></section>
+<section class="blk" id="sec-tx"><h2>טיפול</h2><div class="stub">ייבנה בשלב 3.</div></section>
+<section class="blk" id="sec-sort"><h2>המלצות מפתח ורמת הראיות</h2><div class="stub">ייבנה בשלב 3.</div></section>
+<section class="blk" id="sec-soap"><h2>סיכום לרשומה</h2><div class="stub">ייבנה בשלב 3.</div></section>
+
+<footer>
+  <p><b>מקור.</b> Latimer KM, Gunther A, Kopec M. Fatigue in Adults: Evaluation and Management. Am Fam Physician 2023;108(1):58-69.</p>
+  <p><b>סימון.</b> תגיות כחולות מקשרות לעמוד המתאים במאמר. תגיות מקווקוות = ידע כללי שאינו מופיע במאמר. שמות מסחריים בישראל אינם מופיעים במקור ויש לאמת אותם מול מדריך התרופות.</p>
+  <p>כלי עזר להחלטה קלינית; אינו מחליף שיקול דעת. אין שמירת נתונים — הכול נמחק בסגירת הדף.</p>
+</footer>
+</main>
+
+<script>
+/* ---------- source ---------- */
+const PDF_URL='fatigue-afp-2023.pdf';          // PDF page = journal page − 57
+const afp=(p,l)=>`<a class="cite" href="${PDF_URL}#page=${p-57}" target="_blank" rel="noopener">AFP ${l||'עמ׳ '+p}</a>`;
+const GEN='<span class="gen">ידע כללי</span>';
+/* keep numeric ranges (18–34, 0–2) reading left-to-right inside Hebrew text */
+const bd=x=>String(x).replace(/(\d+)\s*[–-]\s*(\d+)/g,'<span dir="ltr">$1–$2</span>');
+
+/* ---------- state ---------- */
+const S={};           // single-choice groups: value string ; multi groups: Set
+const Q={stopS:null,stopT:null,stopO:null,ess:Array(8).fill(null),phq:Array(9).fill(null),gad:Array(7).fill(null),
+         mdq1:Array(13).fill(null),mdq2:null,mdq3:null,aud:Array(3).fill(null)};
+
+/* gender helper: masculine / feminine / neutral */
+const G=(m,f,n)=>S.sex==='m'?m:S.sex==='f'?f:(n||m+'/'+f);
+
+/* ---------- options ---------- */
+const OPT={
+ sex:{mode:'one',o:[['f','אישה'],['m','גבר']]},
+ preg:{mode:'one',o:[['yes','ייתכן'],['no','לא']]},
+ bg:{mode:'many',o:[['copd','מחלת ריאות חסימתית כרונית'],['hf','אי ספיקת לב'],['ckd','מחלת כליות כרונית'],['dm','סוכרת'],
+   ['hypoT','תת-פעילות של בלוטת התריס'],['ra','דלקת מפרקים שגרונית'],['ibd','מחלת מעי דלקתית'],['ms','טרשת נפוצה'],
+   ['mg','מיאסתניה גרביס'],['ca','סרטן (פעיל או לאחר טיפול)'],['fm','פיברומיאלגיה'],['dep','דיכאון'],['anx','הפרעת חרדה']]},
+ type:{mode:'one',o:[['exh','תשישות וחוסר אנרגיה'],['sleepy','ישנוניות: נטייה להירדם'],['weak','חולשת שרירים']]},
+ dur:{mode:'one',track:true,o:[['lt1','פחות מחודש','חריפה'],['m1to6','חודש עד 6 חודשים','מתמשכת'],['ge6','6 חודשים ומעלה','כרונית']]},
+ onset:{mode:'one',o:[['grad','הדרגתי'],['sudden','פתאומי']]},
+ rest:{mode:'one',o:[['yes','כן'],['no','לא']]},
+ trig:{mode:'many',none:'none',o:[['ebv','לאחר מחלת נשיקה (מונונוקלאוזיס)'],['covid','לאחר COVID-19'],['inf','לאחר זיהום אחר'],
+   ['newmed','לאחר התחלת תרופה חדשה'],['stress','לאחר אירוע חיים או לחץ'],['none','ללא גורם ברור']]},
+ sev:{mode:'one',o:[['mild','קלה'],['mod','בינונית'],['severe','קשה']]},
+ decline:{mode:'one',o:[['yes','כן'],['no','לא']]},
+ half:{mode:'one',o:[['yes','כן'],['no','לא']]},
+ pem:{mode:'many',o:[['pem1','החמרה לאחר פעילות יומיומית רגילה: גופנית, שכלית או רגשית'],['pem2','עוצמת ההחמרה אינה פרופורציונלית למאמץ'],
+   ['pem3','התמוטטות שמופיעה באיחור ונמשכת ימים'],['pem4',()=>`ניסיון "להתגבר" על העייפות מחמיר את ${G('מצבו','מצבה','המצב')}`]]},
+ slp:{mode:'many',o:[['slp1','קושי להירדם או לשמור על רצף שינה'],['slp2','שינה שאינה מרעננת'],['slp3','צורך בתנומות רבות מהרגיל']]},
+ cog:{mode:'many',o:[['cog1','קושי בנהיגה, בקריאה או במעקב אחר שיחה'],['cog2','ירידה בתפקוד בעבודה או בלימודים לעומת העבר']]},
+ ort:{mode:'many',o:[['ort1','תסמינים בעמידה ממושכת במקום'],['ort2','סחרחורת או חולשה בקימה מהירה'],['ort3','החמרה במזג אוויר חם'],
+   ['ort4',()=>G('עובד או לומד בשכיבה','עובדת או לומדת בשכיבה','עובד/ת או לומד/ת בשכיבה')]]},
+ hab:{mode:'many',o:[['h1','שינה של פחות מ-7 שעות בלילה'],['h2','שעות שינה לא קבועות'],['h3','מסכים, קפאין או אלכוהול סמוך לשינה'],
+   ['h4','פעילות גופנית מאומצת וממושכת ללא התאוששות מספקת'],['h5','דיאטת אופנה או תזונה מגבילה מאוד']]},
+ med:{mode:'many',o:[['antih','אנטיהיסטמינים מרדימים'],['benzo','בנזודיאזפינים או כדורי שינה'],['opi','אופיואידים'],['antidep','נוגדי דיכאון'],
+   ['aed','נוגדי פרכוסים'],['bb','חוסמי בטא'],['mr','מרפי שרירים'],['antipsy','נוגדי פסיכוזה']]},
+ sub:{mode:'many',o:[['alc','אלכוהול'],['can','קנביס'],['drugs','סמים אחרים']]}
+};
+
+/* associated clues — one row per category of Table 1 */
+const CLUES=[
+ {k:'cCard',n:'לב וריאות',o:[['dysp','קוצר נשימה'],['cp','כאב בחזה'],['palp','דפיקות לב'],['sync','התעלפות']]},
+ {k:'cEndo',n:'אנדוקריני ומטבולי',o:[['wtch','שינוי במשקל'],['poly','שתייה והשתנה מרובות'],['temp','רגישות לחום או לקור']]},
+ {k:'cGi',n:'מערכת העיכול',o:[['diar','שלשולים'],['abd','כאבי בטן']]},
+ {k:'cGyn',n:'גינקולוגי',fem:true,o:[['pelv','כאבי אגן'],['pms','תסמינים סביב הווסת']]},
+ {k:'cHem',n:'המטולוגי',o:[['bleed','דימום מוגבר או וסת כבדה']]},
+ {k:'cInf',n:'זיהומי',o:[['fever','חום'],['tb','חשיפה לשחפת'],['tick','עקיצת קרציה'],['sex','התנהגות מינית בסיכון'],['travel','שהייה בחו״ל לאחרונה']]},
+ {k:'cNeu',n:'נוירולוגי',o:[['focal','חסר נוירולוגי מוקדי'],['fatw','חולשה שמתגברת במאמץ חוזר'],['diplo','ראייה כפולה או צניחת עפעף']]},
+ {k:'cRh',n:'ראומטולוגי',o:[['joint','כאבי מפרקים או נוקשות'],['prox','חולשת שרירים מקורבת'],['rash','פריחה'],['wpain','כאב מפושט']]},
+ {k:'cSlp',n:'שינה',o:[['snore','נחירות או הפסקות נשימה בשינה'],['legs','תנועות רגליים בשינה']]},
+ {k:'cOnc',n:'אונקולוגי',o:[['wtloss','ירידה לא מכוונת במשקל'],['sweats','הזעות לילה']]},
+ {k:'cExp',n:'חשיפות',o:[['metal','מתכות כבדות'],['mold','עובש'],['occ','חשיפה תעסוקתית אחרת']]}
+];
+const EXAM=[
+ {k:'eCard',n:'לב וריאות',o:[['murmur','אוושה'],['crack','חרחורים'],['edema','בצקות'],['irreg','קצב לא סדיר']]},
+ {k:'eNeu',n:'נוירולוגי',o:[['focalEx','חסר מוקדי'],['fatwEx','חולשה מתעייפת']]},
+ {k:'eSkin',n:'עור',o:[['pallor','חיוורון'],['jaund','צהבת'],['rashEx','פריחה'],['hyperpig','היפרפיגמנטציה']]},
+ {k:'eOth',n:'כללי',o:[['lymph','הגדלת בלוטות לימפה'],['goitre','הגדלת בלוטת התריס'],['bmi35','BMI מעל 35'],
+   ['htn','יתר לחץ דם (ידוע או בבדיקה)'],['neck','היקף צוואר מעל 40 ס״מ']]}
+];
+CLUES.forEach(c=>OPT[c.k]={mode:'many',o:c.o});
+EXAM.forEach(c=>OPT[c.k]={mode:'many',o:c.o});
+
+/* ---------- chip rendering ---------- */
+const lbl=x=>typeof x==='function'?x():x;
+function initState(){
+  for(const k in OPT){S[k]=OPT[k].mode==='many'?new Set():null}
+  S.age=null;
+  const ai=document.getElementById('ageIn'); if(ai) ai.value='';
+  const aw=document.getElementById('ageWarn'); if(aw) aw.textContent='';
+}
+function renderGroup(el){
+  const k=el.dataset.group, spec=OPT[k];
+  const keepMark=el.querySelector('.mark');
+  el.innerHTML='';
+  if(keepMark) el.appendChild(keepMark);
+  spec.o.forEach(([v,t,s])=>{
+    const b=document.createElement('button');
+    b.type='button';
+    if(!spec.track) b.className='chip';
+    b.dataset.v=v;
+    b.innerHTML=spec.track?`<b>${bd(lbl(t))}</b><small>${s}</small>`:bd(lbl(t));
+    const on=spec.mode==='many'?S[k].has(v):S[k]===v;
+    b.setAttribute('aria-pressed',on);
+    b.addEventListener('click',()=>toggle(k,v));
+    el.insertBefore(b,keepMark||null);
+  });
+}
+function toggle(k,v){
+  const spec=OPT[k];
+  if(spec.mode==='many'){
+    if(S[k].has(v)) S[k].delete(v);
+    else{
+      if(spec.none){ if(v===spec.none) S[k].clear(); else S[k].delete(spec.none); }
+      S[k].add(v);
+    }
+  }else{
+    S[k]=S[k]===v?null:v;
+  }
+  if(k==='sex'){ if(S.sex!=='f'){S.preg=null;S.cGyn.clear()} renderAll(); }
+  else document.querySelectorAll(`[data-group="${k}"]`).forEach(renderGroup);
+  update();
+}
+function buildCatRows(){
+  const mk=(arr,host)=>{host.innerHTML=arr.map(c=>`<div class="cat" data-cat="${c.k}"${c.fem?' data-fem="1"':''}><span class="cn">${c.n}</span><div class="chips" data-group="${c.k}"></div></div>`).join('')};
+  mk(CLUES,document.getElementById('clueRows'));
+  mk(EXAM,document.getElementById('examRows'));
+}
+function renderAll(){
+  document.querySelectorAll('[data-group]').forEach(renderGroup);
+  document.getElementById('rowPreg').classList.toggle('hidden',S.sex!=='f');
+  document.querySelectorAll('[data-fem]').forEach(r=>r.classList.toggle('hidden',S.sex!=='f'));
+  document.querySelectorAll('[data-g="patient"]').forEach(e=>e.textContent=G('המטופל','המטופלת','המטופל/ת'));
+  renderQuestionnaires();
+}
+
+/* ---------- questionnaires ---------- */
+const F4=[['0','כלל לא'],['1','כמה ימים'],['2','יותר ממחצית הימים'],['3','כמעט כל יום']];
+const ESSO=[['0','אף פעם'],['1','סיכוי קטן'],['2','סיכוי בינוני'],['3','סיכוי גבוה']];
+const YN=[['1','כן'],['0','לא']];
+
+const QN=[
+ {id:'stop',title:'סיכון לדום נשימה בשינה',formal:'STOP-Bang',cite:()=>afp(62,'עמ׳ 62'),
+  stem:'שלוש השאלות הראשונות נשאלות; חמש האחרות מתמלאות מתוך האנמנזה והבדיקה.'},
+ {id:'ess',title:'ישנוניות בשעות היום',formal:'Epworth Sleepiness Scale',cite:()=>afp(60,'טבלה 1'),
+  stem:()=>`מה הסיכוי ש${G('תירדם','תירדמי','תירדם/י')} (לא רק ${G('תרגיש','תרגישי','תרגיש/י')} עייפות) במצבים הבאים, בתקופה האחרונה?`,
+  items:['ישיבה וקריאה','צפייה בטלוויזיה','ישיבה ללא פעילות במקום ציבורי, למשל בהרצאה או בהצגה',
+   'נסיעה כנוסע ברכב במשך שעה ללא הפסקה','שכיבה למנוחה אחר הצהריים, כשהנסיבות מאפשרות','ישיבה ושיחה עם מישהו',
+   'ישיבה בשקט אחרי ארוחת צהריים, ללא אלכוהול','ברכב, בעצירה של כמה דקות בפקק'],opts:ESSO,arr:'ess'},
+ {id:'phq',title:'דיכאון',formal:'PHQ-9',cite:()=>afp(60,'טבלה 1'),
+  stem:()=>`בשבועיים האחרונים, באיזו תדירות ${G('הוטרדת','הוטרדת','הוטרדת')} מ...`,
+  items:[()=>'חוסר עניין או הנאה בעשיית דברים',()=>'תחושת דכדוך, דיכאון או חוסר תקווה',()=>'קושי להירדם או לשמור על רצף שינה, או שינה מרובה מדי',
+   ()=>'עייפות או חוסר אנרגיה',()=>'תיאבון ירוד או אכילת יתר',
+   ()=>`תחושה רעה כלפי עצמך: שאת${G('ה','','ה')} ${G('כישלון','כישלון','כישלון')}, או ש${G('אכזבת','אכזבת','אכזבת')} את עצמך או את משפחתך`,
+   ()=>'קושי להתרכז, למשל בקריאה או בצפייה בטלוויזיה',
+   ()=>`איטיות בתנועה או בדיבור שאחרים יכולים להבחין בה, או להפך: חוסר שקט ותנועתיות רבה מהרגיל`,
+   ()=>`מחשבות שעדיף היה ${G('לו היית מת','לו היית מתה','למות')}, או מחשבות על פגיעה בעצמך`],opts:F4,arr:'phq'},
+ {id:'gad',title:'חרדה',formal:'GAD-7',cite:()=>afp(60,'טבלה 1'),
+  stem:()=>`בשבועיים האחרונים, באיזו תדירות ${G('הוטרדת','הוטרדת','הוטרדת')} מ...`,
+  items:[()=>'תחושת עצבנות, חרדה או מתח',()=>'חוסר יכולת להפסיק לדאוג או לשלוט בדאגה',()=>'דאגה מופרזת בנוגע לדברים שונים',
+   ()=>'קושי להירגע',()=>'חוסר מנוחה עד כדי קושי לשבת במקום',
+   ()=>`נטייה להתרגז או להיות ${G('רגזן','רגזנית','רגזן/ית')} בקלות`,()=>'פחד שמשהו נורא עלול לקרות'],opts:F4,arr:'gad'},
+ {id:'mdq',title:'הפרעה דו-קוטבית',formal:'Mood Disorder Questionnaire',cite:()=>afp(60,'טבלה 1'),
+  stem:()=>`האם הייתה אי-פעם תקופה שבה ${G('לא היית עצמך','לא היית עצמך','לא היית עצמך')}, ו...`,
+  items:[()=>`${G('הרגשת','הרגשת','הרגשת')} כל כך טוב או כל כך ${G('נמרץ','נמרצת','נמרץ/ת')}, שאחרים חשבו ש${G('אינך','אינך','אינך')} כרגיל, או שזה הכניס אותך לצרות?`,
+   ()=>`${G('היית עצבני','היית עצבנית','היית עצבני/ת')} עד כדי צעקות על אנשים או מריבות?`,
+   ()=>`${G('הרגשת','הרגשת','הרגשת')} ביטחון עצמי רב הרבה יותר מהרגיל?`,
+   ()=>`${G('ישנת','ישנת','ישנת')} הרבה פחות מהרגיל ולא ${G('הרגשת','הרגשת','הרגשת')} שחסרה לך שינה?`,
+   ()=>`${G('דיברת','דיברת','דיברת')} הרבה יותר או מהר יותר מהרגיל?`,
+   ()=>'המחשבות רצו במהירות ולא הצלחת להאט אותן?',
+   ()=>`דברים סביבך הסיחו את דעתך בקלות, עד שהתקשית להתרכז?`,
+   ()=>'הייתה לך הרבה יותר אנרגיה מהרגיל?',
+   ()=>`${G('היית פעיל','היית פעילה','היית פעיל/ה')} או ${G('עשית','עשית','עשית')} הרבה יותר דברים מהרגיל?`,
+   ()=>`${G('היית חברותי','היית חברותית','היית חברותי/ת')} הרבה יותר מהרגיל, למשל ${G('התקשרת','התקשרת','התקשרת')} לאנשים באמצע הלילה?`,
+   ()=>'העניין שלך במין היה גבוה בהרבה מהרגיל?',
+   ()=>`${G('עשית','עשית','עשית')} דברים חריגים שאחרים עלולים לחשוב שהם מוגזמים, טיפשיים או מסוכנים?`,
+   ()=>'הוצאות כספיות הכניסו אותך או את משפחתך לצרות?'],opts:YN,arr:'mdq1'},
+ {id:'aud',title:'צריכת אלכוהול',formal:'AUDIT-C',gen:true,cite:()=>afp(60,'טבלה 1'),
+  stem:'מנה אחת = כוס יין קטנה, פחית בירה או כוסית משקה חריף.'}
+];
+const AUD=[
+ {t:'באיזו תדירות שותה משקה המכיל אלכוהול?',o:[['0','אף פעם'],['1','פעם בחודש או פחות'],['2','2–4 פעמים בחודש'],['3','2–3 פעמים בשבוע'],['4','4 פעמים בשבוע ומעלה']]},
+ {t:'כמה מנות ביום שתייה טיפוסי?',o:[['0','1–2'],['1','3–4'],['2','5–6'],['3','7–9'],['4','10 ומעלה']]},
+ {t:'באיזו תדירות 6 מנות או יותר באירוע אחד?',o:[['0','אף פעם'],['1','פחות מפעם בחודש'],['2','פעם בחודש'],['3','פעם בשבוע'],['4','כמעט כל יום']]}
+];
+
+function seg(key,idx,opts,cur,showVal){
+  return `<span class="seg" role="group">${opts.map(([v,t])=>
+    `<button type="button" data-q="${key}" data-i="${idx}" data-v="${v}" aria-pressed="${cur!==null&&String(cur)===v}">${showVal?`<span class="v">${v}</span>`:''}${bd(t)}</button>`).join('')}</span>`;
+}
+function itemRow(n,text,control){return `<div class="item"><span class="no">${n}</span><span>${text}</span>${control}</div>`}
+
+/* auto-derived STOP-Bang items */
+function stopAuto(){
+  const ageKnown=S.age!==null;
+  return [
+   {l:'לחץ דם גבוה (ידוע או בבדיקה)',v:S.eOth.has('htn')?1:0,known:true},
+   {l:'BMI מעל 35',v:S.eOth.has('bmi35')?1:0,known:true},
+   {l:'גיל מעל 50',v:ageKnown?(S.age>50?1:0):null,known:ageKnown},
+   {l:'היקף צוואר מעל 40 ס״מ',v:S.eOth.has('neck')?1:0,known:true},
+   {l:'מין זכר',v:S.sex?(S.sex==='m'?1:0):null,known:!!S.sex}
+  ];
+}
+
+function renderQuestionnaires(){
+  const wrap=document.getElementById('qnWrap');
+  const openState={};
+  wrap.querySelectorAll('details.qn').forEach(d=>openState[d.id]=d.open);
+  wrap.innerHTML=QN.map(q=>{
+    let body='';
+    const stem=typeof q.stem==='function'?q.stem():q.stem;
+    if(q.id==='stop'){
+      body+=itemRow('S','נחירות חזקות (נשמעות מבעד לדלת סגורה)',seg('stopS',0,YN,Q.stopS));
+      body+=itemRow('T','עייפות או ישנוניות בשעות היום',seg('stopT',0,YN,Q.stopT));
+      body+=itemRow('O','מישהו הבחין בהפסקות נשימה בשינה',seg('stopO',0,YN,Q.stopO));
+      const letters=['P','B','A','N','G'];
+      stopAuto().forEach((a,i)=>{
+        body+=itemRow(letters[i],a.l,`<span class="auto">${a.known?(a.v?'<b>כן</b>':'לא'):'לא נבחר באנמנזה'}</span>`);
+      });
+    }else if(q.id==='aud'){
+      AUD.forEach((a,i)=>body+=itemRow(i+1,bd(a.t),seg('aud',i,a.o,Q.aud[i],false)));
+    }else{
+      q.items.forEach((t,i)=>body+=itemRow(i+1,lbl(t),seg(q.arr,i,q.opts,Q[q.arr][i],q.id!=='mdq')));
+      if(q.id==='mdq'){
+        body+=itemRow('',`אם סומן "כן" ליותר משאלה אחת: האם כמה מהם קרו באותה תקופה?`,seg('mdq2',0,YN,Q.mdq2));
+        body+=itemRow('',`עד כמה הדברים האלה גרמו לבעיה, למשל בעבודה, במשפחה, בכסף או מול החוק?`,
+          seg('mdq3',0,[['0','ללא'],['1','קלה'],['2','בינונית'],['3','חמורה']],Q.mdq3));
+      }
+    }
+    return `<details class="qn" id="qn-${q.id}"${openState['qn-'+q.id]?' open':''}>
+      <summary><span class="qt"><b>${q.title}</b><small>${q.formal}</small></span><span class="pill" id="pill-${q.id}"></span></summary>
+      <div class="qbody"><p class="stem">${stem} ${q.cite()}${q.gen?' '+GEN:''}</p>${body}<div class="qfoot" id="foot-${q.id}"></div></div>
+    </details>`;
+  }).join('');
+  wrap.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.q,i=+b.dataset.i,v=+b.dataset.v;
+    if(Array.isArray(Q[k])) Q[k][i]=Q[k][i]===v?null:v;
+    else Q[k]=Q[k]===v?null:v;
+    renderQuestionnaires(); update();
+  }));
+  scoreAll();
+}
+
+/* ---------- scoring ---------- */
+const sum=a=>a.reduce((s,x)=>s+(x||0),0);
+const answered=a=>a.filter(x=>x!==null).length;
+function band(n,cuts){for(const [max,label,lv] of cuts){if(n<=max)return {label,lv}}}
+
+function scores(){
+  const R={};
+  // STOP-Bang
+  const man=[Q.stopS,Q.stopT,Q.stopO], auto=stopAuto();
+  const stopN=sum(man)+auto.reduce((s,a)=>s+(a.v||0),0);
+  const stopDone=answered(man)===3&&auto.every(a=>a.known);
+  R.stop={n:stopN,max:8,done:stopDone,ans:answered(man)+auto.filter(a=>a.known).length,of:8,
+    b:band(stopN,[[2,'סיכון נמוך',0],[4,'סיכון בינוני',1],[8,'סיכון גבוה',2]])};
+  // Epworth
+  const e=sum(Q.ess);
+  R.ess={n:e,max:24,done:answered(Q.ess)===8,ans:answered(Q.ess),of:8,
+    b:band(e,[[10,'תקין',0],[12,'ישנוניות קלה',1],[15,'ישנוניות בינונית',2],[24,'ישנוניות קשה',2]])};
+  // PHQ-9
+  const p=sum(Q.phq);
+  R.phq={n:p,max:27,done:answered(Q.phq)===9,ans:answered(Q.phq),of:9,
+    b:band(p,[[4,'מינימלי',0],[9,'קל',1],[14,'בינוני',2],[19,'בינוני-קשה',2],[27,'קשה',2]]),item9:(Q.phq[8]||0)>0};
+  // GAD-7
+  const g=sum(Q.gad);
+  R.gad={n:g,max:21,done:answered(Q.gad)===7,ans:answered(Q.gad),of:7,
+    b:band(g,[[4,'מינימלי',0],[9,'קל',1],[14,'בינוני',2],[21,'קשה',2]])};
+  // MDQ
+  const m1=sum(Q.mdq1), mDone=answered(Q.mdq1)===13&&Q.mdq2!==null&&Q.mdq3!==null;
+  const mPos=m1>=7&&Q.mdq2===1&&Q.mdq3>=2;
+  R.mdq={n:m1,max:13,done:mDone,ans:answered(Q.mdq1)+(Q.mdq2!==null)+(Q.mdq3!==null),of:15,
+    b:mPos?{label:'חיובי',lv:2}:{label:'שלילי',lv:0},pos:mPos};
+  // AUDIT-C
+  const a=sum(Q.aud), cut=S.sex==='f'?3:S.sex==='m'?4:null;
+  let ab;
+  if(cut===null) ab={label:a>=4?'חיובי':a>=3?'חיובי באישה':'שלילי',lv:a>=4?2:a>=3?1:0};
+  else ab=a>=cut?{label:'חיובי',lv:2}:{label:'שלילי',lv:0};
+  R.aud={n:a,max:12,done:answered(Q.aud)===3,ans:answered(Q.aud),of:3,b:ab,cut};
+  return R;
+}
+
+function scoreAll(){
+  const R=scores();
+  const names={stop:'דום נשימה בשינה',ess:'ישנוניות',phq:'דיכאון',gad:'חרדה',mdq:'דו-קוטבית',aud:'אלכוהול'};
+  // pills + footers
+  for(const id in R){
+    const r=R[id], pill=document.getElementById('pill-'+id);
+    if(!pill) continue;
+    if(r.ans===0){pill.textContent='לא מולא';pill.className='pill';}
+    else if(!r.done){pill.textContent=`${id==='mdq'?r.n+' "כן"':r.n} (נענו ${r.ans} מתוך ${r.of})`;pill.className='pill';}
+    else{pill.textContent=`${id==='mdq'?r.n+' "כן", ':r.n+', '}${r.b.label}`;pill.className='pill lv'+r.b.lv;}
+  }
+  const ft=(id,h)=>{const e=document.getElementById('foot-'+id);if(e)e.innerHTML=bd(h)};
+  ft('stop',`ציון 0–2: סיכון נמוך; 3–4: בינוני; 5–8: גבוה ${GEN}`);
+  ft('ess',`0–10 תקין; 11–12 ישנוניות קלה; 13–15 בינונית; 16 ומעלה קשה ${GEN}`);
+  ft('phq',`0–4 מינימלי; 5–9 קל; 10–14 בינוני; 15–19 בינוני-קשה; 20 ומעלה קשה ${GEN}`);
+  ft('gad',`0–4 מינימלי; 5–9 קל; 10–14 בינוני; 15 ומעלה קשה ${GEN}`);
+  ft('mdq',`חיובי: לפחות 7 תשובות "כן" בחלק הראשון, התסמינים הופיעו באותה תקופה, והפגיעה בינונית או חמורה ${GEN}`);
+  ft('aud',`חיובי: 4 ומעלה בגבר, 3 ומעלה באישה ${GEN}${R.aud.cut===null?'. המין לא נבחר, לכן מוצגים שני הספים.':''}`);
+  // scoreboard
+  document.getElementById('scoreboard').innerHTML=Object.keys(names).map(id=>{
+    const r=R[id];
+    const n=r.ans===0?'–':(id==='mdq'?r.n+'/13':r.n);
+    const b=r.ans===0?'<span class="b lvu">לא מולא</span>':r.done?`<span class="b lv${r.b.lv}">${r.b.label}</span>`:'<span class="b lvu">חלקי</span>';
+    return `<a class="sb" href="#qn-${id}" data-open="${id}"><span class="t">${names[id]}</span><span class="n">${n}</span> ${b}</a>`;
+  }).join('');
+  document.querySelectorAll('.sb').forEach(a=>a.addEventListener('click',()=>{document.getElementById('qn-'+a.dataset.open).open=true}));
+  // safety banner
+  document.getElementById('safety').innerHTML=R.phq.item9?
+    `<div class="alert bad"><b>תשובה חיובית לשאלה על מחשבות מוות או פגיעה עצמית.</b> יש להעריך סיכון אובדני באותו ביקור: מחשבות, תוכנית, אמצעים וכוונה, ולפעול בהתאם. קו תמיכה רגשית: ער״ן 1201. ${GEN}</div>`:'';
+  window.SCORES=R;
+}
+
+/* ---------- global update ---------- */
+function update(){
+  const d={lt1:'פחות מחודש',m1to6:'חודש עד 6 חודשים',ge6:'6 חודשים ומעלה'};
+  document.getElementById('navDur').textContent='משך: '+(S.dur?d[S.dur]:'לא נבחר');
+  scoreAll();
+  // later stages hook in here: renderWorkup(), renderClass(), renderTx(), buildSoap()
+}
+
+/* ---------- static citations ---------- */
+function placeCites(){
+  const put=(id,h)=>{const e=document.getElementById(id);if(e)e.innerHTML=h};
+  put('citeType',afp(58,'עמ׳ 58'));
+  put('citeDur',afp(63,'עמ׳ 63'));
+  put('citeHalf',afp(63,'טבלה 3'));
+  put('citeT2',afp(61,'טבלה 2'));
+  put('citeHab',afp(61,'עמ׳ 61–62'));
+  put('citeMed',afp(62,'איור 1'));
+  put('genMed',GEN);
+  put('citeT1',afp(59,'טבלה 1'));
+  put('citeExam',afp(61,'עמ׳ 61'));
+  put('citeScr',afp(61,'עמ׳ 61'));
+  put('genCut',GEN);
+}
+
+/* ---------- reset ---------- */
+function resetAll(){
+  initState();
+  for(const k in Q){Q[k]=Array.isArray(Q[k])?Q[k].map(()=>null):null}
+  document.querySelectorAll('details.qn').forEach(d=>d.open=false);
+  renderAll(); update();
+  window.scrollTo({top:0});
+}
+document.getElementById('resetTop').addEventListener('click',resetAll);
+
+/* ---------- exact age ---------- */
+function setAge(v,typing){
+  const ai=document.getElementById('ageIn'), aw=document.getElementById('ageWarn');
+  if(v===''||v===null||isNaN(v)){S.age=null;ai.value='';aw.textContent='';}
+  else{
+    v=Math.max(0,Math.min(110,Math.round(+v)));
+    S.age=v; if(ai.value!==String(v)) ai.value=v;
+    if(!typing||v>=18) aw.textContent=v<18?'הכלי מיועד למבוגרים (18 ומעלה)':'';
+  }
+  renderQuestionnaires(); update();
+}
+document.getElementById('ageIn').addEventListener('input',e=>setAge(e.target.value,true));
+document.getElementById('ageIn').addEventListener('change',e=>setAge(e.target.value,false));
+document.getElementById('ageUp').addEventListener('click',()=>setAge(S.age===null?50:S.age+1));
+document.getElementById('ageDn').addEventListener('click',()=>setAge(S.age===null?50:Math.max(18,S.age-1)));
+
+/* ---------- boot ---------- */
+initState();
+buildCatRows();
+placeCites();
+renderAll();
+update();
+</script>
+</body>
+</html>
