@@ -72,6 +72,11 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
 .hide{display:none}
 .lowp{font-size:11px;color:var(--warn);border:1px solid currentColor;border-radius:999px;padding:0 6px;margin-inline-start:6px;opacity:.85}
 .axis{display:flex;justify-content:space-between;direction:ltr;font-size:11px;color:var(--mut);margin-top:2px}
+.wchart{display:flex;direction:ltr;gap:6px;margin-top:14px}
+.wchart .yl{position:relative;width:34px;flex:none;font-size:11px;color:var(--mut)}
+.wchart .yl span{position:absolute;right:0;transform:translateY(-50%)}
+.wchart svg{flex:1;min-width:0;height:180px;display:block}
+.wchart + .axis{margin-left:40px}
 
 #print{display:none}
 @media print{
@@ -793,21 +798,7 @@ function viewWeight(){
   const w = [...S.weights].sort((a,b) => a.date < b.date ? -1 : 1);
   const last = w[w.length-1], rec = w.slice(-7);
   const avg = rec.length ? rec.reduce((s,x) => s+x.kg, 0)/rec.length : null;
-  /* 30 הימים האחרונים, ציר זמן לפי תאריך. הקו הירוק הוא ממוצע נע של 7 ימים,
-     שמחושב גם משקילות שלפני תחילת החלון. */
-  const from = shift(today(), -29), x0 = dayNum(from);
-  const pts = w.filter(p => p.date >= from).map(p => {
-    const win = w.filter(q => q.date <= p.date && q.date >= shift(p.date, -6));
-    return { ...p, avg: win.reduce((a,q) => a+q.kg, 0) / win.length };
-  });
   const trend = weightTrend();
-  let path = '', avgPath = '';
-  if (pts.length > 1){
-    const all = pts.flatMap(p => [p.kg, p.avg]);
-    const mn = Math.min(...all)-.3, mx = Math.max(...all)+.3;
-    const line = key => pts.map((p,i) => `${i?'L':'M'}${((dayNum(p.date)-x0)/29*300).toFixed(1)},${(100-(p[key]-mn)/(mx-mn||1)*100).toFixed(1)}`).join(' ');
-    path = line('kg'); avgPath = line('avg');
-  }
   return `<h2>משקל</h2>
   <div class="card">
     <div class="sm mut">ממוצע 7 ימים</div>
@@ -817,16 +808,48 @@ function viewWeight(){
       ${last ? `אחרונה: ${last.kg.toFixed(1)} · ${pretty(last.date)}` : 'עדיין אין מדידות'}</div>
     ${trend !== null ? `<div class="sm" style="margin-top:6px">מגמה: ${signed(trend, 2)} ק״ג בשבוע
       <span class="xs mut">(4 השבועות האחרונים)</span></div>` : ''}
-    ${path ? `<svg viewBox="0 0 300 100" preserveAspectRatio="none" style="width:100%;height:90px;margin-top:12px;display:block">
-      <path d="${path}" fill="none" stroke="var(--mut)" stroke-opacity=".6" stroke-width="1" vector-effect="non-scaling-stroke"/>
-      <path d="${avgPath}" fill="none" stroke="var(--pro)" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>
-      <div class="axis"><span>${pretty(from)}</span><span>היום</span></div>
-      <div class="xs mut" style="margin-top:6px">ירוק: ממוצע 7 ימים. אפור: השקילות עצמן.</div>` : ''}
+    ${weightChart(w)}
   </div>
   <label class="f"><span>משקל היום (ק״ג)</span>
     <input id="wIn" type="number" inputmode="decimal" step="0.1" placeholder="0.0"></label>
   <button class="solid full" onclick="saveWeight()">שמירה</button>
   <p class="xs mut">המדידה היומית מושפעת מנוזלים. הממוצע הנע הוא המספר שכדאי להסתכל עליו.</p>`;
+}
+/* גרף משקל: עד 30 ימים אחורה, אבל הציר מתחיל מהשקילה הראשונה בחלון
+   (ולפחות שבוע), כדי שהגרף לא יידחס לקצה כשיש מעט נתונים.
+   הקו הירוק הוא ממוצע נע של 7 ימים, שמחושב גם משקילות שלפני החלון. */
+function weightChart(w){
+  const t = today(), tN = dayNum(t);
+  const inWin = w.filter(p => p.date >= shift(t, -29));
+  if (inWin.length < 2) return '';
+  const pts = inWin.map(p => {
+    const win = w.filter(q => q.date <= p.date && q.date >= shift(p.date, -6));
+    return { ...p, avg: win.reduce((a,q) => a+q.kg, 0) / win.length };
+  });
+  const x0 = Math.min(dayNum(pts[0].date), tN - 6), span = (tN - x0) || 1;
+  const all = pts.flatMap(p => [p.kg, p.avg]);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  if (hi - lo < 1){ const m = (hi + lo) / 2; lo = m - .5; hi = m + .5; }
+  const step = [.2, .5, 1, 2, 5, 10].find(v => (hi - lo) / v <= 4) || 20;
+  lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  const X = d => (4 + (dayNum(d) - x0) / span * 292).toFixed(1);   // שוליים קטנים לנקודות בקצוות
+  const Yp = v => 94 - (v - lo) / (hi - lo) * 88;          // 6%–94% מהגובה
+  const Y = v => Yp(v).toFixed(2);
+  const line = k => pts.map((p,i) => `${i ? 'L' : 'M'}${X(p.date)},${Y(p[k])}`).join(' ');
+  const dots = pts.map(p => `M${X(p.date)},${Y(p.kg)}l0,0`).join(' ');
+  const ticks = [];
+  for (let v = lo; v <= hi + 1e-9; v += step) ticks.push(+v.toFixed(1));
+  const dig = step < 1 ? 1 : 0;
+  return `<div class="wchart">
+      <div class="yl">${ticks.map(v => `<span class="num" style="top:${Yp(v).toFixed(2)}%">${v.toFixed(dig)}</span>`).join('')}</div>
+      <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+        ${ticks.map(v => `<line x1="0" x2="300" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" vector-effect="non-scaling-stroke"/>`).join('')}
+        <path d="${line('kg')}" fill="none" stroke="var(--mut)" stroke-opacity=".6" stroke-width="1" vector-effect="non-scaling-stroke"/>
+        <path d="${dots}" fill="none" stroke="var(--mut)" stroke-width="5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        <path d="${line('avg')}" fill="none" stroke="var(--pro)" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      </svg></div>
+    <div class="axis"><span>${pretty(shift(t, -(tN - x0)))}</span><span>היום</span></div>
+    <div class="xs mut" style="margin-top:6px">ירוק: ממוצע 7 ימים. נקודות אפורות: השקילות עצמן.</div>`;
 }
 function saveWeight(){
   const kg = parseFloat($('#wIn').value);
@@ -877,7 +900,7 @@ function viewSum(){
       <button style="flex:1" onclick="exportAll()">ייצוא גיבוי</button>
       <button style="flex:1" onclick="sheetImport()">שחזור מגיבוי</button>
     </div>
-    <button class="full" style="margin-bottom:8px" onclick="printWeek()">דו״ח שבועי להדפסה / PDF</button>
+    <button class="full" style="margin-bottom:8px" onclick="pdfWeek()">דו״ח שבועי — PDF</button>
     <p class="xs mut">${(() => { const lb = load('lastBackup', '');
       return lb ? `גיבוי אחרון: ${pretty(lb)}.` : 'עדיין לא נשמר גיבוי.'; })()}
     ${isStandalone()
@@ -946,10 +969,7 @@ function exportAll(){
     .forEach(k => logs[k.slice(K.length+4)] = JSON.parse(localStorage.getItem(k)));
   const blob = new Blob([JSON.stringify({ foods: S.foods, logs, weights: S.weights,
     settings: S.settings, exported: new Date().toISOString() }, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `food-tracker-${today()}.json`; a.click();
-  URL.revokeObjectURL(a.href);
-  save('lastBackup', today()); render();
+  saveFile(blob, `food-tracker-${today()}.json`, () => { save('lastBackup', today()); render(); });
 }
 
 /* ============ תזכורת גיבוי ============
@@ -979,12 +999,38 @@ function backupCard(){
 if (navigator.storage && navigator.storage.persist)
   navigator.storage.persisted().then(p => p || navigator.storage.persist()).catch(() => {});
 
-/* דו”ח שבועי. משתמש במנגנון ההדפסה של הדפדפן:
-   באייפון, שיתוף > הדפסה > שמירה לקבצים מייצרת PDF עם עברית תקינה. */
-function printWeek(){
-  const to = S.date, from = shift(to, -6);
-  const st = S.settings;
-  const days = [];
+/* ============ שמירת קבצים ============
+   במצב "מסך הבית" באייפון הורדות והדפסה חסומות, ולכן קבצים נשלחים
+   לגיליון השיתוף של המערכת (שמירה לקבצים, מייל, וואטסאפ).
+   אם השיתוף לא זמין (מחשב), הקובץ יורד כרגיל. */
+async function saveFile(blob, name, onDone){
+  const file = new File([blob], name, { type: blob.type });
+  if (navigator.canShare && navigator.canShare({ files: [file] })){
+    try { await navigator.share({ files: [file] }); onDone && onDone(); return; }
+    catch (e){
+      if (e.name === 'AbortError') return;
+      if (e.name === 'NotAllowedError'){
+        /* ההכנה ארכה יותר מדי והדפדפן איבד את הלחיצה — מבקשים לחיצה נוספת */
+        sheet('הקובץ מוכן', `<p class="sm mut" style="margin-bottom:12px">${esc(name)}</p>
+          <button class="solid full" id="shareNow">שיתוף / שמירה</button>`);
+        $('#shareNow').onclick = () => navigator.share({ files: [file] })
+          .then(() => { closeSheet(); onDone && onDone(); }).catch(() => {});
+        return;
+      }
+    }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  onDone && onDone();
+}
+
+/* ============ דו״ח שבועי — PDF ============
+   הדו״ח מצויר על canvas (הדפדפן מצייר את העברית נכון), כל עמוד נשמר כ-JPEG,
+   והעמודים נארזים ל-PDF בקוד מקומי, בלי ספריות חיצוניות. */
+function weekData(){
+  const to = S.date, from = shift(to, -6), st = S.settings, days = [];
   for (let i = 0; i < 7; i++){
     const d = shift(from, i), es = entries(d);
     const t = es.reduce((a,e) => ({ k: a.k+e.kcal, p: a.p+e.protein }), { k:0, p:0 });
@@ -994,38 +1040,131 @@ function printWeek(){
   const avg = k => logged.length ? r0(logged.reduce((a,x) => a+x[k], 0)/logged.length) : 0;
   const wRow = S.weights.filter(x => x.date >= from && x.date <= to)
                         .sort((a,b) => a.date < b.date ? -1 : 1);
+  return { from, to, st, days, logged, avg, wRow };
+}
+const dm = s => { const [y,m,d] = s.split('-').map(Number);
+  return `${DAYS[new Date(y,m-1,d).getDay()]} ${d}.${String(m).padStart(2,'0')}`; };
+const n1 = v => String(+(+v).toFixed(1));
 
-  const byMeal = es => MEALS.map(([k, label]) => {
-    const l = es.filter(e => mealOf(e) === k);
-    if (!l.length) return '';
-    return `<tr><td colspan="3" style="background:#fafafa"><i>${label}</i></td></tr>`
-      + l.map(e => `<tr><td>${esc(e.name)} <span style="color:#666">${esc(e.qty||'')}</span></td>
-          <td class="n">${e.kcal}</td><td class="n">${e.protein}</td></tr>`).join('');
-  }).join('');
+function reportRows(D){
+  const R = [], row = (cells, o = {}) => R.push({ t: 'tr', cells, ...o });
+  R.push({ t: 'title', text: 'דו״ח תזונה שבועי' });
+  R.push({ t: 'sub', text: `${dm(D.from)} – ${dm(D.to)} · ${D.logged.length} ימים נרשמו · הופק ${dm(today())}` });
+  R.push({ t: 'th', cells: ['יום', 'קלוריות', 'חלבון (ג׳)'] });
+  D.days.forEach(x => row([dm(x.d), x.es.length ? String(r0(x.k)) : '—', x.es.length ? String(r0(x.p)) : '—']));
+  row(['ממוצע יומי', String(D.avg('k')), String(D.avg('p'))], { bold: 1, bg: '#f2f2f2' });
+  if (D.st.kcalTarget || D.st.proteinTarget)
+    row(['יעד', String(D.st.kcalTarget || '—'), String(D.st.proteinTarget || '—')]);
+  if (D.wRow.length){
+    R.push({ t: 'h2', text: 'משקל' });
+    R.push({ t: 'th', cells: ['תאריך', '', 'ק״ג'] });
+    D.wRow.forEach(w => row([dm(w.date), '', (+w.kg).toFixed(1)]));
+  }
+  if (D.logged.length) R.push({ t: 'h2', text: 'פירוט יומי' });
+  D.logged.forEach(x => {
+    R.push({ t: 'h3', text: `${dm(x.d)} — ${r0(x.k)} קק״ל · ${r0(x.p)} ג׳ חלבון` });
+    R.push({ t: 'th', cells: ['פריט', 'קק״ל', 'חלבון'] });
+    MEALS.forEach(([k, label]) => {
+      const l = x.es.filter(e => mealOf(e) === k);
+      if (!l.length) return;
+      row([label, '', ''], { meal: 1 });
+      l.forEach(e => row([e.name + (e.qty ? ' · ' + e.qty : ''), String(r0(e.kcal)), n1(e.protein)]));
+    });
+  });
+  return R;
+}
 
-  $('#print').innerHTML = `
-    <h1>דו״ח תזונה שבועי</h1>
-    <div class="sub">${from} — ${to} · ${logged.length} ימים נרשמו · הופק ${today()}</div>
-    <table>
-      <tr><th>יום</th><th>קלוריות</th><th>חלבון (ג׳)</th></tr>
-      ${days.map(x => `<tr><td>${x.d}</td>
-        <td class="n">${x.es.length ? r0(x.k) : '—'}</td>
-        <td class="n">${x.es.length ? r0(x.p) : '—'}</td></tr>`).join('')}
-      <tr class="tot"><td>ממוצע יומי</td><td class="n">${avg('k')}</td><td class="n">${avg('p')}</td></tr>
-      ${st.kcalTarget || st.proteinTarget ? `<tr><td>יעד</td>
-        <td class="n">${st.kcalTarget || '—'}</td><td class="n">${st.proteinTarget || '—'}</td></tr>` : ''}
-    </table>
-    ${wRow.length ? `<h2>משקל</h2><table>
-      <tr><th>תאריך</th><th>ק״ג</th></tr>
-      ${wRow.map(w => `<tr><td>${w.date}</td><td class="n">${w.kg}</td></tr>`).join('')}
-    </table>` : ''}
-    <h2>פירוט יומי</h2>
-    ${days.filter(x => x.es.length).map(x => `
-      <h2>${x.d} — ${r0(x.k)} קק״ל · ${r0(x.p)} ג׳ חלבון</h2>
-      <table><tr><th>פריט</th><th>קק״ל</th><th>חלבון</th></tr>${byMeal(x.es)}</table>`).join('')}`;
+const PW = 1190, PH = 1684, PM = 80, PC2 = PM + 250, PC3 = PM + 90;   // A4 ×2
+const RH = { title: 66, sub: 58, h2: 76, h3: 64, th: 46, tr: 42 };
+
+function paginate(R){
+  const pages = [[]]; let y = PM;
+  R.forEach(r => {
+    r.h = r.meal ? 38 : RH[r.t];
+    const keep = r.t === 'h2' || r.t === 'h3' ? r.h + RH.th + RH.tr * 2
+               : r.t === 'th' ? r.h + RH.tr : r.h;
+    if (y + keep > PH - PM - 30 && pages[pages.length-1].length){ pages.push([]); y = PM; }
+    pages[pages.length-1].push({ r, y }); y += r.h;
+  });
+  return pages;
+}
+
+function fitText(ctx, s, w){
+  if (ctx.measureText(s).width <= w) return s;
+  while (s.length > 1 && ctx.measureText(s + '…').width > w) s = s.slice(0, -1);
+  return s + '…';
+}
+
+function drawPage(ctx, items, pageNo, pageCount, F){
+  const R = PW - PM;
+  const txt = (s, x, y, font, col, align, dir) => {
+    ctx.font = font; ctx.fillStyle = col; ctx.textAlign = align; ctx.direction = dir; ctx.fillText(s, x, y);
+  };
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, PW, PH);
+  items.forEach(({ r, y }) => {
+    const base = y + r.h * .66;
+    if (r.t === 'title') txt(r.text, R, y + 46, `700 40px ${F}`, '#111', 'right', 'rtl');
+    else if (r.t === 'sub') txt(r.text, R, y + 34, `22px ${F}`, '#666', 'right', 'rtl');
+    else if (r.t === 'h2') txt(r.text, R, y + 54, `700 30px ${F}`, '#111', 'right', 'rtl');
+    else if (r.t === 'h3') txt(r.text, R, y + 44, `700 24px ${F}`, '#222', 'right', 'rtl');
+    else {
+      const head = r.t === 'th', bg = head ? '#e9e9e9' : r.meal ? '#fafafa' : r.bg;
+      if (bg){ ctx.fillStyle = bg; ctx.fillRect(PM, y, PW - 2*PM, r.h); }
+      const font = r.meal ? `italic 21px ${F}` : `${head || r.bold ? '700 ' : ''}23px ${F}`;
+      const col = r.meal ? '#666' : '#111';
+      ctx.font = font;
+      txt(fitText(ctx, r.cells[0], R - 14 - (PC2 + 80)), R - 14, base, font, col, 'right', 'rtl');
+      if (r.cells[1]) txt(r.cells[1], PC2, base, font, col, 'center', head ? 'rtl' : 'ltr');
+      if (r.cells[2]) txt(r.cells[2], PC3, base, font, col, 'center', head ? 'rtl' : 'ltr');
+      ctx.fillStyle = '#d6d6d6'; ctx.fillRect(PM, y + r.h - 1, PW - 2*PM, 1);
+    }
+  });
+  txt(`מעקב תזונה · עמוד ${pageNo} מתוך ${pageCount}`, PW / 2, PH - 44, `18px ${F}`, '#999', 'center', 'rtl');
+}
+
+function buildPdf(imgs){
+  const enc = new TextEncoder(), parts = [], offs = []; let len = 0;
+  const push = x => { const b = typeof x === 'string' ? enc.encode(x) : x; parts.push(b); len += b.length; };
+  const obj = (n, body) => { offs[n] = len; push(`${n} 0 obj\n`); body(); push('\nendobj\n'); };
+  const n = imgs.length, total = 3 + 3*n;
+  push('%PDF-1.4\n');
+  obj(1, () => push('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2, () => push(`<< /Type /Pages /Count ${n} /Kids [${imgs.map((_, i) => `${3+3*i} 0 R`).join(' ')}] >>`));
+  imgs.forEach((im, i) => {
+    const p = 3 + 3*i, cs = 'q 595.28 0 0 841.89 0 0 cm /Im0 Do Q';
+    obj(p, () => push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] ` +
+      `/Resources << /XObject << /Im0 ${p+2} 0 R >> >> /Contents ${p+1} 0 R >>`));
+    obj(p+1, () => push(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
+    obj(p+2, () => { push(`<< /Type /XObject /Subtype /Image /Width ${im.w} /Height ${im.h} ` +
+      `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.bytes.length} >>\nstream\n`);
+      push(im.bytes); push('\nendstream'); });
+  });
+  const xref = len;
+  push(`xref\n0 ${total}\n0000000000 65535 f \n`);
+  for (let k = 1; k < total; k++) push(`${String(offs[k]).padStart(10, '0')} 00000 n \n`);
+  push(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+  return new Blob(parts, { type: 'application/pdf' });
+}
+
+async function pdfWeek(){
   closeSheet();
-  /* בדיקה: קריאה ישירה, בתוך הלחיצה עצמה (בעבר setTimeout של 120ms) */
-  window.print();
+  toast('מכין את הדו״ח…');
+  try {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    const D = weekData(), pages = paginate(reportRows(D));
+    const F = getComputedStyle(document.body).fontFamily;
+    const c = document.createElement('canvas'); c.width = PW; c.height = PH; c.dir = 'rtl';
+    const ctx = c.getContext('2d'), imgs = [];
+    for (let i = 0; i < pages.length; i++){
+      drawPage(ctx, pages[i], i + 1, pages.length, F);
+      const b = await new Promise(res => c.toBlob(res, 'image/jpeg', .88));
+      imgs.push({ w: PW, h: PH, bytes: new Uint8Array(await b.arrayBuffer()) });
+    }
+    await saveFile(buildPdf(imgs), `food-report-${D.to}.pdf`);
+  } catch (e){
+    console.error(e);
+    toast('הפקת הדו״ח נכשלה');
+  }
 }
 
 function sheetImport(){
