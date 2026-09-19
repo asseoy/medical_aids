@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>כלי רפואן – טיפול ותיעוד בקשות</title>
+<meta name="theme-color" content="#16211F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16211F; --body:#3A4744; --muted:#6B7975;
+  --paper:#F2F4F2; --surface:#FFFFFF; --line:#DDE4E1;
+  --accent:#2F5D50; --accent-soft:#E6EFEB;
+  --green:#15803D; --green-bg:#E8F5EC;
+  --amber:#B45309; --amber-bg:#FDF3E3;
+  --red:#B91C1C; --red-bg:#FDECEC;
+  --r:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--body);font-family:'Heebo',system-ui,-apple-system,Arial,sans-serif;font-size:15px;line-height:1.55}
+h1,h2{font-family:'Frank Ruhl Libre',Georgia,serif;color:var(--ink)}
+.top{background:var(--ink);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.top h1{color:#fff;margin:0;font-size:22px;font-weight:900}
+.top p{margin:2px 0 0;font-size:13px;opacity:.8}
+.top a{color:#fff;font-size:13.5px;text-decoration:none;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:5px 11px}
+.top a:hover{background:rgba(255,255,255,.1)}
+.setup{background:var(--surface);border-bottom:1px solid var(--line);padding:10px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:4px 22px;box-shadow:0 2px 8px rgba(22,33,31,.05)}
+.srow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:3px 0}
+.srow>.lbl{font-size:12.5px;color:var(--muted);min-width:84px}
+@media(max-width:600px){.setup{grid-template-columns:1fr}}
+.banner{background:var(--amber-bg);color:var(--amber);font-size:13px;padding:6px 20px;border-bottom:1px solid #F3DDB8;font-weight:500}
+main{max-width:1320px;margin:0 auto;padding:16px 20px 40px;display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:1000px){main{grid-template-columns:1.15fr 1fr}.outputs{position:sticky;top:12px;align-self:start;max-height:calc(100vh - 24px);overflow:auto}}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px}
+.tab{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;padding:9px 14px;font:inherit;font-size:15px;color:var(--muted);cursor:pointer}
+.tab.active{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.tab:focus-visible,.chip:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pane{display:none}.pane.active{display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.card h2{margin:0 0 10px;font-size:16px}
+.grp{margin-bottom:8px}
+.grp>.gl{font-size:12.5px;color:var(--muted);margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:5px 11px;border-radius:8px;font:inherit;font-size:13.5px;cursor:pointer;user-select:none;line-height:1.4}
+.chip:hover{border-color:#B9C7C2}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.type{padding:6px 12px}
+.field{margin:10px 0}
+.field>.fl{display:block;font-size:13.5px;color:var(--ink);font-weight:500;margin-bottom:5px}
+.field .hint{font-size:12px;color:var(--muted);margin-top:3px}
+input[type=text],input[type=number],input[type=date],textarea{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;background:#fff;color:var(--ink)}
+input[type=text]{width:min(100%,360px)}
+input.short{width:80px}
+textarea{width:100%;resize:vertical;line-height:1.6}
+.sub{border-inline-start:3px solid var(--accent-soft);padding-inline-start:12px;margin-inline-start:2px}
+.detect{margin-top:10px;font-size:14px}
+.detect .chip{margin-inline-start:4px}
+.alert{border-radius:8px;padding:8px 12px;font-size:13.5px;margin:8px 0}
+.alert.red{background:var(--red-bg);color:var(--red);font-weight:500}
+.alert.amber{background:var(--amber-bg);color:var(--amber)}
+.alert.info{background:var(--accent-soft);color:var(--accent)}
+.status{border-radius:var(--r);padding:11px 14px;margin-bottom:10px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px}
+.status .dot{width:14px;height:14px;border-radius:50%;flex:none}
+.status.green{background:var(--green-bg);color:var(--green)}.status.green .dot{background:var(--green)}
+.status.amber{background:var(--amber-bg);color:var(--amber)}.status.amber .dot{background:var(--amber)}
+.status.red{background:var(--red-bg);color:var(--red)}.status.red .dot{background:var(--red)}
+.status.none{background:var(--surface);color:var(--muted);border:1px dashed var(--line);font-weight:400}.status.none .dot{background:var(--line)}
+.flags{margin:0 0 10px;padding:0;list-style:none}
+.flags li{font-size:13.5px;padding:5px 10px;border-radius:7px;margin-bottom:4px}
+.flags li.red{background:var(--red-bg);color:var(--red)}
+.flags li.amber{background:var(--amber-bg);color:var(--amber)}
+.flags li.info{background:var(--accent-soft);color:var(--accent)}
+.out{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.out .oh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.out h2{margin:0;font-size:15px}
+.out textarea{min-height:120px;background:#FAFBFA;font-size:14px}
+.out.dim{opacity:.55}
+.btn{border:1px solid var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.btn:hover{background:var(--accent-soft)}
+.btn.solid{background:var(--accent);color:#fff}
+.btn.big{width:100%;padding:10px;font-size:15px;font-weight:700}
+.note{font-size:12.5px;color:var(--muted)}
+footer{max-width:1320px;margin:0 auto;padding:0 20px 30px;font-size:12.5px;color:var(--muted)}
+footer b{color:var(--ink);font-weight:500}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div>
+    <h1>כלי רפואן – טיפול ותיעוד בקשות</h1>
+    <p>ניסוח רישום ביקור, הודעה למטופל/ת והצגה לרופא/ה – לפי נוהל העבודה וספר החפיפה</p>
+  </div>
+  <a href="doctors.html">כל הכלים לרופאים</a>
+</header>
+
+<section class="setup" id="setup">
+  <div class="srow"><span class="lbl">רפואן/ית</span>
+    <input type="text" id="paName" placeholder="שם מלא" style="width:150px">
+    <button class="chip" data-s="paF" data-v="0">רפואן</button>
+    <button class="chip" data-s="paF" data-v="1">רפואנית</button>
+  </div>
+  <div class="srow"><span class="lbl">רופא/ה מנחה</span>
+    <button class="chip" data-s="doc" data-v="יונתן אסיאו">ד״ר אסיאו</button>
+    <button class="chip" data-s="doc" data-v="עמית ינאי">ד״ר ינאי</button>
+    <button class="chip" data-s="doc" data-v="גיל פלדמן">ד״ר פלדמן</button>
+    <button class="chip" data-s="doc" data-v="סימה סרור">ד״ר סרור</button>
+  </div>
+  <div class="srow"><span class="lbl">אופן עבודה</span>
+    <button class="chip" data-s="mode" data-v="sync">סינכרוני (משתמש הרופא)</button>
+    <button class="chip" data-s="mode" data-v="async">אסינכרוני (קליקס רפואן)</button>
+  </div>
+  <div class="srow"><span class="lbl">מקור הבקשה</span>
+    <button class="chip" data-s="src" data-v="בקשה דיגיטלית">בקשה דיגיטלית</button>
+    <button class="chip" data-s="src" data-v="משימת מזכירה">משימת מזכירה</button>
+    <button class="chip" data-s="src" data-v="משימת רפואן">משימת רפואן</button>
+    <span class="note">בקשה טלפונית / וואטסאפ – רק לאחר פתיחת משימה רשמית</span>
+  </div>
+  <div class="srow"><span class="lbl">מטופל/ת</span>
+    <button class="chip" data-s="sex" data-v="m">מטופל</button>
+    <button class="chip" data-s="sex" data-v="f">מטופלת</button>
+    <input type="number" id="age" class="short" placeholder="גיל" min="0" max="120">
+  </div>
+  <div class="srow"><span class="lbl">סטטוס אישור</span>
+    <button class="chip" data-s="appr" data-v="protocol">לפי פרוטוקול</button>
+    <button class="chip" data-s="appr" data-v="specific">אושר ספציפית ע״י הרופא/ה</button>
+    <button class="chip" data-s="appr" data-v="pending">ממתין לרופא/ה</button>
+  </div>
+</section>
+<div class="banner">בפתיחת תיק עם תוצאות קופצות: ללחוץ ״הפסק וסגור״ – לא ״אשר״. ״אשר״ מסמן שהרופא/ה עבר/ה על התוצאות.</div>
+
+<main>
+  <div class="work">
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="paste">הדבקת בקשה</button>
+      <button class="tab" data-tab="handle">טיפול בבקשה</button>
+      <button class="tab" data-tab="present">הצגה לרופא/ה</button>
+    </nav>
+
+    <section class="pane active" id="pane-paste">
+      <div class="card">
+        <h2>הדבקת בקשת המטופל/ת</h2>
+        <textarea id="pasteBox" rows="6" placeholder="הדביקו כאן את נוסח הבקשה מקליקס. מספרי ת״ז, טלפון ודוא״ל מוסתרים אוטומטית. הטקסט אינו נשמר ואינו נשלח."></textarea>
+        <div id="pasteUrgent"></div>
+        <div class="detect" id="detect"></div>
+      </div>
+    </section>
+
+    <section class="pane" id="pane-handle">
+      <div class="card" id="typePicker"></div>
+      <div class="card" id="typeForm"><p class="note">בחרו סוג בקשה.</p></div>
+    </section>
+
+    <section class="pane" id="pane-present">
+      <div class="card" id="presForm"></div>
+    </section>
+  </div>
+
+  <aside class="outputs">
+    <div id="status" class="status none"><span class="dot"></span><span>טרם נבחר סוג בקשה</span></div>
+    <ul class="flags" id="flags"></ul>
+    <div class="out"><div class="oh"><h2>רישום ביקור</h2><button class="btn" data-copy="outNote">העתקה</button></div>
+      <textarea id="outNote"></textarea></div>
+    <div class="out"><div class="oh"><h2>הודעה למטופל/ת</h2><button class="btn" data-copy="outMsg">העתקה</button></div>
+      <textarea id="outMsg"></textarea></div>
+    <div class="out" id="presBox"><div class="oh"><h2>משפט הצגה לרופא/ה</h2><button class="btn" data-copy="outPres">העתקה</button></div>
+      <textarea id="outPres"></textarea>
+      <div class="note" id="presNote"></div></div>
+    <button class="btn solid big" id="nextBtn">מטופל/ת הבא/ה – ניקוי הכול</button>
+    <p class="note">הטקסטים ניתנים לעריכה. עריכה ידנית תידרס בשינוי בחירה – ערכו בסוף.</p>
+  </aside>
+</main>
+
+<footer>
+  <p><b>מקורות:</b> נוהל עבודה לרופא משפחה מול רפואן – מכבי (לאחר מענה על הערות); ספר חפיפה – עוזרי רופא, המרפאה לבריאות המשפחה קריית אונו (מסמכים פנימיים). במקרה של סתירה – הנוהל גובר. כללי החיסונים לפי ספר החפיפה; יש לוודא עדכניות.</p>
+  <p>כלי עזר בלבד. ההחלטה הקלינית הסופית – של הרופא/ה בלבד. אין שמירה או שליחה של מידע על מטופלים.</p>
+</footer>
+
+<script>
+(function(){
+'use strict';
+/* ---------- state ---------- */
+const S={pa:'',paF:null,doc:'',mode:'',src:'',sex:'',age:'',appr:'protocol',type:null,ans:{},pres:{}};
+const LS={get(k){try{return localStorage.getItem('refuan.'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('refuan.'+k,v)}catch(e){}}};
+S.pa=LS.get('pa')||''; const pf=LS.get('paF'); S.paF=pf===null?null:pf==='1'; S.doc=LS.get('doc')||'';
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const G=(m,f,both)=>S.sex==='m'?m:S.sex==='f'?f:(both||m+'/'+f);
+const paTitle=()=>S.paF===true?'רפואנית':S.paF===false?'רפואן':'רפואן/ית';
+const docName=()=>S.doc?'ד״ר '+S.doc:'ד״ר ___';
+const paName=()=>S.pa||'___';
+const end=s=>{s=(s||'').trim();return !s?'':/[.?!:]$/.test(s)?s:s+'.';};
+const fmt=d=>{if(!d)return'';const[y,m,dd]=d.split('-');return `${dd}/${m}/${y}`;};
+const todayStr=()=>{const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;};
+const daysBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5)+1;
+const daysTxt=d=>d===1?'יום אחד':d===2?'יומיים':d+' ימים';
+const ageNum=()=>S.age===''?null:+S.age;
+const R=()=>({checked:[],lines:[],done:'',msg:'',flags:[],detail:'',noMsg:false,block:false});
+const add=(r,l,t)=>r.flags.push([l,t]);
+
+/* field builders */
+const C=(id,label,opts,x={})=>Object.assign({id,label,t:'chips',opts},x);
+const M=(id,label,opts,x={})=>Object.assign({id,label,t:'multi',opts},x);
+const X=(id,label,x={})=>Object.assign({id,label,t:'text'},x);
+const N=(id,label,x={})=>Object.assign({id,label,t:'number'},x);
+const D=(id,label,x={})=>Object.assign({id,label,t:'date'},x);
+const has=(a,id,v)=>(a[id]||[]).includes(v);
+const YN=['כן','לא'];
+
+/* shared med checks */
+const MEDCOMMON=[
+  M('mg','בדיקה חובה',['וידאתי מינון ויחידות (mg/mcg) וכמות (OP)']),
+  C('inter','התראת אינטראקציה',['אין','עם תרופה שניתנה בעבר ע״י הרופאים','עם תרופה חדשה'],{hint:'התוכנה מחשבת מול כל תרופה שניתנה אי־פעם – לבדוק מה נוטל/ת בפועל'})
+];
+function medCommon(a,r){
+  if(!has(a,'mg','וידאתי מינון ויחידות (mg/mcg) וכמות (OP)')) add(r,'amber','יש לוודא מינון, יחידות (mg/mcg) וכמות (OP)');
+  if(a.inter==='עם תרופה שניתנה בעבר ע״י הרופאים'){r.checked.push('התראת אינטראקציה מול תרופה קיימת שניתנה ע״י הרופאים – בוצע Bypass לביקור זה');}
+  if(a.inter==='עם תרופה חדשה') add(r,'amber','אינטראקציה עם תרופה חדשה – להציג לרופא/ה');
+}
+
+/* sick-leave builder (shared) */
+function sickBuild(a,fam){
+  const r=R(); const t=todayStr();
+  const what=fam?`אישור על מחלת ${a.rel||'בן/בת משפחה'}`:'אישור מחלה';
+  if(fam&&a.rel) r.detail='מחלת '+a.rel;
+  let d=0;
+  if(!a.from||!a.to) add(r,'info','יש להזין תאריך התחלה וסיום');
+  else{
+    d=daysBetween(a.from,a.to);
+    if(d<1) add(r,'red','תאריך הסיום מוקדם מתאריך ההתחלה');
+    else if(a.from>t){add(r,'red','לא ניתן להפיק אישור מחלה עתידי');r.block=true;
+      r.msg='לא ניתן להפיק אישור מחלה לימים עתידיים. ניתן לפנות שוב ביום ההיעדרות.';}
+    else{
+      r.detail=(r.detail?r.detail+', ':'')+`${fmt(a.from)}–${fmt(a.to)}, ${daysTxt(d)}`;
+      if(d>4) add(r,'amber','מעל 4 ימים – ככלל נדרשת בדיקה במרפאה. להציג לרופא/ה עם המידע שנאסף');
+      r.done=`הופק ${what} לתאריכים ${fmt(a.from)}–${fmt(a.to)} (${daysTxt(d)}).`;
+      r.msg=`${what} לתאריכים ${fmt(a.from)}–${fmt(a.to)} הופק.`;
+    }
+  }
+  if(a.complaint) r.checked.push('תלונה: '+(a.complaint==='אחר'?(a.complaintOther||'אחר'):a.complaint));
+  if(a.ev&&a.ev.length) r.checked.push('תיעוד תומך: '+a.ev.join(', '));
+  if(has(a,'ev','אין תיעוד תומך')&&d>4) add(r,'amber','אין תיעוד תומך לאישור ארוך – לבקש מסמך מהמטופל/ת (דרך משימה) או להציג לרופא/ה');
+  if(a.freq) r.checked.push('היסטוריית אישורי מחלה: '+a.freq);
+  return r;
+}
+const SICKFIELDS=[
+  D('from','מתאריך'),D('to','עד תאריך',{hint:'ניתן רטרואקטיבית או ברצף עד תאריך עתידי – לא אישור שמתחיל בעתיד'}),
+  C('complaint','תלונה',['צינון/חום','קורונה/שפעת','גסטרו','כאב גב','ניתוח/פרוצדורה','אחר']),
+  X('complaintOther','פירוט',{show:a=>a.complaint==='אחר'}),
+  M('ev','תיעוד תומך שנמצא',['ביקור במרפאה בתקופה הרלוונטית','מסמך יועץ/אשפוז','מידע כרונולוגי/פורטל מכבי','אין תיעוד תומך']),
+  C('freq','היסטוריית אישורי מחלה (בבקשה גבולית)',['נדירה','חוזרת'])
+];
+
+/* ---------- request types ---------- */
+const GROUPS=[['cert','אישורים'],['med','תרופות'],['vac','חיסונים'],['lab','בדיקות מעבדה'],['ref','הפניות']];
+const TYPES=[
+/* ===== certificates ===== */
+{key:'sick',g:'cert',label:'אישור מחלה',kw:['אישור מחלה','ימי מחלה','יום מחלה','חופש מחלה','חולה','מחלה'],
+ fields:SICKFIELDS,build:a=>sickBuild(a,false)},
+{key:'fam',g:'cert',label:'מחלת ילד/בן זוג/הורה',kw:['מחלת ילד','ילד חולה','הילד חולה','הבן שלי חולה','הבת שלי חולה','מחלת הורה','מחלת בן זוג','מחלת בת זוג'],
+ fields:[C('rel','קרבה',['ילד/ה','בן/בת זוג','הורה'])].concat(SICKFIELDS),build:a=>sickBuild(a,true)},
+{key:'workacc',g:'cert',label:'תאונת עבודה',kw:['תאונת עבודה','נפצעתי בעבודה','נפגעתי בעבודה','פגיעה בעבודה'],
+ fields:[D('inj','תאריך הפגיעה'),N('days','מספר ימים מבוקש')],
+ build:a=>{const r=R();add(r,'amber','״תעודה לנפגע בעבודה״ – מסמך משפטי, דורש אישור מקדים של הרופא/ה');
+  r.detail='תעודה לנפגע בעבודה'+(a.days?`, ${a.days} ימים`:'');
+  if(a.inj) r.checked.push('תאריך הפגיעה: '+fmt(a.inj));
+  r.done='הופקה תעודה לנפגע בעבודה'+(a.days?` ל־${a.days} ימים`:'')+'.';r.msg='התעודה לנפגע בעבודה הופקה.';return r;}},
+{key:'health',g:'cert',label:'אישור בריאות (כשירות)',kw:['כשיר','כשירה','אישור בריאות','חדר כושר','מילואים','כשירות'],
+ fields:[C('purpose','מטרה',['מילואים','עבודה','חדר כושר/ספורט','אחר']),X('purposeOther','פירוט',{show:a=>a.purpose==='אחר'}),
+  C('exam','בדיקה גופנית כולל לב וריאות ב־6 החודשים האחרונים',YN),X('examSrc','מקור ותאריך',{show:a=>a.exam==='כן',hint:'למשל: ביקור במרפאה, מיפוי לב'})],
+ build:a=>{const r=R();add(r,'amber','אישור בריאות אינו ניתן ללא אישור הרופא/ה');
+  const p=a.purpose==='אחר'?(a.purposeOther||''):(a.purpose||'');r.detail=p;
+  if(a.exam==='כן') r.checked.push('בדיקה גופנית אחרונה: '+(a.examSrc||'ב־6 החודשים האחרונים'));
+  if(a.exam==='לא'){r.checked.push('אין בדיקה גופנית (לב-ריאות) ב־6 החודשים האחרונים');
+    r.msg='לצורך אישור הבריאות נדרשת בדיקה במרפאה. ניתן לקבוע תור דרך מזכירות המרפאה.';}
+  else{r.done='הופק אישור בריאות'+(p?' ('+p+')':'')+'.';r.msg='אישור הבריאות הופק.';}
+  return r;}},
+{key:'summary',g:'cert',label:'סיכום מידע רפואי',kw:['סיכום מידע','סיכום רפואי'],fields:[],
+ build:a=>{const r=R();r.done='הופק סיכום מידע רפואי (אבחנות, תרופות קבועות, רגישויות).';r.msg='סיכום המידע הרפואי הופק.';return r;}},
+{key:'medcert',g:'cert',label:'אישור רפואי',kw:['ביטוח לאומי','חברת ביטוח','אישור רפואי','מרפאת שיניים','רופא שיניים'],
+ fields:[C('purpose','מטרה',['ביטוח לאומי','חברת ביטוח','מרפאת שיניים','אחר']),X('purposeOther','פירוט',{show:a=>a.purpose==='אחר'}),
+  M('nodx','',['אין אבחנות בתיק (יצא דף ריק)'])],
+ build:a=>{const r=R();const p=a.purpose==='אחר'?(a.purposeOther||''):(a.purpose||'');r.detail=p;
+  r.done='הופק אישור רפואי'+(p?' עבור '+p:'')+'.';
+  if(has(a,'nodx','אין אבחנות בתיק (יצא דף ריק)')) r.lines.push('נוסף מלל לאישור: ״ללא מחלות רקע וללא טיפול תרופתי קבוע.״');
+  r.msg='האישור הרפואי הופק.';return r;}},
+{key:'cannabis',g:'cert',label:'אישור לקנאביס',kw:['קנאביס','קנביס'],
+ fields:[X('dur','משך השימוש',{hint:'למשל: 3 שנים'}),X('why','סיבת השימוש')],
+ build:a=>{const r=R();r.detail='סיכום מידע רפואי';
+  r.lines.push(`נוסף לסיכום המידע הרפואי: ״${G('משתמש','משתמשת')} בקנאביס מזה ${a.dur||'___'} בשל ${a.why||'___'}.״ (ללא המלצה או התנגדות)`);
+  r.done='הופק סיכום מידע רפואי.';r.msg='סיכום המידע הרפואי הופק.';return r;}},
+{key:'weapon',g:'cert',label:'אישור לנשק',kw:['נשק','רישיון נשק','רשיון נשק'],
+ fields:[C('req','הבקשה',['סיכום מידע רפואי (שלב ראשון)','מילוי הצהרת בריאות'])],
+ build:a=>{const r=R();
+  if(a.req==='מילוי הצהרת בריאות'){r.detail='הצהרת בריאות';r.done='לא ניתן למלא הצהרת בריאות לנשק באופן מקוון – הופנה/תה לקביעת תור.';
+    r.msg='לא ניתן למלא הצהרת בריאות לרישיון נשק באופן מקוון, שכן היא מחייבת מעבר מעמיק על התיק במפגש פנים אל פנים. ניתן לקבוע תור למילוי ההצהרה דרך מזכירות המרפאה.';}
+  else if(a.req){r.detail='סיכום מידע רפואי';r.done='הופק סיכום מידע רפואי.';r.msg='סיכום המידע הרפואי הופק.';}
+  return r;}},
+
+/* ===== medications ===== */
+{key:'chronic',g:'med',label:'חידוש תרופות קבועות',kw:['חידוש','לחדש','מרשם קבוע','תרופות קבועות','תרופה קבועה'],
+ fields:[X('drug','תרופה ומינון'),
+  C('interval','חלפו כ־3 חודשים מהמרשם האחרון',['כן','מוקדם מדי']),
+  C('paOnly','חידושים רצופים ע״י רפואנים בלבד (כולל הנוכחי)',['1','2','3 ומעלה']),
+  C('visit','ביקור פיזי אצל רופא/ה בשנה האחרונה',YN),
+  M('cls','קבוצת תרופות',['מניעה שניונית (סוכרת/לחץ דם/לב)','בנזודיאזפינים / Z-drugs / בונדורמין','סטימולנטים','אופיואידים','TCA (אלטרולט/אמיטריפטילין)','GLP-1']),
+  C('bzDur','משך הנטילה',['פחות מחודש','חודשים','שנים'],{show:a=>has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין'),sub:1}),
+  C('bzCont','אופן הנטילה',['ברצף','לסירוגין'],{show:a=>has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין'),sub:1}),
+  C('bzInc','השימוש התגבר לאחרונה',YN,{show:a=>has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין'),sub:1}),
+  C('bzTalk','תועדה שיחה על הרגלי שינה',YN,{show:a=>has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין'),sub:1}),
+  X('bzTalkDate','מועד השיחה',{show:a=>has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין')&&a.bzTalk==='כן',sub:1}),
+  X('bzOther','ניסיונות אחרים (למשל מעבדת שינה)',{show:a=>has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין'),sub:1}),
+  C('stDrug','תכשיר',['ריטלין','אטנט','אדרל','ויואנס'],{show:a=>has(a,'cls','סטימולנטים'),sub:1}),
+  C('stMonth','חלף חודש מהמרשם הקודם',YN,{show:a=>has(a,'cls','סטימולנטים'),sub:1}),
+  M('stSwitch','',['מבקש/ת מעבר מריטלין לתכשיר אחר'],{show:a=>has(a,'cls','סטימולנטים'),sub:1}),
+  C('stRec','קיימת המלצת נוירולוג/ית או פסיכיאטר/ית',YN,{show:a=>has(a,'cls','סטימולנטים')&&has(a,'stSwitch','מבקש/ת מעבר מריטלין לתכשיר אחר'),sub:1}),
+  C('opDx','קיימת אבחנת כאב מתאימה',YN,{show:a=>has(a,'cls','אופיואידים'),sub:1}),
+  C('glp','תכשיר',['אוזמפיק','וויגובי','ריבלסוס'],{show:a=>has(a,'cls','GLP-1'),sub:1}),
+  C('reg','המטופל/ת ברשם סוכרת',YN,{show:a=>has(a,'cls','GLP-1'),sub:1}),
+  C('list','עדכון רשימת התרופות הקבועות',['ללא שינוי','הוספה (עדכון של רופא/ה אחר/ת)','הסרה לבקשת המטופל/ת']),
+  X('listSrc','מקור: תאריך, רופא/ה ותפקיד',{show:a=>a.list==='הוספה (עדכון של רופא/ה אחר/ת)',sub:1}),
+  X('listWhy','הסיבה שציין/ה המטופל/ת',{show:a=>a.list==='הסרה לבקשת המטופל/ת',sub:1})
+ ].concat(MEDCOMMON),
+ build:a=>{const r=R();r.detail=a.drug||'';
+  if(a.interval==='כן') r.checked.push('מרשם אחרון לפני כ־3 חודשים');
+  if(a.interval==='מוקדם מדי') add(r,'amber','לא חלפו כ־3 חודשים מהמרשם האחרון');
+  if(a.paOnly==='3 ומעלה'){add(r,'info','חידוש שלישי ברציפות ע״י רפואנים – נוספה המלצה לביקורת');r.checked.push('חידוש שלישי ברציפות ע״י רפואנים');}
+  if(a.visit==='לא'){add(r,'amber','לא ביקר/ה פיזית אצל רופא/ה בשנה האחרונה – לא לאשר אוטומטית, ליידע את הרופא/ה');r.checked.push(G('לא ביקר','לא ביקרה')+' פיזית אצל רופא/ה בשנה האחרונה');}
+  if(has(a,'cls','מניעה שניונית (סוכרת/לחץ דם/לב)')&&(a.paOnly==='3 ומעלה'||a.visit==='לא'))
+    r.lines.push(`לתשומת לב ${docName()}: תרופות למניעה שניונית חודשו לאורך זמן ע״י רפואנים בלבד – לוודא איזון, לשקול זימון.`);
+  if(has(a,'cls','בנזודיאזפינים / Z-drugs / בונדורמין')){add(r,'amber','בנזודיאזפינים / כדורי שינה – תמיד באישור הרופא/ה, גם אם בקבועות');
+    const bits=[];if(a.bzDur)bits.push('משך נטילה: '+a.bzDur);if(a.bzCont)bits.push(a.bzCont);if(a.bzInc)bits.push('התגברות שימוש: '+a.bzInc);
+    if(a.bzTalk)bits.push('שיחה על הרגלי שינה: '+(a.bzTalk==='כן'?'תועדה'+(a.bzTalkDate?' ('+a.bzTalkDate+')':''):'לא תועדה'));
+    if(a.bzOther)bits.push('ניסיונות אחרים: '+a.bzOther);if(bits.length)r.checked.push(bits.join(', '));}
+  if(has(a,'cls','סטימולנטים')){
+    if(a.stDrug)r.checked.push('סטימולנט: '+a.stDrug);
+    if(a.stMonth==='לא')add(r,'amber','לא חלף חודש מהמרשם הקודם – לא ניתן לחדש');
+    if(a.stMonth==='כן')r.checked.push('חלף חודש מהמרשם הקודם');
+    if(has(a,'stSwitch','מבקש/ת מעבר מריטלין לתכשיר אחר')){ if(a.stRec==='כן')r.checked.push('קיימת המלצת נוירולוג/ית או פסיכיאטר/ית למעבר');
+      else add(r,'amber','מעבר מריטלין לתכשיר אחר מחייב המלצת נוירולוג/ית או פסיכיאטר/ית');}
+    r.lines.push('נרשמה אבחנה בביקור: ADD. סיבה למתן מעל 10 ימים: ״ADD במעקב שלי״. מרשם לחודש לכל היותר.');}
+  if(has(a,'cls','אופיואידים')){ if(a.opDx==='כן')r.lines.push('נרשמה אבחנת כאב מתאימה בביקור.'); else add(r,'amber','אופיואידים – נדרשת אבחנת כאב מתאימה; להציג לרופא/ה');}
+  if(has(a,'cls','TCA (אלטרולט/אמיטריפטילין)')&&a.interval!=='כן') add(r,'amber','TCA – לוודא שחלפו 3 חודשים (מינון יתר עלול לגרום להפרעות קצב)');
+  if(has(a,'cls','GLP-1')){ if(a.glp)r.checked.push('GLP-1: '+a.glp);
+    if(a.glp==='אוזמפיק'&&a.reg==='לא'){add(r,'red','אוזמפיק ניתנת לחולי סוכרת ברשם סוכרת בלבד – לא לירידה במשקל');r.block=true;}
+    if(a.glp==='אוזמפיק'&&a.reg==='כן')r.checked.push('ברשם סוכרת');}
+  if(a.list==='הוספה (עדכון של רופא/ה אחר/ת)')r.lines.push('התרופה הוכנסה לתרופות הקבועות על סמך: '+(a.listSrc||'___')+'.');
+  if(a.list==='הסרה לבקשת המטופל/ת')r.lines.push('התרופה הוסרה מהתרופות הקבועות לבקשת '+G('המטופל','המטופלת')+'. סיבה: '+(a.listWhy||'___')+'.');
+  medCommon(a,r);
+  if(r.block){r.msg='לא ניתן לחדש את המרשם המבוקש. ניתן לקבוע תור לרופא/ת המשפחה לבירור.';}
+  else{r.done='חודש מרשם'+(a.drug?': '+a.drug:'')+'.';
+    r.msg='המרשם חודש.'+(a.paOnly==='3 ומעלה'?' מומלצת ביקורת אצל רופא/ת המשפחה לפחות פעם בשנה.':'');}
+  return r;}},
+{key:'additional',g:'med',label:'תרופות נוספות',kw:['מרשם','תרופה','כדורים','משחה','אנטיביוטיקה','ויאגרה','סיאליס','טלפסט','סירופ','טיפות'],
+ fields:[X('drug','תרופה ומינון'),
+  C('cat','סוג הבקשה',['תרופה שאמורה להינתן בקביעות','חלופה גנרית לתרופה קבועה','המרת מרשם ממסמך חיצוני','תרופה ״פשוטה״ (אלרגיה, צינון, ED, אנטי־פטרייתי)','תרופה ללא מרשם (OTC)','NSAID במרשם (אטופן, ארקוקסיה)','אנטיביוטיקה','אופיואידים','תרופות הרגעה/שינה','אחר']),
+  C('found','נמצא בתיק מקור לטיפול',YN,{show:a=>a.cat==='תרופה שאמורה להינתן בקביעות',sub:1,hint:'רישומי ביקורים, ביקורי יועצים, מידע כרונולוגי'}),
+  X('src','מקור: תאריך, רופא/ה ותפקיד, אבחנה, טיפול מומלץ',{show:a=>(a.cat==='תרופה שאמורה להינתן בקביעות'&&a.found==='כן')||a.cat==='המרת מרשם ממסמך חיצוני',sub:1}),
+  M('many','',['מספר רב של תרופות חדשות'],{show:a=>a.cat==='המרת מרשם ממסמך חיצוני',sub:1}),
+  C('prior','קיבל/ה בעבר',YN,{show:a=>a.cat==='תרופה ״פשוטה״ (אלרגיה, צינון, ED, אנטי־פטרייתי)',sub:1}),
+  C('reldx','קיימת אבחנה קשורה (למשל אלרגיה עונתית)',YN,{show:a=>a.cat==='תרופה ״פשוטה״ (אלרגיה, צינון, ED, אנטי־פטרייתי)',sub:1}),
+  C('ulcer','כיב קיבה בעבר',['לא','כן','לא ידוע'],{show:a=>a.cat==='NSAID במרשם (אטופן, ארקוקסיה)',sub:1}),
+  C('renal','תפקוד כלייתי',['תקין','לא תקין','לא ידוע'],{show:a=>a.cat==='NSAID במרשם (אטופן, ארקוקסיה)',sub:1}),
+  M('caut','תרופות הדורשות זהירות',['סטרואידים סיסטמיים','רטינואידים','טרבינפין','טיפות עיניים סטרואידליות','משחה סטרואידלית','סדורל / מקרודנטין']),
+  M('ret1','',['אישה בגיל הפוריות'],{show:a=>has(a,'caut','רטינואידים'),sub:1}),
+  X('ret2','מועד תפקודי כבד וכליות אחרונים',{show:a=>has(a,'caut','רטינואידים'),sub:1}),
+  C('terb','תפקודי כבד לפני תחילת טיפול (ושוב לאחר חודש)',YN,{show:a=>has(a,'caut','טרבינפין'),sub:1}),
+  C('eye','משך הטיפול נקבע ע״י רופא/ת עיניים',YN,{show:a=>has(a,'caut','טיפות עיניים סטרואידליות'),sub:1}),
+  C('cream','שימוש כרוני',YN,{show:a=>has(a,'caut','משחה סטרואידלית'),sub:1}),
+  C('g6pd','G6PD',['תקין','חסר','לא ידוע'],{show:a=>has(a,'caut','סדורל / מקרודנטין'),sub:1})
+ ].concat(MEDCOMMON),
+ build:a=>{const r=R();r.detail=a.drug||'';let ok=true;let addChronic=false;let otc=false;
+  switch(a.cat){
+   case 'תרופה שאמורה להינתן בקביעות':
+    if(a.found==='כן'){r.checked.push('מקור: '+(a.src||'___'));addChronic=true;}
+    else if(a.found==='לא'){add(r,'amber','לא נמצא מקור בתיק – לברר (דרך משימה) או להציג לרופא/ה');ok=false;}
+    break;
+   case 'חלופה גנרית לתרופה קבועה':r.checked.push('חלופה גנרית לתרופה קבועה');break;
+   case 'המרת מרשם ממסמך חיצוני':r.checked.push('מסמך חיצוני: '+(a.src||'___'));
+    if(has(a,'many','מספר רב של תרופות חדשות'))add(r,'amber','מספר רב של תרופות חדשות – ליידע את הרופא/ה ולא לתת אוטומטית');break;
+   case 'תרופה ״פשוטה״ (אלרגיה, צינון, ED, אנטי־פטרייתי)':
+    if(a.prior)r.checked.push('קיבל/ה בעבר: '+a.prior);if(a.reldx)r.checked.push('אבחנה קשורה: '+a.reldx);
+    add(r,'amber','לאסוף מידע ולהעביר לרופא/ה בקצרה (לרוב יאושר)');break;
+   case 'תרופה ללא מרשם (OTC)':otc=true;r.checked.push('תרופה שאינה מחייבת מרשם (OTC)');break;
+   case 'NSAID במרשם (אטופן, ארקוקסיה)':
+    r.checked.push('כיב קיבה בעבר: '+(a.ulcer||'___')+', תפקוד כלייתי: '+(a.renal||'___'));
+    add(r,'amber','NSAID במרשם – באישור הרופא/ה');break;
+   case 'אנטיביוטיקה':case 'אופיואידים':case 'תרופות הרגעה/שינה':add(r,'amber',a.cat+' – באישור הרופא/ה בלבד');break;
+   case 'אחר':add(r,'info','להפעיל שיקול דעת; בספק – להציג לרופא/ה');break;
+  }
+  const c=x=>has(a,'caut',x);
+  if(c('סטרואידים סיסטמיים'))add(r,'amber','סטרואידים – לנהוג בזהירות, להציג לרופא/ה');
+  if(c('רטינואידים')){add(r,'amber','רטינואידים – טרטוגניים; דורשים תפקודי כבד וכליות תקופתיים');
+    if(has(a,'ret1','אישה בגיל הפוריות'))add(r,'amber','אישה בגיל הפוריות – תשומת לב מיוחדת לטרטוגניות');
+    r.checked.push('תפקודי כבד וכליות אחרונים: '+(a.ret2||'___'));}
+  if(c('טרבינפין')){ if(a.terb==='כן')r.checked.push('בוצעו תפקודי כבד לפני תחילת הטיפול'); else add(r,'amber','טרבינפין – נדרשים תפקודי כבד לפני הטיפול ולאחר חודש');}
+  if(c('טיפות עיניים סטרואידליות')){ if(a.eye==='כן')r.checked.push('משך הטיפול נקבע ע״י רופא/ת עיניים');
+    else if(a.eye==='לא'){add(r,'amber','טיפות סטרואידליות ללא השגחה עלולות להעלות לחץ תוך־עיני');r.msg='לצורך המשך הטיפול בטיפות יש להציג המלצה עדכנית מרופא/ת עיניים.';ok=false;}}
+  if(c('משחה סטרואידלית')&&a.cream==='כן')add(r,'amber','שימוש כרוני במשחה סטרואידלית – סיכון להזדקקות ולפגיעה בעור');
+  if(c('סדורל / מקרודנטין')){ if(a.g6pd==='חסר'){add(r,'red','סדורל ומקרודנטין אסורות בחסר G6PD');r.block=true;}
+    else if(a.g6pd==='לא ידוע')add(r,'amber','לבדוק G6PD לפני מתן סדורל / מקרודנטין'); else if(a.g6pd)r.checked.push('G6PD תקין');}
+  medCommon(a,r);
+  if(r.block) r.msg='לא ניתן להפיק את המרשם המבוקש. הבקשה הועברה לבדיקת הרופא/ה.';
+  else if(ok&&a.cat){r.done='הופק מרשם'+(a.drug?': '+a.drug:'')+'.'+(addChronic?' התרופה הוכנסה לתרופות הקבועות.':'');
+    if(!r.msg) r.msg='המרשם הופק.'+(otc?' מומלץ להתייעץ עם הרוקח/ת לגבי אופן השימוש.':'');}
+  return r;}},
+{key:'drugapproval',g:'med',label:'אישור תרופה',kw:['אישור תרופה','אישור לתרופה','חידוש אישור','טופס 29'],
+ fields:[X('drug','התרופה')],
+ build:a=>{const r=R();r.detail=a.drug||'';add(r,'amber','בקשה לאישור תרופה אינה בקשת מרשם – להעביר לרופא/ה לטיפול מול מחלקת אישורי תרופות');
+  r.done='הבקשה לאישור תרופה הועברה ל'+docName()+'.';r.msg='בקשתך לאישור התרופה הועברה לטיפול הרופא/ה.';return r;}},
+
+/* ===== vaccines ===== */
+{key:'shingrix',g:'vac',label:'שינגריקס',kw:['שינגריקס','שלבקת','זוסטר','shingrix'],
+ fields:[C('elig','זכאות',['גיל 65 ומעלה','גיל 18 ומעלה עם דיכוי חיסוני וקבוצת סיכון מוגדרת','לא זכאי/ת לסל (למשל בריא/ה מגיל 50)']),
+  M('risk','קבוצת סיכון',['השתלת תאי גזע','השתלת איבר סולידי','נשא/ית HIV','ממאירות סולידית פעילה סביב כימותרפיה','ממאירות המטולוגית פעילה'],{show:a=>a.elig==='גיל 18 ומעלה עם דיכוי חיסוני וקבוצת סיכון מוגדרת',sub:1}),
+  C('dose','מנה',['ראשונה','שנייה'])],
+ build:a=>{const r=R();const priv=a.elig==='לא זכאי/ת לסל (למשל בריא/ה מגיל 50)';
+  if(a.elig)r.checked.push('זכאות: '+a.elig+(a.risk&&a.risk.length?' ('+a.risk.join(', ')+')':''));
+  if(a.elig==='גיל 18 ומעלה עם דיכוי חיסוני וקבוצת סיכון מוגדרת'&&!(a.risk&&a.risk.length))add(r,'amber','יש לציין את קבוצת הסיכון המזכה');
+  const n=a.dose==='שנייה'?'השנייה':'הראשונה';r.detail=a.dose==='שנייה'?'מנה שנייה':'מנה ראשונה';const g=ageNum();if(a.elig==='גיל 65 ומעלה'&&g!==null&&g<65)add(r,'amber','הגיל שהוזן נמוך מ־65');
+  r.done=`הופק מרשם לשינגריקס (המנה ${n})${priv?' – לרכישה פרטית':''}. אין צורך בהפניה לאחיות.`;
+  r.msg=`הופק מרשם לחיסון שינגריקס (המנה ${n}).${priv?' החיסון אינו כלול בסל עבורך ולכן יירכש במחיר מלא.':''} יש לקבוע תור באופן עצמאי במרפאת האחיות ולרכוש את החיסון סמוך למועד החיסון.`+(a.dose==='שנייה'?'':' את המנה השנייה יש לקבל 2–6 חודשים לאחר הראשונה; לשם כך יש לפנות למרפאה לקבלת מרשם נוסף.');
+  return r;}},
+{key:'gardasil',g:'vac',label:'גרדסיל 9',kw:['גרדסיל','פפילומה','hpv'],fields:[],
+ build:a=>{const r=R();const g=ageNum();if(g===null)add(r,'info','יש להזין גיל (מיועד לגילאי 9–26)');else if(g<9||g>26)add(r,'amber','מחוץ לטווח הגילאים 9–26');
+  r.done='הופקו מרשם והפניה לאחיות לחיסון גרדסיל 9.';r.msg='הופקו מרשם והפניה למרפאת האחיות לחיסון גרדסיל 9. יש לקבוע תור במרפאת האחיות.';return r;}},
+{key:'prevenar',g:'vac',label:'פרבנר 20',kw:['פרבנר','פנאומוקוק','דלקת ריאות','prevenar'],
+ fields:[C('crit','התוויה',['גיל 65 ומעלה','גיל 18 ומעלה בקבוצת סיכון גבוה']),
+  C('given','פרבנר 20 כבר ניתן (לפי רשומת החיסונים)',YN),
+  C('year','חלפה שנה לפחות מחיסון פנאומוקוק קודם (או לא חוסנ/ה)',YN)],
+ build:a=>{const r=R();if(a.crit)r.checked.push('התוויה: '+a.crit);const g=ageNum();if(a.crit==='גיל 65 ומעלה'&&g!==null&&g<65)add(r,'amber','הגיל שהוזן נמוך מ־65');
+  if(a.given==='כן'){add(r,'red','פרבנר 20 ניתן פעם אחת בלבד – כבר ניתן');r.block=true;r.msg='לפי רשומת החיסונים, חיסון פרבנר 20 כבר ניתן לך. החיסון ניתן פעם אחת בלבד.';return r;}
+  if(a.given==='לא')r.checked.push('לא חוסנ/ה בעבר בפרבנר 20');
+  if(a.year==='לא')add(r,'amber','לא חלפה שנה מחיסון פנאומוקוק קודם');
+  r.done='הופקו מרשם והפניה לאחיות לחיסון פרבנר 20.';r.msg='הופקו מרשם והפניה למרפאת האחיות לחיסון פרבנר 20. יש לקבוע תור במרפאת האחיות.';return r;}},
+{key:'pneumovax',g:'vac',label:'פנוימווקס',kw:['פנוימווקס','pneumovax'],fields:[X('why','קבוצת הסיכון')],
+ build:a=>{const r=R();add(r,'amber','פנוימווקס – לקבוצות סיכון גבוה; להציג לרופא/ה');if(a.why)r.checked.push('קבוצת סיכון: '+a.why);
+  r.done='הופקו מרשם והפניה לאחיות לחיסון פנוימווקס.';r.msg='הופקו מרשם והפניה למרפאת האחיות. יש לקבוע תור במרפאת האחיות.';return r;}},
+{key:'flu',g:'vac',label:'שפעת',kw:['חיסון שפעת','חיסון לשפעת'],fields:[],
+ build:a=>{const r=R();r.done='הוסבר כי אין צורך בהפניה לחיסון שפעת.';r.msg='חיסון השפעת אינו דורש הפניה. יש לקבוע תור ישירות במרפאת האחיות.';return r;}},
+{key:'rabies',g:'vac',label:'כלבת (עובדים עם בעלי חיים)',kw:['כלבת'],fields:[],
+ build:a=>{const r=R();r.done='הוסבר כי אין צורך בהפניה לחיסון מונע כלבת.';r.msg='החיסון המונע נגד כלבת לעובדים עם בעלי חיים אינו דורש הפניה. ההנחיות לקבלת החיסון מופיעות באתר מכבי.';return r;}},
+
+/* ===== labs ===== */
+{key:'labgen',g:'lab',label:'בדיקות כלליות/תקופתיות',kw:['בדיקות דם','בדיקות שגרה','בדיקות תקופתיות','בדיקות כלליות'],
+ fields:[C('six','חלפו לפחות 6 חודשים מהבדיקות הקודמות',YN),
+  C('lip','פאנל שומנים בוצע ב־3 השנים האחרונות',YN),
+  M('bg','מחלות רקע',['סוכרת','תת־פעילות בלוטת התריס']),
+  M('prev','ערכים חריגים בעבר – לחזור',['משק ברזל','B-12']),X('prevOther','אחר')],
+ build:a=>{const r=R();if(a.six==='לא')add(r,'amber','לא חלפו 6 חודשים מהבדיקות הקודמות');
+  const t=['CBC','גלוקוז','אלקטרוליטים','ALT','AST'];
+  if(a.lip==='לא')t.push('Lipid battery');
+  if(has(a,'bg','סוכרת'))t.push('HbA1c');if(has(a,'bg','תת־פעילות בלוטת התריס'))t.push('TSH');
+  if(has(a,'prev','משק ברזל'))t.push('Sat. Transferrin Bat.');if(has(a,'prev','B-12'))t.push('B-12');if(a.prevOther)t.push(a.prevOther);
+  if(a.bg&&a.bg.length)r.checked.push('רקע: '+a.bg.join(', '));
+  r.done='הופקה הפניה לבדיקות: '+t.join(', ')+'.';r.msg='הופקה הפניה לבדיקות דם.';return r;}},
+{key:'labblock',g:'lab',label:'בדיקות שהמחשב חוסם',kw:['חסום','חוסם','לא נותן לי להזמין'],
+ fields:[X('tests','הבדיקות שנחסמו'),X('why','הסבר קצר')],
+ build:a=>{const r=R();r.detail=a.tests||'';r.done='הבדיקות '+(a.tests||'___')+' נחסמו במערכת (לא חלף מספיק זמן מהבדיקה הקודמת). סומן הסבר אוטומטי למטופל/ת.';
+  r.msg='חלק מהבדיקות שביקשת לא הופקו, מאחר שלא חלף מספיק זמן מהבדיקה הקודמת.'+(a.why?' '+end(a.why):'');return r;}},
+{key:'labcons',g:'lab',label:'בדיקות בהמלצת יועץ חיצוני',kw:['ביקש שאעשה','המליץ','לפי המלצת'],
+ fields:[X('who','היועץ/ת ותחום',{hint:'למשל: ייעוץ פרופ׳ ישראלי, נוירולוג'}),X('find','עיקר הממצא'),X('req','מה מבקש/ת'),M('cx','',['מורכב – להשאיר לרופא/ה'])],
+ build:a=>{const r=R();r.lines.push(`ייעוץ ${a.who||'___'}. ${end(a.find||'___')} ${G('מבקש','מבקשת')} ${end(a.req||'___')}`);
+  if(has(a,'cx','מורכב – להשאיר לרופא/ה'))add(r,'amber','ייעוץ מורכב – להשאיר לרופא/ה');
+  r.done='הופקה הפניה לבדיקות לפי המלצת היועץ/ת.';r.msg='הופקה הפניה לבדיקות שהומלצו.';return r;}},
+{key:'labhome',g:'lab',label:'בדיקות מעבדה בבית',kw:['בדיקה בבית','בדיקות בבית','נטילת דם בבית'],
+ fields:[X('tests','הבדיקות'),C('why','סיבה',['קשיי ניידות','מרותק/ת לבית','אחר']),M('tick','',['סומן ״המצב הרפואי מחייב נטילת דם בבית״ + סיבה'])],
+ build:a=>{const r=R();if(!has(a,'tick','סומן ״המצב הרפואי מחייב נטילת דם בבית״ + סיבה'))add(r,'amber','יש לסמן ״המצב הרפואי מחייב נטילת דם בבית״ ולפרט סיבה');
+  r.done='הופקה הפניה לבדיקות מעבדה בבית'+(a.tests?': '+a.tests:'')+(a.why?'. סיבה: '+a.why:'')+'.';r.msg='הופקה הפניה לבדיקות מעבדה בבית.';return r;}},
+{key:'labrep',g:'lab',label:'הפניה חוזרת',kw:['הפניה חוזרת','מעקב הריון'],
+ fields:[X('tests','הבדיקה'),M('tick','',['סומנה ״הפניה חוזרת״'])],
+ build:a=>{const r=R();r.done='הופקה הפניה חוזרת'+(a.tests?' ל'+a.tests:'')+'.';r.msg='הופקה הפניה חוזרת לבדיקה.';return r;}},
+{key:'labsym',g:'lab',label:'בדיקות עבור תלונה',kw:['עייפות','עייף','עייפה','נשירת שיער','סחרחורת'],
+ fields:[C('c','תלונה',['עייפות','נשירת שיער','סחרחורת / תלונה לא ספציפית','אחר']),X('cOther','פירוט',{show:a=>a.c==='אחר'}),
+  C('b12','B-12 נבדק בשנתיים האחרונות',YN,{show:a=>a.c==='עייפות'})],
+ build:a=>{const r=R();add(r,'amber','בדיקות עבור תלונה – עדיף תמיד להיוועץ ברופא/ה');let t=[];
+  if(a.c==='עייפות'){t=['CBC','Sat. Transferrin Bat.','TSH'];if(a.b12==='לא')t.push('B-12');}
+  if(a.c==='נשירת שיער')t=['Sat. Transferrin Bat.','TSH','בדיקות כלליות'];
+  if(a.c==='סחרחורת / תלונה לא ספציפית')add(r,'amber','תלונה לא ספציפית – להתייעץ; ייתכן שיש לזמן לבדיקה במרפאה');
+  r.detail=a.c==='אחר'?(a.cOther||''):(a.c||'');
+  if(t.length)r.lines.push('בדיקות מוצעות: '+t.join(', ')+'.');
+  r.done='הופקה הפניה לבדיקות'+(t.length?': '+t.join(', '):'')+'.';r.msg='הופקה הפניה לבדיקות דם.';return r;}},
+{key:'labint',g:'lab',label:'בקשה לפענוח תוצאות',kw:['תוצאות','לפענח','מה יצא','תקין?','תקינות'],
+ fields:[X('tests','הבדיקות')],
+ build:a=>{const r=R();add(r,'amber','רפואן אינו מפענח תוצאות ואינו נותן משוב (תקין/לא תקין/המשך טיפול) – להעביר לרופא/ה');r.detail=a.tests||'';
+  r.done='הבקשה לפענוח תוצאות'+(a.tests?' ('+a.tests+')':'')+' הועברה ל'+docName()+'.';r.forcePending=true;return r;}},
+{key:'labquick',g:'lab',label:'בדיקות ספציפיות',kw:['בדיקת שתן','תרבית','משטח','בדיקת הריון','הריון','הליקובקטר','צליאק','דם סמוי','מחלות מין','ברזל'],
+ fields:[M('t','בדיקות',['דלקת בדרכי השתן: URINE GENERAL + URINE CULTURE','שתן לצבא: URINE GENERAL','משטח גרון: THROAT CULTURE','משטח נרתיקי: Vaginal ROUTINE ANALYSIS','דם סמוי: Occult blood fecal','הליקובקטר: H. pylori breath test','הריון: HCG-b quantitative','מחלות מין: STD panel + HIV-ab','משק ברזל: Sat. Transferrin Bat.','צליאק: Celiac serology','משטח אף: Staph aureus MRSA/MSSA'])],
+ build:a=>{const r=R();const t=(a.t||[]).map(x=>x.split(': ')[1]);r.detail=t.join(', ');
+  if(t.length){r.done='הופקה הפניה ל: '+t.join(', ')+'.';r.msg='הופקה הפניה לבדיקה.';}return r;}},
+{key:'labalert',g:'lab',label:'התראת מעבדה בפתיחת תיק',kw:[],
+ fields:[X('test','בדיקה וערך נוכחי'),X('prevv','ערכים קודמים (ותאריכים)'),C('cmp','השוואה לערכים קודמים',['ללא שינוי','חדש / מחמיר','אין ערכים קודמים'])],
+ build:a=>{const r=R();r.noMsg=true;r.detail=a.test||'';
+  r.lines.push(`נסקרו תוצאות: ${a.test||'___'}. ערכים קודמים: ${a.prevv||'אין'}. ${a.cmp?'השוואה: '+a.cmp+'.':''}`);
+  r.lines.push('ההתראה נסגרה ב״הפסק וסגור״ – ההחלטה הקלינית לרופא/ה.');
+  if(a.cmp==='חדש / מחמיר')add(r,'red','ערך חדש או מחמיר – להודיע לרופא/ה מיידית ולתעד את הנחייתו/ה');
+  else if(a.cmp==='אין ערכים קודמים')add(r,'amber','ערך חריג ללא ערכים להשוואה – ליידע את הרופא/ה');
+  else if(a.cmp==='ללא שינוי')add(r,'info','ערך חריג יציב – לציין בפני הרופא/ה');
+  return r;}},
+
+/* ===== referrals ===== */
+{key:'consult',g:'ref',label:'הפניה לרופא/ה יועץ/ת',kw:['הפניה ל','הפנייה ל','קרדיולוג','נוירולוג','רופא עור','גסטרו','אנדוקרינולוג','אורולוג','ראומטולוג','גינקולוג','רופא עיניים','אורתופד','אף אוזן גרון'],
+ fields:[C('sp','תחום',['גינקולוגיה','עיניים','אורתופדיה','כירורגיית שד','אא״ג','אחר']),X('spOther','תחום',{show:a=>a.sp==='אחר',sub:1}),
+  C('follow','במעקב קבוע אצל מומחה בתחום עקב מחלה כרונית',YN,{show:a=>a.sp==='אחר',sub:1}),
+  X('why','סיבת ההפניה',{show:a=>a.sp==='אחר',sub:1}),
+  M('hosp','',['מבוקשת הפניה למרפאת חוץ בבית חולים'],{show:a=>a.sp==='אחר'}),
+  C('inHosp','כבר מטופל/ת בבית החולים בתחום',YN,{show:a=>has(a,'hosp','מבוקשת הפניה למרפאת חוץ בבית חולים'),sub:1})],
+ build:a=>{const r=R();const direct=['גינקולוגיה','עיניים','אורתופדיה','כירורגיית שד','אא״ג'];
+  if(direct.includes(a.sp)){r.detail=a.sp;r.done='הוסבר כי לתחום '+a.sp+' אין צורך בהפניה.';r.msg=`לתחום ${a.sp} אין צורך בהפניה – ניתן לקבוע תור ישירות.`;return r;}
+  if(a.sp==='אחר'){const sp=a.spOther||'___';r.detail=sp;
+   if(a.follow==='כן')r.checked.push('במעקב קבוע אצל מומחה/ית בתחום '+sp);
+   else add(r,'amber','הפניה ליועץ – אזור אפור; להציג לרופא/ה עם הרקע הרלוונטי');
+   const hosp=has(a,'hosp','מבוקשת הפניה למרפאת חוץ בבית חולים');
+   if(hosp&&a.inHosp!=='כן')add(r,'amber','הפניה לבית חולים במקום לקהילה – לברר מדוע; בספק לשאול את הרופא/ה');
+   r.done=`הופקה הפניה ל${hosp?'מרפאת חוץ ':''}${sp}${a.why?'. סיבה: '+a.why:''}.`;r.msg='הופקה הפניה ל'+sp+'.';}
+  return r;}},
+{key:'colo',g:'ref',label:'קולונוסקופיה',kw:['קולונוסקופיה','קולונו'],
+ fields:[C('risk','קבוצת סיכון',['סיכון ממוצע','ממצאים בקולונוסקופיה קודמת','קרוב/ת מדרגה ראשונה עם סרטן מעי גס','תסמונת לינץ׳ במשפחה','פוליפוזיס משפחתי','IBD']),
+  N('iv','מרווח שהומלץ בפענוח (שנים)',{show:a=>a.risk==='ממצאים בקולונוסקופיה קודמת',sub:1}),
+  N('last','שנת הקולונוסקופיה האחרונה',{hint:'ריק אם לא בוצעה'})],
+ build:a=>{const r=R();const g=ageNum();const map={'סיכון ממוצע':[50,10],'קרוב/ת מדרגה ראשונה עם סרטן מעי גס':[40,5],'תסמונת לינץ׳ במשפחה':[25,1],'פוליפוזיס משפחתי':[15,1]};
+  if(a.risk)r.checked.push('קבוצת סיכון: '+a.risk);
+  let iv=null,minAge=null;
+  if(map[a.risk]){[minAge,iv]=map[a.risk];}
+  if(a.risk==='ממצאים בקולונוסקופיה קודמת')iv=a.iv?+a.iv:null;
+  if(a.risk==='IBD')add(r,'amber','IBD – לפי המלצת הרופא/ה המטפל/ת');
+  if(minAge!==null&&g!==null&&g<minAge)add(r,'amber',`מתחת לגיל ${minAge} בקבוצת סיכון זו`);
+  if(g===null&&minAge!==null)add(r,'info','יש להזין גיל');
+  if(a.last){r.checked.push('קולונוסקופיה אחרונה: '+a.last);
+   if(iv!==null){const since=new Date().getFullYear()-(+a.last);if(since<iv)add(r,'amber',`טרם חלף המרווח המומלץ (${iv} שנים; חלפו ${since})`);}}
+  r.done='הופקה הפניה לגסטרואנטרולוג/ית – סיבת ההפניה: קולונוסקופיה'+(a.risk?' ('+a.risk+')':'')+'.';r.msg='הופקה הפניה לקולונוסקופיה.';return r;}},
+{key:'imaging',g:'ref',label:'דימות',kw:['צילום','אולטרסאונד','סונר','US','CT','MRI','ממוגרפיה','טי','אם אר איי','קלציום'],
+ fields:[C('mod','סוג',['CT / MRI','צילום רנטגן','US','צל״ח לפני ניתוח','ממוגרפיה','קלציום סקור']),
+  C('recBy','ממליץ/ה',['אורתופד/ית, אונקולוג/ית, נוירולוג/ית או נוירוכירורג/ית','תחום אחר'],{show:a=>a.mod==='CT / MRI',sub:1}),
+  C('basis','בסיס להפניה',['הפניה/המלצת רופא/ה יועץ/ת','אישור רופא/ת המרפאה','אין'],{show:a=>a.mod==='צילום רנטגן'||a.mod==='US',sub:1}),
+  C('usType','סוג US',['בטן עליונה','כליות ודרכי שתן','בטן עליונה + כליות ודרכי שתן','אחר'],{show:a=>a.mod==='US',sub:1}),
+  X('reason','סיבה וממצאים קודמים',{show:a=>a.mod==='צילום רנטגן'||a.mod==='US'||a.mod==='CT / MRI',sub:1}),
+  C('mam','התוויה',['גיל 50–74 (אחת לשנתיים)','קרובת משפחה מדרגה ראשונה עם סרטן שד (מגיל 40, שנתי)','מחלת שד שפירה עם אטיפיה','סיכון גבוה אחר','ממצא במעקב / גידול שד בעבר','אין'],{show:a=>a.mod==='ממוגרפיה',sub:1}),
+  C('mamIv','חלף המרווח מהבדיקה הקודמת',YN,{show:a=>a.mod==='ממוגרפיה',sub:1})],
+ build:a=>{const r=R();r.detail=a.mod||'';
+  switch(a.mod){
+   case 'CT / MRI':
+    if(a.recBy==='אורתופד/ית, אונקולוג/ית, נוירולוג/ית או נוירוכירורג/ית'){r.done='אין צורך בהפניה – ההמלצה הועברה למזכירות לשליחה למרכז הדימות.';}
+    else if(a.recBy){r.done='נפתחה בקשה למרכז דימות, וההמלצה נשלחה דרך המזכירות למרכז הדימות.';}
+    if(a.reason)r.checked.push('סיבה: '+a.reason);r.msg='הבקשה לבדיקת הדימות הועברה למרכז הדימות.';break;
+   case 'צילום רנטגן':case 'US':
+    if(a.basis==='אין'){add(r,'amber','צילום/US – נדרשת הפניה מיועץ/ת או אישור רופא/ת המרפאה');}
+    else if(a.basis)r.checked.push('בסיס: '+a.basis);
+    if(a.usType==='בטן עליונה + כליות ודרכי שתן')add(r,'info','אלה שתי בדיקות – שתי שורות בדיקה');
+    if(a.reason)r.checked.push('סיבה וממצאים קודמים: '+a.reason);
+    if(a.basis!=='אין'){r.done=`הופקה הפניה ל${a.mod==='US'?'US'+(a.usType&&a.usType!=='אחר'?' '+a.usType:''):'צילום רנטגן'}.`;r.msg='הופקה הפניה לבדיקה.';}
+    break;
+   case 'צל״ח לפני ניתוח':r.done='הופקה הפניה לצילום חזה לפני ניתוח (2 מנחים).';r.msg='הופקה הפניה לצילום חזה.';break;
+   case 'ממוגרפיה':
+    if(a.mam==='אין')add(r,'amber','אינה עונה על התוויות הסקר – להציג לרופא/ה');else if(a.mam)r.checked.push('התוויה: '+a.mam);
+    if(a.mamIv==='לא')add(r,'amber','טרם חלף המרווח מהבדיקה הקודמת');
+    if(a.mam!=='אין'){r.done='הופקה הפניה לממוגרפיה.';r.msg='הופקה הפניה לממוגרפיה.';}break;
+   case 'קלציום סקור':r.done='הופקה הפניה ל־cardiac CT (קלציום סקור).';r.msg='הופקה הפניה לבדיקה.';break;
+  }
+  return r;}},
+{key:'brca',g:'ref',label:'בדיקת נשאות BRCA',kw:['brca','ברקה','נשאות'],
+ fields:[M('c','',['יהודייה ממוצא אשכנזי','ללא סרטן שד/שחלה/לבלב – אישי או בקרובת משפחה מדרגה ראשונה'])],
+ build:a=>{const r=R();const ok=(a.c||[]).length===2;
+  if(ok){r.done='הוסבר כי הבדיקה אינה דורשת הפניה.';r.msg='את בדיקת הסקר לנשאות BRCA ניתן לבצע ללא הפניה וללא תשלום – ישירות במעבדה בסניף.';}
+  else add(r,'amber','אינה עונה על תנאי הזכאות לסקר – להציג לרופא/ה');return r;}},
+{key:'physio',g:'ref',label:'פיזיותרפיה / פסיכולוג/ית',kw:['פיזיותרפיה','פיזיו','פסיכולוג','פסיכולוגית'],
+ fields:[C('kind','סוג',['פיזיותרפיה','פסיכולוג/ית']),C('rec','המלצה',['אורתופד/ית','רופא/ת המשפחה','רופא/ה אחר/ת','אין המלצה']),
+  X('area','אזור בגוף',{show:a=>a.kind==='פיזיותרפיה',sub:1})],
+ build:a=>{const r=R();r.detail=a.kind||'';if(a.rec)r.checked.push('המלצה: '+a.rec);
+  if(a.kind==='פיזיותרפיה'&&!a.area)add(r,'amber','יש לציין את האזור בהפניה – לברר עם המטופל/ת');
+  if(a.rec==='אין המלצה')add(r,'info','ללא המלצה קודמת – להפעיל שיקול דעת');
+  r.done='הופקה הפניה ל'+(a.kind==='פיזיותרפיה'?'פיזיותרפיה'+(a.area?' – '+a.area:''):'פסיכולוג/ית')+'.';r.msg='ההפניה הופקה.';return r;}},
+{key:'device',g:'ref',label:'אביזר רפואי',kw:['מדרסים','סד','מד סוכר','מד לחץ','דוקרנים','סטיקים','אביזר','קיבוע'],
+ fields:[X('dev','האביזר',{hint:'בתוכנית ← חיפוש: ״אביזר רפואי״'})],
+ build:a=>{const r=R();r.detail=a.dev||'';r.done='הופקה הפניה לאביזר רפואי'+(a.dev?': '+a.dev:'')+'.';r.msg='ההפניה לאביזר הופקה.';return r;}},
+{key:'form',g:'ref',label:'חידוש טופס',kw:['חידוש טופס','פג תוקף','פגה','תוקף'],
+ fields:[X('f','הטופס')],
+ build:a=>{const r=R();r.detail=a.f||'';r.done='חודש טופס'+(a.f?': '+a.f:'')+'.';r.msg='הטופס חודש.';return r;}},
+{key:'nurse',g:'ref',label:'הפניה לאחיות',kw:['אחות','אחיות','זריקה','חבישה','מנטו','עירוי','אקלסטה'],
+ fields:[C('p','מטרה',['עירוי / תרופה IV','זריקה (למשל אקלסטה)','חיסון','מעקב רגל סוכרתית','חבישה','מנטו','אחר']),X('pOther','פירוט',{show:a=>a.p==='אחר'})],
+ build:a=>{const r=R();const p=a.p==='אחר'?(a.pOther||''):(a.p||'');r.detail=p;
+  r.lines.push('ההפניה הוכנה באמצעות ״טען מקרו״.');r.done='הופקה הפניה לאחיות'+(p?': '+p:'')+'.';r.msg='הופקה הפניה למרפאת האחיות. יש לקבוע תור במרפאת האחיות.';return r;}},
+{key:'urgent',g:'ref',label:'מצב דחוף / מוקד / מיון',kw:['כאב בחזה','כאבים בחזה','לחץ בחזה','קוצר נשימה','התעלפ','דימום','מיון','מוקד','דחוף','חולשה בצד','בלבול'],
+ fields:[X('c','התלונה')],
+ build:a=>{const r=R();add(r,'red','חשד למצב דחוף – להודיע לרופא/ה מיידית ולתעד את הנחייתו/ה');r.detail=a.c||'';
+  r.done='הועבר מיידית ל'+docName()+'. הנחיית הרופא/ה: ___';
+  r.msg='פנייתך הועברה באופן מיידי לרופא/ה. במצב חירום יש לפנות למד״א (101) או לחדר המיון הקרוב.';r.urgent=true;return r;}}
+];
+const T=k=>TYPES.find(t=>t.key===k);
+
+/* ---------- presentation form ---------- */
+const PRES=[
+  M('srcs','נבדקו',['רישום ביקורים','ביקורי יועצים','מידע כרונולוגי','פורטל מכבי']),
+  C('last','ביקור פיזי אחרון במרפאה',['בשנה האחרונה','לפני יותר משנה']),
+  M('ev','דגשים',['אירוע משמעותי לאחרונה (אשפוז, אבל)','אבחנה חדשה','רמז לטעות / פניות חוזרות באותו נושא','הבקשה ניתנה עד כה ע״י רפואנים בלבד']),
+  X('bg','רקע רלוונטי',{hint:'למשל: סוכרת, יתר לחץ דם; או ״ללא מחלות רקע״'}),
+  X('req','מה מבקש/ת',{hint:'ריק = לפי סוג הבקשה שנבחר'}),
+  {id:'found',label:'מה נמצא (מקור, תאריך, ממצא)',t:'textarea'},
+  X('q','השאלה לרופא/ה (כן/לא)',{hint:'למשל: האם לחדש?'}),
+  X('sug','ההצעה שלי',{hint:'למשל: חידוש לחודש וזימון לביקור'})
+];
+
+/* ---------- rendering ---------- */
+function fieldHTML(f,a,scope){
+  const v=a[f.id];const cls=f.sub?'field sub':'field';
+  let h=`<div class="${cls}" data-fid="${f.id}">`+(f.label?`<span class="fl">${f.label}</span>`:'');
+  if(f.t==='chips'||f.t==='multi'){h+='<div class="chips">';
+    f.opts.forEach(o=>{const on=f.t==='chips'?v===o:(v||[]).includes(o);
+      h+=`<button type="button" class="chip${on?' on':''}" data-sc="${scope}" data-f="${f.id}" data-t="${f.t}" data-v="${esc(o)}" aria-pressed="${on}">${o}</button>`;});
+    h+='</div>';}
+  else if(f.t==='textarea') h+=`<textarea rows="3" data-sc="${scope}" data-f="${f.id}">${esc(v||'')}</textarea>`;
+  else{const tp=f.t==='number'?'number':f.t==='date'?'date':'text';
+    h+=`<input type="${tp}" data-sc="${scope}" data-f="${f.id}" value="${esc(v||'')}"${tp==='number'?' class="short"':''}>`;}
+  if(f.hint)h+=`<div class="hint">${f.hint}</div>`;
+  return h+'</div>';
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function renderPicker(){
+  let h='<h2>סוג הבקשה</h2>';
+  GROUPS.forEach(([g,l])=>{h+=`<div class="grp"><div class="gl">${l}</div><div class="chips">`;
+    TYPES.filter(t=>t.g===g).forEach(t=>{h+=`<button type="button" class="chip type${S.type===t.key?' on':''}" data-type="${t.key}">${t.label}</button>`;});
+    h+='</div></div>';});
+  $('#typePicker').innerHTML=h;
+}
+function renderForm(){
+  const box=$('#typeForm');if(!S.type){box.innerHTML='<p class="note">בחרו סוג בקשה.</p>';return;}
+  const t=T(S.type);const a=S.ans[S.type]||(S.ans[S.type]={});
+  let h=`<h2>${t.label}</h2>`;
+  if(!t.fields.length)h+='<p class="note">אין שדות נוספים – הרישום נבנה אוטומטית.</p>';
+  t.fields.forEach(f=>{if(!f.show||f.show(a))h+=fieldHTML(f,a,'type');});
+  box.innerHTML=h;
+}
+function renderPres(){
+  let h='<h2>לפני הצגה לרופא/ה</h2><p class="note">הדגלים מסוג הבקשה נוספים אוטומטית למשפט ההצגה.</p>';
+  PRES.forEach(f=>h+=fieldHTML(f,S.pres,'pres'));$('#presForm').innerHTML=h;
+}
+function renderSetup(){
+  document.querySelectorAll('[data-s]').forEach(b=>{const k=b.dataset.s;let cur=S[k];if(k==='paF')cur=S.paF===null?null:(S.paF?'1':'0');
+    const on=String(cur)===b.dataset.v;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  $('#paName').value=S.pa;$('#age').value=S.age;
+}
+
+/* ---------- output ---------- */
+function compute(){
+  if(!S.type)return null;const t=T(S.type);const a=S.ans[S.type]||{};const r=t.build(a);
+  const lv=r.flags.map(f=>f[0]);
+  r.status=lv.includes('red')?'red':lv.includes('amber')?'amber':'green';
+  return r;
+}
+function update(){
+  const r=compute();const st=$('#status');const fl=$('#flags');
+  if(!r){st.className='status none';st.innerHTML='<span class="dot"></span><span>טרם נבחר סוג בקשה</span>';fl.innerHTML='';
+    $('#outNote').value='';$('#outMsg').value='';$('#outPres').value=presText(null);return;}
+  const lab={green:'במסגרת הפרוטוקול',amber:'נדרשת התייעצות עם הרופא/ה',red:'חסימה / הודעה מיידית לרופא/ה'}[r.status];
+  st.className='status '+r.status;st.innerHTML=`<span class="dot"></span><span>${lab}</span>`;
+  const fx=[];
+  if(S.appr==='protocol'&&r.status!=='green')fx.push(['amber','הבקשה חורגת מהפרוטוקול – יש לקבל אישור רופא/ה ולעדכן את סטטוס האישור']);
+  const missing=[];if(!S.pa)missing.push('שם הרפואן/ית');if(S.paF===null)missing.push('רפואן/רפואנית');if(!S.doc)missing.push('רופא/ה מנחה');if(!S.mode)missing.push('אופן עבודה');if(!S.src)missing.push('מקור הבקשה');if(!S.sex)missing.push('מטופל/מטופלת');
+  if(missing.length)fx.push(['info','חסר בכותרת: '+missing.join(', ')]);
+  fl.innerHTML=fx.concat(r.flags).map(([l,x])=>`<li class="${l}">${x}</li>`).join('');
+  $('#outNote').value=noteText(r);$('#outMsg').value=msgText(r);$('#outPres').value=presText(r);
+  const need=r.status!=='green'||S.appr==='pending';
+  $('#presBox').classList.toggle('dim',!need);
+  $('#presNote').textContent=need?'':'לא נדרשת הצגה לרופא/ה בבקשה זו.';
+}
+function pending(r){return S.appr==='pending'||r.forcePending;}
+function noteText(r){
+  const t=T(S.type);const L=[];
+  L.push(`בוצע על ידי ${paName()}, ${paTitle()}, על פי הנחיית ואישור ${docName()}`+(S.mode==='sync'?' (עבודה סינכרונית על משתמש הרופא/ה).':'.'));
+  L.push(`פנייה: ${S.src||'___'} – ${t.label}${r.detail?' ('+r.detail+')':''}.`);
+  const chk=r.checked.slice();if(S.pres.srcs&&S.pres.srcs.length)chk.unshift('נבדקו: '+S.pres.srcs.join(', '));
+  if(chk.length)L.push('נבדק: '+chk.join('; ')+'.');
+  r.lines.forEach(x=>L.push(x));
+  if(pending(r)&&!r.urgent)L.push(`הועבר להחלטת ${docName()}.`);
+  else if(r.done){L.push('בוצע: '+r.done+(S.appr==='specific'?` באישור ספציפי של ${docName()}.`:''));}
+  return L.filter(Boolean).join('\n');
+}
+function msgText(r){
+  if(r.noMsg)return '';
+  const art=S.paF===true?'הרפואנית':S.paF===false?'הרפואן':'הרפואן/ית';
+  if(pending(r)&&!r.urgent)return `שלום,\nפנייתך התקבלה ונבדקת כעת ע״י ${art} ${paName()} מול ${docName()}. נעדכן בהקדם.`;
+  const body=r.msg||'';
+  return `שלום,\nפנייתך נבדקה ע״י ${art} ${paName()} באישור ובהנחיית ${docName()}.`+(body?'\n'+body:'');
+}
+function presText(r){
+  const p=S.pres;const g=ageNum();
+  const who=S.sex==='m'?'מטופל'+(g!==null?' בן '+g:''):S.sex==='f'?'מטופלת'+(g!==null?' בת '+g:''):'מטופל/ת'+(g!==null?' בן/בת '+g:'');
+  const parts=[];
+  parts.push(who+(p.bg?(p.bg.trim().startsWith('ללא')?', '+p.bg.trim():', ברקע '+p.bg.trim()):'')+'.');
+  let req=p.req;if(!req&&r&&S.type){const t=T(S.type);req=t.label+(r.detail?' ('+r.detail+')':'');}
+  if(req)parts.push(G('מבקש','מבקשת')+' '+end(req));
+  if(p.found)parts.push('נמצא: '+end(p.found.replace(/\n+/g,'; ')));
+  const ev=[];
+  if(p.last==='לפני יותר משנה')ev.push(G('לא ביקר','לא ביקרה')+' פיזית במרפאה בשנה האחרונה');
+  (p.ev||[]).forEach(e=>{
+    if(e.startsWith('אירוע'))ev.push(G('עבר','עברה')+' לאחרונה אירוע משמעותי');
+    else if(e==='אבחנה חדשה')ev.push('אבחנה חדשה בתיק');
+    else if(e.startsWith('רמז'))ev.push('חשד לטעות / פניות חוזרות באותו נושא');
+    else ev.push('הבקשה ניתנה עד כה ע״י רפואנים בלבד');});
+  if(r)r.flags.filter(f=>f[0]!=='info'&&!f[1].includes('mg/mcg')).forEach(f=>ev.push(f[1]));
+  if(ev.length)parts.push('לתשומת לבך: '+ev.join('; ')+'.');
+  if(p.q){let q=p.q.trim();if(!/[?]$/.test(q))q=q.replace(/[.]$/,'')+'?';parts.push('שאלה: '+q);}
+  if(p.sug)parts.push('הצעתי: '+end(p.sug));
+  if(p.srcs&&p.srcs.length)parts.push('(נבדקו: '+p.srcs.join(', ')+')');
+  return parts.join(' ');
+}
+
+/* ---------- paste / classifier ---------- */
+function mask(s){
+  return s.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g,'[דוא״ל]')
+    .replace(/(?:\+972[-\s]?|0)(?:5\d|[2-9])[-\s]?\d{3}[-\s]?\d{4}\b/g,'[טלפון]')
+    .replace(/\b\d{8,9}\b/g,'[ת״ז]');
+}
+function classify(txt){
+  const s=txt.toLowerCase();const sc=[];
+  TYPES.forEach(t=>{let n=0;t.kw.forEach(k=>{if(s.includes(k.toLowerCase()))n+=k.length>4?2:1;});if(n)sc.push([t.key,n]);});
+  sc.sort((x,y)=>y[1]-x[1]);return sc.slice(0,4).map(x=>x[0]);
+}
+const CAREFUL=['קלונקס','ואבן','וליום','לוריוון','בונדורמין','אמביאן','סטילנוקס','נוקטורנו','אימובן','לונסטה','זודורם','ריטלין','קונצרטה','אטנט','אדרל','ויואנס','פוקלין','אוקסיקונטין','טרמדקס','פרקוסט','אוזמפיק','וויגובי','רואקוטן','טרבינפין','למיסיל','סדורל','מקרודנטין'];
+const URGENT=['כאב בחזה','כאבים בחזה','לחץ בחזה','קוצר נשימה','התעלפ','דימום','חולשה בצד','בלבול','מחשבות אובדניות','לפגוע בעצמי'];
+function onPaste(){
+  const box=$('#pasteBox');const m=mask(box.value);if(m!==box.value)box.value=m;
+  const s=box.value;const u=URGENT.filter(k=>s.includes(k));
+  const cz=CAREFUL.filter(k=>s.includes(k));
+  $('#pasteUrgent').innerHTML=(u.length?`<div class="alert red">זוהו מילים המרמזות על מצב דחוף (${u.join(', ')}) – להודיע לרופא/ה מיידית.</div>`:'')+(cz.length?`<div class="alert amber">זוהתה תרופה הדורשת תשומת לב מיוחדת (${cz.join(', ')}) – לבדוק את הכללים בלשונית ״טיפול בבקשה״.</div>`:'');
+  if(!s.trim()){$('#detect').innerHTML='';return;}
+  const c=classify(s);
+  if(!c.length){$('#detect').innerHTML='<div class="alert info">לא זוהה סוג בקשה – בחרו ידנית בלשונית ״טיפול בבקשה״.</div>';return;}
+  let h='<span>זוהה: </span>';c.forEach((k,i)=>{h+=`<button type="button" class="chip${i===0?' on':''}" data-pick="${k}">${T(k).label}</button>`;});
+  h+='<div class="note" style="margin-top:6px">לחיצה על סוג מעבירה לטיפול בבקשה.</div>';$('#detect').innerHTML=h;
+}
+
+/* ---------- events ---------- */
+function setTab(k){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===k));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+k));}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.tab){setTab(b.dataset.tab);return;}
+  if(b.dataset.s){const k=b.dataset.s;let v=b.dataset.v;
+    if(k==='paF'){S.paF=v==='1';LS.set('paF',v);} else {S[k]=(S[k]===v&&k!=='appr')?'':v; if(k==='doc')LS.set('doc',S.doc);}
+    renderSetup();update();return;}
+  if(b.dataset.type){S.type=b.dataset.type;renderPicker();renderForm();update();return;}
+  if(b.dataset.pick){S.type=b.dataset.pick;renderPicker();renderForm();update();setTab('handle');return;}
+  if(b.dataset.f&&b.dataset.sc){const obj=b.dataset.sc==='pres'?S.pres:(S.ans[S.type]||(S.ans[S.type]={}));const f=b.dataset.f,v=b.dataset.v;
+    if(b.dataset.t==='chips')obj[f]=obj[f]===v?'':v;
+    else{const arr=obj[f]||(obj[f]=[]);const i=arr.indexOf(v);i>=0?arr.splice(i,1):arr.push(v);}
+    b.dataset.sc==='pres'?renderPres():renderForm();update();return;}
+  if(b.dataset.copy){const ta=$('#'+b.dataset.copy);const done=()=>{const o=b.textContent;b.textContent='הועתק';setTimeout(()=>b.textContent=o,1200);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(ta.value).then(done,()=>{ta.select();document.execCommand('copy');done();});
+    else{ta.select();document.execCommand('copy');done();}return;}
+  if(b.id==='nextBtn'){S.type=null;S.ans={};S.pres={};S.sex='';S.age='';S.src='';S.appr='protocol';
+    $('#pasteBox').value='';$('#detect').innerHTML='';$('#pasteUrgent').innerHTML='';
+    renderSetup();renderPicker();renderForm();renderPres();update();setTab('paste');window.scrollTo(0,0);}
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='paName'){S.pa=el.value.trim();LS.set('pa',S.pa);update();return;}
+  if(el.id==='age'){S.age=el.value;update();return;}
+  if(el.id==='pasteBox'){onPaste();return;}
+  if(el.dataset.f&&el.dataset.sc){const obj=el.dataset.sc==='pres'?S.pres:(S.ans[S.type]||(S.ans[S.type]={}));obj[el.dataset.f]=el.value;
+    if(el.type==='date'||el.type==='number'){/* conditional fields may depend */}
+    update();}
+});
+renderSetup();renderPicker();renderForm();renderPres();update();
+})();
+</script>
+</body>
+</html>
