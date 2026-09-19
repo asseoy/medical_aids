@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16211F">
+<meta name="description" content="מחולל מכתבים ואישורים רפואיים בעברית ובאנגלית, להעתקה לתיק הרפואי">
+<title>מכתבים ואישורים רפואיים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16211F; --body:#3A4744; --muted:#6B7975;
+  --paper:#F2F4F2; --surface:#FFFFFF; --line:#DDE4E1;
+  --accent:#1F3A68; --accent-soft:#E6ECF5; --warn:#8A4B0F; --warn-bg:#FBF1E4;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--body);font-family:'Heebo',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.55;
+ padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 110px}
+header{padding:26px 0 18px;max-width:600px}
+.back{display:inline-block;font-size:14px;color:var(--muted);text-decoration:none;margin-bottom:10px}
+.back:hover{color:var(--accent)}
+h1{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:900;font-size:32px;line-height:1.15;color:var(--ink);letter-spacing:-.01em}
+header p{margin-top:9px;font-size:15px;color:var(--muted);max-width:48ch}
+.grid{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:960px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.sheet-col{position:sticky;top:14px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;margin-bottom:14px}
+.panel h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:17px;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.panel h2 .rule{flex:1;height:1px;background:var(--line)}
+.row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 10px;margin-bottom:11px}
+.row:last-child{margin-bottom:0}
+.lab{flex:0 0 122px;font-size:14px;color:var(--muted);padding-top:7px}
+.ctl{flex:1 1 240px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+@media(max-width:520px){.lab{flex-basis:100%;padding-top:0}}
+input[type=text],input[type=date],input[type=tel]{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:7px 10px;width:100%;max-width:260px}
+input.short{max-width:92px}
+input:focus-visible,button:focus-visible,textarea:focus-visible{outline:3px solid rgba(31,58,104,.35);outline-offset:1px}
+input[dir=ltr]{text-align:left}
+.suf{font-size:14px;color:var(--muted)}
+.chip{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;user-select:none;transition:background .12s,border-color .12s}
+.chip:hover{border-color:#B9C6C2}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.tog.on::before{content:"✓ "}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+.grp{margin-bottom:12px}
+.grp:last-child{margin-bottom:0}
+.grp h3{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:6px}
+.grp .ctl{flex:none}
+.note{font-size:13px;color:var(--muted);margin-top:4px;flex-basis:100%}
+.warnnote{font-size:13px;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:5px 9px;margin-top:6px;flex-basis:100%}
+.calc{font-size:15px;font-weight:700;color:var(--accent);padding-top:6px}
+.docsum{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;color:var(--ink)}
+.linkbtn{font:inherit;font-size:14px;background:none;border:none;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.empty{font-size:14.5px;color:var(--muted);padding:6px 0}
+/* the letter sheet */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 0 var(--line),0 10px 30px -18px rgba(22,33,31,.35);position:relative;overflow:hidden}
+.sheet::before{content:"";position:absolute;top:0;inset-inline:0;height:6px;background:var(--accent)}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:16px 18px 8px;flex-wrap:wrap}
+.sheet-head h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:17px;color:var(--ink)}
+textarea#out{display:block;width:100%;min-height:340px;border:none;resize:vertical;padding:10px 22px 26px;
+ font-family:'Frank Ruhl Libre',Georgia,serif;font-size:17px;line-height:1.8;color:var(--ink);background:transparent}
+textarea#out[dir=ltr]{font-family:Georgia,'Frank Ruhl Libre',serif;font-size:16px}
+textarea#out:focus-visible{outline:none;background:#FCFDFC}
+.dirty{display:none;align-items:center;justify-content:space-between;gap:8px;background:var(--warn-bg);color:var(--warn);font-size:13.5px;padding:7px 18px}
+.dirty.show{display:flex}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{font:inherit;font-size:15px;font-weight:500;border-radius:10px;padding:9px 16px;cursor:pointer;border:1px solid var(--accent);background:var(--surface);color:var(--accent)}
+.btn.solid{background:var(--accent);color:#fff}
+.btn.ghost{border-color:var(--line);color:var(--body)}
+.btn:active{transform:scale(.98)}
+.fine{font-size:12.5px;color:var(--muted);margin-top:14px;max-width:60ch}
+.bar{position:fixed;bottom:0;inset-inline:0;background:rgba(242,244,242,.96);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center;z-index:5}
+.bar .btn{flex:1;max-width:260px}
+@media(min-width:960px){.bar{display:none}.wrap{padding-bottom:40px}}
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;font-size:14.5px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:9}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="back" href="doctors.html">→ כלים קליניים</a>
+  <h1>מכתבים ואישורים רפואיים</h1>
+  <p>בחירת סוג המכתב והשלמת הפרטים בקליקים. הנוסח נבנה אוטומטית בעברית או באנגלית, להעתקה לתיק הרפואי.</p>
+</header>
+
+<div class="grid">
+<div class="form-col">
+
+  <section class="panel" id="docPanel">
+    <h2>פרטי הרופא/ה<span class="rule"></span></h2>
+    <div id="docSum" class="docsum" hidden><span id="docSumText"></span><button type="button" class="linkbtn" id="docEdit">עריכה</button></div>
+    <div id="docForm">
+      <div class="row"><div class="lab">שם בעברית</div><div class="ctl"><input type="text" id="d_nameHe" placeholder="יונתן כהן"></div></div>
+      <div class="row"><div class="lab">שם באנגלית</div><div class="ctl"><input type="text" id="d_nameEn" dir="ltr" placeholder="Yonatan Cohen"></div></div>
+      <div class="row"><div class="lab">מספר רישיון</div><div class="ctl"><input type="text" id="d_lic" inputmode="numeric" dir="ltr"></div></div>
+      <div class="row"><div class="lab">מרפאה בעברית</div><div class="ctl"><input type="text" id="d_clinicHe"></div></div>
+      <div class="row"><div class="lab">מרפאה באנגלית</div><div class="ctl"><input type="text" id="d_clinicEn" dir="ltr"></div></div>
+      <div class="row"><div class="lab">טלפון</div><div class="ctl"><input type="tel" id="d_phone" dir="ltr"></div></div>
+      <div class="row"><div class="lab"></div><div class="ctl"><button type="button" class="btn" id="docDone">סיום</button><span class="note">הפרטים נשמרים בדפדפן הזה בלבד.</span></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>מכתב ומטופל/ת<span class="rule"></span></h2>
+    <div class="row"><div class="lab">שפת המכתב</div><div class="ctl" id="langChips">
+      <button type="button" class="chip" data-lang="he">עברית</button>
+      <button type="button" class="chip" data-lang="en">English</button>
+      <span class="note" id="langNote" hidden>מכתב זה מנוסח בעברית בלבד.</span>
+    </div></div>
+    <div class="row"><div class="lab">תאריך המכתב</div><div class="ctl"><input type="date" id="p_date"></div></div>
+    <div class="row"><div class="lab">שם</div><div class="ctl"><input type="text" id="p_name" autocomplete="off"><div class="warnnote" id="nameWarn" hidden></div></div></div>
+    <div class="row"><div class="lab">מסמך מזהה</div><div class="ctl" id="idChips">
+      <button type="button" class="chip" data-id="id">תעודת זהות</button>
+      <button type="button" class="chip" data-id="pass">דרכון</button>
+      <input type="text" id="p_idnum" dir="ltr" autocomplete="off" placeholder="מספר">
+    </div></div>
+    <div class="row"><div class="lab">מין</div><div class="ctl" id="sexChips">
+      <button type="button" class="chip" data-sex="m">זכר</button>
+      <button type="button" class="chip" data-sex="f">נקבה</button>
+      <span class="note" id="sexNote" hidden>אישור הריון: הנוסח בלשון נקבה.</span>
+    </div></div>
+  </section>
+
+  <section class="panel">
+    <h2>סוג המכתב<span class="rule"></span></h2>
+    <div id="scenPick"></div>
+  </section>
+
+  <section class="panel" id="fieldsPanel" hidden>
+    <h2 id="fieldsTitle">פרטים<span class="rule"></span></h2>
+    <div id="fields"></div>
+  </section>
+
+</div>
+
+<div class="sheet-col">
+  <div class="sheet">
+    <div class="sheet-head"><h2>נוסח המכתב</h2><span class="note" style="flex-basis:auto;margin:0">ניתן לערוך ישירות</span></div>
+    <div class="dirty" id="dirty"><span>הטקסט נערך ידנית, ושינויים בשדות לא יעדכנו אותו.</span><button type="button" class="linkbtn" id="rebuild" style="color:var(--warn)">בנייה מחדש מהשדות</button></div>
+    <textarea id="out" spellcheck="false" aria-label="נוסח המכתב"></textarea>
+  </div>
+  <div class="actions">
+    <button type="button" class="btn solid" id="copyBtn">העתקה ללוח</button>
+    <button type="button" class="btn" id="clearPt">ניקוי פרטי מטופל/ת</button>
+    <button type="button" class="btn ghost" id="newLetter">מכתב חדש</button>
+  </div>
+  <p class="fine">התבניות כלליות ואינן מבוססות על הנחיה מסוימת. האחריות לנוסח הסופי היא של הרופא/ה החותם/ת. פרטי המטופל/ת אינם נשמרים ואינם נשלחים לשום מקום; הם נמחקים בניקוי או ברענון הדף.</p>
+</div>
+</div>
+</div>
+
+<div class="bar"><button type="button" class="btn solid" id="copyBtn2">העתקה ללוח</button><button type="button" class="btn" id="clearPt2">ניקוי פרטי מטופל/ת</button></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;};
+const B='___';
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+
+/* ---------- state ---------- */
+const st={lang:'he',date:todayISO(),pt:{name:'',idType:'id',idNum:'',sex:'m'},scen:null,f:{},dirty:false};
+
+/* ---------- helpers ---------- */
+const v=x=>(x===undefined||x===null||String(x).trim()==='')?B:String(x).trim();
+const has=x=>!(x===undefined||x===null||String(x).trim()==='');
+const MONTHS_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function fmtD(iso,he){if(!has(iso))return B;const [y,m,d]=iso.split('-');if(!d)return B;return he?`${d}/${m}/${y}`:`${+d} ${MONTHS_EN[+m-1]} ${y}`;}
+function dayDiff(a,b){return Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5);}
+function monthsHe(n){if(!has(n))return B+' חודשים';n=String(n).trim();return n==='1'?'חודש אחד':n==='2'?'חודשיים':`${n} חודשים`;}
+function monthsEn(n){if(!has(n))return B+' months';n=String(n).trim();return n==='1'?'1 month':`${n} months`;}
+function joinHe(arr,pre=''){if(!arr.length)return pre+B;const a=arr.map(x=>pre+x);if(a.length===1)return a[0];return a.slice(0,-1).join(', ')+' ו'+a[a.length-1];}
+function joinEn(arr,conj='and'){if(!arr.length)return B;if(arr.length===1)return arr[0];return arr.slice(0,-1).join(', ')+' '+conj+' '+arr[arr.length-1];}
+function joinHeOr(arr){if(!arr.length)return B;if(arr.length===1)return arr[0];return arr.slice(0,-1).join(', ')+' או '+arr[arr.length-1];}
+function pick(sel,map){return sel.map(k=>map[k]).filter(Boolean);}
+
+/* ---------- scenarios ---------- */
+const GROUPS=[['ins','ביטוח'],['travel','טיסה ונסיעות'],['school','בית ספר וגן'],['work','עבודה, צבא ופנאי']];
+const SETTING=[['school','בית ספר'],['kg','גן'],['camp','קייטנה']];
+const SETTING_HE={school:'בית הספר',kg:'הגן',camp:'הקייטנה'};
+const SETTING_EN={school:'School',kg:'Kindergarten',camp:'Camp'};
+
+const SC={
+glp1:{g:'ins',l:'וגובי / מונג׳רו לביטוח פרטי',
+ fields:[
+  {k:'drug',t:'one',l:'תרופה',o:[['weg','וגובי'],['mou','מונג׳רו']],def:'weg'},
+  {k:'bmi',t:'num',l:'BMI נוכחי',cls:'short'},
+  {k:'bmi0',t:'num',l:'BMI בתחילת המעקב',cls:'short',note:'לא חובה'},
+  {k:'comp',t:'many',l:'סיבוכים',o:[['dm','סוכרת'],['htn','יתר לחץ דם'],['lip','דיסליפידמיה'],['masld','כבד שומני'],['osa','דום נשימה בשינה'],['other','אחר']],def:[]},
+  {k:'compHe',t:'text',l:'סיבוך אחר בעברית',show:f=>f.comp.includes('other')},
+  {k:'compEn',t:'text',l:'סיבוך אחר באנגלית',ltr:true,show:f=>f.comp.includes('other')},
+  {k:'obese',t:'calc',l:'ניסוח',calc:f=>obTerm(f).he},
+  {k:'att',t:'many',l:'ניסיונות קודמים',o:[['diet','דיאטה'],['act','פעילות גופנית'],['dietitian','ליווי דיאטנית'],['drug','טיפול תרופתי קודם']],def:['diet']},
+  {k:'togs',t:'togs',l:'',o:[['shaban','השב״ן מסבסד חלקית',true]]},
+  {k:'months',t:'num',l:'תקופת הבקשה',cls:'short',suf:'חודשים',note:'לא חובה'}
+ ],
+ build(c,f){
+  const DH={weg:['וגובי (סמגלוטייד)','וגובי'],mou:['מונג׳רו (טירזפטייד)','מונג׳רו']};
+  const DE={weg:'Wegovy (semaglutide)',mou:'Mounjaro (tirzepatide)'};
+  const AH={diet:'דיאטה',act:'פעילות גופנית',dietitian:'ליווי דיאטנית',drug:'טיפול תרופתי קודם'};
+  const AE={diet:'diet',act:'physical activity',dietitian:'dietitian follow-up',drug:'previous drug therapy'};
+  const CH={dm:'סוכרת',htn:'יתר לחץ דם',lip:'דיסליפידמיה',masld:'כבד שומני',osa:'דום נשימה בשינה',other:v(f.compHe)};
+  const CE={dm:'diabetes',htn:'hypertension',lip:'dyslipidemia',masld:'fatty liver disease (MASLD)',osa:'obstructive sleep apnea',other:v(f.compEn)};
+  const ob=obTerm(f);
+  if(c.he){
+   return {addr:'',subj:`סיכום מידע רפואי: ${DH[f.drug][0]}`,paras:[
+    `${c.name}, ${c.id}, ${c.g('נמצא','נמצאת')} במעקבי ובטיפולי. הבעיות הרפואיות והתרופות הקבועות מפורטות להלן.`,
+    `יש לציין במיוחד ${ob.he} (BMI ${v(f.bmi)}${has(f.bmi0)?`, BMI בתחילת המעקב ${f.bmi0}`:''})${f.comp.length?` המלווה בסיבוכים: ${joinHe(pick(f.comp,CH))}`:''}.`+(f.att.length?` ניסיונות קודמים להפחתת משקל באמצעות ${joinHe(pick(f.att,AH))} לא הביאו לתוצאה מספקת.`:''),
+    `לאור זאת, הומלץ על טיפול ב${DH[f.drug][1]}, בשילוב שינוי תזונתי ופעילות גופנית.`,
+    f.shaban?'התרופה אינה כלולה בסל הבריאות להתוויה זו, עלותה גבוהה, והשב״ן משתתף במימונה באופן חלקי בלבד.':'התרופה אינה כלולה בסל הבריאות להתוויה זו, ועלותה גבוהה.',
+    `אבקש לאשר את השתתפות חברת הביטוח במימון הטיפול${has(f.months)?` לתקופה של ${monthsHe(f.months)}`:''}.`]};
+  }
+  const drug=DE[f.drug],short=drug.split(' ')[0];
+  return {addr:'',subj:`Medical Summary: ${drug}`,paras:[
+   `${c.name}, ${c.id}, is under my care. ${c.P.His} medical problems and regular medications are listed below.`,
+   `Of particular note is ${ob.en} (BMI ${v(f.bmi)}${has(f.bmi0)?`; baseline BMI ${f.bmi0}`:''})${f.comp.length?` with complications including ${joinEn(pick(f.comp,CE))}`:''}.`+(f.att.length?` Previous attempts at weight reduction through ${joinEn(pick(f.att,AE))} have not achieved adequate results.`:''),
+   `Accordingly, treatment with ${short} has been recommended, combined with dietary changes and physical activity.`,
+   f.shaban?'This medication is not included in the national health basket for this indication, its cost is high, and supplementary health insurance covers it only partially.':'This medication is not included in the national health basket for this indication, and its cost is high.',
+   `I kindly request that the insurance company participate in funding this treatment${has(f.months)?` for a period of ${monthsEn(f.months)}`:''}.`]};
+ }},
+
+stable:{g:'ins',l:'מצב יציב לביטוח נסיעות',
+ fields:[
+  {k:'per',t:'one',l:'יציב במשך',o:[['3','3 חודשים'],['6','6 חודשים'],['12','12 חודשים']],def:'6'},
+  {k:'togs',t:'togs',l:'',o:[['noMed','ללא שינוי בטיפול התרופתי',true],['noHosp','ללא אשפוזים',true]]},
+  {k:'from',t:'date',l:'נסיעה מתאריך',note:'לא חובה'},
+  {k:'to',t:'date',l:'עד תאריך'}
+ ],
+ build(c,f){
+  const trip=has(f.from)||has(f.to);
+  if(c.he){
+   const x=[];if(f.noMed)x.push('ללא שינוי בטיפול התרופתי');if(f.noHosp)x.push('ללא אשפוזים');
+   return {addr:'לכבוד חברת הביטוח',paras:[
+    `הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נמצא','נמצאת')} במעקב במרפאתי. ${c.g('מצבו','מצבה')} הרפואי, כמפורט בסיכום הרפואי המצורף, יציב ב-${f.per} החודשים האחרונים${x.length?', '+joinHe(x):''}.`,
+    `לדעתי אין מניעה רפואית ${c.g('לנסיעתו','לנסיעתה')} לחו״ל${trip?` בתאריכים ${fmtD(f.from,1)}–${fmtD(f.to,1)}`:''}.`]};
+  }
+  const x=[];if(f.noMed)x.push('no change in medication');if(f.noHosp)x.push('no hospitalizations');
+  return {addr:'To the Insurance Company',paras:[
+   `This is to certify that ${c.name}, ${c.id}, is under my medical care. ${c.P.His} medical condition, as detailed in the attached medical summary, has been stable over the past ${f.per} months${x.length?', with '+joinEn(x):''}.`,
+   `In my opinion, there is no medical contraindication to ${c.P.his} travel abroad${trip?` from ${fmtD(f.from)} to ${fmtD(f.to)}`:''}.`]};
+ }},
+
+cancel:{g:'ins',l:'ביטול נסיעה או אירוע',
+ fields:[
+  {k:'what',t:'one',l:'מה בוטל',o:[['trip','נסיעה'],['event','אירוע']],def:'trip'},
+  {k:'when',t:'one',l:'מועד המכתב',o:[['after','אחרי המועד'],['before','לפני המועד']],def:'after'},
+  {k:'exam',t:'date',l:'תאריך הבדיקה'},
+  {k:'date',t:'date',l:'מועד הנסיעה/האירוע'},
+  {k:'togs',t:'togs',l:'',o:[['ref','הפניה לסיכום הרפואי המצורף',true]]}
+ ],
+ build(c,f){
+  const past=f.when==='after';
+  if(c.he){
+   const act=f.what==='trip'?'לצאת לנסיעה שתוכננה':'להשתתף באירוע שתוכנן';
+   return {addr:'לכבוד חברת הביטוח',paras:[
+    `הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נבדק','נבדקה')} במרפאתי בתאריך ${fmtD(f.exam,1)}. בשל ${c.g('מצבו','מצבה')} הרפואי${f.ref?', כמפורט בסיכום הרפואי המצורף,':''} ${past?'לא היה':'אין'} ${c.g('ביכולתו','ביכולתה')} ${act} לתאריך ${fmtD(f.date,1)}.`]};
+  }
+  const act=f.what==='trip'?'go on the trip':'attend the event';
+  return {addr:'To the Insurance Company',paras:[
+   `This is to certify that ${c.name}, ${c.id}, was examined at my clinic on ${fmtD(f.exam)}. Due to ${c.P.his} medical condition${f.ref?', as detailed in the attached medical summary,':''} ${c.P.he} ${past?'was':'is'} unable to ${act} scheduled for ${fmtD(f.date)}.`]};
+ }},
+
+flymeds:{g:'travel',l:'טיסה עם תרופות',
+ fields:[
+  {k:'from',t:'date',l:'נסיעה מתאריך'},
+  {k:'to',t:'date',l:'עד תאריך'},
+  {k:'togs',t:'togs',l:'',o:[['inj','תרופות בהזרקה (מזרקים/מחטים)',false],['cold','תרופות בקירור',false]]}
+ ],
+ build(c,f){
+  if(c.he){
+   const p=[`הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נמצא','נמצאת')} במעקב במרפאתי ו${c.g('נושא עמו','נושאת עמה')} תרופות במרשם לשימוש אישי במהלך נסיעה בתאריכים ${fmtD(f.from,1)}–${fmtD(f.to,1)}, כמפורט בסיכום הרפואי המצורף.`];
+   const x=[];if(f.inj)x.push('חלק מהתרופות ניתנות בהזרקה ומחייבות נשיאת מזרקים או מחטים.');if(f.cold)x.push('חלק מהתרופות מחייבות קירור ונישאות בתיק קירור.');
+   if(x.length)p.push(x.join(' '));
+   p.push(`הכמויות מיועדות לשימוש אישי בלבד למשך הנסיעה. אבקש לאפשר ${c.g('לו','לה')} לשאת את התרופות ואת הציוד הנלווה בכבודת היד.`);
+   return {addr:'לכל מאן דבעי',paras:p};
+  }
+  const p=[`This is to certify that ${c.name}, ${c.id}, is under my medical care and is carrying prescribed medications for personal use during travel from ${fmtD(f.from)} to ${fmtD(f.to)}, as listed in the attached medical summary.`];
+  const x=[];if(f.inj)x.push('Some of these medications are administered by injection and require carrying syringes or pen needles.');if(f.cold)x.push('Some medications require refrigeration and are carried in a cooling bag.');
+  if(x.length)p.push(x.join(' '));
+  p.push(`The quantities carried are for personal use only for the duration of the trip. Kindly allow ${c.P.him} to carry these medications and related supplies in hand luggage.`);
+  return {addr:'To Whom It May Concern',paras:p};
+ }},
+
+devices:{g:'travel',l:'מכשור רפואי בטיסה',
+ fields:[
+  {k:'dev',t:'many',l:'מכשיר',o:[['pump','משאבת אינסולין'],['cgm','חיישן סוכר רציף'],['cpap','CPAP'],['other','אחר']],def:[]},
+  {k:'otherHe',t:'text',l:'שם המכשיר בעברית',show:f=>f.dev.includes('other')},
+  {k:'otherEn',t:'text',l:'שם המכשיר באנגלית',ltr:true,show:f=>f.dev.includes('other')},
+  {k:'togs',t:'togs',l:'',o:[['noXray','אין להעביר בשיקוף/סורק גוף',false],['inflight','נדרש גם במהלך הטיסה',false]]}
+ ],
+ build(c,f){
+  const n=f.dev.length, pl=n>1;
+  if(c.he){
+   const MH={pump:'משאבת אינסולין',cgm:'חיישן סוכר רציף',cpap:'מכשיר CPAP',other:v(f.otherHe)};
+   const p=[`הריני לאשר כי ${c.name}, ${c.id}, ${c.g('משתמש','משתמשת')} באופן קבוע ${joinHe(pick(f.dev,MH),'ב')} מסיבות רפואיות, ו${c.g('עליו','עליה')} לשאת את ${pl?'המכשירים':'המכשיר'} ואת הציוד הנלווה בכל עת, כולל בכבודת היד.`];
+   if(f.noXray)p.push(`על פי הנחיות היצרן, אין להעביר את ${pl?'המכשירים':'המכשיר'} במכונת שיקוף או בסורק גוף. אבקש לאפשר בדיקה ידנית במקום זאת.`);
+   if(f.inflight)p.push(pl?'המכשירים נדרשים לשימוש גם במהלך הטיסה.':'המכשיר נדרש לשימוש גם במהלך הטיסה.');
+   return {addr:'לכל מאן דבעי',paras:p};
+  }
+  const ME={pump:'an insulin pump',cgm:'a continuous glucose monitor',cpap:'a CPAP machine',other:v(f.otherEn)};
+  const d=pl?'devices':'device';
+  const p=[`This is to certify that ${c.name}, ${c.id}, uses ${joinEn(pick(f.dev,ME))} on a regular basis for medical reasons and must carry the ${d} and related supplies at all times, including in hand luggage.`];
+  if(f.noXray)p.push(`According to the manufacturer's instructions, the ${d} must not pass through X-ray machines or body scanners. Kindly allow a manual inspection instead.`);
+  if(f.inflight)p.push(pl?'The devices are also required for use during the flight.':'The device is also required for use during the flight.');
+  return {addr:'To Whom It May Concern',paras:p};
+ }},
+
+supply:{g:'travel',l:'תרופות לשהייה ממושכת בחו״ל',
+ fields:[
+  {k:'from',t:'date',l:'שהייה מתאריך'},
+  {k:'to',t:'date',l:'עד תאריך'},
+  {k:'len',t:'calc',l:'משך השהייה',calc:f=>{const s=supplyLen(f);return s?s.he:'—';}}
+ ],
+ build(c,f){
+  const s=supplyLen(f);
+  if(c.he){
+   return {addr:'לכבוד בית המרקחת',paras:[
+    `הריני לאשר כי ${c.name}, ${c.id}, ${c.g('צפוי','צפויה')} לשהות בחו״ל בתאריכים ${fmtD(f.from,1)}–${fmtD(f.to,1)} (${s?s.he:B}). כדי להבטיח את רציפות הטיפול, אבקש לאפשר ניפוק של ${c.g('תרופותיו','תרופותיה')} הקבועות, כמפורט בסיכום הרפואי המצורף, לכל תקופת השהייה.`]};
+  }
+  return {addr:'To Whom It May Concern',paras:[
+   `This is to certify that ${c.name}, ${c.id}, will be staying abroad from ${fmtD(f.from)} to ${fmtD(f.to)} (${s?s.en:B}). To ensure continuity of care, ${c.P.he} is carrying a supply of ${c.P.his} regular prescribed medications, as listed in the attached medical summary, sufficient for the entire period.`]};
+ }},
+
+fly:{g:'travel',l:'כשירות לטיסה',
+ fields:[
+  {k:'main',t:'one',l:'סוג האישור',o:[['preg','הריון'],['surg','אחרי ניתוח'],['none','סיוע בלבד']],def:'preg'},
+  {k:'flight',t:'date',l:'תאריך הטיסה'},
+  {k:'edd',t:'date',l:'מועד לידה משוער',show:f=>f.main==='preg'},
+  {k:'ga',t:'calc',l:'שבוע ההריון בטיסה',show:f=>f.main==='preg',calc:f=>gaAt(f)||'—'},
+  {k:'togs1',t:'togs',l:'',show:f=>f.main==='preg',o:[['single','הריון יחיד',true]]},
+  {k:'surgDate',t:'date',l:'תאריך הניתוח',show:f=>f.main==='surg'},
+  {k:'togs2',t:'togs',l:'',show:f=>f.main==='surg',o:[['ref','הפניה לסיכום הרפואי המצורף',true]]},
+  {k:'assist',t:'many',l:'סיוע נדרש',o:[['wc','כיסא גלגלים'],['seat','מרווח רגליים / מושב ליד המעבר'],['escort','מלווה']],def:[]}
+ ],
+ build(c,f){
+  const p=[];
+  if(c.he){
+   if(f.main==='preg')p.push(`הריני לאשר כי ${c.name}, ${c.id}, נמצאת בשבוע ${gaAt(f)||B} להריון${f.single?' יחיד':''} נכון לתאריך הטיסה (${fmtD(f.flight,1)}), ומועד הלידה המשוער הוא ${fmtD(f.edd,1)}. ההריון מתקדם ללא סיבוכים, ולדעתי אין מניעה רפואית לטיסתה.`);
+   else if(f.main==='surg')p.push(`הריני לאשר כי ${c.name}, ${c.id}, ${c.g('עבר','עברה')} ניתוח בתאריך ${fmtD(f.surgDate,1)}${f.ref?', כמפורט בסיכום הרפואי המצורף':''}. ההחלמה תקינה, ולדעתי אין מניעה רפואית ${c.g('לטיסתו','לטיסתה')} בתאריך ${fmtD(f.flight,1)}.`);
+   else p.push(`הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נמצא','נמצאת')} במעקב במרפאתי${has(f.flight)?` ו${c.g('צפוי','צפויה')} לטוס בתאריך ${fmtD(f.flight,1)}`:''}.`);
+   const AH={wc:'סיוע בכיסא גלגלים בשדה התעופה ועד המטוס',seat:'מושב עם מרווח רגליים מוגדל או ליד המעבר',escort:'טיסה עם מלווה'};
+   if(f.assist.length||f.main==='none')p.push(`בשל ${c.g('מצבו','מצבה')} הרפואי, אבקש לאפשר ${c.g('לו','לה')} ${joinHe(pick(f.assist,AH))}.`);
+   return {addr:'לכל מאן דבעי',paras:p};
+  }
+  if(f.main==='preg')p.push(`This is to certify that ${c.name}, ${c.id}, will be ${gaAt(f)||B} weeks pregnant${f.single?' with a singleton pregnancy':''} on the flight date (${fmtD(f.flight)}), with an estimated due date of ${fmtD(f.edd)}. The pregnancy is uncomplicated, and in my opinion she is fit to fly.`);
+  else if(f.main==='surg')p.push(`This is to certify that ${c.name}, ${c.id}, underwent surgery on ${fmtD(f.surgDate)}${f.ref?', as detailed in the attached medical summary':''}. ${c.P.He} has recovered well, and in my opinion ${c.P.he} is fit to fly on ${fmtD(f.flight)}.`);
+  else p.push(`This is to certify that ${c.name}, ${c.id}, is under my medical care${has(f.flight)?` and is scheduled to fly on ${fmtD(f.flight)}`:''}.`);
+  const AE={wc:'wheelchair assistance at the airport and to the aircraft',seat:'a seat with extra legroom or an aisle seat',escort:'permission to travel with an escort'};
+  if(f.assist.length||f.main==='none')p.push(`Due to ${c.P.his} medical condition, kindly provide ${joinEn(pick(f.assist,AE))}.`);
+  return {addr:'To Whom It May Concern',paras:p};
+ }},
+
+pe:{g:'school',l:'פטור מחינוך גופני',
+ fields:[
+  {k:'ext',t:'one',l:'היקף',o:[['full','פטור מלא'],['part','פטור חלקי']],def:'full'},
+  {k:'per',t:'one',l:'תקופה',o:[['until','עד תאריך'],['year','שנת הלימודים']],def:'until'},
+  {k:'until',t:'date',l:'עד תאריך',show:f=>f.per==='until'},
+  {k:'avoid',t:'many',l:'להימנע מ',show:f=>f.ext==='part',o:[['run','ריצה'],['contact','ספורט מגע'],['jump','קפיצות'],['lift','הרמת משקלים'],['swim','שחייה']],def:[]}
+ ],
+ build(c,f){
+  const full=f.ext==='full';
+  if(c.he){
+   const AH={run:'ריצה',contact:'ספורט מגע',jump:'קפיצות',lift:'הרמת משקלים',swim:'שחייה'};
+   const p=[`הריני לאשר כי ${c.g('התלמיד','התלמידה')} ${c.name}, ${c.id}, ${c.g('פטור','פטורה')} ${full?'באופן מלא':'באופן חלקי'} משיעורי חינוך גופני ${f.per==='until'?`עד לתאריך ${fmtD(f.until,1)}`:'בשנת הלימודים הנוכחית'}.`];
+   if(!full)p.push(`${c.g('התלמיד רשאי','התלמידה רשאית')} להשתתף בפעילות מתונה, אך ${c.g('עליו','עליה')} להימנע ${joinHe(pick(f.avoid,AH),'מ')}.`);
+   return {addr:'לכבוד הנהלת בית הספר',paras:p};
+  }
+  const AE={run:'running',contact:'contact sports',jump:'jumping',lift:'weight lifting',swim:'swimming'};
+  const p=[`This is to certify that ${c.name}, ${c.id}, is ${full?'fully':'partially'} exempt from physical education classes ${f.per==='until'?`until ${fmtD(f.until)}`:'for the current school year'}.`];
+  if(!full)p.push(`${c.P.He} may take part in light activity but should avoid ${joinEn(pick(f.avoid,AE))}.`);
+  return {addr:'To the School Administration',paras:p};
+ }},
+
+allergy:{g:'school',l:'אלרגיה ואפיפן',
+ fields:[
+  {k:'set',t:'one',l:'מסגרת',o:SETTING,def:'school'},
+  {k:'alg',t:'many',l:'אלרגיה ל',o:[['peanut','בוטנים'],['nut','אגוזים'],['sesame','שומשום'],['milk','חלב'],['egg','ביצים'],['fish','דגים'],['bee','עקיצת דבורה'],['other','אחר']],def:[]},
+  {k:'otherHe',t:'text',l:'אחר בעברית',show:f=>f.alg.includes('other')},
+  {k:'otherEn',t:'text',l:'אחר באנגלית',ltr:true,show:f=>f.alg.includes('other')},
+  {k:'pen',t:'one',l:'מזרק',o:[['adult','אפיפן 0.3 מ״ג'],['jr','אפיפן ג׳וניור 0.15 מ״ג']],def:'jr'},
+  {k:'togs',t:'togs',l:'',o:[['second','הוראה למנה שנייה',true]]}
+ ],
+ build(c,f){
+  if(c.he){
+   const AH={peanut:'בוטנים',nut:'אגוזים',sesame:'שומשום',milk:'חלב',egg:'ביצים',fish:'דגים',bee:'עקיצת דבורה',other:v(f.otherHe)};
+   const list=pick(f.alg,AH);
+   const steps=['להזריק מיד את האפיפן לצד החיצוני של הירך. אפשר להזריק דרך הבגדים.','להזעיק מד״א (101).',
+    `להשכיב את ${c.g('הילד','הילדה')} עם רגליים מורמות. אם ${c.g('הוא מתקשה','היא מתקשה')} לנשום, להושיב ${c.g('אותו','אותה')}.`];
+   if(f.second)steps.push('אם אין שיפור לאחר 5–15 דקות ויש מזרק נוסף, להזריק שוב.');
+   steps.push('לפנות לבית חולים גם אם חל שיפור.');
+   return {addr:`לכבוד צוות ${SETTING_HE[f.set]}`,paras:[
+    `${c.name}, ${c.id}, ${c.g('אלרגי','אלרגית')} ${joinHe(list,'ל')}, והחשיפה עלולה לגרום לתגובה אלרגית חמורה (אנפילקסיס). יש להקפיד על הימנעות מחשיפה ${joinHe(list,'ל')}.`,
+    `${c.g('הילד מחזיק','הילדה מחזיקה')} מזרק אדרנלין (${f.pen==='adult'?'אפיפן 0.3 מ״ג':'אפיפן ג׳וניור 0.15 מ״ג'}).`,
+    'בתגובה חמורה (קשיי נשימה, צרידות או נפיחות בגרון, הקאות חוזרות, חולשה או חיוורון):\n'+steps.map((s,i)=>`${i+1}. ${s}`).join('\n')]};
+  }
+  const AE={peanut:'peanuts',nut:'tree nuts',sesame:'sesame',milk:'milk',egg:'eggs',fish:'fish',bee:'bee stings',other:v(f.otherEn)};
+  const list=joinEn(pick(f.alg,AE));
+  const steps=['Inject the EpiPen immediately into the outer thigh. It can be given through clothing.','Call emergency services (101 in Israel).',
+   `Lay the child down with legs raised. If ${c.P.he} is having trouble breathing, sit ${c.P.him} up instead.`];
+  if(f.second)steps.push('If there is no improvement after 5–15 minutes and a second injector is available, inject again.');
+  steps.push(`Take ${c.P.him} to hospital even if symptoms improve.`);
+  return {addr:`To the ${SETTING_EN[f.set]} Staff`,paras:[
+   `${c.name}, ${c.id}, is allergic to ${list}, and exposure may cause a severe allergic reaction (anaphylaxis). Strict avoidance of ${list} is required.`,
+   `${c.P.He} carries an adrenaline auto-injector (${f.pen==='adult'?'EpiPen 0.3 mg':'EpiPen Jr 0.15 mg'}).`,
+   'In a severe reaction (difficulty breathing, hoarseness or throat swelling, repeated vomiting, weakness or pallor):\n'+steps.map((s,i)=>`${i+1}. ${s}`).join('\n')]};
+ }},
+
+schoolmed:{g:'school',l:'מתן תרופה במסגרת החינוכית',
+ fields:[
+  {k:'set',t:'one',l:'מסגרת',o:SETTING,def:'school'},
+  {k:'drug',t:'one',l:'תרופה',o:[['ritalin','ריטלין'],['focalin','פוקלין'],['ventolin','ונטולין'],['other','אחרת']],def:'ritalin'},
+  {k:'otherHe',t:'text',l:'שם התרופה בעברית',show:f=>f.drug==='other'},
+  {k:'otherEn',t:'text',l:'שם התרופה באנגלית',ltr:true,show:f=>f.drug==='other'},
+  {k:'dose',t:'text',l:'מינון',cls:'short',ph:'10 מ״ג'},
+  {k:'timing',t:'one',l:'מתן',o:[['fixed','בשעה קבועה'],['prn','בעת הצורך']],def:'fixed'},
+  {k:'time',t:'text',l:'שעה',cls:'short',ltr:true,ph:'12:00',show:f=>f.timing==='fixed'},
+  {k:'trig',t:'many',l:'כאשר מופיעים',show:f=>f.timing==='prn',o:[['sob','קוצר נשימה'],['cough','שיעול'],['wheeze','צפצופים']],def:[]},
+  {k:'who',t:'one',l:'מי נותן',o:[['self','הילד/ה בעצמו/ה'],['staff','איש צוות']],def:'staff'}
+ ],
+ build(c,f){
+  const kid=f.set==='school'?c.g('התלמיד','התלמידה'):c.g('הילד','הילדה');
+  if(c.he){
+   const DH={ritalin:'ריטלין',focalin:'פוקלין',ventolin:'ונטולין',other:v(f.otherHe)};
+   const TH={sob:'קוצר נשימה',cough:'שיעול',wheeze:'צפצופים'};
+   const when=f.timing==='fixed'?`בשעה ${v(f.time)}`:`בעת הצורך, כאשר מופיעים ${joinHeOr(pick(f.trig,TH))}`;
+   const who=f.who==='self'?`${kid} ${c.g('נוטל','נוטלת')} את התרופה ${c.g('בעצמו','בעצמה')}.`:`אבקש שאחד מאנשי הצוות ייתן ${c.g('לו','לה')} את התרופה.`;
+   return {addr:`לכבוד צוות ${SETTING_HE[f.set]}`,paras:[
+    `הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נוטל','נוטלת')} את התרופה ${DH[f.drug]} במינון ${v(f.dose)}, ${when}.`,who]};
+  }
+  const DE={ritalin:'Ritalin',focalin:'Focalin',ventolin:'Ventolin',other:v(f.otherEn)};
+  const TE={sob:'shortness of breath',cough:'cough',wheeze:'wheezing'};
+  const when=f.timing==='fixed'?`at ${v(f.time)}`:`as needed for ${joinEn(pick(f.trig,TE),'or')}`;
+  const who=f.who==='self'?`${c.P.He} takes the medication by ${c.P.self}.`:`Kindly have a staff member give ${c.P.him} the medication.`;
+  return {addr:`To the ${SETTING_EN[f.set]} Staff`,paras:[
+   `This is to certify that ${c.name}, ${c.id}, takes ${DE[f.drug]} ${v(f.dose).replace(/מ[״"]ג/,'mg')} ${when}.`,who]};
+ }},
+
+work:{g:'work',l:'התאמות בעבודה',
+ fields:[
+  {k:'adj',t:'many',l:'התאמות',o:[['lift','הגבלת הרמה'],['stand','עמידה ממושכת'],['night','משמרות לילה'],['breaks','הפסקות קצרות'],['reduced','היקף מופחת'],['wfh','עבודה מהבית']],def:[]},
+  {k:'kg',t:'num',l:'הרמה עד',cls:'short',suf:'ק״ג',show:f=>f.adj.includes('lift')},
+  {k:'pct',t:'num',l:'היקף משרה',cls:'short',suf:'%',show:f=>f.adj.includes('reduced')},
+  {k:'per',t:'one',l:'תקופה',o:[['months','חודשים'],['until','עד תאריך'],['indef','בלתי מוגבלת']],def:'months'},
+  {k:'months',t:'num',l:'מספר חודשים',cls:'short',show:f=>f.per==='months'},
+  {k:'until',t:'date',l:'עד תאריך',show:f=>f.per==='until'},
+  {k:'togs',t:'togs',l:'',show:f=>f.per!=='indef',o:[['reassess','הערכה מחודשת בתום התקופה',true]]}
+ ],
+ build(c,f){
+  const re=f.reassess&&f.per!=='indef';
+  if(c.he){
+   const L={lift:`הימנעות מהרמת משא של יותר מ-${v(f.kg)} ק״ג`,stand:'הימנעות מעמידה ממושכת',night:'פטור ממשמרות לילה',breaks:'אפשרות להפסקות קצרות במהלך יום העבודה',reduced:`עבודה בהיקף מופחת (${v(f.pct)}% משרה)`,wfh:'אפשרות לעבודה מהבית'};
+   const per=f.per==='months'?`למשך ${monthsHe(f.months)}`:f.per==='until'?`עד לתאריך ${fmtD(f.until,1)}`:'לתקופה בלתי מוגבלת';
+   const lines=f.adj.length?pick(f.adj,L).map(x=>'– '+x).join('\n'):'– '+B;
+   const p=[`הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נמצא','נמצאת')} במעקב במרפאתי. בשל ${c.g('מצבו','מצבה')} הרפואי, מומלץ לבצע את ההתאמות הבאות ${c.g('בעבודתו','בעבודתה')} ${per}:\n${lines}`];
+   if(re)p.push('בתום התקופה ייבחן הצורך בהמשך ההתאמות.');
+   return {addr:'לכבוד המעסיק',paras:p};
+  }
+  const L={lift:`No lifting of more than ${v(f.kg)} kg`,stand:'Avoidance of prolonged standing',night:'Exemption from night shifts',breaks:'Short breaks during the workday',reduced:`Reduced hours (${v(f.pct)}% position)`,wfh:'Option to work from home'};
+  const per=f.per==='months'?`for ${monthsEn(f.months)}`:f.per==='until'?`until ${fmtD(f.until)}`:'indefinitely';
+  const lines=f.adj.length?pick(f.adj,L).map(x=>'– '+x).join('\n'):'– '+B;
+  const p=[`This is to certify that ${c.name}, ${c.id}, is under my medical care. Due to ${c.P.his} medical condition, the following workplace adjustments are recommended ${per}:\n${lines}`];
+  if(re)p.push('The need for continued adjustments will be reassessed at the end of this period.');
+  return {addr:'To the Employer',paras:p};
+ }},
+
+reserve:{g:'work',l:'מילואים – לקצין הרפואה',heOnly:true,
+ fields:[
+  {k:'mil',t:'text',l:'מספר אישי',cls:'short',ltr:true,note:'לא חובה'},
+  {k:'req',t:'one',l:'הבקשה',o:[['eval','בחינת כשירות'],['defer','דחייה זמנית'],['adjust','התאמות בשירות']],def:'eval'},
+  {k:'callup',t:'date',l:'תאריך הצו',note:'לא חובה',show:f=>f.req==='defer'},
+  {k:'adjs',t:'many',l:'התאמות',show:f=>f.req==='adjust',o:[['lift','הימנעות מהרמת משא'],['night','פטור משמירות לילה'],['field','שירות שאינו בשטח']],def:[]},
+  {k:'togs',t:'togs',l:'',o:[['meds','המשך נטילת תרופות קבועות',false]]}
+ ],
+ build(c,f){
+  const AH={lift:'הימנעות מהרמת משא',night:'פטור משמירות לילה',field:'שירות שאינו בשטח'};
+  const svc=c.g('שירותו','שירותה');
+  const req=f.req==='eval'?`אבקש לבחון את ${c.g('כשירותו','כשירותה')} לשירות מילואים.`
+   :f.req==='defer'?`אבקש לשקול דחייה זמנית של ${svc}${has(f.callup)?` לפי הצו מתאריך ${fmtD(f.callup,1)}`:''}.`
+   :`אבקש לשקול התאמות בתנאי ${svc}: ${joinHe(pick(f.adjs,AH))}.`;
+  const p=[`${c.name} ${c.g('נמצא','נמצאת')} במעקב במרפאתי. ${c.g('מצבו הרפואי והטיפול התרופתי שהוא מקבל','מצבה הרפואי והטיפול התרופתי שהיא מקבלת')} מפורטים בסיכום הרפואי המצורף.`,req];
+  if(f.meds)p.push(`יש להקפיד על המשך נטילה סדירה של ${c.g('תרופותיו','תרופותיה')} הקבועות במהלך השירות.`);
+  return {addr:'לכבוד קצין הרפואה',subj:`הנדון: ${c.name}, ${c.id}${has(f.mil)?`, מ.א. ${f.mil.trim()}`:''}`,paras:p};
+ }},
+
+gym:{g:'work',l:'ביטול או הקפאת מנוי למכון כושר',
+ fields:[
+  {k:'place',t:'one',l:'מקום',o:[['gym','מכון כושר'],['club','מועדון']],def:'gym'},
+  {k:'dur',t:'one',l:'משך',o:[['perm','קבוע – ביטול'],['temp','זמני – הקפאה']],def:'perm'},
+  {k:'months',t:'num',l:'מספר חודשים',cls:'short',show:f=>f.dur==='temp'}
+ ],
+ build(c,f){
+  const perm=f.dur==='perm';
+  if(c.he){
+   return {addr:'לכל מאן דבעי',paras:[
+    `הריני לאשר כי ${c.name}, ${c.id}, ${c.g('נמצא','נמצאת')} במעקב במרפאתי. בשל ${c.g('מצבו','מצבה')} הרפואי, ${perm?`אין ${c.g('באפשרותו','באפשרותה')} להמשיך בפעילות ${f.place==='gym'?'במכון הכושר':'במועדון'}`:`${c.g('עליו','עליה')} להפסיק את הפעילות ${f.place==='gym'?'במכון הכושר':'במועדון'} למשך ${monthsHe(f.months)}`}. אבקש לאפשר את ${perm?'ביטול המנוי':'הקפאת המנוי'} בהתאם.`]};
+  }
+  return {addr:'To Whom It May Concern',paras:[
+   `This is to certify that ${c.name}, ${c.id}, is under my medical care. Due to ${c.P.his} medical condition, ${perm?`${c.P.he} is no longer able to continue ${c.P.his} activity at the ${f.place==='gym'?'gym':'club'}`:`${c.P.he} must stop ${c.P.his} activity at the ${f.place==='gym'?'gym':'club'} for a period of ${monthsEn(f.months)}`}. Kindly allow ${perm?'cancellation':'suspension'} of ${c.P.his} membership accordingly.`]};
+ }}
+};
+
+function obTerm(f){
+ const b=parseFloat(String(f.bmi||'').replace(',','.'));
+ const morbid=b>=40||(b>=35&&f.comp.length>0);
+ return morbid?{he:'השמנת יתר חולנית',en:'morbid obesity'}:{he:'השמנת יתר',en:'obesity'};
+}
+function supplyLen(f){
+ if(!has(f.from)||!has(f.to))return null;
+ const d=dayDiff(f.from,f.to);if(!(d>0))return null;
+ if(d<28)return {he:`${d} ימים`,en:`${d} days`};
+ const m=Math.max(1,Math.round(d/30.44));return {he:monthsHe(m),en:monthsEn(m)};
+}
+function gaAt(f){
+ if(!has(f.edd)||!has(f.flight))return '';
+ const ga=280-dayDiff(f.flight,f.edd);
+ if(ga<0||ga>44*7)return '';
+ return `${Math.floor(ga/7)}+${ga%7}`;
+}
+
+/* ---------- defaults ---------- */
+function defaults(sc){
+ const o={};
+ sc.fields.forEach(fd=>{
+  if(fd.t==='togs')fd.o.forEach(([k,,d])=>o[k]=!!d);
+  else if(fd.t==='many')o[fd.k]=(fd.def||[]).slice();
+  else if(fd.t==='one')o[fd.k]=fd.def;
+  else if(fd.t!=='calc')o[fd.k]='';
+ });
+ return o;
+}
+
+/* ---------- doctor ---------- */
+const DOC_KEYS=['nameHe','nameEn','lic','clinicHe','clinicEn','phone'];
+const doc={};
+function loadDoc(){try{const s=JSON.parse(localStorage.getItem('letters_doctor')||'{}');DOC_KEYS.forEach(k=>doc[k]=s[k]||'');}catch(e){DOC_KEYS.forEach(k=>doc[k]='');}}
+function saveDoc(){try{localStorage.setItem('letters_doctor',JSON.stringify(doc));}catch(e){}}
+function docSummary(){
+ const parts=[];if(doc.nameHe)parts.push('ד״ר '+doc.nameHe);if(doc.lic)parts.push('מ.ר. '+doc.lic);if(doc.clinicHe)parts.push(doc.clinicHe);
+ return parts.join(', ');
+}
+function showDoc(collapsed){
+ $('#docForm').hidden=collapsed;$('#docSum').hidden=!collapsed;$('#docSumText').textContent=docSummary();
+}
+
+/* ---------- context + letter ---------- */
+function ctx(){
+ const he=st.lang==='he';
+ let sex=st.pt.sex;
+ if(st.scen==='fly'&&st.f.fly&&st.f.fly.main==='preg')sex='f';
+ const m=sex!=='f';
+ const num=v(st.pt.idNum);
+ const id=he?(st.pt.idType==='pass'?`דרכון מס׳ ${num}`:`ת״ז ${num}`):(st.pt.idType==='pass'?`passport no. ${num}`:`ID ${num}`);
+ return {he,name:v(st.pt.name),id,g:(a,b)=>m?a:b,
+  P:m?{he:'he',He:'He',his:'his',His:'His',him:'him',self:'himself'}:{he:'she',He:'She',his:'her',His:'Her',him:'her',self:'herself'}};
+}
+function signature(he){
+ const L=[];
+ if(he){L.push('בברכה,','ד״ר '+v(doc.nameHe),'מ.ר. '+v(doc.lic));if(doc.clinicHe)L.push(doc.clinicHe);if(doc.phone)L.push('טל׳ '+doc.phone);}
+ else{L.push('Sincerely,','Dr. '+v(doc.nameEn),'License No. '+v(doc.lic));if(doc.clinicEn)L.push(doc.clinicEn);if(doc.phone)L.push('Tel. '+doc.phone);}
+ return L.join('\n');
+}
+function buildLetter(){
+ if(!st.scen)return '';
+ const c=ctx();const r=SC[st.scen].build(c,st.f[st.scen]);
+ const head=[(c.he?'תאריך: ':'Date: ')+fmtD(st.date,c.he),''];if(r.addr)head.push(r.addr);
+ if(r.subj)head.push(r.subj);
+ return head.join('\n')+'\n\n'+r.paras.join('\n')+'\n\n'+signature(c.he);
+}
+
+/* ---------- UI: scenario picker ---------- */
+function renderPicker(){
+ const box=$('#scenPick');box.innerHTML='';
+ GROUPS.forEach(([g,gl])=>{
+  const grp=el('div','grp');grp.append(el('h3',null,gl));const ctl=el('div','ctl');
+  Object.entries(SC).filter(([,s])=>s.g===g).forEach(([k,s])=>{
+   const b=el('button','chip',s.l);b.type='button';b.dataset.scen=k;
+   b.onclick=()=>{st.scen=k;if(!st.f[k])st.f[k]=defaults(s);st.dirty=false;renderFields();update();};
+   ctl.append(b);
+  });
+  grp.append(ctl);box.append(grp);
+ });
+}
+
+/* ---------- UI: fields ---------- */
+function renderFields(){
+ const panel=$('#fieldsPanel'),box=$('#fields');box.innerHTML='';
+ if(!st.scen){panel.hidden=true;return;}
+ panel.hidden=false;
+ const sc=SC[st.scen],f=st.f[st.scen];
+ $('#fieldsTitle').firstChild.textContent=sc.l+' ';
+ sc.fields.forEach(fd=>{
+  const row=el('div','row');row._fd=fd;
+  row.append(el('div','lab',fd.l));
+  const ctl=el('div','ctl');
+  if(fd.t==='one'||fd.t==='many'){
+   fd.o.forEach(([val,t])=>{
+    const b=el('button','chip',t);b.type='button';b.dataset.v=val;b._k=fd.k;b._t=fd.t;
+    b.onclick=()=>{
+     if(fd.t==='one')f[fd.k]=val;
+     else{const a=f[fd.k],i=a.indexOf(val);i<0?a.push(val):a.splice(i,1);}
+     update();
+    };
+    ctl.append(b);
+   });
+  }else if(fd.t==='togs'){
+   fd.o.forEach(([k,t])=>{const b=el('button','chip tog',t);b.type='button';b._tog=k;b.onclick=()=>{f[k]=!f[k];update();};ctl.append(b);});
+  }else if(fd.t==='calc'){
+   const s=el('span','calc');s._calc=fd;ctl.append(s);
+  }else{
+   const i=document.createElement('input');
+   i.type=fd.t==='date'?'date':'text';
+   if(fd.t==='num')i.inputMode='decimal';
+   if(fd.cls)i.className=fd.cls;
+   if(fd.ltr)i.dir='ltr';
+   if(fd.ph)i.placeholder=fd.ph;
+   i.value=f[fd.k]||'';i.autocomplete='off';
+   i.oninput=()=>{f[fd.k]=i.value;update();};
+   ctl.append(i);
+   if(fd.suf)ctl.append(el('span','suf',fd.suf));
+  }
+  if(fd.note)ctl.append(el('span','note',fd.note));
+  row.append(ctl);box.append(row);
+ });
+}
+function syncFields(){
+ if(!st.scen)return;
+ const f=st.f[st.scen];
+ document.querySelectorAll('#fields .row').forEach(row=>{
+  const fd=row._fd;row.hidden=fd.show?!fd.show(f):false;
+  row.querySelectorAll('.chip').forEach(b=>{
+   if(b._tog)b.classList.toggle('on',!!f[b._tog]);
+   else if(b._t==='one')b.classList.toggle('on',f[b._k]===b.dataset.v);
+   else if(b._t==='many')b.classList.toggle('on',f[b._k].includes(b.dataset.v));
+  });
+  const s=row.querySelector('.calc');if(s)s.textContent=s._calc.calc(f);
+ });
+}
+
+/* ---------- global sync ---------- */
+function syncTop(){
+ const heOnly=st.scen&&SC[st.scen].heOnly;
+ if(heOnly&&st.lang==='en')st.lang='he';
+ document.querySelectorAll('#langChips .chip').forEach(b=>{b.classList.toggle('on',b.dataset.lang===st.lang);if(b.dataset.lang==='en')b.disabled=!!heOnly;});
+ $('#langNote').hidden=!heOnly;
+ document.querySelectorAll('#idChips .chip').forEach(b=>b.classList.toggle('on',b.dataset.id===st.pt.idType));
+ const pregLock=st.scen==='fly'&&st.f.fly&&st.f.fly.main==='preg';
+ document.querySelectorAll('#sexChips .chip').forEach(b=>{b.classList.toggle('on',(pregLock?'f':st.pt.sex)===b.dataset.sex);b.disabled=!!pregLock;});
+ $('#sexNote').hidden=!pregLock;
+ document.querySelectorAll('#scenPick .chip').forEach(b=>b.classList.toggle('on',b.dataset.scen===st.scen));
+ const w=$('#nameWarn');const n=st.pt.name;
+ if(st.lang==='en'&&/[\u0590-\u05FF]/.test(n)){w.hidden=false;w.textContent='השם כתוב בעברית, והמכתב באנגלית.';}
+ else if(st.lang==='he'&&/[A-Za-z]/.test(n)&&!/[\u0590-\u05FF]/.test(n)){w.hidden=false;w.textContent='השם כתוב באנגלית, והמכתב בעברית.';}
+ else w.hidden=true;
+}
+const out=$('#out');
+function autosize(){out.style.height='auto';out.style.height=Math.max(340,out.scrollHeight+4)+'px';}
+function render(){
+ out.dir=st.lang==='en'?'ltr':'rtl';
+ if(!st.scen){out.value='';out.placeholder='בחירת סוג מכתב תציג כאן את הנוסח.';autosize();return;}
+ out.value=buildLetter();autosize();
+}
+function update(){
+ syncTop();syncFields();
+ if(!st.dirty)render();
+ $('#dirty').classList.toggle('show',st.dirty);
+}
+
+/* ---------- events ---------- */
+document.querySelectorAll('#langChips .chip').forEach(b=>b.onclick=()=>{st.lang=b.dataset.lang;update();});
+document.querySelectorAll('#idChips .chip').forEach(b=>b.onclick=()=>{st.pt.idType=b.dataset.id;update();});
+document.querySelectorAll('#sexChips .chip').forEach(b=>b.onclick=()=>{st.pt.sex=b.dataset.sex;update();});
+$('#p_name').oninput=e=>{st.pt.name=e.target.value;update();};
+$('#p_idnum').oninput=e=>{st.pt.idNum=e.target.value;update();};
+$('#p_date').value=st.date;
+$('#p_date').oninput=e=>{st.date=e.target.value;update();};
+DOC_KEYS.forEach(k=>{const i=$('#d_'+k);i.oninput=()=>{doc[k]=i.value;saveDoc();update();};});
+$('#docDone').onclick=()=>showDoc(true);
+$('#docEdit').onclick=()=>showDoc(false);
+out.addEventListener('input',()=>{if(st.scen){st.dirty=true;$('#dirty').classList.add('show');}autosize();});
+$('#rebuild').onclick=()=>{st.dirty=false;update();};
+
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1600);}
+async function copy(){
+ const t=out.value;if(!t.trim()){toast('אין טקסט להעתקה');return;}
+ try{await navigator.clipboard.writeText(t);}catch(e){out.select();try{document.execCommand('copy');}catch(_){}window.getSelection&&window.getSelection().removeAllRanges();}
+ toast('הועתק ללוח');
+}
+function clearPt(){
+ st.pt={name:'',idType:'id',idNum:'',sex:'m'};$('#p_name').value='';$('#p_idnum').value='';
+ st.dirty=false;update();toast('פרטי המטופל/ת נוקו');
+}
+$('#copyBtn').onclick=copy;$('#copyBtn2').onclick=copy;
+$('#clearPt').onclick=clearPt;$('#clearPt2').onclick=clearPt;
+$('#newLetter').onclick=()=>{
+ st.pt={name:'',idType:'id',idNum:'',sex:'m'};$('#p_name').value='';$('#p_idnum').value='';
+ st.scen=null;st.f={};st.dirty=false;st.date=todayISO();$('#p_date').value=st.date;
+ renderFields();update();window.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* ---------- init ---------- */
+loadDoc();
+DOC_KEYS.forEach(k=>$('#d_'+k).value=doc[k]);
+showDoc(!!(doc.nameHe&&doc.lic));
+renderPicker();renderFields();update();
+})();
+</script>
+</body>
+</html>
