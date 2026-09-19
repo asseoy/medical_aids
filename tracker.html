@@ -795,7 +795,12 @@ function viewWeight(){
   const avg = rec.length ? rec.reduce((s,x) => s+x.kg, 0)/rec.length : null;
   /* 30 הימים האחרונים, ציר זמן לפי תאריך. הקו הירוק הוא ממוצע נע של 7 ימים,
      שמחושב גם משקילות שלפני תחילת החלון. */
-  const from = shift(today(), -29), x0 = dayNum(from);
+  /* החלון הוא 30 יום, אבל אם השקילות מתחילות מאוחר יותר הגרף מתחיל מהשקילה
+     הראשונה — אחרת כל הקו נדחס לקצה אחד. */
+  const win = shift(today(), -29);
+  const first = w.find(p => p.date >= win);
+  const from = first ? (first.date > win ? first.date : win) : win;
+  const x0 = dayNum(from), xSpan = Math.max(1, dayNum(today()) - x0);
   const pts = w.filter(p => p.date >= from).map(p => {
     const win = w.filter(q => q.date <= p.date && q.date >= shift(p.date, -6));
     return { ...p, avg: win.reduce((a,q) => a+q.kg, 0) / win.length };
@@ -805,7 +810,7 @@ function viewWeight(){
   if (pts.length > 1){
     const all = pts.flatMap(p => [p.kg, p.avg]);
     const mn = Math.min(...all)-.3, mx = Math.max(...all)+.3;
-    const line = key => pts.map((p,i) => `${i?'L':'M'}${((dayNum(p.date)-x0)/29*300).toFixed(1)},${(100-(p[key]-mn)/(mx-mn||1)*100).toFixed(1)}`).join(' ');
+    const line = key => pts.map((p,i) => `${i?'L':'M'}${((dayNum(p.date)-x0)/xSpan*300).toFixed(1)},${(100-(p[key]-mn)/(mx-mn||1)*100).toFixed(1)}`).join(' ');
     path = line('kg'); avgPath = line('avg');
   }
   return `<h2>משקל</h2>
@@ -920,9 +925,13 @@ function tdeeCard(){
       ובשבועיים הראשונים אחרי שינוי בתזונה חלק משינוי המשקל הוא נוזלים.</div></div>`;
 }
 function monthCharts(){
-  const t = today(), from = shift(t, -29), by = dayTotals(from, t), st = S.settings;
-  if (!Object.keys(by).length) return '';
-  const days = Array.from({ length: 30 }, (_, i) => shift(from, i));
+  const t = today(), win = shift(t, -29), by = dayTotals(win, t), st = S.settings;
+  const logged = Object.keys(by).sort();
+  if (!logged.length) return '';
+  /* מתחילים מהיום הרשום הראשון בחלון, כדי לא למתוח את הגרף על ימים ריקים בהתחלה */
+  const from = logged[0] > win ? logged[0] : win;
+  const days = [];
+  for (let d = from; d <= t; d = shift(d, 1)) days.push(d);
   const pro = days.map(d => by[d] ? by[d].p : null), kc = days.map(d => by[d] ? by[d].k : null);
   /* ארוחות עיקריות של 7 הימים האחרונים, בלי היום */
   const wFrom = shift(t, -7), wTo = shift(t, -1), meals = {};
@@ -933,7 +942,8 @@ function monthCharts(){
   const mv = Object.values(meals), good = mv.filter(v => v >= MEAL_PRO).length;
   const axis = `<div class="axis"><span>${pretty(from)}</span><span>היום</span></div>`;
   return `<div class="card">
-    <b style="display:block;margin-bottom:14px">30 הימים האחרונים</b>
+    <b style="display:block;margin-bottom:14px">${days.length >= 30 ? '30 הימים האחרונים'
+      : days.length === 1 ? 'היום' : `${days.length} הימים האחרונים`}</b>
     <div class="row xs" style="margin-bottom:4px"><span style="color:var(--pro)">חלבון ליום</span>
       ${st.proteinTarget ? `<span class="mut">קו מקווקו: יעד ${st.proteinTarget} ג׳</span>` : ''}</div>
     ${barChart(pro, st.proteinTarget, 'var(--pro)')}${axis}
@@ -1272,7 +1282,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-19a';
+const BUILD = '2026-09-19b';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
