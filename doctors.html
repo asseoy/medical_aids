@@ -29,6 +29,7 @@
   --paper:#F2F4F2; --surface:#FFFFFF; --line:#DDE4E1;
   --htn:#0D4F63; --dm:#125A46; --lipid:#5B2D9B; --af:#1D4ED8; --mht:#0F5C52;
   --osteo:#9D174D; --masld:#6B4A17; --prev:#0D9488; --ibs:#9A3412; --macros:#3730A3; --fibro:#86198F; --refuan:#2F5D50;
+  --asthma:#0B5C7A; --fatigue:#3A459E; --home:#6D28D9; --letters:#1F3A68;
   --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -158,11 +159,38 @@ footer b{color:var(--ink)}
   <span class="go" aria-hidden="true">←</span>
 </a>
 
+<a class="card" href="asthma.html" style="--accent:var(--asthma)">
+  <h3>אסתמה</h3>
+  <p class="desc">הערכת רמת האיזון והסיכון, בחירת הטיפול הכרוני לפי שלב, טיפול בהתקף חריף במרפאה, החמרה מדורגת ותוכנית פעולה, ושמות מסחריים בישראל.</p>
+  <div class="based"><span class="k">מבוסס על</span><span class="src">GINA 2026 — Summary Guide</span></div>
+  <span class="go" aria-hidden="true">←</span>
+</a>
+
+<a class="card" href="fatigue.html" style="--accent:var(--fatigue)">
+  <h3>עייפות במבוגר</h3>
+  <p class="desc">אנמנזה ובדיקה ממוקדות, שאלוני סינון מובנים עם ניקוד, בירור מדורג, סיווג העייפות, וטיפול לפי הגורם.</p>
+  <div class="based"><span class="k">מבוסס על</span><span class="src">AFP 2023 — Latimer et al.</span></div>
+  <span class="go" aria-hidden="true">←</span>
+</a>
+
+<a class="card" href="homevisit.html" style="--accent:var(--home)">
+  <h3>ביקור בית</h3>
+  <p class="desc">הערכה לפי מבנה INHOMESSS עם כלים מנוקדים מובנים — Barthel, Lawton, Mini-Cog, GDS-15, MNA-SF והערכת נפילות — בטיחות הבית חדר אחר חדר, מטפל/ת עיקרי/ת, התאמת תרופות, מטרות טיפול, ושירותים בישראל.</p>
+  <div class="based"><span class="k">מבוסס על</span><span class="src">AAFP 2020 — House Calls</span><span class="src">סקירה שיטתית 2024</span></div>
+  <span class="go" aria-hidden="true">←</span>
+</a>
+
 <div class="sec"><h2>תיעוד ביקור</h2><div class="rule"></div></div>
 
 <a class="card" href="macros.html" style="--accent:var(--macros)">
   <h3>תבניות תיעוד מהיר</h3>
   <p class="desc">טקסט מוכן להדבקה בתיק הרפואי לפי קליקים בלבד, כמעט ללא הקלדה — כאב גרון (כולל Centor), שיעול, בדיקות דם כלליות, בדיקת יילוד, בדיקה נוירולוגית מקיפה, ודגלים אדומים לפי תלונה מובילה. שלושה חלונות נפרדים לאנמנזה, בדיקה גופנית וסיכום, עם הדפסה ישירה למטופל.</p>
+  <span class="go" aria-hidden="true">←</span>
+</a>
+
+<a class="card" href="letters.html" style="--accent:var(--letters)">
+  <h3>מכתבים ואישורים רפואיים</h3>
+  <p class="desc">מכתבים ואישורים בעברית ובאנגלית בקליקים, להעתקה לתיק — טיסה עם תרופות, כשירות לטיסה, ביטוח נסיעות, ביטול נסיעה או מנוי, פטור מחינוך גופני, אלרגיה ואפיפן, תרופות בבית הספר, התאמות בעבודה, מילואים ועוד.</p>
   <span class="go" aria-hidden="true">←</span>
 </a>
 
@@ -194,8 +222,13 @@ footer b{color:var(--ink)}
 </div>
 <script>
 /* המונה נגזר ממספר הכרטיסים בפועל, כדי שלא יתיישן בהוספת כלי */
-document.getElementById('tally').textContent =
-  document.querySelectorAll('a.card').length;
+/* סופרים רק את הכרטיסים שלפני הכותרת הבאה (לא את כלי התיעוד) */
+(function(){
+  const t=document.getElementById('tally'), head=t.closest('.sec');
+  const next=[...document.querySelectorAll('.sec')].find(x=>x!==head && head.compareDocumentPosition(x)&4);
+  t.textContent=[...document.querySelectorAll('a.card')].filter(c=>
+    (head.compareDocumentPosition(c)&4) && (!next || (next.compareDocumentPosition(c)&2))).length;
+})();
 </script>
 </body>
 </html>
