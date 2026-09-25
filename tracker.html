@@ -56,6 +56,11 @@ label.f span{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
 .tabs div{max-width:460px;width:100%;display:flex}
 .tabs button{flex:1;border:none;background:none;color:var(--mut);border-radius:0;padding:16px 0;font-size:14px}
 .tabs button.on{color:var(--pro);font-weight:700}
+.wtypes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.wtypes button{padding:10px 4px;font-size:13px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px}
+.wtypes button span{font-size:22px}
+.wpre{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;font-size:13px;line-height:1.25;text-align:center}
+.wtypes button.on{border-color:var(--pro);background:#1B2A20;color:var(--ink);font-weight:700}
 .sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;
   justify-content:center;z-index:50}
 .sheet{max-width:460px;width:100%;background:var(--bg);border-top:1px solid var(--line);
@@ -126,6 +131,8 @@ function save(key, val){
 const S = {
   foods: load('foods', []),
   weights: load('weights', []),
+  workouts: load('workouts', []),
+  steps: load('steps', {}),          // { 'YYYY-MM-DD': מספר צעדים }
   settings: load('settings', { kcalTarget: 0, proteinTarget: 0 }),
   keys: { anthropic: load('apikey', ''), gemini: load('gkey', '') },
   provider: load('provider', ''),
@@ -279,9 +286,14 @@ let R = null;
 function sheetRecipe(){
   if (!S.key) return sheetLabel();
   sheet('ניתוח מתכון', `
-    <p class="sm mut" style="margin-bottom:12px">צילום, תמונה או PDF של מתכון.
-    יחולצו הרכיבים והכמויות, יותאמו לצמרת, ויחושבו ערכים למנה אחת.</p>
-    <input type="file" accept="image/*,application/pdf" onchange="analyzeRecipe(this.files[0])">
+    <p class="sm mut" style="margin-bottom:12px">צילום, צילומי מסך או PDF של מתכון — אפשר לבחור כמה קבצים יחד,
+    למשל מתכון שנפרש על שני עמודים. יחולצו הרכיבים והכמויות, יותאמו לצמרת, ויחושבו ערכים למנה אחת.</p>
+    <input type="file" accept="image/*,application/pdf" multiple onchange="analyzeRecipe([...this.files])">
+    <div class="sm mut" style="margin:16px 0 6px">או הדבקת טקסט המתכון</div>
+    <textarea id="rtxt" rows="5" style="width:100%;padding:12px;border-radius:12px;background:var(--surf2);
+      border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:16px"
+      placeholder="רכיבים ואופן הכנה, כפי שהם מופיעים באתר או בהודעה"></textarea>
+    <button class="full" style="margin-top:8px" onclick="analyzeRecipe(null, $('#rtxt').value)">ניתוח הטקסט</button>
     <div id="rout" class="sm mut" style="margin-top:12px"></div>`);
 }
 
@@ -379,45 +391,112 @@ async function fileB64(file){
   });
 }
 
-async function analyzeRecipe(file){
-  if (!file) return;
+/* שלב 1 — קריאה. ההנחיות לכמויות נכתבו כדי שההמרה לגרמים תהיה עקבית:
+   מוצקים שונים שוקלים אחרת בכוס, וירקות שלמים צריכים משקל טיפוסי.
+   state מתאר את מצב הרכיב במתכון (בדרך כלל גולמי), ו-search הוא ניסוח בסגנון צמרת. */
+const RECIPE_READ = `זהו מתכון. חלץ ממנו את כל הרכיבים והכמויות, והמר כל כמות לגרמים של הרכיב כפי שהוא נכנס למתכון.
+
+המרות מקובלות (השתמש בהן כשאין משקל מפורש):
+- כוס: קמח ~130 ג׳, סוכר ~200 ג׳, אורז או עדשים יבשים ~190 ג׳, שיבולת שועל ~90 ג׳, נוזלים ~240 ג׳, גבינה מגוררת ~100 ג׳
+- כף: שמן ~13 ג׳, חמאה ~14 ג׳, סוכר או דבש ~12–20 ג׳, רוטב סויה ~16 ג׳, טחינה ~15 ג׳. כפית ≈ שליש כף
+- יחידות: ביצה ~50 ג׳ (בלי קליפה), בצל בינוני ~150 ג׳, שן שום ~5 ג׳, גזר ~80 ג׳, עגבנייה ~120 ג׳,
+  תפוח אדמה ~170 ג׳, בטטה ~200 ג׳, פלפל ~150 ג׳, חציל ~350 ג׳, לימון (מיץ) ~40 ג׳
+- קופסת שימורים: המשקל המסונן אם הנוזל נשפך, אחרת המשקל הכולל
+- טווח (״2–3 כפות״) — אמצע הטווח. ״לפי הטעם״ — כמות טיפוסית קטנה.
+
+כללים:
+- רכיב שמופיע בכמה חלקים של המתכון (למשל בבצק ובמילוי) — אחד לשורה אחת עם סכום הכמויות.
+- רכיב ״להגשה״ או ״לקישוט״ — כלול רק אם הוא חלק מהמנה עצמה.
+- name: שם כללי בעברית, בלי מותג.
+- search: ניסוח קצר בסגנון המאגר הישראלי צמרת, למשל ״בשר עוף, חזה, ללא עור, לא מבושל״ או ״אורז לבן יבש״.
+- state: raw (גולמי/טרי/לא מבושל), dry (יבש — קטניות, דגנים, פסטה), cooked (כבר מבושל כשנכנס למתכון), processed (מוצר מוכן — גבינה, רוטב, לחם).
+  רוב הרכיבים במתכון נכנסים גולמיים או יבשים — cooked רק כשהמתכון אומר זאת במפורש (״אורז מבושל״, ״עוף צלוי מפורק״).
+- negligible:true לרכיב שתרומתו למתכון כולו פחות מ-15 קלוריות ופחות מגרם חלבון: מלח, פלפל, תבלינים יבשים, מים,
+  אבקת אפייה, סודה לשתייה, שמרים, חומץ, מעט עשבי תיבול או מיץ לימון. שמן, סוכר ורטבים אינם זניחים גם בכמות קטנה.
+- servings: מספר המנות שכתוב. אם כתוב מספר יחידות (״12 מאפינס״) — זה מספר המנות. אם לא כתוב — הערך לפי כמות המזון.
+
+החזר JSON בלבד:
+{"title":"שם המתכון","servings":מספר,"ingredients":[{"name":"","grams":מספר,"search":"","state":"raw|dry|cooked|processed","negligible":true|false}]}`;
+
+/* חיפוש מועמדים בצמרת: לפי השם ולפי ניסוח החיפוש, ואז העדפה למצב המתאים —
+   ברכיב גולמי או יבש, פריטים "לא מבושל / טרי / נא / יבש" עולים, ומבושלים ואפויים יורדים. */
+const RAW_RX = /לא מבושל|טרי|גולמי|(^|[\s,])נא($|[\s,])|יבש/;
+const COOKED_RX = /(^|[^א])מבושל|אפוי|צלוי|בגריל|מטוגן|קלוי/;
+function recipeCands(ing){
+  const best = {};
+  [ing.name, ing.search].filter(Boolean).forEach(q => dbSearch(q, 25).forEach(c => {
+    if (!best[c.i] || best[c.i].sc < c.sc) best[c.i] = c;
+  }));
+  const wantRaw = ing.state === 'raw' || ing.state === 'dry';
+  const wantCooked = ing.state === 'cooked';
+  return Object.values(best).map(c => {
+    const n = c.row[0], raw = RAW_RX.test(n) && !/(^|[^א])מבושל/.test(n.replace('לא מבושל', ''));
+    const cooked = COOKED_RX.test(n.replace('לא מבושל', ''));
+    let sc = c.sc;
+    if (wantRaw) sc += (raw ? 5 : 0) - (cooked ? 5 : 0);
+    if (wantCooked) sc += (cooked ? 5 : 0) - (raw ? 3 : 0);
+    return { ...c, sc };
+  }).sort((a, b) => b.sc - a.sc).slice(0, 10);
+}
+
+async function analyzeRecipe(files, text){
   const out = $('#rout');
+  files = (files || []).filter(Boolean);
+  text = String(text || '').trim();
+  if (!files.length && !text) return;
   try {
     out.textContent = 'קורא את המתכון…';
-    const isPdf = /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name);
-    const block = isPdf
-      ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: await fileB64(file) } }
-      : { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await prepImage(file) } };
+    const blocks = [];
+    for (const file of files){
+      const isPdf = /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name);
+      blocks.push(isPdf
+        ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: await fileB64(file) } }
+        : { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await prepImage(file) } });
+    }
+    const note = files.length > 1 ? 'המתכון מפוצל על פני ' + files.length + ' קבצים — קרא את כולם כמתכון אחד.\n\n' : '';
+    blocks.push({ type: 'text', text: note + RECIPE_READ + (text ? '\n\nטקסט המתכון:\n' + text : '') });
 
-    const p1 = await askJSON([block, { type: 'text', text:
-      'זהו מתכון. חלץ ממנו את הרכיבים והכמויות, והמר כל כמות לגרמים.\n'
-      + 'כוסות, כפות ויחידות יש להמיר להערכת משקל סבירה.\n'
-      + 'אם מספר המנות לא מצוין, הערך אותו לפי גודל המתכון.\n'
-      + 'החזר JSON בלבד, בלי טקסט נוסף ובלי סימוני קוד:\n'
-      + '{"title":"שם המתכון","servings":מספר,"ingredients":[{"name":"שם הרכיב בעברית","grams":מספר}]}' }], 3000);
-
+    const p1 = await askJSON(blocks, 4000);
     if (!p1 || !Array.isArray(p1.ingredients) || !p1.ingredients.length)
-      throw new Error('לא זוהו רכיבים בקובץ');
+      throw new Error('לא זוהו רכיבים');
 
     out.textContent = 'מתאים לצמרת…';
-    const cands = p1.ingredients.map(ing => dbSearch(ing.name, 8));
-    const blocks = p1.ingredients.map((ing, i) => cands[i].length
-      ? `רכיב ${i}: ${ing.name}\n` + cands[i].map((c, n) => `  ${n}. ${c.row[0]}`).join('\n')
-      : `רכיב ${i}: ${ing.name}\n  (אין מועמדים)`).join('\n\n');
+    const neg = ing => ing.negligible === true;
+    const cands = p1.ingredients.map(ing => neg(ing) ? [] : recipeCands(ing));
+    const stateHe = { raw: 'גולמי', dry: 'יבש, לפני בישול', cooked: 'מבושל', processed: 'מוצר מוכן' };
+    const list = p1.ingredients.map((ing, i) => neg(ing) ? null
+      : `רכיב ${i}: ${ing.name} (${stateHe[ing.state] || 'מצב לא ידוע'}, ${ing.grams} ג׳)\n` + (cands[i].length
+        ? cands[i].map((c, n) => `  ${n}. ${c.row[0]} | ${c.row[1]} קק״ל, ${c.row[2]} ג׳ חלבון ל-100 ג׳`).join('\n')
+        : '  (אין מועמדים)')).filter(Boolean).join('\n\n');
 
-    const p2 = await askJSON([{ type: 'text', text:
-      'לכל רכיב, בחר מהרשימה שלו את הפריט הקרוב ביותר.\n'
-      + 'אם אף פריט לא מתאים, החזר null עבור אותו רכיב.\n\n' + blocks
-      + '\n\nהחזר JSON בלבד, בלי הסברים: {"matches":[{"ingredient":מספר,"candidateIndex":מספר או null}]}' }], 3000);
+    /* שלב 2 — התאמה. המועמדים מגיעים עם הערכים שלהם, כדי שהמודל יוכל לפסול התאמה לא סבירה.
+       אין התאמה → המודל מעריך בעצמו ערכים ל-100 גרם, והרכיב מסומן "הערכה". */
+    const p2 = list ? await askJSON([{ type: 'text', text:
+      'לכל רכיב, בחר מהרשימה שלו את הפריט שמתאים לו ביותר.\n'
+      + 'חשוב: התאם גם את המצב. רכיב גולמי — בחר פריט "לא מבושל", "טרי" או "נא"; רכיב יבש — פריט "יבש" '
+      + '(אורז יבש ולא מבושל, עדשים יבשים ולא מבושלים). אל תבחר פריט מבושל, אפוי, צלוי או בגריל לרכיב גולמי — '
+      + 'המשקל והקלוריות שלהם שונים. גם סוג הבשר או המוצר חייב להתאים (עוף ולא בקר).\n'
+      + 'אם אף פריט לא מתאים כך, החזר candidateIndex:null, והערך בעצמך את הערכים ל-100 גרם של הרכיב במצב שבו הוא '
+      + 'נכנס למתכון, לפי נתונים תזונתיים מקובלים כמו USDA: k100 — קלוריות, p100 — גרם חלבון. כשנבחר מועמד, k100 ו-p100 הם null.\n\n'
+      + list
+      + '\n\nהחזר JSON בלבד: {"matches":[{"ingredient":מספר,"candidateIndex":מספר או null,"k100":מספר או null,"p100":מספר או null}]}' }], 4000)
+      : { matches: [] };
 
     const pick = {};
-    (p2.matches || []).forEach(m => { pick[m.ingredient] = m.candidateIndex; });
+    (p2.matches || []).forEach(m => { pick[m.ingredient] = m; });
+    const num = v => (typeof v === 'number' && isFinite(v) && v >= 0) ? v : null;
 
     R = { title: p1.title || 'מתכון', servings: Math.max(1, parseFloat(p1.servings) || 1),
       items: p1.ingredients.map((ing, i) => {
-        const ci = pick[i], c = (ci === null || ci === undefined) ? null : cands[i][ci];
-        return { name: ing.name, grams: Math.max(0, parseFloat(ing.grams) || 0),
-          src: c ? c.row[0] : null, k100: c ? c.row[1] : 0, p100: c ? c.row[2] : 0 };
+        const base = { name: ing.name, grams: Math.max(0, parseFloat(ing.grams) || 0) };
+        if (neg(ing)) return { ...base, neg: true, src: null, k100: 0, p100: 0 };
+        const m = pick[i] || {}, ci = m.candidateIndex;
+        const c = (ci === null || ci === undefined) ? null : cands[i][ci];
+        if (c) return { ...base, src: c.row[0], k100: c.row[1], p100: c.row[2] };
+        const k = num(m.k100), p = num(m.p100);
+        if (k !== null && k <= 900 && p !== null && p <= 100)
+          return { ...base, src: null, est: true, k100: k, p100: p };
+        return { ...base, src: null, k100: 0, p100: 0 };
       }) };
     drawRecipe();
   } catch (e){
@@ -426,7 +505,7 @@ async function analyzeRecipe(file){
 }
 
 function recipeTotals(r){
-  const t = r.items.reduce((a, it) => ({
+  const t = r.items.filter(it => !it.neg).reduce((a, it) => ({
     k: a.k + it.k100 * (it.grams/100), p: a.p + it.p100 * (it.grams/100) }), { k:0, p:0 });
   const s = Math.max(1, parseFloat(r.servings) || 1);
   return { k: t.k/s, p: t.p/s, tk: t.k, tp: t.p };
@@ -434,7 +513,8 @@ function recipeTotals(r){
 
 function drawRecipe(){
   const t = recipeTotals(R);
-  const miss = R.items.filter(it => !it.src).length;
+  const miss = R.items.filter(it => !it.src && !it.est && !it.neg).length;
+  const negs = R.items.filter(it => it.neg), ests = R.items.filter(it => it.est).length;
   sheet('מתכון: בדיקה לפני שמירה', `
     <label class="f"><span>שם</span>
       <input value="${esc(R.title)}" oninput="R.title=this.value"></label>
@@ -442,11 +522,13 @@ function drawRecipe(){
       <input type="number" inputmode="decimal" min="1" style="direction:ltr"
         value="${R.servings}" oninput="R.servings=this.value;recipeLive()"></label>
     <div class="sm mut" style="margin-bottom:6px">רכיבים</div>
-    <div class="list" style="margin-bottom:12px">${R.items.map((it, i) => `
+    <div class="list" style="margin-bottom:12px">${R.items.map((it, i) => it.neg ? '' : `
       <div class="item">
         <div style="min-width:0">
           <div class="sm">${esc(it.name)}</div>
-          <div class="xs mut">${it.src ? esc(it.src) : '<span style="color:var(--warn)">לא הותאם — לא נספר</span>'}</div>
+          <div class="xs mut">${it.src ? esc(it.src)
+            : it.est ? `<span style="color:var(--kcal)">הערכה (לא מצמרת): ${r0(it.k100)} קק״ל · ${it.p100 < 10 ? Math.round(it.p100 * 10) / 10 : r0(it.p100)} ג׳ חלבון ל-100 ג׳</span>`
+            : '<span style="color:var(--warn)">לא הותאם — לא נספר</span>'}</div>
         </div>
         <div class="flex" style="align-items:center">
           <input type="number" inputmode="decimal" style="width:76px;direction:ltr"
@@ -455,9 +537,11 @@ function drawRecipe(){
           <button class="del" onclick="R.items.splice(${i},1);drawRecipe()">×</button>
         </div>
       </div>`).join('')}</div>
+    ${negs.length ? `<div class="xs mut" style="margin:-4px 0 12px">רכיבים זניחים שלא נספרו: ${negs.map(it => esc(it.name)).join(' · ')}</div>` : ''}
+    ${ests ? `<div class="xs mut" style="margin:-4px 0 12px">${ests === 1 ? 'רכיב אחד חושב' : ests + ' רכיבים חושבו'} לפי הערכה, כי לא נמצאה להם התאמה בצמרת. כדאי לבדוק שהמספרים סבירים.</div>` : ''}
     ${miss ? `<div class="card sm" style="padding:12px;border-color:var(--warn)">
-      <b style="color:var(--warn)">${miss} רכיבים לא הותאמו</b>
-      <div class="xs mut" style="margin-top:4px">הם לא נכללים בחישוב. אפשר למחוק אותם או להתעלם.</div></div>` : ''}
+      <b style="color:var(--warn)">${miss === 1 ? 'רכיב אחד לא הותאם' : miss + ' רכיבים לא הותאמו'}</b>
+      <div class="xs mut" style="margin-top:4px">${miss === 1 ? 'הוא לא נכלל' : 'הם לא נכללים'} בחישוב, כי גם הערכה לא התקבלה. אפשר למחוק או להתעלם.</div></div>` : ''}
     <div class="card row" style="padding:12px;margin:12px 0">
       <span class="sm mut">למנה אחת</span>
       <span class="sm num"><b id="rp" style="color:var(--pro)">${r0(t.p)} ג׳ חלבון</b>
@@ -804,6 +888,198 @@ function saveWeight(){
   save('weights', S.weights); render();
 }
 
+/* ============ מסך: אימונים ============
+   רשומה: { id, date, type, name?, min?, kcal? } — משך וקלוריות אינם חובה.
+   name הוא תיאור חופשי (למשל "שחייה קבוצתית"); כשאין — מוצג שם הסוג. */
+
+/* האימונים הקבועים — הוספה בלחיצה אחת.
+   rate = קק״ל לדקה במשקל 88 ק״ג. הקלוריות מוכפלות ביחס בין המשקל האחרון
+   שנרשם עד יום האימון לבין 88 (השריפה בפעילות כזו גדלה בערך ביחס ישר למשקל).
+   ריצה בינונית: קצב ~5:45 לק״מ, MET ~10.5 → 88 × 10.5 / 60 ≈ 15.4.
+   בפועל הסטייה יכולה להגיע ל-15–25% לפי העצימות והמנוחות. */
+const WBASE_KG = 88;
+const WPRESETS = [
+  { key: 'functional', type: 'functional', min: 60, rate: 650 / 60 },
+  { key: 'swim-group', type: 'swim', name: 'שחייה קבוצתית', min: 60, rate: 650 / 60 },
+  { key: 'run-easy', type: 'run', name: 'ריצה קלה', pace: '6:30', min: 30, rate: 400 / 30 },
+  { key: 'run-medium', type: 'run', name: 'ריצה בינונית', pace: '5:45', min: 40, rate: 15.4 },
+];
+/* המשקל האחרון שנרשם עד התאריך; אם אין — האחרון בכלל; אם אין בכלל — 88 */
+function kgOn(date){
+  const ws = [...S.weights].sort((a, b) => a.date < b.date ? -1 : 1);
+  const before = ws.filter(w => w.date <= date);
+  return (before[before.length - 1] || ws[ws.length - 1] || { kg: WBASE_KG }).kg;
+}
+const presetKcal = (p, min, date) => Math.round(p.rate * min * kgOn(date) / WBASE_KG / 5) * 5;
+/* p שמור ברשומה; לאימונים שנוספו לפני שהיה p — זיהוי לפי סוג ותיאור */
+const presetOf = w => w.p ? WPRESETS.find(p => p.key === w.p)
+  : w.p === undefined ? WPRESETS.find(p => p.type === w.type && (p.name || '') === (w.name || '')) : null;
+const WTYPES = [
+  ['run', 'ריצה', '🏃'], ['walk', 'הליכה', '🚶'], ['hike', 'טיול רגלי', '🥾'],
+  ['bike', 'רכיבה על אופניים', '🚴'], ['spin', 'ספינינג', '🚲'], ['swim', 'שחייה', '🏊'],
+  ['strength', 'אימון כוח', '🏋️'], ['functional', 'אימון פונקציונלי', '💪'], ['hiit', 'HIIT', '⚡'],
+  ['crossfit', 'קרוספיט', '🔥'],
+  ['row', 'חתירה', '🚣'], ['elliptical', 'אליפטיקל', '🔄'], ['yoga', 'יוגה', '🧘'],
+  ['pilates', 'פילאטיס', '🤸'], ['stretch', 'מתיחות וגמישות', '🙆'], ['tennis', 'טניס', '🎾'],
+  ['padel', 'פאדל', '🏓'], ['football', 'כדורגל', '⚽'], ['basketball', 'כדורסל', '🏀'],
+  ['dance', 'ריקוד', '💃'], ['martial', 'אגרוף ולחימה', '🥊'], ['climb', 'טיפוס', '🧗'],
+  ['other', 'אחר', '➕'],
+];
+const wType = id => WTYPES.find(t => t[0] === id) || WTYPES[WTYPES.length - 1];
+const wName = w => w.name || wType(w.type)[1];
+const wMeta = w => [w.min && w.min + ' דק׳', w.kcal && w.kcal + ' קק״ל'].filter(Boolean).join(' · ');
+
+function wItem(w, withDate){
+  return `<div class="item" onclick="sheetWorkout('${w.id}')">
+    <div style="min-width:0"><b>${wType(w.type)[2]} ${esc(wName(w))}</b>
+      <div class="xs mut num">${withDate ? pretty(w.date) + (wMeta(w) ? ' · ' : '') : ''}${wMeta(w)}</div></div>
+    <div class="flex" style="align-items:center">
+      <button class="sm" onclick="event.stopPropagation();sheetWorkout('${w.id}')">עריכה</button>
+      <button class="del" onclick="event.stopPropagation();delWorkout('${w.id}')">×</button></div></div>`;
+}
+function viewTrain(){
+  const day = S.workouts.filter(w => w.date === S.date);
+  const past = S.workouts.filter(w => w.date < S.date)
+    .sort((a, b) => a.date < b.date ? 1 : -1).slice(0, 10);
+  return `
+  <div class="row" style="margin-bottom:22px;padding-top:4px">
+    <button class="ghost" style="padding:8px 12px" onclick="go(-1)">›</button>
+    <b style="font-size:18px">${pretty(S.date)}</b>
+    <button class="ghost" style="padding:8px 12px;${S.date >= today() ? 'opacity:.3' : ''}" onclick="go(1)">‹</button>
+  </div>
+  <div class="card" style="padding:14px">
+    <div class="row" style="margin-bottom:8px"><b>צעדים</b>
+      <span class="xs mut num">${stepsNote()}</span></div>
+    <div class="flex">
+      <input id="stepsIn" type="number" inputmode="numeric" placeholder="מספר הצעדים ${S.date === today() ? 'היום' : 'ביום הזה'}"
+        value="${S.steps[S.date] || ''}" style="flex:1">
+      <button onclick="saveSteps()">שמירה</button>
+    </div>
+  </div>
+  <div class="sm mut" style="margin-bottom:8px">האימונים הקבועים</div>
+  <div class="grid" style="margin-bottom:8px">
+    ${WPRESETS.map((p, i) => `<button class="wpre" onclick="addPreset(${i})">
+      <span style="font-size:22px">${wType(p.type)[2]}</span><b>${esc(wName(p))}</b>
+      <span class="xs mut num">${p.min} דק׳ · ${presetKcal(p, p.min, S.date)} קק״ל</span>${p.pace ? `<span class="xs mut num">קצב ${p.pace} לק״מ</span>` : ''}</button>`).join('')}
+  </div>
+  <div class="xs mut" style="margin-bottom:18px">${S.weights.length
+    ? 'הקלוריות מחושבות לפי משקל ' + kgOn(S.date).toFixed(1) + ' ק״ג, ומתעדכנות כשמשנים את המשך.'
+    : 'הקלוריות מחושבות לפי 88 ק״ג, עד שתירשם שקילה, ומתעדכנות כשמשנים את המשך.'}</div>
+  ${day.length ? `<div class="list" style="margin-bottom:12px">${day.map(w => wItem(w)).join('')}</div>`
+    : '<div class="card sm mut">אין אימונים ביום הזה.</div>'}
+  <button class="solid full" style="margin-bottom:22px" onclick="sheetWorkout()">+ הוספת אימון</button>
+  ${past.length ? `<div class="sm mut" style="margin-bottom:8px">אימונים קודמים</div>
+    <div class="list">${past.map(w => wItem(w, true)).join('')}</div>` : ''}`;
+}
+
+let WK = null;
+function sheetWorkout(id){
+  const w = id && S.workouts.find(x => x.id === id);
+  WK = w ? { ...w } : { date: S.date, type: '', name: '', min: '', kcal: '' };
+  WK.quick = !!(w && presetOf(w));          // אימון קבוע נפתח בתצוגה מקוצרת
+  drawWorkout();
+}
+/* תצוגה מקוצרת לאימון קבוע: רק משך (עם כפתורי ±5) וקלוריות */
+function drawQuick(){
+  const p = presetOf(WK);
+  sheet(wType(WK.type)[2] + ' ' + wName(WK) + ' · ' + pretty(WK.date), `
+    <div class="sm mut" style="margin-bottom:6px">משך בדקות</div>
+    <div class="flex" style="align-items:center;margin-bottom:14px">
+      <button style="width:64px;direction:ltr" onclick="wStep(-5)">−5</button>
+      <input id="wmin" type="number" inputmode="numeric" style="text-align:center;font-size:22px"
+        value="${WK.min || ''}" oninput="WK.min=this.value;wAuto()">
+      <button style="width:64px;direction:ltr" onclick="wStep(5)">+5</button>
+    </div>
+    <label class="f"><span>קלוריות</span>
+      <input id="wkcal" type="number" inputmode="numeric" value="${WK.kcal || ''}"
+        oninput="WK.kcal=this.value;WK.kcalManual=true;wHint()"></label>
+    <p id="whint" class="xs mut" style="margin:-4px 0 14px">${wHintText()}</p>
+    ${p && p.pace ? `<p class="xs mut" style="margin:-8px 0 14px">החישוב מניח קצב של ${p.pace} לק״מ.</p>` : ''}
+    <button class="solid full" onclick="saveWorkout()">${WK.id ? 'שמירה' : 'הוספה'}</button>
+    <button class="ghost full" style="margin-top:6px" onclick="WK.quick=false;drawWorkout()">שינוי סוג או תיאור</button>
+    <div id="werr" class="sm" style="color:var(--warn);margin-top:10px"></div>`);
+}
+function wStep(n){
+  WK.min = Math.max(5, (Math.round(parseFloat(WK.min)) || 0) + n);
+  $('#wmin').value = WK.min; wAuto();
+}
+function drawWorkout(){
+  if (WK.quick) return drawQuick();
+  sheet(WK.id ? 'עריכת אימון' : 'אימון חדש · ' + pretty(WK.date), `
+    <div class="sm mut" style="margin-bottom:8px">סוג האימון</div>
+    <div class="wtypes">${WTYPES.map(([k, l, e]) =>
+      `<button class="${WK.type === k ? 'on' : ''}" onclick="setWType('${k}')"><span>${e}</span>${l}</button>`).join('')}</div>
+    ${WK.type ? `<label class="f"><span>${WK.type === 'other' ? 'שם האימון' : 'תיאור (לא חובה)'}</span>
+      <input value="${esc(WK.name || '')}" oninput="WK.name=this.value"
+        placeholder="${WK.type === 'other' ? 'למשל: סקי, גלישה' : 'למשל: ' + (WK.type === 'swim' ? 'שחייה קבוצתית' : 'אימון בקבוצה')}"></label>` : ''}
+    <div class="grid" style="gap:12px">
+      <label class="f"><span>משך בדקות (לא חובה)</span>
+        <input type="number" inputmode="numeric" value="${WK.min || ''}" oninput="WK.min=this.value;wAuto()"></label>
+      <label class="f"><span>קלוריות (לא חובה)</span>
+        <input id="wkcal" type="number" inputmode="numeric" value="${WK.kcal || ''}" oninput="WK.kcal=this.value;WK.kcalManual=true;wHint()"></label>
+    </div>
+    <p id="whint" class="xs mut" style="margin:-4px 0 14px">${wHintText()}</p>
+    <button class="solid full" onclick="saveWorkout()">שמירה</button>
+    <div id="werr" class="sm" style="color:var(--warn);margin-top:10px"></div>`);
+}
+function setWType(k){
+  const p = presetOf(WK);
+  if (p && p.type !== k) WK.p = null;           // סוג אחר — כבר לא האימון הקבוע
+  WK.type = k; drawWorkout();
+}
+/* באימון קבוע: שינוי המשך מעדכן את הקלוריות — כל עוד לא הוקלדו ידנית */
+function wAuto(){
+  const p = presetOf(WK);
+  if (!p || WK.kcalManual) return;
+  const m = parseFloat(WK.min) || 0;
+  WK.kcal = m > 0 ? presetKcal(p, m, WK.date) : '';
+  $('#wkcal').value = WK.kcal;
+}
+function wHintText(){
+  const p = presetOf(WK);
+  if (!p) return 'את הקלוריות אפשר להעתיק מהשעון או מאפליקציית הכושר.';
+  if (WK.kcalManual) return 'הקלוריות הוקלדו ידנית ולא יתעדכנו לפי המשך.';
+  return 'הקלוריות מתעדכנות לפי המשך ולפי משקל ' + kgOn(WK.date).toFixed(1) + ' ק״ג. הקלדה ידנית שלהן מבטלת את החישוב.';
+}
+function wHint(){ $('#whint').textContent = wHintText(); }
+function saveWorkout(){
+  if (!WK.type) return void ($('#werr').textContent = 'יש לבחור סוג אימון.');
+  const min = Math.round(parseFloat(WK.min)) || 0, kcal = Math.round(parseFloat(WK.kcal)) || 0;
+  const rec = { id: WK.id || uid(), date: WK.date, type: WK.type };
+  if (String(WK.name || '').trim()) rec.name = String(WK.name).trim();
+  if (min > 0) rec.min = min;
+  if (kcal > 0) rec.kcal = kcal;
+  const p = presetOf(WK);
+  rec.p = p ? p.key : null;
+  if (p && WK.kcalManual) rec.kcalManual = true;
+  S.workouts = WK.id ? S.workouts.map(x => x.id === rec.id ? rec : x) : [...S.workouts, rec];   // עריכה שומרת על המקום ברשימה
+  if (!save('workouts', S.workouts)) return;
+  closeSheet(); render(); toast(WK.id ? 'האימון עודכן' : 'נוסף: ' + wName(rec));
+}
+/* ממוצע 7 הימים שלפני היום המוצג, על הימים שנרשמו בלבד */
+function stepsNote(){
+  const v = []; for (let i = 1; i <= 7; i++){ const x = S.steps[shift(S.date, -i)]; if (x) v.push(x); }
+  return v.length ? 'ממוצע 7 ימים: ' + Math.round(v.reduce((a, b) => a + b, 0) / v.length).toLocaleString('he-IL') : '';
+}
+function saveSteps(){
+  const n = Math.round(parseFloat($('#stepsIn').value));
+  if (n > 0) S.steps[S.date] = n; else delete S.steps[S.date];
+  if (!save('steps', S.steps)) return;
+  render(); toast(n > 0 ? 'נשמרו ' + n.toLocaleString('he-IL') + ' צעדים' : 'הצעדים נמחקו');
+}
+function addPreset(i){
+  const p = WPRESETS[i];
+  WK = { date: S.date, type: p.type, name: p.name || '', min: p.min,
+         kcal: presetKcal(p, p.min, S.date), p: p.key, quick: true };
+  drawWorkout();
+}
+function delWorkout(id){
+  const w = S.workouts.find(x => x.id === id);
+  if (!w || !confirm('למחוק את האימון "' + wName(w) + '"?')) return;
+  S.workouts = S.workouts.filter(x => x.id !== id);
+  save('workouts', S.workouts); render();
+}
+
 /* ============ מסך: סיכומים ============ */
 function viewSum(){
   const all = Object.keys(localStorage).filter(k => k.startsWith(K+'log.'))
@@ -820,7 +1096,9 @@ function viewSum(){
     const ws = S.weights.filter(x => x.date >= from && x.date <= wTo).sort((a,b) => a.date < b.date ? -1 : 1);
     return { n, span, k: n ? sum.k/n : 0, p: n ? sum.p/n : 0,
       hit: S.settings.proteinTarget ? days.filter(d => byDay[d].p >= S.settings.proteinTarget).length : null,
-      dw: ws.length > 1 ? ws[ws.length-1].kg - ws[0].kg : null };
+      dw: ws.length > 1 ? ws[ws.length-1].kg - ws[0].kg : null,
+      wo: S.workouts.filter(w => w.date >= from && w.date <= wTo),
+      st: Object.entries(S.steps).filter(([d]) => d >= from && d <= to).map(([, v]) => v) };
   };
   const box = (title, s, note) => `<div class="card">
     <div class="row" style="margin-bottom:${note ? 4 : 14}px"><b>${title}</b>
@@ -836,24 +1114,146 @@ function viewSum(){
       ${s.dw !== null ? `<div><div class="xs mut">שינוי במשקל</div>
         <div class="num" style="font-size:20px">${s.dw > 0 ? '+' : ''}${s.dw.toFixed(1)} ק״ג</div></div>` : ''}
     </div>${s.n < s.span ? '<div class="xs mut" style="margin-top:14px">הממוצעים מחושבים על הימים שנרשמו בלבד.</div>' : ''}`
-    : `<div class="sm mut">${s.span ? 'אין רישומים בתקופה הזו.' : 'החודש התחיל היום — עדיין אין ימים שהסתיימו.'}</div>`}</div>`;
+    : `<div class="sm mut">${s.span ? 'אין רישומים בתקופה הזו.' : 'החודש התחיל היום — עדיין אין ימים שהסתיימו.'}</div>`}
+    ${trainBox(s.wo, s.st)}</div>`;
   const t = today();
+  const note = 'הממוצעים והצעדים לא כוללים את היום, שעדיין לא הסתיים. המשקל והאימונים כוללים גם את היום.';
   return `<h2>סיכומים</h2>
-    ${box('שבעת הימים האחרונים', stat(shift(t,-7), shift(t,-1), t), 'הממוצעים לא כוללים את היום, שעדיין לא הסתיים. המשקל כולל גם את היום.')}
-    ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', shift(t,-1), t), 'הממוצעים לא כוללים את היום, שעדיין לא הסתיים. המשקל כולל גם את היום.')}
+    ${box('שבעת הימים האחרונים', stat(shift(t,-7), shift(t,-1), t), note)}
+    ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', shift(t,-1), t), note)}
     <div class="flex" style="margin-bottom:8px">
       <button style="flex:1" onclick="exportAll()">ייצוא גיבוי</button>
       <button style="flex:1" onclick="sheetImport()">שחזור מגיבוי</button>
     </div>
     <button class="full" style="margin-bottom:8px" onclick="printWeek()">דו״ח שבועי להדפסה / PDF</button>
+    <button class="full" style="margin-bottom:8px" onclick="sheetCoach()">תובנות מהמאמן (AI)</button>
     <p class="xs mut">הנתונים נשמרים במכשיר הזה בלבד, וספארי מוחק אותם אחרי שבוע ללא כניסה לאתר.
     כדאי לייצא גיבוי מדי פעם, ולהוסיף את הכלי למסך הבית — שם המחיקה לא חלה.</p>`;
 }
+function trainBox(wo, st){
+  const steps = st && st.length ? `<div style="margin-top:12px"><div class="xs mut">צעדים ליום</div>
+    <div class="num" style="font-size:20px">${Math.round(st.reduce((a, b) => a + b, 0) / st.length).toLocaleString('he-IL')}
+      <span class="sm mut">· ממוצע של ${st.length === 1 ? 'יום אחד' : st.length + ' ימים'}</span></div></div>` : '';
+  return trainBoxW(wo) .replace(/<\/div>$/, steps + '</div>');
+}
+function trainBoxW(wo){
+  const top = `<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px">`;
+  if (!wo.length) return top + '<div class="xs mut">אימונים</div><div class="sm mut">לא נרשמו אימונים.</div></div>';
+  const min = wo.reduce((a, w) => a + (w.min || 0), 0);
+  const withK = wo.filter(w => w.kcal), kcal = withK.reduce((a, w) => a + w.kcal, 0);
+  const cnt = {};
+  wo.forEach(w => { const n = wName(w); cnt[n] = (cnt[n] || 0) + 1; });
+  const types = Object.entries(cnt).sort((a, b) => b[1] - a[1]);
+  return top + `<div class="grid" style="gap:14px">
+      <div><div class="xs mut">אימונים</div>
+        <div class="num" style="font-size:20px">${wo.length}${min ? ` <span class="sm mut">· ${min} דק׳</span>` : ''}</div></div>
+      <div><div class="xs mut">קלוריות באימונים</div>
+        <div class="num" style="font-size:20px">${withK.length ? kcal + ' <span class="sm mut">קק״ל</span>' : '—'}</div></div>
+    </div>
+    <div class="xs mut" style="margin-top:10px">${types.slice(0, 4).map(([n, c]) => esc(n) + (c > 1 ? ' ×' + c : '')).join(' · ')}${types.length > 4 ? ' ועוד' : ''}</div>
+    ${withK.length && withK.length < wo.length
+      ? `<div class="xs mut" style="margin-top:4px">הקלוריות נרשמו ב-${withK.length} מתוך ${wo.length} אימונים.</div>` : ''}</div>`;
+}
+
+/* ============ תובנות מאמן (AI) ============
+   נשלחים רק סיכומים מספריים: קלוריות וחלבון לכל ארוחה ויום, משקלים ואימונים.
+   שמות המאכלים לא נשלחים. התשובה האחרונה נשמרת במכשיר ומוצגת שוב בלי פנייה חוזרת. */
+const COACH_DAYS = 14;
+function coachData(){
+  const t = today(), days = [];
+  for (let i = COACH_DAYS; i >= 1; i--){        // ימים שהסתיימו בלבד, כמו בסיכומים
+    const d = shift(t, -i), es = entries(d), meals = {};
+    es.forEach(e => { const m = mealOf(e); meals[m] = meals[m] || { kcal: 0, protein: 0 };
+      meals[m].kcal += e.kcal; meals[m].protein += e.protein; });
+    Object.values(meals).forEach(v => { v.kcal = r0(v.kcal); v.protein = r0(v.protein); });
+    const tt = totals(d);
+    days.push({ date: d, logged: es.length > 0,
+      ...(es.length ? { kcal: r0(tt.k), protein: r0(tt.p), meals } : {}),
+      ...(S.steps[d] ? { steps: S.steps[d] } : {}) });
+  }
+  const from = shift(t, -COACH_DAYS);
+  const wk = w => ({ type: wName(w), ...(w.min ? { minutes: w.min } : {}), ...(w.kcal ? { estKcal: w.kcal } : {}) });
+  return {
+    today: t,
+    targets: { kcal: S.settings.kcalTarget || null, protein: S.settings.proteinTarget || null },
+    goal: load('coachGoal', '') || null,
+    days,
+    workouts: S.workouts.filter(w => w.date >= from && w.date <= t)
+      .sort((a, b) => a.date < b.date ? -1 : 1).map(w => ({ date: w.date, ...wk(w) })),
+    weights: S.weights.filter(w => w.date >= shift(t, -30) && w.date <= t)
+      .sort((a, b) => a.date < b.date ? -1 : 1).map(w => ({ date: w.date, kg: w.kg })),
+  };
+}
+
+const COACH_PROMPT = `אתה מאמן תזונה וכושר שמלווה אדם אחד. לפניך הנתונים שהוא רשם בכלי המעקב שלו, בפורמט JSON.
+
+כללים:
+- כתוב בעברית טבעית ופשוטה, כמו מאמן אנושי ולא כמו תרגום. פנה אליו בגוף שני, בלשון זכר.
+- כל תובנה חייבת להישען על מספרים מהנתונים, ולציין על כמה ימים או אימונים היא מבוססת.
+- אל תמציא מגמה מנתונים מעטים. אם יש פחות מ-5 ימים רשומים, אמור זאת במפורש והסתפק בתובנה אחת או שתיים.
+- ימים עם logged:false לא נרשמו — אל תתייחס אליהם כימים שבהם הוא לא אכל.
+- estKcal הוא הערכה גסה (מהשעון או ערך ברירת מחדל), עם סטייה של 15–25% ויותר; אל תבסס עליו המלצה לאכול יותר.
+- השווה ימי אימון לימי מנוחה רק אם יש לפחות 3 מכל סוג.
+- steps הוא מספר הצעדים היומי, כשנרשם. יום בלי steps — פשוט לא נרשם.
+- תן המלצות מעשיות וקטנות (למשל: להוסיף מקור חלבון לארוחת הבוקר), לא תוכנית שלמה.
+- זה אימון ולא ייעוץ רפואי: בלי אבחנות, בלי תרופות ובלי תוספים.
+- אם יש goal, התאם אליו את התובנות.
+
+החזר JSON בלבד, במבנה הזה:
+{"summary":"משפט אחד על השבועיים האחרונים",
+ "insights":[{"title":"כותרת קצרה","text":"2–3 משפטים"}],
+ "focus":"דבר אחד לשבוע הקרוב, במשפט אחד",
+ "dataNote":"הערה על מגבלות הנתונים, או null"}
+בין 2 ל-4 תובנות.
+
+הנתונים:
+`;
+
+function sheetCoach(){
+  const c = load('coach', null);
+  sheet('תובנות מהמאמן', `
+    <label class="f"><span>המטרה שלך (לא חובה, נשמרת במכשיר)</span>
+      <input id="cgoal" value="${esc(load('coachGoal', ''))}" placeholder="למשל: לרדת במשקל ולשמור על מסת שריר"
+        onchange="save('coachGoal', this.value.trim())"></label>
+    <div id="cout">${c ? coachHtml(c) : `<p class="sm mut">ניתוח של ${COACH_DAYS} הימים האחרונים — תזונה, משקל ואימונים.</p>`}</div>
+    <button class="solid full" style="margin-top:6px" onclick="runCoach()">${c ? 'ניתוח מחדש' : 'ניתוח'}</button>
+    <p class="xs mut" style="margin-top:10px">נשלחים ל-${PNAME[S.provider]} רק סיכומים מספריים (קלוריות, חלבון, משקל ואימונים), בלי שמות המאכלים.
+    אפשר להחליף ספק במסך צילום התווית.</p>`);
+}
+function coachHtml(c){
+  const r = c.res;
+  return `<div class="xs mut" style="margin-bottom:10px">${esc(PNAME[c.provider] || '')} · ${pretty(c.date)}</div>
+    ${r.summary ? `<p style="margin:0 0 12px">${esc(r.summary)}</p>` : ''}
+    ${(r.insights || []).map(i => `<div class="card" style="padding:12px;margin-bottom:10px">
+      <b>${esc(i.title || '')}</b><div class="sm" style="margin-top:4px;line-height:1.5">${esc(i.text || '')}</div></div>`).join('')}
+    ${r.focus ? `<div class="card" style="padding:12px;margin-bottom:10px;border-color:var(--pro)">
+      <div class="xs mut">לשבוע הקרוב</div><b>${esc(r.focus)}</b></div>` : ''}
+    ${r.dataNote ? `<p class="xs mut">${esc(r.dataNote)}</p>` : ''}`;
+}
+async function runCoach(){
+  const g = $('#cgoal'); if (g) save('coachGoal', g.value.trim());
+  if (!S.key){ closeSheet(); return sheetLabel(); }
+  const data = coachData();
+  if (!data.days.some(d => d.logged) && !data.workouts.length && !data.weights.length)
+    return void ($('#cout').innerHTML = '<p class="sm" style="color:var(--warn)">אין עדיין נתונים לניתוח.</p>');
+  const btn = event && event.target; if (btn) btn.disabled = true;
+  $('#cout').innerHTML = '<p class="sm mut">מנתח…</p>';
+  try {
+    const res = await askJSON(COACH_PROMPT + JSON.stringify(data), 1500);
+    if (!Array.isArray(res.insights)) throw new Error('התשובה לא במבנה הצפוי');
+    const c = { date: today(), provider: S.provider, res };
+    save('coach', c);
+    $('#cout').innerHTML = coachHtml(c);
+  } catch (e){
+    $('#cout').innerHTML = '<p class="sm"><b style="color:var(--warn)">הניתוח נכשל.</b> ' + esc(e.message || '') + '</p>';
+  } finally { if (btn){ btn.disabled = false; btn.textContent = 'ניתוח מחדש'; } }
+}
+
 function exportAll(){
   const logs = {};
   Object.keys(localStorage).filter(k => k.startsWith(K+'log.'))
     .forEach(k => logs[k.slice(K.length+4)] = JSON.parse(localStorage.getItem(k)));
-  const blob = new Blob([JSON.stringify({ foods: S.foods, logs, weights: S.weights,
+  const blob = new Blob([JSON.stringify({ foods: S.foods, logs, weights: S.weights, workouts: S.workouts, steps: S.steps,
     settings: S.settings, exported: new Date().toISOString() }, null, 2)], { type: 'application/json' });
   shareFile(new File([blob], `food-tracker-${today()}.json`, { type: 'application/json' }), 'גיבוי מעקב תזונה');
 }
@@ -1043,7 +1443,7 @@ function shareFile(file, title){
 function sheetImport(){
   sheet('שחזור מגיבוי', `
     <p class="sm mut" style="margin-bottom:12px">בחירת קובץ גיבוי שיוצא מהכלי.
-    הרישומים, המאכלים והמשקלים הקיימים במכשיר יוחלפו. מפתח ה-API יישאר.</p>
+    הרישומים, המאכלים, המשקלים, האימונים והצעדים הקיימים במכשיר יוחלפו. מפתח ה-API יישאר.</p>
     <input type="file" accept="application/json,.json" onchange="importAll(this.files[0])">
     <div id="imp" class="sm mut" style="margin-top:12px"></div>`);
 }
@@ -1058,6 +1458,8 @@ async function importAll(file){
       .forEach(k => localStorage.removeItem(k));
     save('foods', Array.isArray(d.foods) ? d.foods : []);
     save('weights', Array.isArray(d.weights) ? d.weights : []);
+    save('workouts', Array.isArray(d.workouts) ? d.workouts : []);
+    save('steps', d.steps && typeof d.steps === 'object' ? d.steps : {});
     save('settings', d.settings || { kcalTarget: 0, proteinTarget: 0 });
     Object.entries(d.logs).forEach(([m, v]) => { if (Array.isArray(v)) save('log.' + m, v); });
     out.textContent = 'שוחזרו ' + days + ' רישומים. טוען מחדש…';
@@ -1268,7 +1670,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-25c';
+const BUILD = '2026-09-26c';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
@@ -1462,14 +1864,14 @@ function originOk(){
 }
 
 /* ============ ניווט ============ */
-const TABS = [['day','היום'],['foods','מאכלים'],['weight','משקל'],['sum','סיכומים']];
+const TABS = [['day','היום'],['foods','מאכלים'],['weight','משקל'],['train','אימונים'],['sum','סיכומים']];
 function render(){
   const warn = originOk() ? '' :
     `<div class="card" style="border-color:var(--warn);background:#2A1A18;color:#F2C4BC">
       <b>הדף הזה רץ בתצוגה מוגבלת — שום דבר לא יישמר.</b>
       פתח את הכתובת בספארי (למשל מ-GitHub Pages) במקום לצפות בקובץ מתוך אפליקציה.
     </div>`;
-  $('#app').innerHTML = warn + { day: viewDay, foods: viewFoods, weight: viewWeight, sum: viewSum }[S.tab]();
+  $('#app').innerHTML = warn + { day: viewDay, foods: viewFoods, weight: viewWeight, train: viewTrain, sum: viewSum }[S.tab]();
   $('#tabs').innerHTML = TABS.map(([id,l]) =>
     `<button class="${S.tab === id ? 'on' : ''}" onclick="S.tab='${id}';render()">${l}</button>`).join('');
 }
