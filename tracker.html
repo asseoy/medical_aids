@@ -808,7 +808,7 @@ function saveWeight(){
 function viewSum(){
   const all = Object.keys(localStorage).filter(k => k.startsWith(K+'log.'))
     .flatMap(k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return []; } });
-  const stat = (from, to) => {
+  const stat = (from, to, wTo = to) => {
     const byDay = {};
     all.filter(e => e.date >= from && e.date <= to).forEach(e => {
       byDay[e.date] = byDay[e.date] || { k:0, p:0 };
@@ -816,15 +816,16 @@ function viewSum(){
     });
     const days = Object.keys(byDay), n = days.length;
     const sum = days.reduce((a,d) => ({ k: a.k+byDay[d].k, p: a.p+byDay[d].p }), { k:0, p:0 });
-    const span = Math.round((new Date(to) - new Date(from))/864e5) + 1;
-    const ws = S.weights.filter(x => x.date >= from && x.date <= to).sort((a,b) => a.date < b.date ? -1 : 1);
+    const span = Math.max(0, Math.round((new Date(to) - new Date(from))/864e5) + 1);
+    const ws = S.weights.filter(x => x.date >= from && x.date <= wTo).sort((a,b) => a.date < b.date ? -1 : 1);
     return { n, span, k: n ? sum.k/n : 0, p: n ? sum.p/n : 0,
       hit: S.settings.proteinTarget ? days.filter(d => byDay[d].p >= S.settings.proteinTarget).length : null,
       dw: ws.length > 1 ? ws[ws.length-1].kg - ws[0].kg : null };
   };
-  const box = (title, s) => `<div class="card">
-    <div class="row" style="margin-bottom:14px"><b>${title}</b>
+  const box = (title, s, note) => `<div class="card">
+    <div class="row" style="margin-bottom:${note ? 4 : 14}px"><b>${title}</b>
       <span class="xs mut num">${s.n} מתוך ${s.span} ימים נרשמו</span></div>
+    ${note ? `<div class="xs mut" style="margin-bottom:14px">${note}</div>` : ''}
     ${s.n ? `<div class="grid" style="gap:14px">
       <div><div class="xs mut">חלבון ליום</div>
         <div class="num" style="color:var(--pro);font-size:28px;font-weight:800">${r0(s.p)}</div></div>
@@ -835,11 +836,11 @@ function viewSum(){
       ${s.dw !== null ? `<div><div class="xs mut">שינוי במשקל</div>
         <div class="num" style="font-size:20px">${s.dw > 0 ? '+' : ''}${s.dw.toFixed(1)} ק״ג</div></div>` : ''}
     </div>${s.n < s.span ? '<div class="xs mut" style="margin-top:14px">הממוצעים מחושבים על הימים שנרשמו בלבד.</div>' : ''}`
-    : '<div class="sm mut">אין רישומים בתקופה הזו.</div>'}</div>`;
+    : `<div class="sm mut">${s.span ? 'אין רישומים בתקופה הזו.' : 'החודש התחיל היום — עדיין אין ימים שהסתיימו.'}</div>`}</div>`;
   const t = today();
   return `<h2>סיכומים</h2>
-    ${box('שבעת הימים האחרונים', stat(shift(t,-6), t))}
-    ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', t))}
+    ${box('שבעת הימים האחרונים', stat(shift(t,-7), shift(t,-1), t), 'הממוצעים לא כוללים את היום, שעדיין לא הסתיים. המשקל כולל גם את היום.')}
+    ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', shift(t,-1), t), 'הממוצעים לא כוללים את היום, שעדיין לא הסתיים. המשקל כולל גם את היום.')}
     <div class="flex" style="margin-bottom:8px">
       <button style="flex:1" onclick="exportAll()">ייצוא גיבוי</button>
       <button style="flex:1" onclick="sheetImport()">שחזור מגיבוי</button>
@@ -859,8 +860,9 @@ function exportAll(){
 
 /* דו”ח שבועי. משתמש במנגנון ההדפסה של הדפדפן:
    באייפון, שיתוף > הדפסה > שמירה לקבצים מייצרת PDF עם עברית תקינה. */
+/* הדו״ח מסתיים ביום שמוצג — אבל אם זה היום, שעדיין לא הסתיים, הוא מסתיים אתמול */
 function weekData(){
-  const to = S.date, from = shift(to, -6);
+  const to = S.date >= today() ? shift(today(), -1) : S.date, from = shift(to, -6);
   const st = S.settings;
   const days = [];
   for (let i = 0; i < 7; i++){
@@ -870,7 +872,8 @@ function weekData(){
   }
   const logged = days.filter(x => x.es.length);
   const avg = k => logged.length ? r0(logged.reduce((a,x) => a+x[k], 0)/logged.length) : 0;
-  const wRow = S.weights.filter(x => x.date >= from && x.date <= to)
+  const wTo = S.date >= today() ? today() : to;   // המשקל כן כולל את היום
+  const wRow = S.weights.filter(x => x.date >= from && x.date <= wTo)
                         .sort((a,b) => a.date < b.date ? -1 : 1);
 
   return { to, from, st, days, logged, avg, wRow };
@@ -1265,7 +1268,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-25a';
+const BUILD = '2026-09-25c';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
