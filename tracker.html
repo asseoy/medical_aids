@@ -336,7 +336,10 @@ async function askAI(content, { maxTok = 1000, json = false, system } = {}){
     text = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     cut = d.stop_reason === 'max_tokens';
   }
-  if (cut) throw new Error('התשובה נקטעה באמצע. נסה קלט קצר יותר, או צלם רק את החלק הרלוונטי.');
+  /* ההודעה על צילום רלוונטית רק כשנשלחה תמונה או קובץ */
+  const hasFile = Array.isArray(content) && content.some(b => b.type !== 'text');
+  if (cut) throw new Error('התשובה הייתה ארוכה מהמגבלה ונקטעה באמצע.'
+    + (hasFile ? ' נסה לצלם רק את החלק הרלוונטי.' : ' כדאי לנסות שוב.'));
   if (!text) throw new Error('התשובה חזרה ריקה');
   return text;
 }
@@ -675,7 +678,7 @@ async function aiName(){
   const items = D.parts.map(p => { const v = partVals(p); return v.name + ' ' + p.qty + ' ' + v.unit; });
   try {
     const name = (await askAI('תן שם קצר וטבעי בעברית למנה שמורכבת מ: ' + items.join(', ')
-      + '\nהחזר את השם בלבד, בלי מרכאות ובלי הסבר.', { maxTok: 100 })).trim();
+      + '\nהחזר את השם בלבד, בלי מרכאות ובלי הסבר.', { maxTok: 300 })).trim();
     if (name){ D.name = name; drawCompose(); }
   } catch (e){ out.innerHTML = '<b style="color:var(--warn)">לא הצלחתי.</b> ' + esc(e.message || ''); }
 }
@@ -1185,29 +1188,32 @@ function coachData(){
   };
 }
 
-const COACH_PROMPT = `אתה מאמן תזונה וכושר שמלווה אדם אחד. לפניך הנתונים שהוא רשם בכלי המעקב שלו, בפורמט JSON.
+/* ההנחיות באנגלית: זול יותר (עברית צורכת פי 2–3 טוקנים) ופחות סיכוי לקטיעה.
+   שפת התשובה נבחרת בגיליון — ברירת המחדל אנגלית. */
+const COACH_PROMPT = `You are a nutrition and fitness coach for one person. Below is the data he logged in his tracker, as JSON.
 
-כללים:
-- כתוב בעברית טבעית ופשוטה, כמו מאמן אנושי ולא כמו תרגום. פנה אליו בגוף שני, בלשון זכר.
-- כל תובנה חייבת להישען על מספרים מהנתונים, ולציין על כמה ימים או אימונים היא מבוססת.
-- אל תמציא מגמה מנתונים מעטים. אם יש פחות מ-5 ימים רשומים, אמור זאת במפורש והסתפק בתובנה אחת או שתיים.
-- ימים עם logged:false לא נרשמו — אל תתייחס אליהם כימים שבהם הוא לא אכל.
-- estKcal הוא הערכה גסה (מהשעון או ערך ברירת מחדל), עם סטייה של 15–25% ויותר; אל תבסס עליו המלצה לאכול יותר.
-- השווה ימי אימון לימי מנוחה רק אם יש לפחות 3 מכל סוג.
-- steps הוא מספר הצעדים היומי, כשנרשם. יום בלי steps — פשוט לא נרשם.
-- תן המלצות מעשיות וקטנות (למשל: להוסיף מקור חלבון לארוחת הבוקר), לא תוכנית שלמה.
-- זה אימון ולא ייעוץ רפואי: בלי אבחנות, בלי תרופות ובלי תוספים.
-- אם יש goal, התאם אליו את התובנות.
+Rules:
+- Every insight must rest on numbers from the data and say how many days or workouts it is based on.
+- Don't invent trends from little data. With fewer than 5 logged days, say so explicitly and give only one or two insights.
+- Days with logged:false were not logged — don't treat them as days he didn't eat.
+- estKcal is a rough estimate (watch or default value), often off by 15–25% or more. Never base a "eat more" recommendation on it.
+- Compare training days with rest days only if there are at least 3 of each.
+- steps is the daily step count, when logged. A day without steps simply wasn't logged.
+- Give small, practical suggestions (e.g. add a protein source to breakfast), not a full plan.
+- This is coaching, not medical advice: no diagnoses, no medications, no supplements.
+- If goal is set (it may be in Hebrew), tailor the insights to it.
+- Workout type names in the data are in Hebrew; translate them if you mention them.
 
-החזר JSON בלבד, במבנה הזה:
-{"summary":"משפט אחד על השבועיים האחרונים",
- "insights":[{"title":"כותרת קצרה","text":"2–3 משפטים"}],
- "focus":"דבר אחד לשבוע הקרוב, במשפט אחד",
- "dataNote":"הערה על מגבלות הנתונים, או null"}
-בין 2 ל-4 תובנות.
-
-הנתונים:
-`;
+Return JSON only, in this shape:
+{"summary":"one sentence about the last two weeks",
+ "insights":[{"title":"short title","text":"at most two short sentences"}],
+ "focus":"one thing for the coming week, in one sentence",
+ "dataNote":"a note on data limitations, or null"}
+Between 2 and 4 insights. Be concise.`;
+const COACH_LANG = {
+  en: 'Write all text values in plain, natural English, addressing him as "you".',
+  he: 'Write all text values in natural, simple Hebrew — like a human coach, not a translation. Address him in second person, masculine.',
+};
 
 function sheetCoach(){
   const c = load('coach', null);
@@ -1215,20 +1221,27 @@ function sheetCoach(){
     <label class="f"><span>המטרה שלך (לא חובה, נשמרת במכשיר)</span>
       <input id="cgoal" value="${esc(load('coachGoal', ''))}" placeholder="למשל: לרדת במשקל ולשמור על מסת שריר"
         onchange="save('coachGoal', this.value.trim())"></label>
+    <div class="flex" style="align-items:center;margin-bottom:12px">
+      <span class="sm mut" style="flex:1">שפת התשובה</span>
+      ${[['en', 'English'], ['he', 'עברית']].map(([k, l]) => `<button class="${coachLang() === k ? 'solid' : ''} sm"
+        style="padding:8px 14px" onclick="save('coachLang','${k}');sheetCoach()">${l}</button>`).join('')}
+    </div>
     <div id="cout">${c ? coachHtml(c) : `<p class="sm mut">ניתוח של ${COACH_DAYS} הימים האחרונים — תזונה, משקל ואימונים.</p>`}</div>
     <button class="solid full" style="margin-top:6px" onclick="runCoach()">${c ? 'ניתוח מחדש' : 'ניתוח'}</button>
     <p class="xs mut" style="margin-top:10px">נשלחים ל-${PNAME[S.provider]} רק סיכומים מספריים (קלוריות, חלבון, משקל ואימונים), בלי שמות המאכלים.
     אפשר להחליף ספק במסך צילום התווית.</p>`);
 }
+function coachLang(){ return load('coachLang', 'en'); }
 function coachHtml(c){
-  const r = c.res;
+  const r = c.res, en = c.lang === 'en';
   return `<div class="xs mut" style="margin-bottom:10px">${esc(PNAME[c.provider] || '')} · ${pretty(c.date)}</div>
+    <div dir="${en ? 'ltr' : 'rtl'}" style="text-align:${en ? 'left' : 'right'}">
     ${r.summary ? `<p style="margin:0 0 12px">${esc(r.summary)}</p>` : ''}
     ${(r.insights || []).map(i => `<div class="card" style="padding:12px;margin-bottom:10px">
       <b>${esc(i.title || '')}</b><div class="sm" style="margin-top:4px;line-height:1.5">${esc(i.text || '')}</div></div>`).join('')}
     ${r.focus ? `<div class="card" style="padding:12px;margin-bottom:10px;border-color:var(--pro)">
-      <div class="xs mut">לשבוע הקרוב</div><b>${esc(r.focus)}</b></div>` : ''}
-    ${r.dataNote ? `<p class="xs mut">${esc(r.dataNote)}</p>` : ''}`;
+      <div class="xs mut">${en ? 'For the coming week' : 'לשבוע הקרוב'}</div><b>${esc(r.focus)}</b></div>` : ''}
+    ${r.dataNote ? `<p class="xs mut">${esc(r.dataNote)}</p>` : ''}</div>`;
 }
 async function runCoach(){
   const g = $('#cgoal'); if (g) save('coachGoal', g.value.trim());
@@ -1239,9 +1252,10 @@ async function runCoach(){
   const btn = event && event.target; if (btn) btn.disabled = true;
   $('#cout').innerHTML = '<p class="sm mut">מנתח…</p>';
   try {
-    const res = await askJSON(COACH_PROMPT + JSON.stringify(data), 1500);
+    const lang = coachLang();
+    const res = await askJSON(COACH_PROMPT + '\n' + COACH_LANG[lang] + '\n\nData:\n' + JSON.stringify(data), 6000);
     if (!Array.isArray(res.insights)) throw new Error('התשובה לא במבנה הצפוי');
-    const c = { date: today(), provider: S.provider, res };
+    const c = { date: today(), provider: S.provider, lang, res };
     save('coach', c);
     $('#cout').innerHTML = coachHtml(c);
   } catch (e){
@@ -1651,7 +1665,7 @@ async function aiEstimate(qArg){
     + 'החזר JSON בלבד, בלי טקסט נוסף ובלי סימוני קוד:\n'
     + '{"candidateIndex": מספר או null, "grams": מספר, "name": "שם קצר בעברית למאכל", "note": "משפט קצר על אופן ההערכה"}';
   try {
-    const j = await askJSON(prompt, 400);
+    const j = await askJSON(prompt, 1200);
 
     if (j.candidateIndex === null || j.candidateIndex === undefined)
       throw new Error('לא נמצאה התאמה מתאימה. ' + esc(j.note || ''));
@@ -1670,7 +1684,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-26c';
+const BUILD = '2026-09-26e';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
