@@ -272,11 +272,48 @@ function delEntry(id){
   S.logs[m] = S.logs[m].filter(e => e.id !== id);
   saveLog(d); render();
 }
+/* אריחים חכמים: מאכלים שנאכלו ב-45 הימים האחרונים בארוחה של השעה הנוכחית
+   (משקל גבוה יותר לרישום חדש), ועוד עד שניים שנאכלו לאחרונה. משלימים לפי uses. */
+function smartFoods(){
+  const meal = mealNow(), score = {}, last = [];
+  for (let i = 0; i < 45; i++){
+    const d = shift(today(), -i), rec = 1 - i / 60;
+    entries(d).forEach(e => {
+      if (!e.foodId) return;
+      score[e.foodId] = (score[e.foodId] || 0) + (mealOf(e) === meal ? 3 : 0.5) * rec;
+      if (!last.includes(e.foodId)) last.push(e.foodId);   // הימים עוברים מהחדש לישן
+    });
+  }
+  const byId = id => S.foods.find(f => f.id === id);
+  const pick = Object.entries(score).sort((a, b) => b[1] - a[1]).map(([id]) => byId(id)).filter(Boolean).slice(0, 6);
+  last.map(byId).filter(f => f && !pick.includes(f)).slice(0, 2).forEach(f => pick.push(f));
+  [...S.foods].sort((a, b) => (b.uses || 0) - (a.uses || 0))
+    .forEach(f => { if (pick.length < 8 && !pick.includes(f)) pick.push(f); });
+  return pick.slice(0, 8);
+}
+
+/* ============ העתקה מאתמול — לפי ארוחות ============ */
 function repeatYesterday(){
   const y = entries(shift(S.date, -1));
   if (!y.length) return toast('אין רישומים מאתמול');
+  const meals = MEALS.filter(([k]) => y.some(e => mealOf(e) === k));
+  sheet('העתקה מאתמול', `
+    <p class="sm mut" style="margin-bottom:12px">בחר אילו ארוחות להעתיק ל${S.date === today() ? 'היום' : 'יום הזה'}.</p>
+    <div class="list" style="margin-bottom:14px">${meals.map(([k, label]) => {
+      const l = y.filter(e => mealOf(e) === k), p = l.reduce((a, e) => a + e.protein, 0), kc = l.reduce((a, e) => a + e.kcal, 0);
+      return `<label class="item" style="cursor:pointer">
+        <div style="min-width:0"><b>${label}</b>
+          <div class="xs mut num">${l.length === 1 ? esc(l[0].name) : l.length + ' פריטים'} · ${r0(kc)} קק״ל · ${r0(p)} ג׳ חלבון</div></div>
+        <input type="checkbox" class="cpm" value="${k}" checked style="width:24px;height:24px"></label>`; }).join('')}</div>
+    <button class="solid full" onclick="copyMeals()">העתקה</button>`);
+}
+function copyMeals(){
+  const pick = [...document.querySelectorAll('.cpm:checked')].map(x => x.value);
+  if (!pick.length) return toast('לא נבחרה ארוחה');
+  const y = entries(shift(S.date, -1)).filter(e => pick.includes(mealOf(e)));
   y.forEach(e => logOf(S.date).push({ ...e, id: uid(), date: S.date }));
-  saveLog(S.date); render();
+  saveLog(S.date); closeSheet(); render();
+  toast('הועתקו ' + (y.length === 1 ? 'פריט אחד' : y.length + ' פריטים'));
 }
 /* ============ ניתוח מתכון ============
    שני מעברים: (1) קריאת המתכון מהקובץ -> רכיבים וכמויות,
@@ -709,7 +746,7 @@ function viewDay(){
   recalcComposites();
   mergeDay(S.date);
   const t = totals(S.date), st = S.settings;
-  const favs = [...S.foods].sort((a,b) => (b.uses||0)-(a.uses||0)).slice(0, 8);
+  const favs = smartFoods();
   const rail = (v, target, col) => target > 0
     ? `<div class="rail"><i style="width:${Math.min(100, v/target*100)}%;background:${col}"></i></div>` : '';
 
@@ -733,7 +770,7 @@ function viewDay(){
       ${st.proteinTarget || st.kcalTarget ? 'שינוי יעדים' : 'הגדרת יעדים'}</button>
   </div>
 
-  ${favs.length ? `<div class="sm mut" style="margin-bottom:8px">הכי בשימוש</div>
+  ${favs.length ? `<div class="sm mut" style="margin-bottom:8px">מתאים לעכשיו · ${mealName(mealNow())}</div>
   <div class="grid" style="margin-bottom:16px">${favs.map((f,i) => `
     <button class="tile" onclick="quickAdd(S.foods.find(x=>x.id==='${f.id}'))">
       <b>${esc(f.name)}</b>
@@ -930,7 +967,15 @@ const WTYPES = [
 ];
 const wType = id => WTYPES.find(t => t[0] === id) || WTYPES[WTYPES.length - 1];
 const wName = w => w.name || wType(w.type)[1];
-const wMeta = w => [w.min && w.min + ' דק׳', w.kcal && w.kcal + ' קק״ל'].filter(Boolean).join(' · ');
+const wMeta = w => [w.km && w.km + ' ק״מ', w.min && w.min + ' דק׳', w.kcal && w.kcal + ' קק״ל'].filter(Boolean).join(' · ');
+/* ריצה עם מרחק: ≈1 קק״ל לכל ק״ג משקל לכל ק״מ — כמעט בלי תלות בקצב, ולכן מדויק יותר מהנחת קצב */
+const runKcal = (km, date) => Math.round(kgOn(date) * km / 5) * 5;
+const paceOf = (min, km) => { if (!(min > 0 && km > 0)) return '';
+  const s = Math.round(min * 60 / km); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+function kmField(){
+  return WK.type === 'run' ? `<label class="f"><span>מרחק בק״מ (לא חובה)</span>
+    <input id="wkm" type="number" inputmode="decimal" step="0.1" value="${WK.km || ''}" oninput="WK.km=this.value;wAuto()"></label>` : '';
+}
 
 function wItem(w, withDate){
   return `<div class="item" onclick="sheetWorkout('${w.id}')">
@@ -980,6 +1025,7 @@ function sheetWorkout(id){
   const w = id && S.workouts.find(x => x.id === id);
   WK = w ? { ...w } : { date: S.date, type: '', name: '', min: '', kcal: '' };
   WK.quick = !!(w && presetOf(w));          // אימון קבוע נפתח בתצוגה מקוצרת
+  if (w && !presetOf(w) && w.kcal && !w.km) WK.kcalManual = true;   // קלוריות שהוקלדו (משעון) לא יידרסו
   drawWorkout();
 }
 /* תצוגה מקוצרת לאימון קבוע: רק משך (עם כפתורי ±5) וקלוריות */
@@ -993,11 +1039,11 @@ function drawQuick(){
         value="${WK.min || ''}" oninput="WK.min=this.value;wAuto()">
       <button style="width:64px;direction:ltr" onclick="wStep(5)">+5</button>
     </div>
+    ${kmField()}
     <label class="f"><span>קלוריות</span>
       <input id="wkcal" type="number" inputmode="numeric" value="${WK.kcal || ''}"
         oninput="WK.kcal=this.value;WK.kcalManual=true;wHint()"></label>
     <p id="whint" class="xs mut" style="margin:-4px 0 14px">${wHintText()}</p>
-    ${p && p.pace ? `<p class="xs mut" style="margin:-8px 0 14px">החישוב מניח קצב של ${p.pace} לק״מ.</p>` : ''}
     <button class="solid full" onclick="saveWorkout()">${WK.id ? 'שמירה' : 'הוספה'}</button>
     <button class="ghost full" style="margin-top:6px" onclick="WK.quick=false;drawWorkout()">שינוי סוג או תיאור</button>
     <div id="werr" class="sm" style="color:var(--warn);margin-top:10px"></div>`);
@@ -1021,6 +1067,7 @@ function drawWorkout(){
       <label class="f"><span>קלוריות (לא חובה)</span>
         <input id="wkcal" type="number" inputmode="numeric" value="${WK.kcal || ''}" oninput="WK.kcal=this.value;WK.kcalManual=true;wHint()"></label>
     </div>
+    ${kmField()}
     <p id="whint" class="xs mut" style="margin:-4px 0 14px">${wHintText()}</p>
     <button class="solid full" onclick="saveWorkout()">שמירה</button>
     <div id="werr" class="sm" style="color:var(--warn);margin-top:10px"></div>`);
@@ -1032,17 +1079,24 @@ function setWType(k){
 }
 /* באימון קבוע: שינוי המשך מעדכן את הקלוריות — כל עוד לא הוקלדו ידנית */
 function wAuto(){
-  const p = presetOf(WK);
-  if (!p || WK.kcalManual) return;
-  const m = parseFloat(WK.min) || 0;
-  WK.kcal = m > 0 ? presetKcal(p, m, WK.date) : '';
-  $('#wkcal').value = WK.kcal;
+  if (!WK.kcalManual){
+    const p = presetOf(WK), m = parseFloat(WK.min) || 0, km = parseFloat(WK.km) || 0;
+    if (WK.type === 'run' && km > 0) WK.kcal = runKcal(km, WK.date);
+    else if (p) WK.kcal = m > 0 ? presetKcal(p, m, WK.date) : '';
+    $('#wkcal').value = WK.kcal || '';
+  }
+  wHint();
 }
 function wHintText(){
-  const p = presetOf(WK);
-  if (!p) return 'את הקלוריות אפשר להעתיק מהשעון או מאפליקציית הכושר.';
-  if (WK.kcalManual) return 'הקלוריות הוקלדו ידנית ולא יתעדכנו לפי המשך.';
-  return 'הקלוריות מתעדכנות לפי המשך ולפי משקל ' + kgOn(WK.date).toFixed(1) + ' ק״ג. הקלדה ידנית שלהן מבטלת את החישוב.';
+  const p = presetOf(WK), km = parseFloat(WK.km) || 0, m = parseFloat(WK.min) || 0;
+  const pace = WK.type === 'run' && km > 0 && m > 0 ? ' קצב: ' + paceOf(m, km) + ' לק״מ.' : '';
+  const kg = kgOn(WK.date).toFixed(1);
+  if (WK.kcalManual) return 'הקלוריות הוקלדו ידנית ולא יתעדכנו.' + pace;
+  if (WK.type === 'run' && km > 0) return 'הקלוריות מחושבות לפי המרחק והמשקל (' + kg + ' ק״ג): כקלוריה לכל ק״ג לכל ק״מ.' + pace;
+  if (p) return 'הקלוריות מתעדכנות לפי המשך ולפי משקל ' + kg + ' ק״ג'
+    + (p.pace ? ', בהנחת קצב ' + p.pace + ' לק״מ — הוספת מרחק תדייק' : '') + '. הקלדה ידנית שלהן מבטלת את החישוב.';
+  return WK.type === 'run' ? 'הזנת מרחק תחשב את הקלוריות אוטומטית. אפשר גם להעתיק מהשעון.'
+    : 'את הקלוריות אפשר להעתיק מהשעון או מאפליקציית הכושר.';
 }
 function wHint(){ $('#whint').textContent = wHintText(); }
 function saveWorkout(){
@@ -1052,9 +1106,11 @@ function saveWorkout(){
   if (String(WK.name || '').trim()) rec.name = String(WK.name).trim();
   if (min > 0) rec.min = min;
   if (kcal > 0) rec.kcal = kcal;
+  const km = Math.round((parseFloat(WK.km) || 0) * 100) / 100;
+  if (WK.type === 'run' && km > 0) rec.km = km;
   const p = presetOf(WK);
   rec.p = p ? p.key : null;
-  if (p && WK.kcalManual) rec.kcalManual = true;
+  if (WK.kcalManual) rec.kcalManual = true;
   S.workouts = WK.id ? S.workouts.map(x => x.id === rec.id ? rec : x) : [...S.workouts, rec];   // עריכה שומרת על המקום ברשימה
   if (!save('workouts', S.workouts)) return;
   closeSheet(); render(); toast(WK.id ? 'האימון עודכן' : 'נוסף: ' + wName(rec));
@@ -1122,6 +1178,8 @@ function viewSum(){
   const t = today();
   const note = 'הממוצעים והצעדים לא כוללים את היום, שעדיין לא הסתיים. המשקל והאימונים כוללים גם את היום.';
   return `<h2>סיכומים</h2>
+    ${weightCard()}
+    ${card14(all)}
     ${box('שבעת הימים האחרונים', stat(shift(t,-7), shift(t,-1), t), note)}
     ${box('החודש הנוכחי', stat(t.slice(0,8)+'01', shift(t,-1), t), note)}
     <div class="flex" style="margin-bottom:8px">
@@ -1175,7 +1233,7 @@ function coachData(){
       ...(S.steps[d] ? { steps: S.steps[d] } : {}) });
   }
   const from = shift(t, -COACH_DAYS);
-  const wk = w => ({ type: wName(w), ...(w.min ? { minutes: w.min } : {}), ...(w.kcal ? { estKcal: w.kcal } : {}) });
+  const wk = w => ({ type: wName(w), ...(w.km ? { km: w.km } : {}), ...(w.min ? { minutes: w.min } : {}), ...(w.kcal ? { estKcal: w.kcal } : {}) });
   return {
     today: t,
     targets: { kcal: S.settings.kcalTarget || null, protein: S.settings.proteinTarget || null },
@@ -1261,6 +1319,61 @@ async function runCoach(){
   } catch (e){
     $('#cout').innerHTML = '<p class="sm"><b style="color:var(--warn)">הניתוח נכשל.</b> ' + esc(e.message || '') + '</p>';
   } finally { if (btn){ btn.disabled = false; btn.textContent = 'ניתוח מחדש'; } }
+}
+
+/* ממוצע נע: ממוצע השקילות ב-7 הימים שמסתיימים ב-d (כולל). null אם אין שקילה בחלון. */
+function maWeight(d){
+  const w = S.weights.filter(x => x.date <= d && x.date > shift(d, -7));
+  return w.length ? w.reduce((a, x) => a + x.kg, 0) / w.length : null;
+}
+function weightCard(){
+  const t = today(), days = [...Array(31)].map((_, i) => shift(t, i - 30));
+  const pts = days.map((d, i) => ({ i, w: (S.weights.find(x => x.date === d) || {}).kg, ma: maWeight(d) }));
+  const vals = pts.flatMap(p => [p.w, p.ma]).filter(v => v != null);
+  if (!vals.length) return '';
+  const mn = Math.min(...vals) - .4, mx = Math.max(...vals) + .4;
+  const X = i => (i / 30 * 290 + 5).toFixed(1), Y = v => (8 + (mx - v) / (mx - mn || 1) * 104).toFixed(1);
+  const ma = pts.filter(p => p.ma != null);
+  const line = ma.map((p, n) => (n ? 'L' : 'M') + X(p.i) + ',' + Y(p.ma)).join(' ');
+  const dots = pts.filter(p => p.w != null).map(p => `<circle cx="${X(p.i)}" cy="${Y(p.w)}" r="2.6" fill="var(--mut)" opacity=".7"/>`).join('');
+  const now = maWeight(t);
+  const diff = back => { const a = maWeight(shift(t, -back)); return now != null && a != null ? now - a : null; };
+  const fmt = v => v == null ? '—' : '<span dir="ltr">' + (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1) + '</span> ק״ג';
+  return `<div class="card">
+    <div class="row" style="margin-bottom:6px"><b>משקל · 30 יום</b>
+      <span class="xs mut num">ממוצע נע: ${now != null ? now.toFixed(1) + ' ק״ג' : '—'}</span></div>
+    <svg viewBox="0 0 300 120" style="width:100%;height:auto;display:block">
+      ${line ? `<path d="${line}" fill="none" stroke="var(--pro)" stroke-width="2.2" stroke-linejoin="round"/>` : ''}${dots}</svg>
+    <div class="xs mut" style="margin:4px 0 12px">נקודות — שקילות · קו — ממוצע נע של 7 ימים</div>
+    <div class="grid">
+      <div><div class="xs mut">שינוי 7 ימים</div><div class="num" style="font-size:20px">${fmt(diff(7))}</div></div>
+      <div><div class="xs mut">שינוי 30 יום</div><div class="num" style="font-size:20px">${fmt(diff(30))}</div></div>
+    </div></div>`;
+}
+/* 14 הימים האחרונים: תזונה וצעדים על ימים שהסתיימו; אימונים ומשקל כוללים את היום */
+function card14(all){
+  const t = today(), from = shift(t, -14), to = shift(t, -1);
+  const byDay = {};
+  all.filter(e => e.date >= from && e.date <= to).forEach(e => {
+    byDay[e.date] = byDay[e.date] || { k: 0, p: 0 }; byDay[e.date].k += e.kcal; byDay[e.date].p += e.protein; });
+  const fd = Object.values(byDay), n = fd.length;
+  const st = Object.entries(S.steps).filter(([d]) => d >= from && d <= to).map(([, v]) => v);
+  const wo = S.workouts.filter(w => w.date > shift(t, -14) && w.date <= t).length;
+  const a = maWeight(t), b = maWeight(shift(t, -14));
+  const trend = a != null && b != null ? (a - b) / 2 : null;
+  const cell = (label, v, unit) => `<div><div class="xs mut">${label}</div>
+    <div class="num" style="font-size:20px">${v}${unit ? ` <span class="sm mut">${unit}</span>` : ''}</div></div>`;
+  return `<div class="card">
+    <div class="row" style="margin-bottom:14px"><b>14 הימים האחרונים</b>
+      <span class="xs mut num">${n} מתוך 14 ימים נרשמו</span></div>
+    <div class="grid" style="gap:14px">
+      ${cell('קלוריות ליום', n ? r0(fd.reduce((s, x) => s + x.k, 0) / n) : '—', n ? 'קק״ל' : '')}
+      ${cell('חלבון ליום', n ? r0(fd.reduce((s, x) => s + x.p, 0) / n) : '—', n ? 'ג׳' : '')}
+      ${cell('אימונים בשבוע', (wo / 2).toFixed(1).replace(/\.0$/, ''), '')}
+      ${cell('צעדים ליום', st.length ? Math.round(st.reduce((s, x) => s + x, 0) / st.length).toLocaleString('he-IL') : '—', '')}
+      ${cell('מגמת משקל', trend == null ? '—' : '<span dir="ltr">' + (trend > 0 ? '+' : trend < 0 ? '−' : '') + Math.abs(trend).toFixed(2) + '</span>', trend == null ? '' : 'ק״ג לשבוע')}
+    </div>
+    <div class="xs mut" style="margin-top:12px">מגמת המשקל מחושבת מהממוצע הנע, ולכן פחות רגישה לתנודות של נוזלים.</div></div>`;
 }
 
 function exportAll(){
@@ -1684,7 +1797,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-26e';
+const BUILD = '2026-09-26f';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
