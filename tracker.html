@@ -158,12 +158,16 @@ function toast(msg){
 }
 
 /* ============ ארוחות ============ */
-const MEALS = [['breakfast','ארוחת בוקר'],['lunch','ארוחת צהריים'],
-               ['dinner','ארוחת ערב'],['snack','ביניים'],['other','ללא שיוך']];
-const mealName = k => (MEALS.find(m => m[0] === k) || MEALS[4])[1];
+/* סדר התצוגה לפי שעות היום. המפתח 'snack' נשאר לביניים של אחרי הערב,
+   כך שרישומי 'ביניים' ישנים ממשיכים לעבוד בלי המרה. */
+const MEALS = [['breakfast','ארוחת בוקר'],['snack_am','ביניים בוקר'],['lunch','ארוחת צהריים'],
+               ['snack_pm','ביניים אחה״צ'],['dinner','ארוחת ערב'],['snack','ביניים ערב'],['other','ללא שיוך']];
+const mealName = k => (MEALS.find(m => m[0] === k) || MEALS[MEALS.length - 1])[1];
+/* בוקר עד 10:30 · ביניים עד 12:00 · צהריים עד 15:00 · ביניים עד 18:00 · ערב עד 21:00 · ביניים אחר כך */
 function mealNow(){
-  const h = new Date().getHours();
-  return h < 11 ? 'breakfast' : h < 16 ? 'lunch' : h < 21 ? 'dinner' : 'snack';
+  const d = new Date(), t = d.getHours() * 60 + d.getMinutes();
+  return t < 630 ? 'breakfast' : t < 720 ? 'snack_am' : t < 900 ? 'lunch'
+       : t < 1080 ? 'snack_pm' : t < 1260 ? 'dinner' : 'snack';
 }
 const mealOf = e => MEALS.some(m => m[0] === e.meal) ? e.meal : 'other';
 function setMeal(id, meal){
@@ -1797,7 +1801,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-26f';
+const BUILD = '2026-09-27a';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
