@@ -289,11 +289,11 @@ function smartFoods(){
     });
   }
   const byId = id => S.foods.find(f => f.id === id);
-  const pick = Object.entries(score).sort((a, b) => b[1] - a[1]).map(([id]) => byId(id)).filter(Boolean).slice(0, 6);
+  const pick = Object.entries(score).sort((a, b) => b[1] - a[1]).map(([id]) => byId(id)).filter(Boolean).slice(0, 8);
   last.map(byId).filter(f => f && !pick.includes(f)).slice(0, 2).forEach(f => pick.push(f));
   [...S.foods].sort((a, b) => (b.uses || 0) - (a.uses || 0))
-    .forEach(f => { if (pick.length < 8 && !pick.includes(f)) pick.push(f); });
-  return pick.slice(0, 8);
+    .forEach(f => { if (pick.length < 10 && !pick.includes(f)) pick.push(f); });
+  return pick.slice(0, 10);
 }
 
 /* ============ העתקה מאתמול — לפי ארוחות ============ */
@@ -828,7 +828,7 @@ function viewFoods(){
     : `<button class="full solid" style="margin-bottom:16px" onclick="sheetAddFood()">+ הוספת מאכל</button>`}
   <div id="aiout" class="sm mut" style="margin-bottom:8px"></div>
   ${list.length ? `<div class="list" id="foodlist">${list.map(f => `
-    <div class="item" data-n="${esc(String(f.name).toLowerCase())}">
+    <div class="item" data-n="${esc(normQ(f.name))}">
       <div style="min-width:0">
         <div>${esc(f.name)}${f.est ? ' <span class="xs" style="color:var(--kcal)">הערכה</span>' : ''}${
           f.parts ? ' <span class="xs" style="color:var(--pro)">מורכב</span>' : ''}${
@@ -858,7 +858,7 @@ function viewFoods(){
 
 /* סינון בצד הלקוח, בלי render מחדש — כדי שהמיקוד בשדה החיפוש לא יאבד בהקלדה */
 function filterFoods(){
-  const q = ($('#fq').value || '').trim().toLowerCase();
+  const q = normQ(($('#fq').value || '').trim());
   const rows = document.querySelectorAll('#foodlist .item');
   let shown = 0;
   rows.forEach(r => {
@@ -1635,8 +1635,15 @@ function myList(){
        ${S.foods.length ? 'אין התאמה' : 'הרשימה ריקה. הוסף מהמאגר, מתווית או ידנית.'}</div>`;
 }
 
+/* השוואת טקסט לחיפוש: המקלדת באייפון מקלידה גרש/גרשיים עבריים (׳ ״) או מירכאות מעוגלות,
+   והמאגר כתוב עם ' ו-" רגילים — מאחדים את שני הצדדים לפני ההשוואה. */
+const normQ = s => String(s || '').toLowerCase()
+  .replace(/[\u05F3\u2018\u2019\u201B`\u00B4]/g, "'")
+  .replace(/[\u05F4\u201C\u201D\u201E]/g, '"');
+
 let dbGroup = 'הכול';
-function sheetDb(seed){
+function sheetDb(seed, keepGroup){
+  if (!keepGroup) dbGroup = 'הכול';   // כל פתיחה חדשה של המאגר מתחילה מ"הכול"
   const groups = ['הכול', ...new Set(DB.map(x => x[3]))];
   const q0 = typeof seed === 'string' ? seed : '';
   sheet('מאגר מזון', `
@@ -1644,15 +1651,15 @@ function sheetDb(seed){
       למוצר ארוז עדיף לצלם תווית.</p>
     <label class="f"><span>חיפוש</span><input id="dq" oninput="dbList()" placeholder="חזה עוף" value="${esc(q0)}"></label>
     <div class="chips">${groups.map(g => `<button class="${g === dbGroup ? 'on' : ''}"
-      onclick="dbGroup='${g}';sheetDb(($('#dq')||{}).value||'')">${g}</button>`).join('')}</div>
+      onclick="dbGroup='${g}';sheetDb(($('#dq')||{}).value||'', true)">${g}</button>`).join('')}</div>
     <div id="dbres"></div>
     <p class="xs mut">נא מול מבושל: 100 גרם חזה עוף נא הם 22.5 גרם חלבון, ואחרי בישול 31 —
       הבשר מאבד מים, לא חלבון. שקול תמיד באותו מצב.</p>`);
   dbList();
 }
 function dbList(){
-  const q = ($('#dq') && $('#dq').value || '').trim();
-  const list = DB.filter(x => (dbGroup === 'הכול' || x[3] === dbGroup) && x[0].includes(q)).slice(0, 80);
+  const q = normQ(($('#dq') && $('#dq').value || '').trim());
+  const list = DB.filter(x => (dbGroup === 'הכול' || x[3] === dbGroup) && normQ(x[0]).includes(q)).slice(0, 80);
   const have = new Set(S.foods.map(f => f.name));
   $('#dbres').innerHTML = `<div class="list">${list.map(x => {
     const added = have.has(x[0]);
@@ -1751,10 +1758,10 @@ function delFood(){
    האפליקציה = החישוב. Claude לא מחזיר ולו מספר תזונתי אחד — רק אינדקס
    מתוך הרשימה שנשלחה אליו, ומשקל בגרמים. */
 function dbSearch(q, n){
-  const toks = String(q).toLowerCase().split(/[\s,]+/).filter(t => t.length > 1);
+  const toks = normQ(q).split(/[\s,]+/).filter(t => t.length > 1);
   if (!toks.length) return [];
   return DB.map((row, i) => {
-    const name = row[0].toLowerCase();
+    const name = normQ(row[0]);
     let sc = 0;
     toks.forEach(t => { if (name.includes(t)) sc += t.length; });
     if (sc && name.startsWith(toks[0])) sc += 3;
@@ -1801,7 +1808,7 @@ async function aiEstimate(qArg){
 }
 
 /* --- צילום תווית --- */
-const BUILD = '2026-09-27a';
+const BUILD = '2026-09-29a';
 
 /* מפתח שהועתק מטקסט עברי עלול לכלול סימני כיווניות בלתי־נראים (U+200E/200F).
    ערך כזה בכותרת HTTP גורם ל-fetch לזרוק TypeError מיידית, בלי שום פנייה לרשת. */
