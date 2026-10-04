@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ביקור בית – כלי לרופא</title>
+<meta name="description" content="כלי לרופא לביקור בית: הערכה מקיפה לפי INHOMESSS, כלי סינון מובנים, דגלים וסיכום רפואי להעתקה">
+<meta name="theme-color" content="#2c2a78">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f3f9;
+  --surface:#ffffff;
+  --surface-2:#f7f7fc;
+  --ink:#17182e;
+  --muted:#5f6180;
+  --brand:#3f3d9e;
+  --brand-dark:#2c2a78;
+  --tint:#e8e7f7;
+  --line:#dcdcec;
+  --line-strong:#c3c2dc;
+  --focus:#a5a3e6;
+  --warn-bg:#fdf4e3;
+  --warn-line:#e8c98a;
+  --warn-ink:#8a5a08;
+  --danger-bg:#fdeceb;
+  --danger-line:#f0b3ae;
+  --danger-ink:#9c2620;
+  --info-bg:#e8f1fb;
+  --info-line:#b3cfee;
+  --info-ink:#1f4d80;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(23,24,46,.05), 0 6px 20px rgba(23,24,46,.05);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:120px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{animation:none!important; transition:none!important}}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:"Assistant","Segoe UI",Arial,sans-serif; font-size:16px; line-height:1.65}
+
+/* header */
+.topbar{background:var(--brand-dark); color:#e9e8fb; padding:10px 16px}
+.topbar-in{max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.topbar a{color:#d4d2f7; text-decoration:none; font-weight:600; font-size:.9rem}
+.topbar a:hover{text-decoration:underline}
+.topbar .src{color:#bebcec}
+.hero{background:var(--brand); color:#fff; padding:22px 16px 24px}
+.hero-in{max-width:1080px; margin:0 auto}
+.hero h1{margin:0 0 6px; font-size:1.7rem; font-weight:800; letter-spacing:-.01em}
+.hero p{margin:0; color:#dcdbf8; font-size:.95rem; max-width:70ch}
+
+/* INHOMESSS strip */
+.mnemo{direction:ltr; display:grid; grid-template-columns:repeat(9,1fr); gap:6px; margin-top:18px; max-width:760px; margin-left:auto; margin-right:0}
+.mnemo a{position:relative; display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#fff;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:8px 2px 7px}
+.mnemo a:hover{background:rgba(255,255,255,.16)}
+.mnemo b{font-size:1.55rem; font-weight:800; line-height:1}
+.mnemo small{direction:rtl; font-size:.7rem; color:#d6d5f6; margin-top:4px; text-align:center; line-height:1.2}
+.mnemo a::after{content:""; position:absolute; top:5px; right:5px; width:8px; height:8px; border-radius:50%; background:transparent}
+.mnemo a.f-o::after{background:#f3b33d}
+.mnemo a.f-r::after{background:#ff6b5e}
+@media (max-width:560px){ .mnemo b{font-size:1.15rem} .mnemo small{display:none} }
+
+/* sticky nav + flag bar */
+.stick{position:sticky; top:0; z-index:40; background:rgba(255,255,255,.97); backdrop-filter:blur(6px); border-bottom:1px solid var(--line)}
+.nav-in{max-width:1080px; margin:0 auto; display:flex; gap:2px; overflow-x:auto; padding:0 10px; scrollbar-width:thin}
+.nav-in a{flex:0 0 auto; padding:11px 12px; text-decoration:none; color:var(--muted); font-weight:600; font-size:.9rem; border-bottom:3px solid transparent; white-space:nowrap}
+.nav-in a:hover{color:var(--brand)}
+.nav-in a.active{color:var(--brand-dark); border-bottom-color:var(--brand)}
+.flagbar{border-top:1px solid var(--line); background:var(--surface-2)}
+.flagbar-in{max-width:1080px; margin:0 auto; padding:6px 16px}
+.flagbtn{display:flex; align-items:center; gap:8px; width:100%; background:none; border:0; padding:3px 0; font:inherit; font-weight:700; font-size:.9rem; color:var(--brand-dark); cursor:pointer; text-align:right}
+.cnt{font-size:.78rem; font-weight:700; border-radius:999px; padding:1px 9px; border:1px solid}
+.cnt.r{background:var(--danger-bg); border-color:var(--danger-line); color:var(--danger-ink)}
+.cnt.o{background:var(--warn-bg); border-color:var(--warn-line); color:var(--warn-ink)}
+.cnt.b{background:var(--info-bg); border-color:var(--info-line); color:var(--info-ink)}
+.cnt.zero{opacity:.45}
+.flagbtn .chev{margin-inline-start:auto; color:var(--muted); font-weight:400}
+.flaglist{display:none; max-height:42vh; overflow:auto; padding:4px 0 6px}
+.flagbar.open .flaglist{display:block}
+.flaglist a{display:flex; gap:8px; align-items:flex-start; text-decoration:none; color:var(--ink); font-size:.88rem; padding:5px 8px; border-radius:8px; line-height:1.45}
+.flaglist a:hover{background:var(--tint)}
+.dot{flex:0 0 10px; height:10px; border-radius:50%; margin-top:6px}
+.dot.r{background:#d9463b} .dot.o{background:#e3a126} .dot.b{background:#4a86c8}
+.flaglist .none{font-size:.86rem; color:var(--muted); padding:4px 8px}
+
+/* layout */
+main{max-width:1080px; margin:0 auto; padding:20px 16px 80px}
+section{scroll-margin-top:120px; margin-bottom:16px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 18px 20px}
+.card > h2{margin:0 0 4px; font-size:1.25rem; color:var(--brand-dark)}
+.sub{margin:0 0 14px; color:var(--muted); font-size:.9rem}
+details.mod{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
+details.mod > summary{list-style:none; cursor:pointer; padding:14px 18px; display:flex; align-items:center; gap:10px}
+details.mod > summary::-webkit-details-marker{display:none}
+details.mod > summary h2{margin:0; font-size:1.18rem; color:var(--brand-dark)}
+details.mod > summary .letter{direction:ltr; font-weight:800; color:var(--brand); background:var(--tint); border-radius:8px; min-width:34px; text-align:center; padding:1px 6px; font-size:.95rem}
+details.mod > summary .chev{margin-inline-start:auto; color:var(--muted); transition:transform .15s}
+details.mod[open] > summary .chev{transform:rotate(180deg)}
+details.mod > summary .rec{display:none; font-size:.74rem; font-weight:700; color:var(--brand-dark); background:var(--tint); border:1px solid var(--line-strong); border-radius:999px; padding:1px 9px}
+details.mod.recommended > summary .rec{display:inline-block}
+.mod-body{padding:0 18px 20px; border-top:1px solid var(--line)}
+.mod-body > .sub:first-child{margin-top:12px}
+h3{font-size:1.02rem; margin:18px 0 8px; color:var(--brand-dark)}
+.placeholder{border:1px dashed var(--line-strong); border-radius:var(--radius); padding:22px 18px; text-align:center; color:var(--muted); background:var(--surface-2); font-size:.92rem; margin-top:14px}
+
+/* form */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px 18px}
+.field{display:flex; flex-direction:column; gap:6px}
+.legend{font-weight:700; font-size:.9rem; color:var(--ink)}
+.hint{font-size:.8rem; color:var(--muted); font-weight:400; line-height:1.45}
+input[type=text], input[type=number]{font:inherit; font-size:.95rem; padding:8px 10px; border:1px solid var(--line-strong); border-radius:8px; background:#fff; color:var(--ink); width:100%}
+input[type=number]{max-width:120px}
+input:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible, textarea:focus-visible{outline:3px solid var(--focus); outline-offset:1px; border-radius:8px}
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg label{position:relative; border:1px solid var(--line-strong); border-radius:999px; padding:5px 13px; font-size:.88rem; cursor:pointer; background:#fff; user-select:none; line-height:1.4}
+.seg input{position:absolute; opacity:0; width:0; height:0}
+.seg label:has(input:checked){background:var(--brand); border-color:var(--brand); color:#fff; font-weight:600}
+.seg label:has(input:focus-visible){outline:3px solid var(--focus); outline-offset:1px}
+.seg.danger label:has(input:checked){background:#b3342a; border-color:#b3342a}
+.inline{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+button{font:inherit; font-weight:600; cursor:pointer; border-radius:9px; padding:9px 16px; border:1px solid var(--line-strong); background:#fff; color:var(--ink)}
+button.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+button:hover{filter:brightness(.97)}
+.cond{display:none}
+.cond.on{display:block}
+
+/* notes, sources */
+.note{border-radius:10px; padding:10px 13px; font-size:.9rem; margin:10px 0; border:1px solid}
+.note-info{background:var(--tint); border-color:var(--line-strong); color:var(--brand-dark)}
+.note-danger{background:var(--danger-bg); border-color:var(--danger-line); color:var(--danger-ink)}
+.src{font-size:.8rem; color:var(--muted)}
+.src a{color:var(--brand)}
+.gk{font-size:.72rem; font-weight:700; border-radius:6px; padding:1px 7px; background:#f1f1f4; color:#5b5b6b; border:1px solid #d6d6de; white-space:nowrap}
+details.acc{border:1px solid var(--line); border-radius:10px; background:var(--surface-2); padding:9px 13px; margin:0 0 16px}
+details.acc summary{cursor:pointer; font-weight:700; font-size:.93rem; color:var(--brand-dark)}
+details.acc[open] summary{margin-bottom:6px}
+details.acc ul{margin:4px 0 6px; padding-inline-start:20px; font-size:.9rem}
+details.acc li{margin:3px 0}
+
+/* note */
+textarea{font:inherit; font-size:.92rem; line-height:1.6; width:100%; border:1px solid var(--line-strong); border-radius:10px; padding:11px 12px; background:#fff; color:var(--ink); resize:vertical}
+.soap-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; align-items:center}
+.status{font-size:.85rem; color:var(--brand-dark); font-weight:600}
+.status.warn{color:var(--warn-ink)}
+
+footer{max-width:1080px; margin:0 auto; padding:0 16px 60px; color:var(--muted); font-size:.83rem}
+footer p{margin:6px 0}
+footer a{color:var(--brand)}
+@media (max-width:560px){
+  .hero h1{font-size:1.4rem}
+  main{padding:14px 12px 60px}
+  .card{padding:14px}
+  details.mod > summary{padding:12px 14px}
+  .mod-body{padding:0 14px 16px}
+}
+/* scales */
+.scale{margin:4px 0 0}
+.qrow{display:grid; grid-template-columns:minmax(180px,34%) 1fr; gap:6px 14px; align-items:start; padding:8px 0; border-top:1px dashed var(--line)}
+.scale .qrow:first-child{border-top:0}
+.q{font-size:.92rem; font-weight:600; line-height:1.45; padding-top:4px}
+.q .hint{display:block; font-weight:400}
+.seg label em{font-style:normal; font-size:.74rem; opacity:.7; margin-inline-start:4px}
+.score{margin:10px 0 4px; padding:9px 13px; border-radius:10px; background:var(--surface-2); border:1px solid var(--line); font-size:.92rem}
+.score:empty{display:none}
+.score b{color:var(--brand-dark); font-variant-numeric:tabular-nums}
+.score.o{background:var(--warn-bg); border-color:var(--warn-line)}
+.score.ok{background:#eef8f2; border-color:#b9e0c8}
+.score .prog{color:var(--muted); font-size:.84rem}
+@media (max-width:640px){ .qrow{grid-template-columns:1fr} }
+button.step{padding:4px 12px; font-size:1.05rem; line-height:1.2}
+.field.cgdep.off{display:none}
+.seg label.prob:has(input:checked){background:#b86e00; border-color:#b86e00}
+.seg label.okc:has(input:checked){background:#2f7d55; border-color:#2f7d55}
+.vit input[type=number]{max-width:110px}
+.vit .inline{flex-wrap:nowrap}
+.vit .inline input[type=number]{width:84px}
+.bmi{font-size:1.25rem; font-weight:800; color:var(--brand-dark); font-variant-numeric:tabular-nums; padding-top:2px}
+.sugg{display:inline-block; margin-inline-start:6px; font-size:.72rem; font-weight:700; color:var(--warn-ink); background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:999px; padding:0 8px; vertical-align:middle}
+#examtpl{font-size:.9rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a href="doctors.html">→ חזרה לכלים לרופאים</a>
+    <span class="src">מבוסס על AAFP 2020 (House Calls) ועל סקירה שיטתית, Healthcare 2024</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero-in">
+    <h1>ביקור בית</h1>
+    <p>הערכה מקיפה של המטופל/ת בביתו/ה, לפי רשימת INHOMESSS. בוחרים את סוג הביקור, והפרקים הרלוונטיים נפתחים. בסוף נבנה סיכום רפואי להעתקה לרשומה. הכלי אינו שומר ואינו שולח נתונים.</p>
+    <nav class="mnemo" aria-label="INHOMESSS">
+      <a href="#sec-imp" data-sec="sec-imp sec-cog"><b>I</b><small>ליקויים וניידות</small></a>
+      <a href="#sec-nut" data-sec="sec-nut"><b>N</b><small>תזונה</small></a>
+      <a href="#sec-home" data-sec="sec-home"><b>H</b><small>סביבת הבית</small></a>
+      <a href="#sec-people" data-sec="sec-people"><b>O</b><small>המטפלים</small></a>
+      <a href="#sec-meds" data-sec="sec-meds"><b>M</b><small>תרופות</small></a>
+      <a href="#sec-exam" data-sec="sec-exam"><b>E</b><small>בדיקה</small></a>
+      <a href="#sec-home" data-sec="sec-home"><b>S</b><small>בטיחות</small></a>
+      <a href="#sec-goals" data-sec="sec-goals"><b>S</b><small>רוחניות</small></a>
+      <a href="#sec-svc" data-sec="sec-svc"><b>S</b><small>שירותים</small></a>
+    </nav>
+  </div>
+</header>
+
+<div class="stick">
+  <nav class="nav-in" aria-label="ניווט בדף">
+    <a href="#sec-hdr">פרטי הביקור</a>
+    <a href="#sec-type">סוג הביקור</a>
+    <a href="#sec-imp">תפקוד וניידות</a>
+    <a href="#sec-cog">קוגניציה ומצב רוח</a>
+    <a href="#sec-nut">תזונה</a>
+    <a href="#sec-home">הבית ובטיחות</a>
+    <a href="#sec-people">מטפלים</a>
+    <a href="#sec-meds">תרופות</a>
+    <a href="#sec-exam">בדיקה</a>
+    <a href="#sec-goals">מטרות טיפול</a>
+    <a href="#sec-svc">שירותים</a>
+    <a href="#sec-soap">סיכום</a>
+  </nav>
+  <div class="flagbar" id="flagbar">
+    <div class="flagbar-in">
+      <button type="button" class="flagbtn" id="flagbtn" aria-expanded="false" aria-controls="flaglist">
+        דגלים
+        <span class="cnt r zero" id="cnt-r">0 דחוף</span>
+        <span class="cnt o zero" id="cnt-o">0 לתכנית</span>
+        <span class="cnt b zero" id="cnt-b">0 לידיעה</span>
+        <span class="chev" aria-hidden="true">▾</span>
+      </button>
+      <div class="flaglist" id="flaglist"></div>
+    </div>
+  </div>
+</div>
+
+<main id="app">
+
+  <details class="acc">
+    <summary>הכנה לביקור ובטיחות הצוות</summary>
+    <ul>
+      <li>להתקשר מראש: לוודא שהמטופל/ת בבית ואת הכתובת, ולבקש לסגור חיות מחמד.</li>
+      <li>לעבור על הרשומה ועל רשימת התרופות, ולהביא עותק עדכני להשוואה מול מה שנמצא בבית.</li>
+      <li>לעדכן את המרפאה במיקום ובשעה, ולתאם קוד מצוקה מוסכם ושיחת בדיקה בהגעה ובסיום.</li>
+      <li>כשאפשר, להגיע עם איש צוות נוסף או עם סטודנט/ית.</li>
+      <li>לשבת על ריהוט לא מרופד, להשתמש בכפפות או במסכה לפי הצורך, ולחטא ידיים לפני הביקור, במהלכו ואחריו. להביא מכל לפסולת חדה.</li>
+      <li>ביקור מקיף נמשך בדרך כלל 45–90 דקות, ולרוב נדרשות הפסקות.</li>
+    </ul>
+    <div class="src">מקור: <a class="cA" data-p="3"></a>, <a class="cA" data-p="4" data-t="טבלה 3"></a></div>
+  </details>
+
+  <!-- ===== header ===== -->
+  <section id="sec-hdr" class="card">
+    <h2>פרטי הביקור</h2>
+    <p class="sub">ללא פרטים מזהים. המין קובע את לשון הפנייה בכל הדף ובסיכום.</p>
+    <div class="grid">
+      <div class="field">
+        <span class="legend">מין</span>
+        <div class="seg">
+          <label><input type="radio" name="sex" value="m"><span>מטופל</span></label>
+          <label><input type="radio" name="sex" value="f"><span>מטופלת</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="legend" for="age">גיל</label>
+        <input type="number" id="age" name="age" min="18" max="120" inputmode="numeric">
+      </div>
+      <div class="field">
+        <span class="legend" data-g="מתגורר|מתגוררת|מתגורר/ת">מתגורר/ת</span>
+        <div class="seg" id="live">
+          <label><input type="checkbox" name="live" value="alone"><span>לבד</span></label>
+          <label><input type="checkbox" name="live" value="spouse"><span>עם בן/בת זוג</span></label>
+          <label><input type="checkbox" name="live" value="family"><span>עם בני משפחה</span></label>
+          <label><input type="checkbox" name="live" value="carer"><span>עם מטפל/ת בבית</span></label>
+        </div>
+      </div>
+    </div>
+
+    <h3>הדירה</h3>
+    <div class="grid">
+      <div class="field">
+        <span class="legend">סוג המגורים</span>
+        <div class="seg">
+          <label><input type="radio" name="house" value="apt"><span>דירה</span></label>
+          <label><input type="radio" name="house" value="private"><span>בית פרטי</span></label>
+          <label><input type="radio" name="house" value="assisted"><span>דיור מוגן</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="legend" for="floor">קומה</label>
+        <input type="number" id="floor" name="floor" min="-3" max="60" inputmode="numeric">
+      </div>
+      <div class="field">
+        <span class="legend">מעלית</span>
+        <div class="seg">
+          <label><input type="radio" name="lift" value="yes"><span>יש</span></label>
+          <label><input type="radio" name="lift" value="no"><span>אין</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="legend">מדרגות</span>
+        <div class="seg">
+          <label><input type="checkbox" name="stairs" value="entry"><span>בכניסה לבניין או לבית</span></label>
+          <label><input type="checkbox" name="stairs" value="inside"><span>בתוך הבית</span></label>
+        </div>
+      </div>
+    </div>
+
+    <h3>נוכחים בביקור</h3>
+    <div class="seg">
+      <label><input type="checkbox" name="present" value="patient"><span data-g="המטופל|המטופלת|המטופל/ת">המטופל/ת</span></label>
+      <label><input type="checkbox" name="present" value="spouse"><span>בן/בת זוג</span></label>
+      <label><input type="checkbox" name="present" value="family"><span>בן/בת משפחה</span></label>
+      <label><input type="checkbox" name="present" value="carer"><span>מטפל/ת</span></label>
+      <label><input type="checkbox" name="present" value="staff"><span>איש צוות נוסף</span></label>
+    </div>
+  </section>
+
+  <!-- ===== visit type ===== -->
+  <section id="sec-type" class="card">
+    <h2>סוג הביקור</h2>
+    <p class="sub">אפשר לבחור יותר מאחד. הפרקים המתאימים ייפתחו ויסומנו „מומלץ לביקור זה”. <span class="src">מקור: <a class="cA" data-p="3" data-t="טבלה 1"></a>, <a class="cA" data-p="11" data-t="eFigure A"></a></span></p>
+    <div class="seg" id="vtype">
+      <label><input type="checkbox" name="vtype" value="cga"><span>הערכה גריאטרית מקיפה</span></label>
+      <label><input type="checkbox" name="vtype" value="hosp"><span>מעקב אחרי אשפוז</span></label>
+      <label><input type="checkbox" name="vtype" value="chronic"><span>מעקב מחלה כרונית</span></label>
+      <label><input type="checkbox" name="vtype" value="falls"><span>נפילות ושבריריות</span></label>
+      <label><input type="checkbox" name="vtype" value="cog"><span>ירידה קוגניטיבית</span></label>
+      <label><input type="checkbox" name="vtype" value="meds"><span>ריבוי תרופות</span></label>
+      <label><input type="checkbox" name="vtype" value="safety"><span>חשש לבטיחות או להזנחה</span></label>
+      <label><input type="checkbox" name="vtype" value="family"><span>תיאום טיפול או מפגש משפחתי</span></label>
+      <label><input type="checkbox" name="vtype" value="eol"><span>סוף החיים וטיפול תומך</span></label>
+      <label><input type="checkbox" name="vtype" value="acute"><span>בעיה חריפה</span></label>
+    </div>
+
+    <div class="cond" id="acute-box">
+      <h3>הבעיה החריפה</h3>
+      <div class="seg danger">
+        <label><input type="checkbox" name="acute" value="acs"><span>כאב חזה או חשד לתסמונת כלילית חריפה</span></label>
+        <label><input type="checkbox" name="acute" value="delir"><span>אי-שקט או דליריום</span></label>
+        <label><input type="checkbox" name="acute" value="allergy"><span>תגובה אלרגית</span></label>
+        <label><input type="checkbox" name="acute" value="dehyd"><span>התייבשות</span></label>
+        <label><input type="checkbox" name="acute" value="dysp"><span>קוצר נשימה</span></label>
+        <label><input type="checkbox" name="acute" value="hf"><span>אי-ספיקת לב לא מאוזנת</span></label>
+        <label><input type="checkbox" name="acute" value="hypo"><span>היפוגליקמיה</span></label>
+        <label><input type="checkbox" name="acute" value="pain"><span>כאב לא נשלט</span></label>
+        <label><input type="checkbox" name="acute" value="seiz"><span>פרכוס</span></label>
+        <label><input type="checkbox" name="acute" value="trauma"><span>חבלה</span></label>
+      </div>
+      <div class="src" style="margin-top:6px">רשימת המצבים לפי <a class="cA" data-p="6" data-t="טבלה 5"></a>. המינונים שבטבלה מיועדים למטופלי הוספיס בארה"ב ולכן אינם מוצגים.</div>
+    </div>
+
+    <div class="field" style="margin-top:16px">
+      <label class="legend" for="cc">סיבת הביקור או התלונה העיקרית</label>
+      <input type="text" id="cc" name="cc" placeholder="בקצרה">
+    </div>
+  </section>
+
+  <!-- ===== modules (steps 2–4) ===== -->
+  <section id="sec-imp">
+    <details class="mod">
+      <summary><span class="letter">I</span><h2>תפקוד, ניידות ונפילות</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub">בחירת תשובה בכל שורה. הציון מחושב תוך כדי, והפרשנות מוצגת כשכל הפריטים מולאו. <span class="src">מקורות: <a class="cA" data-p="7" data-t="איור 1"></a>, <a class="cF" data-p="8" data-t="טבלה 3"></a></span></p>
+
+        <h3>פעולות יום-יום בסיסיות (Barthel)</h3>
+        <div class="scale" id="barthel"></div>
+        <div class="score" id="barthel-score"></div>
+
+        <h3>פעולות יום-יום מורכבות (Lawton IADL)</h3>
+        <div class="scale" id="lawton"></div>
+        <div class="score" id="lawton-score"></div>
+        <div class="qrow">
+          <div class="q">נהיגה</div>
+          <div class="seg">
+            <label><input type="radio" name="drive" value="no"><span data-t="{אינו נוהג|אינה נוהגת}">אינו נוהג/ת</span></label>
+            <label><input type="radio" name="drive" value="ok"><span data-t="{נוהג|נוהגת} ללא קושי">נוהג/ת ללא קושי</span></label>
+            <label><input type="radio" name="drive" value="concern"><span data-t="{נוהג|נוהגת}, יש חשש">נוהג/ת, יש חשש</span></label>
+          </div>
+        </div>
+
+        <h3>נפילות</h3>
+        <p class="sub">שלוש שאלות הסינון של STEADI (CDC). תשובה חיובית לאחת מהן פותחת את המבחנים.</p>
+        <div class="qrow"><div class="q" data-t="{נפל|נפלה} בשנה האחרונה">נפל/ה בשנה האחרונה</div>
+          <div class="seg"><label><input type="radio" name="fall" value="yes"><span>כן</span></label><label><input type="radio" name="fall" value="no"><span>לא</span></label></div></div>
+        <div class="cond" id="fall-more">
+          <div class="qrow"><div class="q">מספר נפילות</div>
+            <div class="seg"><label><input type="radio" name="fallN" value="1"><span>אחת</span></label><label><input type="radio" name="fallN" value="2"><span>שתיים או יותר</span></label></div></div>
+          <div class="qrow"><div class="q">פגיעה בנפילה</div>
+            <div class="seg"><label><input type="radio" name="fallInj" value="yes"><span>כן</span></label><label><input type="radio" name="fallInj" value="no"><span>לא</span></label></div></div>
+        </div>
+        <div class="qrow"><div class="q" data-t="{מרגיש|מרגישה} חוסר יציבות בעמידה או בהליכה">מרגיש/ה חוסר יציבות בעמידה או בהליכה</div>
+          <div class="seg"><label><input type="radio" name="unsteady" value="yes"><span>כן</span></label><label><input type="radio" name="unsteady" value="no"><span>לא</span></label></div></div>
+        <div class="qrow"><div class="q" data-t="{חושש|חוששת} ליפול">חושש/ת ליפול</div>
+          <div class="seg"><label><input type="radio" name="fear" value="yes"><span>כן</span></label><label><input type="radio" name="fear" value="no"><span>לא</span></label></div></div>
+
+        <div class="field" style="margin-top:12px">
+          <span class="legend">תצפית: קימה ותנועה בבית</span>
+          <div class="seg">
+            <label><input type="checkbox" name="gaitobs" value="rise"><span>קושי בקימה מכיסא</span></label>
+            <label><input type="checkbox" name="gaitobs" value="arms"><span data-t="{נעזר|נעזרת} בידיות הכיסא">נעזר/ת בידיות הכיסא</span></label>
+            <label><input type="checkbox" name="gaitobs" value="furn"><span data-t="{נאחז|נאחזת} ברהיטים">נאחז/ת ברהיטים</span></label>
+            <label><input type="checkbox" name="gaitobs" value="unst"><span>הליכה לא יציבה</span></label>
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <span class="legend">אביזר עזר</span>
+          <div class="seg">
+            <label><input type="radio" name="aid" value="none"><span>ללא</span></label>
+            <label><input type="radio" name="aid" value="cane"><span>מקל</span></label>
+            <label><input type="radio" name="aid" value="walker"><span>הליכון</span></label>
+            <label><input type="radio" name="aid" value="wc"><span>כיסא גלגלים</span></label>
+          </div>
+        </div>
+
+        <div class="cond" id="fall-tests">
+          <h3>מבחני הליכה, כוח ושיווי משקל</h3>
+          <div class="grid">
+            <div class="field">
+              <label class="legend" for="tug">Timed Up and Go (שניות)</label>
+              <input type="number" id="tug" name="tug" min="3" max="180" step="0.1" inputmode="decimal">
+              <span class="hint">קימה, הליכה 3 מטרים, סיבוב, חזרה וישיבה. 12 שניות ומעלה: סיכון מוגבר לנפילה.</span>
+            </div>
+            <div class="field">
+              <label class="legend" for="cst">קימה מכיסא ב-30 שניות (מספר)</label>
+              <input type="number" id="cst" name="cst" min="0" max="40" inputmode="numeric">
+              <span class="hint">ידיים משוכלות על החזה. אם אי אפשר לקום בלי ידיים, רושמים 0.</span>
+              <span class="hint" id="cst-norm"></span>
+            </div>
+            <div class="field">
+              <span class="legend">שיווי משקל ב-4 שלבים</span>
+              <span class="hint">השלב הגבוה ביותר שהוחזק 10 שניות:</span>
+              <div class="seg">
+                <label><input type="radio" name="bal" value="0"><span>אף שלב</span></label>
+                <label><input type="radio" name="bal" value="1"><span>רגליים צמודות</span></label>
+                <label><input type="radio" name="bal" value="2"><span>חצי-טנדם</span></label>
+                <label><input type="radio" name="bal" value="3"><span>טנדם</span></label>
+                <label><input type="radio" name="bal" value="4"><span>רגל אחת</span></label>
+              </div>
+              <span class="hint">אי-החזקת טנדם 10 שניות: סיכון מוגבר לנפילה.</span>
+            </div>
+          </div>
+          <p class="src" style="margin-top:10px">המבחנים וערכי הסף לפי STEADI (CDC), המקושר ב-<a class="cA" data-p="7" data-t="איור 1"></a>. ערכי הסף ל-TUG אינם אחידים בספרות (20 או 30 שניות במחקרים שונים): <a class="cF" data-p="11"></a>.</p>
+        </div>
+
+        <h3>חושים</h3>
+        <div class="grid">
+          <div class="field">
+            <span class="legend">ליקוי</span>
+            <div class="seg">
+              <label><input type="checkbox" name="sens" value="vision"><span>ראייה</span></label>
+              <label><input type="checkbox" name="sens" value="hearing"><span>שמיעה</span></label>
+              <label><input type="checkbox" name="sens" value="smell"><span>ריח או טעם</span></label>
+              <label><input type="checkbox" name="sens" value="touch"><span>תחושה</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="legend">אביזרים בשימוש</span>
+            <div class="seg">
+              <label><input type="checkbox" name="sensaid" value="glasses"><span>משקפיים</span></label>
+              <label><input type="checkbox" name="sensaid" value="ha"><span>מכשיר שמיעה</span></label>
+            </div>
+          </div>
+        </div>
+
+        <h3>כאב</h3>
+        <div class="seg" id="pain"></div>
+        <span class="hint">0 = אין כאב, 10 = הכאב החמור ביותר.</span>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-cog">
+    <details class="mod">
+      <summary><span class="letter">I</span><h2>קוגניציה ומצב רוח</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub"><span class="src">מקורות: <a class="cA" data-p="8" data-t="איור 1"></a>, <a class="cF" data-p="7" data-t="טבלה 2"></a></span></p>
+
+        <h3>Mini-Cog</h3>
+        <p class="sub">1. לומר שלוש מילים ולבקש לחזור עליהן: <b>בננה, זריחה, כיסא</b>. 2. לבקש לצייר שעון עם כל המספרים ולסמן את השעה 11:10. 3. לבקש לחזור על שלוש המילים.</p>
+        <div class="qrow"><div class="q">מילים שנזכרו</div>
+          <div class="seg">
+            <label><input type="radio" name="mcRecall" value="0"><span>0</span></label>
+            <label><input type="radio" name="mcRecall" value="1"><span>1</span></label>
+            <label><input type="radio" name="mcRecall" value="2"><span>2</span></label>
+            <label><input type="radio" name="mcRecall" value="3"><span>3</span></label>
+          </div></div>
+        <div class="qrow"><div class="q">ציור השעון</div>
+          <div class="seg">
+            <label><input type="radio" name="mcClock" value="2"><span>תקין</span></label>
+            <label><input type="radio" name="mcClock" value="0"><span>לא תקין</span></label>
+            <label><input type="radio" name="mcClock" value="na"><span>לא בוצע</span></label>
+          </div></div>
+        <div class="score" id="mc-score"></div>
+        <p class="src">Mini-Cog © S. Borson. שימוש קליני חופשי. ציור תקין: כל המספרים במקומם והמחוגים מצביעים על 11 ועל 2.</p>
+
+        <h3>ציון במבחן מלא (אם בוצע)</h3>
+        <div class="grid">
+          <div class="field"><label class="legend" for="mmse">MMSE (0–30)</label><input type="number" id="mmse" name="mmse" min="0" max="30" inputmode="numeric"></div>
+          <div class="field"><label class="legend" for="moca">MoCA (0–30)</label><input type="number" id="moca" name="moca" min="0" max="30" inputmode="numeric"></div>
+        </div>
+        <p class="src">סף לפי ניקוד הכלים: MMSE מתחת ל-24, MoCA מתחת ל-26.</p>
+
+        <div class="cond" id="informant">
+          <h3>דיווח המשפחה או המטפל/ת</h3>
+          <div class="seg">
+            <label><input type="checkbox" name="inf" value="memory"><span>ירידה בזיכרון בשנה האחרונה</span></label>
+            <label><input type="checkbox" name="inf" value="lost"><span data-t="{הלך|הלכה} לאיבוד">הלך/ה לאיבוד</span></label>
+            <label><input type="checkbox" name="inf" value="meds"><span>שכחת תרופות</span></label>
+            <label><input type="checkbox" name="inf" value="money"><span>קושי בניהול כספים</span></label>
+            <label><input type="checkbox" name="inf" value="behav"><span>שינויי התנהגות או תוקפנות</span></label>
+            <label><input type="checkbox" name="inf" value="sleep"><span>הפרעות שינה</span></label>
+          </div>
+          <div class="qrow" style="margin-top:8px"><div class="q">כשירות לקבל החלטות</div>
+            <div class="seg">
+              <label><input type="radio" name="capacity" value="ok"><span>נראית שמורה</span></label>
+              <label><input type="radio" name="capacity" value="doubt"><span>מוטלת בספק</span></label>
+            </div></div>
+          <p class="src">ייפוי כוח מתמשך והנחיות מקדימות: בפרק „מטרות טיפול”.</p>
+        </div>
+
+        <h3>מצב רוח (GDS-15)</h3>
+        <p class="sub" id="gds-sexhint">כדי שהשאלות יוצגו בלשון המתאימה, יש לבחור מין בפרטי הביקור.</p>
+        <div class="scale" id="gds"></div>
+        <div class="score" id="gds-score"></div>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-nut">
+    <details class="mod">
+      <summary><span class="letter">N</span><h2>תזונה</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub"><span class="src">מקורות: <a class="cA" data-p="7" data-t="איור 1"></a>, <a class="cF" data-p="6"></a>, <a class="cF" data-p="7" data-t="טבלה 2"></a></span></p>
+
+        <h3>MNA-SF</h3>
+        <div class="scale" id="mna"></div>
+        <div class="score" id="mna-score"></div>
+        <p class="src">MNA® Société des Produits Nestlé SA. פרשנות לפי ניקוד הכלי: 12–14 תקין, 8–11 בסיכון, 0–7 תת-תזונה.</p>
+
+        <h3>תצפית: אוכל ושתייה בבית</h3>
+        <div class="grid">
+          <div class="field"><span class="legend">מקרר ומזווה</span>
+            <div class="seg">
+              <label><input type="radio" name="food" value="ok"><span>מגוון ומספק</span></label>
+              <label><input type="radio" name="food" value="poor"><span>דל</span></label>
+              <label><input type="radio" name="food" value="expired"><span>מזון פג תוקף או מקולקל</span></label>
+            </div></div>
+          <div class="field"><span class="legend">מי מכין את הארוחות</span>
+            <div class="seg">
+              <label><input type="checkbox" name="meals" value="self"><span data-t="{בעצמו|בעצמה}">בעצמו/ה</span></label>
+              <label><input type="checkbox" name="meals" value="family"><span>בני משפחה</span></label>
+              <label><input type="checkbox" name="meals" value="carer"><span>מטפל/ת</span></label>
+              <label><input type="checkbox" name="meals" value="delivery"><span>ארוחות מוכנות או משלוח</span></label>
+            </div></div>
+          <div class="field"><span class="legend">שתייה</span>
+            <div class="seg">
+              <label><input type="radio" name="fluid" value="ok"><span>מספקת</span></label>
+              <label><input type="radio" name="fluid" value="low"><span>מועטה</span></label>
+            </div></div>
+          <div class="field"><span class="legend">אלכוהול</span>
+            <div class="seg">
+              <label><input type="radio" name="alcohol" value="none"><span>אין</span></label>
+              <label><input type="radio" name="alcohol" value="some"><span>שתייה מתונה</span></label>
+              <label><input type="radio" name="alcohol" value="concern"><span>חשש לשתייה מופרזת</span></label>
+            </div></div>
+          <div class="field"><span class="legend">בליעה</span>
+            <div class="seg">
+              <label><input type="radio" name="swallow" value="ok"><span>ללא קושי</span></label>
+              <label><input type="radio" name="swallow" value="diff"><span>קושי בבליעה</span></label>
+            </div></div>
+          <div class="field"><span class="legend">פה ושיניים</span>
+            <div class="seg">
+              <label><input type="checkbox" name="oral" value="dentures"><span>שיניים תותבות</span></label>
+              <label><input type="checkbox" name="oral" value="chew"><span>קושי בלעיסה</span></label>
+              <label><input type="checkbox" name="oral" value="poor"><span>היגיינת פה ירודה</span></label>
+            </div></div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-home">
+    <details class="mod">
+      <summary><span class="letter">H·S</span><h2>סביבת הבית ובטיחות</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub">מתחילים בתצפית בכניסה, ואחר כך, ברשות המטופל/ת, עוברים יחד בחדרים שבשימוש. מסמנים רק ליקויים; „תקין” מסמן שהתחום נבדק. <span class="src">מקורות: <a class="cA" data-p="5"></a>, <a class="cA" data-p="9" data-t="טבלה 6"></a>, <a class="cF" data-p="10" data-t="טבלה 4"></a></span></p>
+
+        <h3>הבית והסביבה</h3>
+        <div class="grid">
+          <div class="field"><span class="legend">מצב הבית</span>
+            <div class="seg">
+              <label><input type="checkbox" name="interior" value="tidy"><span>מסודר ומטופח</span></label>
+              <label><input type="checkbox" name="interior" value="dirty"><span>לכלוך והזנחה</span></label>
+              <label><input type="checkbox" name="interior" value="hoard"><span>אגירת חפצים</span></label>
+              <label><input type="checkbox" name="interior" value="crowd"><span>צפיפות</span></label>
+            </div></div>
+          <div class="field"><span class="legend">תקשורת</span>
+            <div class="seg">
+              <label><input type="checkbox" name="comm" value="phone"><span>טלפון נייד זמין</span></label>
+              <label><input type="checkbox" name="comm" value="net"><span>אינטרנט</span></label>
+            </div></div>
+          <div class="field"><span class="legend">הגישה לבית והשכונה</span>
+            <div class="seg">
+              <label><input type="checkbox" name="access" value="entry"><span>כניסה לא נגישה</span></label>
+              <label><input type="checkbox" name="access" value="hood"><span>שכונה לא בטוחה</span></label>
+            </div></div>
+        </div>
+
+        <h3>בטיחות לפי תחומים</h3>
+        <div class="scale" id="safety"></div>
+
+        <div class="qrow">
+          <div class="q">נשק בבית</div>
+          <div class="seg">
+            <label><input type="radio" name="gun" value="none"><span>אין</span></label>
+            <label><input type="radio" name="gun" value="secured"><span>נשק מאובטח</span></label>
+            <label><input type="radio" name="gun" value="unsecured"><span>נשק לא מאובטח</span></label>
+          </div>
+        </div>
+        <p class="src">נשק מאובטח: מנעול הדק או כספת, ותחמושת בנפרד.</p>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-people">
+    <details class="mod">
+      <summary><span class="letter">O</span><h2>מטפלים ותמיכה חברתית</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub"><span class="src">מקורות: <a class="cA" data-p="3"></a>, <a class="cA" data-p="7" data-t="איור 1"></a>, <a class="cF" data-p="10" data-t="טבלה 4"></a></span></p>
+
+        <h3>המטפל/ת העיקרי/ת</h3>
+        <div class="grid">
+          <div class="field"><span class="legend">מי</span>
+            <div class="seg">
+              <label><input type="radio" name="cg" value="spouse"><span>בן/בת זוג</span></label>
+              <label><input type="radio" name="cg" value="child"><span>בן או בת</span></label>
+              <label><input type="radio" name="cg" value="family"><span>בן משפחה אחר</span></label>
+              <label><input type="radio" name="cg" value="paid"><span>מטפל/ת בשכר</span></label>
+              <label><input type="radio" name="cg" value="none"><span>אין מטפל/ת</span></label>
+            </div></div>
+          <div class="field cgdep"><span class="legend">שעות טיפול ביום</span>
+            <div class="seg">
+              <label><input type="radio" name="cgh" value="lt4"><span>עד 4</span></label>
+              <label><input type="radio" name="cgh" value="4-8"><span>4–8</span></label>
+              <label><input type="radio" name="cgh" value="8-16"><span>8–16</span></label>
+              <label><input type="radio" name="cgh" value="24"><span>מסביב לשעון</span></label>
+            </div></div>
+          <div class="field cgdep"><span class="legend">מסוגל/ת לטפל, פיזית ורגשית</span>
+            <div class="seg">
+              <label><input type="radio" name="cgcap" value="yes"><span>כן</span></label>
+              <label><input type="radio" name="cgcap" value="partly"><span>חלקית</span></label>
+              <label><input type="radio" name="cgcap" value="no"><span>לא</span></label>
+            </div></div>
+          <div class="field cgdep"><span class="legend">עומס על המטפל/ת</span>
+            <div class="seg">
+              <label><input type="checkbox" name="cgload" value="stress"><span>סימני מתח ושחיקה</span></label>
+              <label><input type="checkbox" name="cgload" value="respite"><span>זקוק/ה להפוגה</span></label>
+            </div></div>
+        </div>
+
+        <h3>תמיכה חברתית</h3>
+        <div class="seg">
+          <label><input type="checkbox" name="social" value="regular"><span>קשר קבוע עם משפחה או חברים</span></label>
+          <label><input type="checkbox" name="social" value="community"><span>קשר עם קהילה או מרכז יום</span></label>
+          <label><input type="checkbox" name="social" value="isolated"><span>בדידות או בידוד חברתי</span></label>
+        </div>
+
+        <h3>חשש לפגיעה</h3>
+        <div class="seg danger">
+          <label><input type="checkbox" name="abuse" value="abuse"><span>חשש להתעללות</span></label>
+          <label><input type="checkbox" name="abuse" value="neglect"><span>חשש להזנחה על ידי המטפלים</span></label>
+          <label><input type="checkbox" name="abuse" value="self"><span>הזנחה עצמית</span></label>
+        </div>
+        <p class="src">חובת הדיווח על פגיעה בחסר ישע (חוק העונשין, סעיף 368ד) <span class="gk">ידע כללי</span></p>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-meds">
+    <details class="mod">
+      <summary><span class="letter">M</span><h2>תרופות</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub">מבקשים לראות היכן שמורות התרופות, ופורשים את כולן, כולל תרופות ללא מרשם ותוספים. משווים לרשימה שבתיק ובודקים אינטראקציות. <span class="src">מקורות: <a class="cA" data-p="4"></a>, <a class="cA" data-p="8" data-t="איור 1"></a></span></p>
+        <div class="qrow">
+          <div class="q">מספר התרופות הקבועות<span class="hint">כולל תרופות ללא מרשם ותוספים</span></div>
+          <div class="inline">
+            <button type="button" class="step" data-step="-1" aria-label="פחות">−</button>
+            <input type="number" id="medN" name="medN" min="0" max="40" inputmode="numeric" style="max-width:80px; text-align:center">
+            <button type="button" class="step" data-step="1" aria-label="יותר">+</button>
+          </div>
+        </div>
+        <div class="qrow">
+          <div class="q">ממצאים</div>
+          <div class="seg">
+            <label><input type="checkbox" name="medIss" value="adh"><span>היענות חלקית</span></label>
+            <label><input type="checkbox" name="medIss" value="org"><span>התרופות לא מאורגנות</span></label>
+            <label><input type="checkbox" name="medIss" value="multi"><span>כמה רופאים רושמים</span></label>
+            <label><input type="checkbox" name="medIss" value="otc"><span>תרופות ללא מרשם או תוספים שאינם ברשימה</span></label>
+            <label><input type="checkbox" name="medIss" value="old"><span>מלאי תרופות ישנות או פגות תוקף</span></label>
+            <label><input type="checkbox" name="medIss" value="disc"><span>אי-התאמה לרשימה שבתיק</span></label>
+          </div>
+        </div>
+        <div class="field cond" id="disc-box" style="margin-top:8px">
+          <label class="legend" for="medDisc">אי-ההתאמות שנמצאו</label>
+          <input type="text" id="medDisc" name="medDisc" placeholder="בקצרה">
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-exam">
+    <details class="mod">
+      <summary><span class="letter">E</span><h2>בדיקה</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub">מודדים סימנים חיוניים ובודקים כשהמטופל/ת עדיין יושב/ת, ורק אחר כך מבקשים לקום וללכת. <span class="src">מקורות: <a class="cA" data-p="5"></a>, <a class="cA" data-p="8" data-t="איור 1"></a>, <a class="cA" data-p="11" data-t="eFigure A"></a></span></p>
+
+        <h3>סימנים חיוניים</h3>
+        <div class="grid vit">
+          <div class="field"><span class="legend">לחץ דם (mmHg)</span>
+            <div class="inline"><input type="number" id="sbp" name="sbp" min="50" max="260" inputmode="numeric" aria-label="סיסטולי" placeholder="סיסטולי"><span>/</span><input type="number" id="dbp" name="dbp" min="20" max="160" inputmode="numeric" aria-label="דיאסטולי" placeholder="דיאסטולי"></div></div>
+          <div class="field"><label class="legend" for="hr">דופק (לדקה)</label><input type="number" id="hr" name="hr" min="20" max="250" inputmode="numeric"></div>
+          <div class="field"><label class="legend" for="rr">נשימות (לדקה)</label><input type="number" id="rr" name="rr" min="4" max="60" inputmode="numeric"></div>
+          <div class="field"><label class="legend" for="spo2">סטורציה (%)</label><input type="number" id="spo2" name="spo2" min="50" max="100" inputmode="numeric"></div>
+          <div class="field"><label class="legend" for="temp">חום (°C)</label><input type="number" id="temp" name="temp" min="30" max="43" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label class="legend" for="glu">סוכר (mg/dL)</label><input type="number" id="glu" name="glu" min="10" max="900" inputmode="numeric"></div>
+        </div>
+        <p class="src">ערכי סף לדגל דחוף: סטורציה מתחת ל-92%, לחץ סיסטולי מתחת ל-90 או מעל 180, דופק מתחת ל-50 או מעל 120, סוכר מתחת ל-70. <span class="gk">ידע כללי</span></p>
+
+        <h3>משקל</h3>
+        <div class="grid">
+          <div class="field"><label class="legend" for="wt">משקל (ק"ג)</label><input type="number" id="wt" name="wt" min="20" max="250" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label class="legend" for="ht">גובה (ס"מ)</label><input type="number" id="ht" name="ht" min="100" max="220" inputmode="numeric"></div>
+          <div class="field"><span class="legend">BMI</span><div class="bmi" id="bmi">—</div><span class="hint" id="bmi-hint"></span></div>
+        </div>
+        <div class="qrow" style="margin-top:8px"><div class="q">ירידה לא מכוונת במשקל</div>
+          <div class="seg"><label><input type="radio" name="wl" value="yes"><span>כן</span></label><label><input type="radio" name="wl" value="no"><span>לא</span></label></div></div>
+        <div class="cond" id="wl-box">
+          <div class="grid">
+            <div class="field"><label class="legend" for="wlkg">כמה ק"ג</label><input type="number" id="wlkg" name="wlkg" min="0.5" max="60" step="0.5" inputmode="decimal"></div>
+            <div class="field"><span class="legend">בתוך</span>
+              <div class="seg">
+                <label><input type="radio" name="wlper" value="1"><span>חודש</span></label>
+                <label><input type="radio" name="wlper" value="3"><span>3 חודשים</span></label>
+                <label><input type="radio" name="wlper" value="6"><span>חצי שנה</span></label>
+                <label><input type="radio" name="wlper" value="12"><span>שנה</span></label>
+              </div></div>
+          </div>
+        </div>
+
+        <h3>מצב כללי</h3>
+        <div class="seg">
+          <label><input type="radio" name="gen" value="good"><span>טוב</span></label>
+          <label><input type="radio" name="gen" value="fair"><span>סביר</span></label>
+          <label><input type="radio" name="gen" value="poor"><span>ירוד</span></label>
+        </div>
+
+        <h3>בדיקה גופנית</h3>
+        <p class="sub">משלימים במקום ___. רק שורות שהושלמו נכנסות לסיכום.</p>
+        <textarea id="examtpl" rows="11" spellcheck="false"></textarea>
+        <div class="soap-actions"><button type="button" id="examreset">איפוס התבנית</button></div>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-goals">
+    <details class="mod">
+      <summary><span class="letter">S</span><h2>מטרות טיפול, מסמכים ורוחניות</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub">כדאי לחזור לשיחה על מטרות הטיפול בכל שינוי משמעותי במצב, גם אם כבר התקיימה במרפאה או באשפוז. <span class="src">מקורות: <a class="cA" data-p="3"></a>, <a class="cA" data-p="6"></a>, <a class="cA" data-p="7" data-t="איור 1"></a>, <a class="cA" data-p="2" data-t="SORT"></a></span></p>
+
+        <div class="qrow"><div class="q">שיחה על מטרות הטיפול</div>
+          <div class="seg">
+            <label><input type="radio" name="gocd" value="now"><span>התקיימה בביקור</span></label>
+            <label><input type="radio" name="gocd" value="past"><span>התקיימה בעבר</span></label>
+            <label><input type="radio" name="gocd" value="none"><span>לא התקיימה</span></label>
+          </div></div>
+        <div class="qrow"><div class="q">מוקד הטיפול</div>
+          <div class="seg">
+            <label><input type="radio" name="focus" value="life"><span>הארכת חיים</span></label>
+            <label><input type="radio" name="focus" value="func"><span>שמירה על תפקוד</span></label>
+            <label><input type="radio" name="focus" value="comfort"><span>נוחות</span></label>
+          </div></div>
+        <div class="qrow"><div class="q">החייאה והנשמה</div>
+          <div class="seg" id="code">
+            <label><input type="checkbox" name="code" value="full"><span>החייאה מלאה</span></label>
+            <label><input type="checkbox" name="code" value="dnr"><span>לא להחיות</span></label>
+            <label><input type="checkbox" name="code" value="dni"><span>לא להנשים</span></label>
+            <label><input type="checkbox" name="code" value="na"><span>טרם נקבע</span></label>
+          </div></div>
+        <div class="cond" id="eol-box">
+          <div class="qrow"><div class="q">מקום פטירה מועדף</div>
+            <div class="seg">
+              <label><input type="radio" name="pod" value="home"><span>בבית</span></label>
+              <label><input type="radio" name="pod" value="hosp"><span>בבית חולים</span></label>
+              <label><input type="radio" name="pod" value="hospice"><span>בהוספיס</span></label>
+              <label><input type="radio" name="pod" value="none"><span>לא נדון</span></label>
+            </div></div>
+        </div>
+
+        <h3>מסמכים <span class="gk">ידע כללי</span></h3>
+        <div class="qrow"><div class="q">הנחיות רפואיות מקדימות</div>
+          <div class="seg">
+            <label><input type="radio" name="ad" value="yes"><span>יש</span></label>
+            <label><input type="radio" name="ad" value="no"><span>אין</span></label>
+            <label><input type="radio" name="ad" value="unk"><span>לא ידוע</span></label>
+          </div></div>
+        <div class="qrow"><div class="q">ייפוי כוח מתמשך</div>
+          <div class="seg">
+            <label><input type="checkbox" name="lpa" value="med"><span>בעניינים רפואיים</span></label>
+            <label><input type="checkbox" name="lpa" value="fin"><span>בעניינים כלכליים</span></label>
+            <label><input type="checkbox" name="lpa" value="no"><span>אין</span></label>
+            <label><input type="checkbox" name="lpa" value="unk"><span>לא ידוע</span></label>
+          </div></div>
+        <div class="qrow"><div class="q">אפוטרופוס</div>
+          <div class="seg">
+            <label><input type="radio" name="guard" value="yes"><span>מונה</span></label>
+            <label><input type="radio" name="guard" value="no"><span>לא מונה</span></label>
+          </div></div>
+        <div class="qrow"><div class="q">עותק בתיק הרפואי</div>
+          <div class="seg">
+            <label><input type="radio" name="docs" value="yes"><span>יש</span></label>
+            <label><input type="radio" name="docs" value="req"><span>התבקש להביא</span></label>
+          </div></div>
+        <p class="src">הנחיות מקדימות: טופס משרד הבריאות. ייפוי כוח מתמשך: נערך בפני עורך דין שהוסמך לכך ומופקד אצל האפוטרופוס הכללי.</p>
+
+        <h3>רוחניות ותרבות</h3>
+        <div class="qrow"><div class="q">תמיכה דתית או קהילתית</div>
+          <div class="seg">
+            <label><input type="radio" name="spir" value="yes"><span>יש</span></label>
+            <label><input type="radio" name="spir" value="no"><span>אין</span></label>
+          </div></div>
+        <details class="acc" style="margin-top:8px">
+          <summary>שאלות מנחות (FICA)</summary>
+          <ul>
+            <li><b>אמונה:</b> האם יש לך אמונה או ערכים שנותנים משמעות לחייך?</li>
+            <li><b>חשיבות:</b> עד כמה הם חשובים לך, והאם הם משפיעים על החלטות בנוגע לטיפול?</li>
+            <li><b>קהילה:</b> האם יש קהילה שתומכת בך?</li>
+            <li><b>התייחסות בטיפול:</b> איך היית רוצה שנתחשב בזה בטיפול?</li>
+          </ul>
+          <input type="text" name="spirnote" placeholder="הערה קצרה (לא חובה)">
+        </details>
+      </div>
+    </details>
+  </section>
+
+  <section id="sec-svc">
+    <details class="mod">
+      <summary><span class="letter">S</span><h2>שירותים</h2><span class="rec">מומלץ לביקור זה</span><span class="chev">▾</span></summary>
+      <div class="mod-body">
+        <p class="sub">לכל שירות: „קיים” או „להמליץ”. שירות שהממצאים מצביעים עליו מסומן „עולה מהממצאים”. <span class="src">צוות רב-מקצועי: <a class="cA" data-p="6"></a>; רשימת שירותים: <a class="cA" data-p="8" data-t="איור 1"></a>. שירותי הרווחה בישראל: <span class="gk">ידע כללי</span></span></p>
+        <div class="scale" id="svc"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== note ===== -->
+  <section id="sec-soap" class="card">
+    <h2>סיכום רפואי</h2>
+    <p class="sub">נבנה אוטומטית מהנתונים. אפשר לערוך לפני ההעתקה. סעיפים ריקים אינם מופיעים.</p>
+
+    <div class="grid" style="margin-bottom:14px">
+      <div class="field">
+        <span class="legend">מעקב</span>
+        <div class="seg">
+          <label><input type="radio" name="fuwhere" value="home"><span>ביקור בית חוזר</span></label>
+          <label><input type="radio" name="fuwhere" value="clinic"><span>במרפאה</span></label>
+          <label><input type="radio" name="fuwhere" value="phone"><span>טלפוני</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="legend">מועד</span>
+        <div class="seg">
+          <label><input type="radio" name="fuwhen" value="1w"><span>שבוע</span></label>
+          <label><input type="radio" name="fuwhen" value="1m"><span>חודש</span></label>
+          <label><input type="radio" name="fuwhen" value="3m"><span>3 חודשים</span></label>
+          <label><input type="radio" name="fuwhen" value="prn"><span>לפי הצורך</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="legend">משפחה</span>
+        <div class="seg">
+          <label><input type="checkbox" name="famfu" value="update"><span>עדכון המשפחה</span></label>
+          <label><input type="checkbox" name="famfu" value="meeting"><span>תיאום מפגש משפחתי</span></label>
+        </div>
+      </div>
+    </div>
+
+    <label class="legend" for="note">טקסט לרשומה</label>
+    <textarea id="note" rows="18" spellcheck="false"></textarea>
+    <div class="soap-actions">
+      <button type="button" class="primary" id="copy">העתק</button>
+      <button type="button" id="rebuild">בנה מחדש מהנתונים</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p><b>מקורות:</b>
+    Rerucha CM, Salinas R Jr, Shook J, Duane M. House Calls. <i>Am Fam Physician</i> 2020;102(4):211-220 (<a id="lnk-aafp" href="#">PDF</a>);
+    Fang W, Phung H, Olley R, Lee P. The Major Domains of Comprehensive Assessment Tools for Older Adults Requiring Home-Based Aged Care Services: A Systematic Review. <i>Healthcare</i> 2024;12:2468 (<a id="lnk-fang" href="#">PDF</a>).
+  </p>
+  <p>פריטים המסומנים <span class="gk">ידע כללי</span> אינם מופיעים במקורות ומבוססים על הנוהג בישראל. הכלי מיועד לסייע לשיקול הדעת הקליני ואינו מחליף אותו.</p>
+</footer>
+
+<script>
+/* ================= config ================= */
+const PDF_AAFP = 'homevisit-afp-2020.pdf';
+const PDF_FANG = 'homevisit-review-2024.pdf';
+
+/* ================= helpers ================= */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const vals = n => $$(`[name="${n}"]:checked`).map(e => e.value);
+const has  = (n, v) => vals(n).includes(v);
+function val(n){
+  const el = $(`[name="${n}"]`);
+  if (!el) return '';
+  if (el.type === 'radio' || el.type === 'checkbox'){ const c = $(`[name="${n}"]:checked`); return c ? c.value : ''; }
+  return el.value.trim();
+}
+function num(n){ const v = parseFloat(val(n)); return isNaN(v) ? null : v; }
+const sex = () => val('sex');
+/* gender helper: m, f, neutral (used while sex is unset) */
+function g(m, f, n){ const s = sex(); return s === 'f' ? f : s === 'm' ? m : (n || m + '/' + f); }
+function listHe(a){ if (a.length < 2) return a.join(''); return a.slice(0, -1).join(', ') + ' ו' + a[a.length - 1]; }
+
+/* citation links */
+function initCites(){
+  $$('a.cA').forEach(a => { a.href = `${PDF_AAFP}#page=${a.dataset.p}`; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = `AAFP 2020${a.dataset.t ? ', ' + a.dataset.t : ''}, עמ' ${a.dataset.p}`; });
+  $$('a.cF').forEach(a => { a.href = `${PDF_FANG}#page=${a.dataset.p}`; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = `Fang 2024${a.dataset.t ? ', ' + a.dataset.t : ''}, עמ' ${a.dataset.p}`; });
+  $('#lnk-aafp').href = PDF_AAFP; $('#lnk-fang').href = PDF_FANG;
+}
+
+/* gendered static labels: data-g="m|f|neutral" */
+function gt(t){ return t.replace(/\{([^|}]*)\|([^}]*)\}/g, (_, m, f) => g(m, f)); }
+function applyGender(){
+  $$('[data-g]').forEach(el => { const [m, f, n] = el.dataset.g.split('|'); el.textContent = g(m, f, n); });
+  $$('[data-t]').forEach(el => { el.textContent = gt(el.dataset.t); });
+}
+
+/* ================= visit type → modules ================= */
+const ALL_MODS = ['sec-imp','sec-cog','sec-nut','sec-home','sec-people','sec-meds','sec-exam','sec-goals','sec-svc'];
+const TYPE_MAP = {
+  cga:     ALL_MODS,
+  hosp:    ['sec-meds','sec-home','sec-exam','sec-svc'],
+  chronic: ['sec-exam','sec-meds','sec-people'],
+  falls:   ['sec-imp','sec-home','sec-meds'],
+  cog:     ['sec-cog','sec-imp','sec-people','sec-goals'],
+  meds:    ['sec-meds'],
+  safety:  ['sec-home','sec-people'],
+  family:  ['sec-people','sec-goals','sec-svc'],
+  eol:     ['sec-goals','sec-people','sec-exam','sec-svc'],
+  acute:   ['sec-exam']
+};
+const TYPE_LABEL = {
+  cga:'הערכה גריאטרית מקיפה', hosp:'מעקב אחרי אשפוז', chronic:'מעקב מחלה כרונית', falls:'נפילות ושבריריות',
+  cog:'ירידה קוגניטיבית', meds:'ריבוי תרופות', safety:'חשש לבטיחות או להזנחה', family:'תיאום טיפול או מפגש משפחתי',
+  eol:'סוף החיים וטיפול תומך', acute:'בעיה חריפה'
+};
+let prevTypes = [];
+function onTypeChange(){
+  const now = vals('vtype');
+  const rec = new Set(now.flatMap(t => TYPE_MAP[t] || []));
+  ALL_MODS.forEach(id => { const d = $(`#${id} details.mod`); d.classList.toggle('recommended', rec.has(id)); });
+  // open modules only for newly added types; never auto-close what the user opened
+  now.filter(t => !prevTypes.includes(t)).forEach(t => (TYPE_MAP[t] || []).forEach(id => $(`#${id} details.mod`).open = true));
+  prevTypes = now;
+  $('#acute-box').classList.toggle('on', has('vtype', 'acute'));
+}
+
+/* "alone" is exclusive */
+function onLiveChange(e){
+  const t = e.target; if (t.name !== 'live' || !t.checked) return;
+  if (t.value === 'alone') $$('[name="live"]').forEach(c => { if (c !== t) c.checked = false; });
+  else { const a = $('[name="live"][value="alone"]'); if (a) a.checked = false; }
+}
+
+/* ================= flags engine =================
+   Each rule returns [] or an array of
+   {lvl:'r'|'o'|'b', t: panel text, sec: section id, a: assessment line?, p: plan line?} */
+const RULES = [];
+
+const ACUTE = {
+  acs:'כאב חזה או חשד לתסמונת כלילית חריפה', delir:'אי-שקט או דליריום', allergy:'תגובה אלרגית',
+  dehyd:'התייבשות', dysp:'קוצר נשימה', hf:'אי-ספיקת לב לא מאוזנת', hypo:'היפוגליקמיה',
+  pain:'כאב לא נשלט', seiz:'פרכוס', trauma:'חבלה'
+};
+RULES.push(() => !has('vtype','acute') ? [] : vals('acute').map(k => ({
+  lvl:'r', sec:'sec-type',
+  t:`בעיה חריפה: ${ACUTE[k]}. נדרשים טיפול מיידי או הפניה דחופה.`,
+  a:`${ACUTE[k]} (בעיה חריפה)`,
+  p:`${ACUTE[k]}: טיפול מיידי בבית או הפניה דחופה למיון, לפי שיקול קליני.`
+})));
+
+function computeFlags(){ return RULES.flatMap(r => { try { return r() || []; } catch(e){ console.error(e); return []; } }); }
+
+function renderFlags(flags){
+  const c = {r:0, o:0, b:0}; flags.forEach(f => c[f.lvl]++);
+  const lab = {r:'דחוף', o:'לתכנית', b:'לידיעה'};
+  ['r','o','b'].forEach(k => { const el = $(`#cnt-${k}`); el.textContent = `${c[k]} ${lab[k]}`; el.classList.toggle('zero', !c[k]); });
+  const order = {r:0, o:1, b:2};
+  const list = $('#flaglist');
+  list.innerHTML = flags.length
+    ? flags.slice().sort((a,b) => order[a.lvl] - order[b.lvl]).map(f => `<a href="#${f.sec}"><span class="dot ${f.lvl}"></span><span>${f.t}</span></a>`).join('')
+    : '<div class="none">אין דגלים עדיין. הם יופיעו כאן תוך כדי מילוי.</div>';
+  // mnemonic tile dots
+  $$('.mnemo a').forEach(a => {
+    const secs = a.dataset.sec.split(' ');
+    const fs = flags.filter(f => secs.includes(f.sec));
+    a.classList.toggle('f-r', fs.some(f => f.lvl === 'r'));
+    a.classList.toggle('f-o', !fs.some(f => f.lvl === 'r') && fs.some(f => f.lvl === 'o'));
+  });
+}
+
+/* ================= note engine =================
+   Modules push functions returning arrays of lines. */
+const NOTE = { S: [], O: [] };
+
+const LIVE = {alone:'לבד', spouse:'עם בן/בת הזוג', family:'עם בני משפחה', carer:'עם מטפל/ת'};
+const PRESENT = {patient:null, spouse:'בן/בת הזוג', family:'בן/בת משפחה', carer:'מטפל/ת', staff:'איש צוות נוסף'};
+
+NOTE.S.push(() => {
+  const L = [];
+  const cc = val('cc'); if (cc) L.push(`סיבת הביקור: ${cc}`);
+  const lv = vals('live').map(v => LIVE[v]);
+  if (lv.length) L.push(`${g('מתגורר','מתגוררת','מתגורר/ת')} ${listHe(lv)}.`);
+  const h = [];
+  const house = val('house'); if (house) h.push({apt:'דירה', private:'בית פרטי', assisted:'דיור מוגן'}[house]);
+  const fl = num('floor'); if (fl !== null) h.push(fl === 0 ? 'קומת קרקע' : `קומה ${fl}`);
+  const lift = val('lift'); if (lift) h.push(lift === 'yes' ? 'עם מעלית' : 'ללא מעלית');
+  const st = vals('stairs'); if (st.length) h.push('מדרגות ' + listHe(st.map(s => s === 'entry' ? 'בכניסה' : 'בתוך הבית')));
+  if (h.length) L.push(`מגורים: ${h.join(', ')}.`);
+  return L;
+});
+
+const FU_WHERE = {home:'ביקור בית חוזר', clinic:'ביקור במרפאה', phone:'מעקב טלפוני'};
+const FU_WHEN  = {'1w':'בעוד שבוע', '1m':'בעוד חודש', '3m':'בעוד 3 חודשים', prn:'לפי הצורך'};
+
+function todayHe(){ const d = new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+
+function buildNote(flags){
+  const out = [];
+  let head = `ביקור בית – ${todayHe()}`;
+  out.push(head);
+  const who = [];
+  const s = sex(), age = num('age');
+  if (s || age !== null) who.push(`${g('מטופל','מטופלת','מטופל/ת')}${age !== null ? ' ' + g('בן','בת','בן/בת') + ' ' + age : ''}`);
+  const types = vals('vtype').map(t => TYPE_LABEL[t]);
+  if (types.length) who.push(`סוג הביקור: ${types.join('; ')}`);
+  if (who.length) out.push(who.join('. ') + '.');
+  const pr = vals('present');
+  if (pr.length) out.push(`נוכחים: ${pr.map(p => p === 'patient' ? g('המטופל','המטופלת','המטופל/ת') : PRESENT[p]).join(', ')}.`);
+
+  const sec = (title, lines) => { if (lines.length){ out.push('', title, ...lines); } };
+  sec('S – סובייקטיבי', NOTE.S.flatMap(f => f() || []));
+  sec('O – אובייקטיבי', NOTE.O.flatMap(f => f() || []));
+
+  const order = {r:0, o:1, b:2};
+  const fs = flags.slice().sort((a,b) => order[a.lvl] - order[b.lvl]);
+  sec('A – הערכה', fs.filter(f => f.a).map(f => `- ${f.lvl === 'r' ? 'דחוף: ' : ''}${f.a}`));
+
+  const P = fs.filter(f => f.p).map(f => `- ${f.p}`);
+  const w = val('fuwhere'), n = val('fuwhen');
+  if (w || n) P.push(`- מעקב: ${[FU_WHERE[w], FU_WHEN[n]].filter(Boolean).join(' ')}.`);
+  const fam = vals('famfu');
+  if (fam.length) P.push(`- משפחה: ${fam.map(x => x === 'update' ? 'עדכון המשפחה' : 'תיאום מפגש משפחתי').join(', ')}.`);
+  PLAN_EXTRA.forEach(f => P.push(...f()));
+  sec('P – תכנית', P);
+
+  return out.join('\n');
+}
+
+/* ================= step 2: function, cognition, nutrition ================= */
+const UPDATERS = [];
+
+function renderScale(id, name, items, pts){
+  $('#' + id).innerHTML = items.map((it, i) => `
+    <div class="qrow"><div class="q"><span data-t="${it.q}">${gt(it.q)}</span>${it.h ? `<span class="hint">${it.h}</span>` : ''}</div>
+      <div class="seg">${it.o.map((o, j) => `<label><input type="radio" name="${name}${i}" value="${j}" data-s="${o[0]}"><span data-t="${o[1]}">${gt(o[1])}</span>${pts ? `<em>${o[0]}</em>` : ''}</label>`).join('')}</div>
+    </div>`).join('');
+}
+function scaleState(name, items){
+  let s = 0, n = 0; const pick = [];
+  items.forEach((it, i) => { const c = $(`[name="${name}${i}"]:checked`); if (c){ n++; s += +c.dataset.s; pick[i] = +c.value; } else pick[i] = null; });
+  return { s, n, total: items.length, done: n === items.length, pick };
+}
+function setScore(id, html, cls){ const el = $('#' + id); el.innerHTML = html; el.className = 'score' + (cls ? ' ' + cls : ''); }
+
+/* --- Barthel --- */
+const BARTHEL = [
+  { q:'אכילה', k:'אכילה', o:[[10,'{עצמאי|עצמאית}'],[5,'{זקוק|זקוקה} לעזרה בחיתוך או במריחה'],[0,'{תלוי|תלויה}']] },
+  { q:'רחצה', k:'רחצה', o:[[5,'{עצמאי|עצמאית}'],[0,'{זקוק|זקוקה} לעזרה']] },
+  { q:'היגיינה אישית', h:'פנים, שיער, שיניים, גילוח', k:'היגיינה אישית', o:[[5,'{עצמאי|עצמאית}'],[0,'{זקוק|זקוקה} לעזרה']] },
+  { q:'הלבשה', k:'הלבשה', o:[[10,'{עצמאי|עצמאית}, כולל כפתורים ורוכסן'],[5,'{זקוק|זקוקה} לעזרה, {מבצע|מבצעת} כמחצית לבד'],[0,'{תלוי|תלויה}']] },
+  { q:'שליטה על צואה', k:'שליטה על צואה', o:[[10,'{שולט|שולטת}'],[5,'דליפה מזדמנת'],[0,'אי-שליטה']] },
+  { q:'שליטה על שתן', k:'שליטה על שתן', o:[[10,'{שולט|שולטת}'],[5,'דליפה מזדמנת'],[0,'אי-שליטה, או קטטר ללא טיפול עצמי']] },
+  { q:'שימוש בשירותים', k:'שימוש בשירותים', o:[[10,'{עצמאי|עצמאית}'],[5,'{זקוק|זקוקה} לעזרה חלקית'],[0,'{תלוי|תלויה}']] },
+  { q:'מעבר ממיטה לכיסא', k:'מעברים', o:[[15,'{עצמאי|עצמאית}'],[10,'עזרה קלה או השגחה'],[5,'עזרה רבה, {יכול|יכולה} לשבת'],[0,'{אינו מסוגל|אינה מסוגלת}']] },
+  { q:'ניידות במישור', h:'מרחק של 50 מטר ומעלה', k:'ניידות', o:[[15,'{הולך|הולכת} {עצמאית|עצמאית}, גם עם אביזר'],[10,'{הולך|הולכת} בעזרת אדם אחד'],[5,'{עצמאי|עצמאית} בכיסא גלגלים'],[0,'{מרותק|מרותקת} או פחות מ-50 מטר']] },
+  { q:'מדרגות', k:'מדרגות', o:[[10,'{עצמאי|עצמאית}'],[5,'{זקוק|זקוקה} לעזרה'],[0,'{אינו מסוגל|אינה מסוגלת}']] }
+];
+function barthelInterp(s){ return s === 100 ? g('עצמאי','עצמאית','עצמאות מלאה') : s >= 91 ? 'תלות קלה' : s >= 61 ? 'תלות בינונית' : s >= 21 ? 'תלות קשה' : 'תלות מלאה'; }
+function barthel(){
+  const st = scaleState('bar', BARTHEL);
+  st.diff = BARTHEL.filter((it, i) => st.pick[i] !== null && st.pick[i] > 0).map(it => it.k);
+  return st;
+}
+
+/* --- Lawton --- */
+const LAWTON = [
+  { q:'שימוש בטלפון', k:'שימוש בטלפון', o:[[1,'{עצמאי|עצמאית}'],[1,'{עונה|עונה}, {מחייג|מחייגת} רק למספרים מוכרים'],[0,'{אינו משתמש|אינה משתמשת}']] },
+  { q:'קניות', k:'קניות', o:[[1,'{עצמאי|עצמאית} בכל הקניות'],[0,'קניות קטנות בלבד או בליווי'],[0,'{אינו קונה|אינה קונה}']] },
+  { q:'הכנת אוכל', k:'הכנת אוכל', o:[[1,'{מתכנן ומכין|מתכננת ומכינה} ארוחות לבד'],[0,'{מחמם|מחממת} או {מכין|מכינה} עם עזרה'],[0,'{זקוק|זקוקה} שיכינו ויגישו']] },
+  { q:'עבודות בית', k:'עבודות בית', o:[[1,'{עצמאי|עצמאית} או עם עזרה מזדמנת'],[1,'משימות קלות בלבד'],[0,'{אינו משתתף|אינה משתתפת} או {זקוק|זקוקה} לעזרה בכול']] },
+  { q:'כביסה', k:'כביסה', o:[[1,'כל הכביסה לבד'],[1,'פריטים קטנים בלבד'],[0,'אחרים מכבסים']] },
+  { q:'תחבורה', k:'תחבורה', o:[[1,'{נוסע|נוסעת} לבד בתחבורה ציבורית, במונית או ברכב'],[1,'תחבורה ציבורית בליווי'],[0,'רק במונית או ברכב בליווי, או {אינו נוסע|אינה נוסעת}']] },
+  { q:'נטילת תרופות', k:'נטילת תרופות', o:[[1,'{אחראי|אחראית} למינון ולשעות'],[0,'{נוטל|נוטלת} אם מכינים מראש'],[0,'{אינו מסוגל|אינה מסוגלת}']] },
+  { q:'ניהול כספים', k:'ניהול כספים', o:[[1,'{עצמאי|עצמאית}'],[1,'ענייני יום-יום לבד, עזרה בבנק'],[0,'{אינו מסוגל|אינה מסוגלת}']] }
+];
+function lawton(){
+  const st = scaleState('law', LAWTON);
+  st.lost = LAWTON.filter((it, i) => st.pick[i] !== null && +$(`[name="law${i}"]:checked`).dataset.s === 0).map(it => it.k);
+  st.lostKeys = LAWTON.map((it, i) => (st.pick[i] !== null && +$(`[name="law${i}"]:checked`).dataset.s === 0) ? i : -1).filter(i => i >= 0);
+  return st;
+}
+
+/* --- GDS-15: o[0] = depressive point --- */
+const Y = [[1,'כן'],[0,'לא']], N = [[0,'כן'],[1,'לא']];
+const GDS = [
+  { q:'האם באופן כללי {אתה|את} מרוצה מהחיים שלך?', o:N },
+  { q:'האם ויתרת על רבות מהפעילויות ומתחומי העניין שלך?', o:Y },
+  { q:'האם {אתה מרגיש|את מרגישה} שהחיים שלך ריקים?', o:Y },
+  { q:'האם {אתה משתעמם|את משתעממת} לעיתים קרובות?', o:Y },
+  { q:'האם רוב הזמן {אתה|את} במצב רוח טוב?', o:N },
+  { q:'האם {אתה חושש|את חוששת} שמשהו רע עומד לקרות לך?', o:Y },
+  { q:'האם רוב הזמן {אתה מרגיש מאושר|את מרגישה מאושרת}?', o:N },
+  { q:'האם {אתה מרגיש חסר אונים|את מרגישה חסרת אונים} לעיתים קרובות?', o:Y },
+  { q:'האם {אתה מעדיף|את מעדיפה} להישאר בבית במקום לצאת ולעשות דברים חדשים?', o:Y },
+  { q:'האם {אתה מרגיש|את מרגישה} שיש לך יותר בעיות זיכרון מלרוב האנשים?', o:Y },
+  { q:'האם {אתה חושב|את חושבת} שזה נפלא להיות בחיים עכשיו?', o:N },
+  { q:'האם {אתה מרגיש חסר ערך|את מרגישה חסרת ערך} במצבך הנוכחי?', o:Y },
+  { q:'האם {אתה מרגיש מלא אנרגיה|את מרגישה מלאת אנרגיה}?', o:N },
+  { q:'האם {אתה מרגיש|את מרגישה} שמצבך חסר תקווה?', o:Y },
+  { q:'האם {אתה חושב|את חושבת} שמצבם של רוב האנשים טוב משלך?', o:Y }
+];
+function gdsInterp(s){ return s >= 10 ? 'סבירות גבוהה לדיכאון' : s >= 5 ? 'חשד לדיכאון' : 'תקין'; }
+
+/* --- MNA-SF --- */
+const MNA = [
+  { q:'ירידה בכמות האוכל ב-3 החודשים האחרונים', h:'בגלל תיאבון, עיכול, לעיסה או בליעה', o:[[0,'ירידה חמורה'],[1,'ירידה מתונה'],[2,'ללא ירידה']] },
+  { q:'ירידה במשקל ב-3 החודשים האחרונים', o:[[0,'מעל 3 ק"ג'],[1,'לא ידוע'],[2,'1–3 ק"ג'],[3,'ללא ירידה']] },
+  { q:'ניידות', o:[[0,'{מרותק|מרותקת} למיטה או לכיסא'],[1,'{קם|קמה} מהמיטה, אך {אינו יוצא|אינה יוצאת} מהבית'],[2,'{יוצא|יוצאת} מהבית']] },
+  { q:'מחלה חריפה או מצוקה נפשית ב-3 החודשים האחרונים', o:[[0,'כן'],[2,'לא']] },
+  { q:'בעיה נוירו-פסיכולוגית', o:[[0,'דמנציה קשה או דיכאון'],[1,'דמנציה קלה'],[2,'אין']] },
+  { q:'BMI', h:'אם אין BMI: היקף שוק', o:[[0,'מתחת ל-19'],[1,'19 עד פחות מ-21'],[2,'21 עד פחות מ-23'],[3,'23 ומעלה'],[0,'שוק מתחת ל-31 ס"מ'],[3,'שוק 31 ס"מ ומעלה']] }
+];
+function mnaInterp(s){ return s >= 12 ? 'מצב תזונתי תקין' : s >= 8 ? 'בסיכון לתת-תזונה' : 'תת-תזונה'; }
+
+/* --- Mini-Cog --- */
+function miniCog(){
+  const r = val('mcRecall'), c = val('mcClock');
+  if (r === '' || c === '') return null;
+  const rec = +r;
+  if (c === 'na'){
+    if (rec === 0) return { rec, clock:'לא בוצע', total:null, pos:true };
+    if (rec === 3) return { rec, clock:'לא בוצע', total:null, pos:false };
+    return { rec, clock:'לא בוצע', total:null, pos:null };
+  }
+  const total = rec + (+c);
+  return { rec, clock: c === '2' ? 'תקין' : 'לא תקין', total, pos: total < 3 };
+}
+function cogPositive(){
+  const mc = miniCog(), mm = num('mmse'), mo = num('moca');
+  return (mc && mc.pos === true) || (mm !== null && mm < 24) || (mo !== null && mo < 26);
+}
+
+/* --- falls / STEADI --- */
+const CST_NORM = { m:[[60,14],[65,12],[70,12],[75,11],[80,10],[85,8],[90,7]], f:[[60,12],[65,11],[70,10],[75,10],[80,9],[85,8],[90,4]] };
+function cstEval(){
+  const c = num('cst'), a = num('age'), s = sex();
+  if (c === null) return null;
+  if (a === null || !s) return { c, t:null, below:null, why:'נדרשים גיל ומין לפרשנות' };
+  if (a < 60) return { c, t:null, below:null, why:'אין נורמה מתחת לגיל 60' };
+  let t = null; CST_NORM[s].forEach(([ag, v]) => { if (a >= ag) t = v; });
+  return { c, t, below: c < t };
+}
+const BAL = ['לא החזיק/ה אף שלב','רגליים צמודות','חצי-טנדם','טנדם','עמידה על רגל אחת'];
+function fallRisk(){
+  const why = [];
+  if (val('fall') === 'yes') why.push('נפילה בשנה האחרונה');
+  const tug = num('tug'); if (tug !== null && tug >= 12) why.push(`TUG ${tug} שנ'`);
+  const b = val('bal'); if (b !== '' && +b < 3) why.push('אי-החזקת טנדם');
+  const cs = cstEval(); if (cs && cs.below) why.push('קימה מכיסא מתחת לנורמה');
+  return why;
+}
+
+/* --- pain chips --- */
+$('#pain').innerHTML = Array.from({length:11}, (_, i) => `<label><input type="radio" name="pain" value="${i}"><span>${i}</span></label>`).join('');
+
+renderScale('barthel', 'bar', BARTHEL, true);
+renderScale('lawton',  'law', LAWTON,  true);
+renderScale('gds',     'gds', GDS,     false);
+renderScale('mna',     'mna', MNA,     true);
+
+/* --- live display + conditional blocks --- */
+UPDATERS.push(() => {
+  const b = barthel();
+  setScore('barthel-score', b.n ? `Barthel: <b>${b.s}/100</b> ${b.done ? '– ' + barthelInterp(b.s) : `<span class="prog">(${b.n}/10 פריטים)</span>`}` : '',
+    b.done ? (b.s <= 90 ? 'o' : 'ok') : '');
+  const l = lawton();
+  setScore('lawton-score', l.n ? `Lawton: <b>${l.s}/8</b> ${l.done ? (l.lost.length ? '– ירידה ב: ' + l.lost.join(', ') : '– עצמאות מלאה') : `<span class="prog">(${l.n}/8 פריטים)</span>`}` : '',
+    l.done ? (l.lost.length ? 'o' : 'ok') : '');
+  const gd = scaleState('gds', GDS);
+  setScore('gds-score', gd.n ? `GDS-15: <b>${gd.s}/15</b> ${gd.done || gd.s >= 5 ? '– ' + gdsInterp(gd.s) : ''} ${gd.done ? '' : `<span class="prog">(${gd.n}/15 נענו)</span>`}` : '',
+    gd.s >= 5 ? 'o' : gd.done ? 'ok' : '');
+  const m = scaleState('mna', MNA);
+  setScore('mna-score', m.n ? `MNA-SF: <b>${m.s}/14</b> ${m.done ? '– ' + mnaInterp(m.s) : `<span class="prog">(${m.n}/6 פריטים)</span>`}` : '',
+    m.done ? (m.s <= 11 ? 'o' : 'ok') : '');
+  const mc = miniCog();
+  setScore('mc-score', mc ? (mc.total !== null ? `Mini-Cog: <b>${mc.total}/5</b> – ${mc.pos ? 'חיובי (חשד לליקוי קוגניטיבי)' : 'שלילי'}`
+      : `Mini-Cog: זכירה <b>${mc.rec}/3</b>, שעון לא בוצע – ${mc.pos === true ? 'חיובי' : mc.pos === false ? 'שלילי' : 'לא ניתן לפרש ללא שעון'}`) : '',
+    mc && mc.pos ? 'o' : mc && mc.pos === false ? 'ok' : '');
+
+  $('#fall-more').classList.toggle('on', val('fall') === 'yes');
+  const screenPos = ['fall','unsteady','fear'].some(n => val(n) === 'yes');
+  $('#fall-tests').classList.toggle('on', screenPos || has('vtype','falls') || has('vtype','cga'));
+  const cs = cstEval();
+  $('#cst-norm').textContent = !cs ? '' : cs.t === null ? cs.why : `נורמה לגיל ולמין: ${cs.t} לפחות. ${cs.below ? 'מתחת לנורמה.' : 'בטווח הנורמה.'}`;
+  $('#informant').classList.toggle('on', cogPositive() || has('vtype','cog'));
+  $('#gds-sexhint').style.display = sex() ? 'none' : '';
+});
+
+/* --- flags --- */
+RULES.push(() => {
+  const F = [], b = barthel();
+  if (b.done && b.s <= 90){
+    const it = barthelInterp(b.s);
+    F.push({ lvl:'o', sec:'sec-imp', t:`Barthel ${b.s}/100: ${it}.`,
+      a:`${it} בפעולות יום-יום בסיסיות (Barthel ${b.s}/100)`,
+      p:`להעריך את היקף העזרה הנדרשת בבית (${b.diff.join(', ')}), ולשקול ריפוי בעיסוק.` });
+    if (b.s <= 60 && !svcHave('siud')) F.push({ lvl:'b', sec:'sec-svc', t:'תלות קשה: לבדוק זכאות לגמלת סיעוד (ידע כללי).', p:'לבדוק זכאות לגמלת סיעוד מביטוח לאומי.' });
+  }
+  const l = lawton();
+  if (l.done && l.lost.length){
+    F.push({ lvl:'o', sec:'sec-imp', t:`Lawton ${l.s}/8: ירידה ב${l.lost.join(', ')}.`,
+      a:`ירידה בפעולות יום-יום מורכבות (Lawton ${l.s}/8)`,
+      p: l.lostKeys.filter(i => i < 6).length ? `עזרה ב: ${l.lostKeys.filter(i => i < 6).map(i => LAWTON[i].k).join(', ')}.` : null });
+    if (l.lostKeys.includes(6)) F.push({ lvl:'o', sec:'sec-imp', t:`${g('אינו מסוגל','אינה מסוגלת','אין יכולת')} ליטול תרופות לבד.`,
+      p:'השגחה על נטילת התרופות: קופסת תרופות שבועית שממלאים בני המשפחה או המטפל/ת.' });
+    if (l.lostKeys.includes(7)) F.push({ lvl:'o', sec:'sec-imp', t:`${g('אינו מסוגל','אינה מסוגלת','אין יכולת')} לנהל כספים.`,
+      p:'מעורבות בן/בת משפחה או גורם מוסמך בניהול הכספים.' });
+  }
+  const fr = fallRisk();
+  if (fr.length) F.push({ lvl:'o', sec:'sec-imp', t:`סיכון לנפילות: ${fr.join(', ')}.`,
+    a:`סיכון מוגבר לנפילות (${fr.join(', ')})`,
+    p:'מניעת נפילות: פיזיותרפיה לחיזוק ולשיווי משקל, סקירת תרופות והתאמות בבית.' });
+  const sens = vals('sens').filter(s => s === 'vision' || s === 'hearing');
+  sens.forEach(s => F.push({ lvl:'b', sec:'sec-imp',
+    t:`ליקוי ${s === 'vision' ? 'ראייה' : 'שמיעה'}: קשור לירידה קוגניטיבית ולתלות.`,
+    a:`ליקוי ${s === 'vision' ? 'ראייה' : 'שמיעה'}`,
+    p: s === 'vision' ? 'הפניה לבדיקת ראייה.' : 'הפניה לבדיקת שמיעה.' }));
+  return F;
+});
+RULES.push(() => {
+  const F = [];
+  if (cogPositive()){
+    const mc = miniCog(), bits = [];
+    if (mc && mc.pos) bits.push(mc.total !== null ? `Mini-Cog ${mc.total}/5` : 'Mini-Cog חיובי');
+    const mm = num('mmse'), mo = num('moca');
+    if (mm !== null && mm < 24) bits.push(`MMSE ${mm}/30`);
+    if (mo !== null && mo < 26) bits.push(`MoCA ${mo}/30`);
+    F.push({ lvl:'o', sec:'sec-cog', t:`סינון קוגניטיבי חיובי (${bits.join(', ')}).`,
+      a:`חשד לליקוי קוגניטיבי (${bits.join(', ')})`,
+      p:'בירור קוגניטיבי נוסף, ושיחה על ייפוי כוח מתמשך והנחיות מקדימות.' });
+  }
+  const gd = scaleState('gds', GDS);
+  if (gd.s >= 5) F.push({ lvl:'o', sec:'sec-cog', t:`GDS-15 ${gd.s}: ${gdsInterp(gd.s)}.`,
+    a:`${gdsInterp(gd.s)} (GDS-15 ${gd.s}/15)`,
+    p:'הערכה קלינית לדיכאון ובחינת טיפול.' });
+  return F;
+});
+RULES.push(() => {
+  const F = [], m = scaleState('mna', MNA);
+  if (m.done && m.s <= 11) F.push({ lvl:'o', sec:'sec-nut', t:`MNA-SF ${m.s}: ${mnaInterp(m.s)}.`,
+    a:`${mnaInterp(m.s)} (MNA-SF ${m.s}/14)`,
+    p:'הפניה לדיאטנית ובירור הגורמים לירידה בתזונה.' });
+  if (val('swallow') === 'diff') F.push({ lvl:'o', sec:'sec-nut', t:'קושי בבליעה.',
+    a:'קושי בבליעה', p:'הפניה לקלינאית תקשורת להערכת בליעה.' });
+  return F;
+});
+
+/* --- note lines --- */
+const GAITOBS = { rise:'קושי בקימה מכיסא', arms:'נעזר/ת בידיות הכיסא', furn:'נאחז/ת ברהיטים', unst:'הליכה לא יציבה' };
+const AID = { none:'ללא אביזר עזר', cane:'הולך/ת עם מקל', walker:'הולך/ת עם הליכון', wc:'בכיסא גלגלים' };
+const SENS = { vision:'ראייה', hearing:'שמיעה', smell:'ריח או טעם', touch:'תחושה' };
+const INF = { memory:'ירידה בזיכרון בשנה האחרונה', lost:'הליכה לאיבוד', meds:'שכחת תרופות', money:'קושי בניהול כספים', behav:'שינויי התנהגות או תוקפנות', sleep:'הפרעות שינה' };
+
+NOTE.S.push(() => {
+  const L = [];
+  const f = val('fall');
+  if (f === 'yes'){
+    const n = val('fallN'), inj = val('fallInj');
+    L.push(`נפילות בשנה האחרונה: ${n === '2' ? 'שתיים או יותר' : n === '1' ? 'אחת' : 'כן'}${inj === 'yes' ? ', עם פגיעה' : inj === 'no' ? ', ללא פגיעה' : ''}.`);
+  } else if (f === 'no') L.push('ללא נפילות בשנה האחרונה.');
+  const u = [];
+  if (val('unsteady') === 'yes') u.push('חוסר יציבות בעמידה או בהליכה');
+  if (val('fear') === 'yes') u.push('חשש ליפול');
+  if (u.length) L.push(`מדווח${g('','ת','/ת')} על ${listHe(u)}.`);
+  const inf = vals('inf');
+  if (inf.length) L.push(`לפי המשפחה או המטפל/ת: ${inf.map(x => INF[x]).join(', ')}.`);
+  return L;
+});
+
+NOTE.O.push(() => {
+  const L = [];
+  const b = barthel();
+  if (b.n) L.push(b.done ? `Barthel ${b.s}/100 (${barthelInterp(b.s)})${b.diff.length ? '; קושי ב: ' + b.diff.join(', ') : ''}.`
+                         : `Barthel חלקי (${b.n}/10 פריטים)${b.diff.length ? '; קושי ב: ' + b.diff.join(', ') : ''}.`);
+  const l = lawton();
+  if (l.n) L.push(l.done ? `Lawton IADL ${l.s}/8${l.lost.length ? '; ירידה ב: ' + l.lost.join(', ') : ''}.`
+                         : `Lawton חלקי (${l.n}/8 פריטים)${l.lost.length ? '; ירידה ב: ' + l.lost.join(', ') : ''}.`);
+  const d = val('drive');
+  if (d) L.push(`נהיגה: ${{no: g('אינו נוהג','אינה נוהגת','אינו/ה נוהג/ת'), ok:'ללא קושי', concern:'קיים חשש לבטיחות הנהיגה'}[d]}.`);
+  const go = vals('gaitobs').map(x => gt(GAITOBS[x].replace('נעזר/ת','{נעזר|נעזרת}').replace('נאחז/ת','{נאחז|נאחזת}')));
+  const aid = val('aid');
+  const mob = [];
+  if (aid) mob.push(gt(AID[aid].replace('הולך/ת','{הולך|הולכת}')));
+  mob.push(...go);
+  if (mob.length) L.push(`ניידות: ${mob.join(', ')}.`);
+  const t = [];
+  const tug = num('tug'); if (tug !== null) t.push(`TUG ${tug} שנ'${tug >= 12 ? ' (12 ומעלה: סיכון לנפילה)' : ''}`);
+  const cs = cstEval(); if (cs) t.push(`קימה מכיסא ב-30 שנ': ${cs.c}${cs.t !== null ? (cs.below ? ` (מתחת לנורמה, ${cs.t})` : ' (בנורמה)') : ''}`);
+  const bl = val('bal'); if (bl !== '') t.push(`שיווי משקל: ${bl === '0' ? 'לא הוחזק אף שלב' : BAL[+bl]} (10 שנ')`);
+  if (t.length) L.push(t.join('; ') + '.');
+  const sv = vals('sens'), sa = vals('sensaid');
+  if (sv.length || sa.length) L.push(`חושים: ${sv.length ? 'ליקוי ' + sv.map(x => SENS[x]).join(', ') : 'ללא ליקוי מדווח'}${sa.length ? '; ' + sa.map(x => x === 'glasses' ? 'משקפיים' : 'מכשיר שמיעה').join(', ') : ''}.`);
+  const p = val('pain'); if (p !== '') L.push(`כאב: ${p}/10.`);
+  return L;
+});
+
+NOTE.O.push(() => {
+  const L = [];
+  const mc = miniCog();
+  if (mc) L.push(mc.total !== null ? `Mini-Cog ${mc.total}/5 (זכירה ${mc.rec}/3, שעון ${mc.clock}) – ${mc.pos ? 'חיובי' : 'שלילי'}.`
+                                   : `Mini-Cog: זכירה ${mc.rec}/3, שעון לא בוצע${mc.pos === true ? ' – חיובי' : mc.pos === false ? ' – שלילי' : ''}.`);
+  const mm = num('mmse'), mo = num('moca');
+  if (mm !== null) L.push(`MMSE ${mm}/30.`);
+  if (mo !== null) L.push(`MoCA ${mo}/30.`);
+  const cap = val('capacity');
+  if (cap) L.push(`כשירות לקבל החלטות: ${cap === 'ok' ? 'נראית שמורה' : 'מוטלת בספק'}.`);
+  const gd = scaleState('gds', GDS);
+  if (gd.n) L.push(gd.done ? `GDS-15 ${gd.s}/15 (${gdsInterp(gd.s)}).` : `GDS-15 חלקי: ${gd.s} מתוך ${gd.n} שאלות שנענו.`);
+  return L;
+});
+
+NOTE.O.push(() => {
+  const L = [];
+  const m = scaleState('mna', MNA);
+  if (m.n) L.push(m.done ? `MNA-SF ${m.s}/14 (${mnaInterp(m.s)}).` : `MNA-SF חלקי (${m.n}/6 פריטים).`);
+  const o = [];
+  const fd = val('food'); if (fd) o.push({ok:'מקרר ומזווה מגוונים', poor:'מלאי מזון דל', expired:'מזון פג תוקף או מקולקל בבית'}[fd]);
+  const ml = vals('meals'); if (ml.length) o.push('הארוחות מוכנות ' + listHe(ml.map(x => ({self: g('על ידו','על ידה','על ידו/ה'), family:'על ידי בני המשפחה', carer:'על ידי המטפל/ת', delivery:'כארוחות מוכנות או במשלוח'})[x])));
+  const fl = val('fluid'); if (fl) o.push(fl === 'ok' ? 'שתייה מספקת' : 'שתייה מועטה');
+  const al = val('alcohol'); if (al) o.push({none:'ללא אלכוהול', some:'שתיית אלכוהול מתונה', concern:'חשש לשתיית אלכוהול מופרזת'}[al]);
+  const sw = val('swallow'); if (sw) o.push(sw === 'ok' ? 'ללא קושי בבליעה' : 'קושי בבליעה');
+  const or = vals('oral'); if (or.length) o.push(or.map(x => ({dentures:'שיניים תותבות', chew:'קושי בלעיסה', poor:'היגיינת פה ירודה'})[x]).join(', '));
+  if (o.length) L.push(`תזונה: ${o.join(', ')}.`);
+  return L;
+});
+
+/* ================= step 3: home safety, caregivers, medications ================= */
+/* each problem: [label, fix for plan] */
+const SAFETY = [
+  { k:'bath', q:'חדר רחצה', p:[
+    ['אין מאחזי יד, או שאינם יציבים', 'התקנת מאחזי יד יציבים באסלה ובמקלחת'],
+    ['אסלה נמוכה או קשה להגעה', 'הגבהת מושב האסלה'],
+    ['אין משטח מונע החלקה', 'משטח מונע החלקה באמבטיה או במקלחת'],
+    ['רצפה חלקה', 'טיפול ברצפה החלקה בחדר הרחצה'],
+    ['אמבטיה בלבד, בלי מקלחון', 'כיסא רחצה או מעבר למקלחון'] ]},
+  { k:'stairs', q:'מדרגות', p:[
+    ['אין מעקה', 'התקנת מעקה במדרגות'],
+    ['תאורה חלשה', 'שיפור התאורה במדרגות'],
+    ['שטיח לא מקובע', 'קיבוע השטיח במדרגות'],
+    ['נדרשים רמפה או מעלון', 'בדיקת התאמה של רמפה או מעלון'] ]},
+  { k:'floor', q:'רצפה ומעברים', p:[
+    ['שטיחים רופפים', 'הסרה או קיבוע של שטיחים רופפים'],
+    ['מכשולים במעברים', 'פינוי מכשולים ממעברי ההליכה'],
+    ['מפתנים והפרשי גובה', 'סימון או הנמכה של מפתנים'] ]},
+  { k:'light', q:'תאורה', p:[
+    ['תאורה לא מספקת', 'שיפור התאורה באזורי המגורים'],
+    ['אין תאורת לילה', 'תאורת לילה בדרך לשירותים'] ]},
+  { k:'elec', q:'חשמל', p:[
+    ['חוטים פגומים', 'החלפת חוטי חשמל פגומים'],
+    ['חוטים חוצים מעברים', 'הרחקת חוטים ממעברי ההליכה'] ]},
+  { k:'furn', q:'ריהוט', p:[
+    ['רהיטים לא יציבים', 'תיקון או החלפה של רהיטים לא יציבים'],
+    ['גובה כיסא או מיטה לא מתאים', 'התאמת גובה הכיסא או המיטה'] ]},
+  { k:'kitchen', q:'מטבח', p:[
+    ['קשה לזהות כירה דולקת', 'אמצעי בטיחות לכיריים (סימון, ניתוק אוטומטי)'],
+    ['בגדים רפויים בזמן בישול', 'הדרכה על לבוש צמוד בזמן בישול'] ]},
+  { k:'water', q:'מים חמים', p:[
+    ['הדוד מעל 49°C', 'הורדת טמפרטורת המים החמים ל-49°C לכל היותר'] ]},
+  { k:'smoke', q:'גלאי עשן ופחמן חד-חמצני', p:[
+    ['אין גלאים', 'התקנת גלאי עשן'],
+    ['גלאים לא תקינים', 'בדיקת הגלאים והחלפת סוללות'] ]},
+  { k:'ext', q:'מטף כיבוי', p:[
+    ['אין מטף', 'רכישת מטף כיבוי'],
+    ['לא נגיש או לא תקין', 'הצבת מטף תקין במקום נגיש'],
+    ['אין מי שיודע להפעיל', 'הדרכה על הפעלת המטף'] ]},
+  { k:'climate', q:'חימום וקירור', p:[
+    ['שליטה לא נגישה', 'התאמת השלט או הבקרים לשימוש'],
+    ['טמפרטורה לא מתאימה בבית', 'פתרון לחימום או לקירור הבית'] ]},
+  { k:'pets', q:'חיות מחמד', p:[
+    ['סכנת נפילה', 'צמצום סכנת הנפילה מחיית המחמד'],
+    ['קושי בטיפול בחיה', 'עזרה בטיפול בחיית המחמד'] ]},
+  { k:'emerg', q:'מצב חירום', p:[
+    ['מספרי חירום לא זמינים', 'רשימת מספרי חירום ליד הטלפון'],
+    ['אין אמצעי קריאה לעזרה על הגוף', 'אמצעי קריאה לעזרה שנישא על הגוף'],
+    ['אין דרך יציאה נוחה', 'תכנון דרך יציאה בשעת חירום'] ]},
+  { k:'subst', q:'עישון וחומרים', p:[
+    ['עישון בבית', 'הדרכה על סכנות העישון בבית'],
+    ['שימוש בחומרים אחרים', 'בירור השימוש בחומרים'] ]}
+];
+const FALL_SAFETY = { bath:[0,1,2,3,4], stairs:[0,1,2,3], floor:[0,1,2], light:[0,1], elec:[1], furn:[0,1], pets:[0] };
+
+$('#safety').innerHTML = SAFETY.map(c => `
+  <div class="qrow" data-saf="${c.k}"><div class="q">${c.q}</div>
+    <div class="seg">
+      <label class="okc"><input type="checkbox" name="safok_${c.k}" value="ok"><span>תקין</span></label>
+      ${c.p.map((p, i) => `<label class="prob"><input type="checkbox" name="saf_${c.k}" value="${i}"><span>${p[0]}</span></label>`).join('')}
+    </div></div>`).join('');
+
+/* "תקין" and problems are mutually exclusive within a row */
+$('#safety').addEventListener('change', e => {
+  const t = e.target; if (!t.checked) return;
+  const row = t.closest('[data-saf]'); const k = row.dataset.saf;
+  if (t.name === 'safok_' + k) $$(`[name="saf_${k}"]`).forEach(c => c.checked = false);
+  else { const ok = $(`[name="safok_${k}"]`); if (ok) ok.checked = false; }
+});
+
+function safetyProblems(){
+  const out = [];
+  SAFETY.forEach(c => vals('saf_' + c.k).forEach(i => out.push({ k:c.k, cat:c.q, i:+i, label:c.p[+i][0], fix:c.p[+i][1],
+    fall: (FALL_SAFETY[c.k] || []).includes(+i) })));
+  return out;
+}
+function safetyChecked(){ return SAFETY.filter(c => has('safok_' + c.k, 'ok') || vals('saf_' + c.k).length).length; }
+
+function medCount(){ return num('medN'); }
+
+/* stepper buttons */
+document.addEventListener('click', e => {
+  const b = e.target.closest('button.step'); if (!b) return;
+  const inp = $('#medN'); const v = (parseInt(inp.value) || 0) + (+b.dataset.step);
+  inp.value = Math.max(0, Math.min(40, v)); refresh();
+});
+
+UPDATERS.push(() => {
+  const noCg = val('cg') === 'none' || val('cg') === '';
+  $$('.field.cgdep').forEach(f => f.classList.toggle('off', noCg));
+  $('#disc-box').classList.toggle('on', has('medIss', 'disc'));
+});
+
+/* --- flags --- */
+RULES.push(() => {
+  const F = [];
+  const probs = safetyProblems();
+  if (probs.length){
+    F.push({ lvl:'o', sec:'sec-home', t:`ליקויי בטיחות בבית: ${probs.length}.`,
+      a:`ליקויי בטיחות בבית (${[...new Set(probs.map(p => p.cat))].join(', ')})`,
+      p: (fx => fx.length ? `התאמות בטיחות בבית: ${fx.join('; ')}.` : null)(probs.filter(p => !(p.k === 'emerg' && p.i === 1)).map(p => p.fix)) });
+  }
+  const gun = val('gun');
+  if (gun === 'unsecured'){
+    const gd = scaleState('gds', GDS);
+    const risk = cogPositive() || gd.s >= 5 || has('vtype','cog');
+    F.push(risk
+      ? { lvl:'r', sec:'sec-home', t:'נשק לא מאובטח בבית, עם ליקוי קוגניטיבי או חשד לדיכאון.',
+          a:'נשק לא מאובטח בבית, בנוכחות ליקוי קוגניטיבי או חשד לדיכאון',
+          p:'אבטחה או הוצאה מיידית של הנשק מהבית, בשיתוף המשפחה.' }
+      : { lvl:'o', sec:'sec-home', t:'נשק לא מאובטח בבית.', a:'נשק לא מאובטח בבית',
+          p:'אבטחת הנשק: מנעול הדק או כספת, ותחמושת בנפרד.' });
+  }
+  return F;
+});
+
+const ABUSE = { abuse:'חשש להתעללות', neglect:'חשש להזנחה על ידי המטפלים', self:'הזנחה עצמית' };
+RULES.push(() => {
+  const F = [];
+  vals('abuse').forEach(k => F.push({ lvl:'r', sec:'sec-people', t:`${ABUSE[k]}.`, a:ABUSE[k],
+    p:`${ABUSE[k]}: תיעוד הממצאים, הפניה לעובד/ת סוציאלי/ת ובחינת חובת הדיווח.` }));
+  const cap = val('cgcap'), load = vals('cgload');
+  if (val('cg') && val('cg') !== 'none' && (cap === 'no' || cap === 'partly' || load.length)){
+    const w = [];
+    if (cap === 'no') w.push('המטפל/ת אינו/ה מסוגל/ת לטפל'); else if (cap === 'partly') w.push('יכולת טיפול חלקית');
+    if (load.includes('stress')) w.push('סימני מתח ושחיקה');
+    if (load.includes('respite')) w.push('צורך בהפוגה');
+    F.push({ lvl:'o', sec:'sec-people', t:`עומס על המטפל/ת: ${w.join(', ')}.`, a:`עומס על המטפל/ת (${w.join(', ')})`,
+      p:'תמיכה במטפל/ת: הפוגה, הדרכה ושיחה עם עובד/ת סוציאלי/ת.' });
+  }
+  /* emergency-call button (general knowledge) */
+  const b = barthel();
+  const alone = has('live', 'alone');
+  const noMeans = vals('saf_emerg').includes('1');
+  const lowFn = (b.done && b.s <= 90) || fallRisk().length > 0 || cogPositive();
+  const isolated = has('social', 'isolated');
+  if ((noMeans || (alone && (lowFn || isolated))) && !svcHave('alarm')){
+    const w = [];
+    if (alone) w.push(g('גר לבד','גרה לבד','גר/ה לבד'));
+    if (alone && lowFn) w.push('ירידה בתפקוד או סיכון לנפילות');
+    if (isolated) w.push('בידוד חברתי');
+    if (noMeans) w.push('אין אמצעי קריאה לעזרה');
+    F.push({ lvl:'o', sec:'sec-svc', t:`${w.join(', ')}: לשקול לחצן מצוקה (ידע כללי).`, a:null,
+      p:'לחצן מצוקה.' });
+  }
+  if (isolated && !alone) F.push({ lvl:'o', sec:'sec-people', t:'בידוד חברתי.', a:'בידוד חברתי', p:'חיזוק הקשרים החברתיים: מרכז יום או פעילות בקהילה.' });
+  if (isolated && alone) F.push({ lvl:'o', sec:'sec-people', t:'בידוד חברתי אצל מי שגר/ה לבד.', a:`בידוד חברתי, ${g('גר לבד','גרה לבד','גר/ה לבד')}`, p:'חיזוק הקשרים החברתיים: מרכז יום או פעילות בקהילה.' });
+  return F;
+});
+
+const MEDISS = { adh:'היענות חלקית', org:'התרופות לא מאורגנות', multi:'כמה רופאים רושמים', otc:'תרופות ללא מרשם או תוספים שאינם ברשימה', old:'מלאי תרופות ישנות או פגות תוקף', disc:'אי-התאמה לרשימה שבתיק' };
+RULES.push(() => {
+  const F = [], n = medCount(), iss = vals('medIss');
+  const why = [];
+  if (n !== null && n >= 5) why.push(`${n} תרופות`);
+  ['disc','multi','old','otc'].forEach(k => { if (iss.includes(k)) why.push(MEDISS[k]); });
+  if (why.length){
+    const p = ['התאמה תרופתית מלאה ובחינת הפסקה של תרופות מיותרות, בשיתוף רוקח/ת קליני/ת'];
+    if (iss.includes('old')) p.push('איסוף תרופות ישנות ופגות תוקף מהבית');
+    F.push({ lvl:'o', sec:'sec-meds', t:`תרופות: ${why.join(', ')}.`, a:`${n !== null && n >= 5 ? 'ריבוי תרופות' : 'בעיות בטיפול התרופתי'} (${why.join(', ')})`, p:p.join('; ') + '.' });
+  }
+  if (iss.includes('adh') || iss.includes('org')){
+    const w = iss.filter(k => k === 'adh' || k === 'org').map(k => MEDISS[k]);
+    F.push({ lvl:'o', sec:'sec-meds', t:`${w.join(', ')}.`, a:w.join(', '),
+      p:'שיפור ההיענות: פישוט המשטר התרופתי, קופסת תרופות שבועית ורשימת תרופות כתובה.' });
+  }
+  return F;
+});
+
+/* --- note lines --- */
+const CG = { spouse:'בן/בת הזוג', child:'בן או בת', family:'בן משפחה', paid:'מטפל/ת בשכר' };
+const CGH = { lt4:'עד 4 שעות ביום', '4-8':'4–8 שעות ביום', '8-16':'8–16 שעות ביום', '24':'מסביב לשעון' };
+NOTE.S.push(() => {
+  const L = [];
+  const cg = val('cg');
+  if (cg === 'none') L.push('אין מטפל/ת עיקרי/ת.');
+  else if (cg){
+    const bits = [`מטפל/ת עיקרי/ת: ${CG[cg]}`];
+    const h = val('cgh'); if (h) bits.push(CGH[h]);
+    const c = val('cgcap'); if (c) bits.push({yes:'מסוגל/ת לטפל', partly:'יכולת טיפול חלקית', no:'אינו/ה מסוגל/ת לטפל'}[c]);
+    const ld = vals('cgload'); if (ld.length) bits.push(ld.map(x => x === 'stress' ? 'סימני מתח ושחיקה' : 'זקוק/ה להפוגה').join(', '));
+    L.push(bits.join(', ') + '.');
+  }
+  const so = vals('social');
+  if (so.length) L.push(`תמיכה חברתית: ${so.map(x => ({regular:'קשר קבוע עם משפחה או חברים', community:'קשר עם קהילה או מרכז יום', isolated:'בדידות או בידוד חברתי'})[x]).join(', ')}.`);
+  return L;
+});
+NOTE.O.push(() => {
+  const L = [];
+  const env = [];
+  vals('interior').forEach(x => env.push({tidy:'בית מסודר ומטופח', dirty:'לכלוך והזנחה בבית', hoard:'אגירת חפצים', crowd:'צפיפות'}[x]));
+  vals('access').forEach(x => env.push({entry:'כניסה לא נגישה', hood:'שכונה לא בטוחה'}[x]));
+  const cm = vals('comm'); if (cm.length) env.push(cm.map(x => x === 'phone' ? 'טלפון נייד זמין' : 'יש אינטרנט').join(', '));
+  if (env.length) L.push(`הבית: ${env.join(', ')}.`);
+  const probs = safetyProblems(), checked = safetyChecked();
+  if (probs.length){
+    const byCat = {};
+    probs.forEach(p => (byCat[p.cat] = byCat[p.cat] || []).push(p.label));
+    L.push(`בדיקת בטיחות (${checked} תחומים נבדקו), ליקויים: ${Object.entries(byCat).map(([c, a]) => `${c} – ${a.join(', ')}`).join('; ')}.`);
+  } else if (checked) L.push(`בדיקת בטיחות: ${checked} תחומים נבדקו, ללא ליקויים.`);
+  const gun = val('gun');
+  if (gun && gun !== 'none') L.push(`נשק בבית: ${gun === 'secured' ? 'מאובטח' : 'לא מאובטח'}.`);
+  if (gun === 'none') L.push('אין נשק בבית.');
+  const ab = vals('abuse'); if (ab.length) L.push(`${ab.map(k => ABUSE[k]).join(', ')}.`);
+  return L;
+});
+NOTE.O.push(() => {
+  const L = [], n = medCount(), iss = vals('medIss');
+  if (n === null && !iss.length) return L;
+  const bits = [];
+  if (n !== null) bits.push(`${n} תרופות קבועות`);
+  if (iss.length) bits.push(iss.map(k => MEDISS[k]).join(', '));
+  else if (n !== null) bits.push('ללא ממצאים חריגים בהתאמה התרופתית');
+  L.push(`תרופות: ${bits.join('; ')}.`);
+  const d = val('medDisc'); if (d && iss.includes('disc')) L.push(`אי-התאמות: ${d}.`);
+  return L;
+});
+
+/* ================= step 4: examination, goals, services ================= */
+const EXAM_TPL = ['כללי: ___','ראש, עיניים, אוזניים, אף וגרון: ___','צוואר: ___','לב: ___','ריאות: ___','בטן: ___',
+  'עור, כולל פצעי לחץ: ___','גפיים ובצקות: ___','נוירולוגי: ___','בדיקות נוספות: ___'].join('\n');
+$('#examtpl').value = EXAM_TPL;
+$('#examreset').addEventListener('click', () => { $('#examtpl').value = EXAM_TPL; refresh(); });
+function examLines(){
+  return $('#examtpl').value.split('\n').map(l => l.trim())
+    .filter(l => l && !l.includes('___') && !/:\s*$/.test(l));
+}
+
+function bmi(){ const w = num('wt'), h = num('ht'); return (w && h) ? Math.round(w / ((h / 100) ** 2) * 10) / 10 : null; }
+function bmiBand(b){ return b < 19 ? 0 : b < 21 ? 1 : b < 23 ? 2 : 3; }
+
+function weightLoss(){
+  const wl = val('wl');
+  if (wl === 'yes'){
+    const kg = num('wlkg'), per = val('wlper'), w = num('wt');
+    const pct = (kg && w) ? Math.round(kg / (w + kg) * 1000) / 10 : null;
+    return { src:'exam', kg, per, pct };
+  }
+  if (wl === 'no') return null;
+  const p = scaleState('mna', MNA).pick[1];
+  if (p === 0 || p === 2) return { src:'mna', txt: p === 0 ? 'מעל 3 ק"ג ב-3 חודשים' : '1–3 ק"ג ב-3 חודשים' };
+  return null;
+}
+function wlText(w){
+  if (w.src === 'mna') return w.txt;
+  const per = { '1':'בחודש', '3':'ב-3 חודשים', '6':'בחצי שנה', '12':'בשנה' }[w.per] || '';
+  return [w.kg ? `${w.kg} ק"ג` : '', per, w.pct !== null ? `(${w.pct}%)` : ''].filter(Boolean).join(' ');
+}
+
+/* manual choice on MNA item F cancels the BMI auto-fill */
+$('#mna').addEventListener('change', e => { if (e.target.name === 'mna5') $$('[name="mna5"]').forEach(i => delete i.dataset.auto); });
+
+/* "full code" is exclusive; "not decided" is exclusive */
+$('#code').addEventListener('change', e => {
+  const t = e.target; if (!t.checked) return;
+  const others = $$('[name="code"]').filter(c => c !== t);
+  if (t.value === 'full' || t.value === 'na') others.forEach(c => c.checked = false);
+  else others.filter(c => c.value === 'full' || c.value === 'na').forEach(c => c.checked = false);
+});
+/* LPA: "none"/"unknown" exclusive */
+document.addEventListener('change', e => {
+  const t = e.target; if (t.name !== 'lpa' || !t.checked) return;
+  const others = $$('[name="lpa"]').filter(c => c !== t);
+  if (t.value === 'no' || t.value === 'unk') others.forEach(c => c.checked = false);
+  else others.filter(c => c.value === 'no' || c.value === 'unk').forEach(c => c.checked = false);
+}, true);
+
+/* --- services --- */
+function cgBurden(){ const c = val('cgcap'); return !!val('cg') && val('cg') !== 'none' && (c === 'no' || c === 'partly' || vals('cgload').length > 0); }
+function medProblem(){ const n = medCount(), iss = vals('medIss'); return (n !== null && n >= 5) || ['disc','multi','old','otc'].some(k => iss.includes(k)); }
+function alarmNeed(){
+  const b = barthel(), alone = has('live','alone'), noMeans = vals('saf_emerg').includes('1');
+  const lowFn = (b.done && b.s <= 90) || fallRisk().length > 0 || cogPositive();
+  const isolated = has('social','isolated');
+  return { need: noMeans || (alone && (lowFn || isolated)), alone, noMeans, lowFn, isolated };
+}
+const SVC = [
+  { k:'siud',  q:'גמלת סיעוד (ביטוח לאומי)', s:() => { const b = barthel(); return b.done && b.s <= 60; } },
+  { k:'carer', q:'מטפל/ת בשכר', s:() => { const b = barthel(); return b.done && b.s <= 60 && val('cg') !== 'paid'; } },
+  { k:'homecare', q:'טיפול בית (המשך טיפול, אחות קהילה)', s:() => val('rehosp') === 'yes' },
+  { k:'hospice', q:'הוספיס בית', s:() => has('vtype','eol') },
+  { k:'day',   q:'מרכז יום', s:() => has('social','isolated') },
+  { k:'alarm', q:'לחצן מצוקה', s:() => alarmNeed().need },
+  { k:'meals', q:'ארוחות מוכנות עד הבית', s:() => lawton().lostKeys.includes(2) },
+  { k:'equip', q:'השאלת ציוד (יד שרה)', s:() => fallRisk().length > 0 || safetyProblems().some(p => p.k === 'bath' || p.k === 'stairs') },
+  { k:'sw',    q:'עובד/ת סוציאלי/ת', s:() => vals('abuse').length > 0 || cgBurden() },
+  { k:'pt',    q:'פיזיותרפיה', s:() => fallRisk().length > 0 },
+  { k:'ot',    q:'ריפוי בעיסוק', s:() => { const b = barthel(); return b.done && b.s <= 90; } },
+  { k:'diet',  q:'דיאטן/ית', s:() => { const m = scaleState('mna', MNA); return (m.done && m.s <= 11) || !!weightLoss(); } },
+  { k:'slp',   q:'קלינאי/ת תקשורת', s:() => val('swallow') === 'diff' },
+  { k:'pharm', q:'רוקח/ת קליני/ת', s:() => medProblem() }
+];
+$('#svc').innerHTML = `
+  <div class="qrow"><div class="q">אשפוזים חוזרים בשנה האחרונה</div>
+    <div class="seg"><label><input type="radio" name="rehosp" value="yes"><span>כן</span></label><label><input type="radio" name="rehosp" value="no"><span>לא</span></label></div></div>` +
+  SVC.map(v => `
+  <div class="qrow" data-svc="${v.k}"><div class="q">${v.q}<span class="sugg" hidden>עולה מהממצאים</span></div>
+    <div class="seg">
+      <label class="okc"><input type="checkbox" name="svc_${v.k}" value="have"><span>קיים</span></label>
+      <label><input type="checkbox" name="svc_${v.k}" value="rec"><span>להמליץ</span></label>
+    </div></div>`).join('');
+$('#svc').addEventListener('change', e => {
+  const t = e.target; if (!t.name.startsWith('svc_') || !t.checked) return;
+  $$(`[name="${t.name}"]`).forEach(c => { if (c !== t) c.checked = false; });
+});
+const svcHave = k => has('svc_' + k, 'have');
+const svcRec  = k => has('svc_' + k, 'rec');
+
+UPDATERS.push(() => {
+  const b = bmi();
+  $('#bmi').textContent = b !== null ? b : '—';
+  let hint = '';
+  if (b !== null){
+    const idx = bmiBand(b);
+    const cur = $('[name="mna5"]:checked');
+    if (!cur || cur.dataset.auto === '1'){
+      if (cur){ cur.checked = false; delete cur.dataset.auto; }
+      const t = $(`[name="mna5"][value="${idx}"]`); t.checked = true; t.dataset.auto = '1';
+      hint = 'הועבר אוטומטית לסעיף BMI ב-MNA-SF.';
+    }
+  }
+  $('#bmi-hint').textContent = hint;
+  $('#wl-box').classList.toggle('on', val('wl') === 'yes');
+  $('#eol-box').classList.toggle('on', has('vtype','eol'));
+  SVC.forEach(v => { const el = $(`[data-svc="${v.k}"] .sugg`); let on = false; try { on = !svcHave(v.k) && v.s(); } catch(e){} el.hidden = !on; });
+});
+
+/* --- flags --- */
+RULES.push(() => {
+  const F = [];
+  const sbp = num('sbp'), hr = num('hr'), spo2 = num('spo2'), glu = num('glu');
+  const urg = (t, a, p) => F.push({ lvl:'r', sec:'sec-exam', t, a, p });
+  if (spo2 !== null && spo2 < 92) urg(`סטורציה ${spo2}%.`, `ירידה בסטורציה (${spo2}%)`, 'סטורציה נמוכה: הערכה מיידית ושקילת הפניה דחופה.');
+  if (sbp !== null && sbp < 90) urg(`לחץ דם סיסטולי ${sbp}.`, `תת-לחץ דם (${sbp} סיסטולי)`, 'תת-לחץ דם: הערכה מיידית ושקילת הפניה דחופה.');
+  if (sbp !== null && sbp > 180) urg(`לחץ דם סיסטולי ${sbp}.`, `לחץ דם גבוה מאוד (${sbp} סיסטולי)`, 'לחץ דם מעל 180: הערכה לנזק לאיברי מטרה והתאמת טיפול.');
+  if (hr !== null && hr < 50) urg(`דופק ${hr}.`, `ברדיקרדיה (${hr})`, 'ברדיקרדיה: הערכה מיידית ובדיקת תרופות מאטות דופק.');
+  if (hr !== null && hr > 120) urg(`דופק ${hr}.`, `טכיקרדיה (${hr})`, 'טכיקרדיה: הערכה מיידית ושקילת הפניה דחופה.');
+  if (glu !== null && glu < 70) urg(`סוכר ${glu}.`, `היפוגליקמיה (${glu} mg/dL)`, 'היפוגליקמיה: טיפול מיידי ובחינת הטיפול התרופתי.');
+  const b = bmi(), age = num('age'), m = scaleState('mna', MNA);
+  if (b !== null && b < 22 && (age === null || age >= 65)){
+    const mnaFlag = m.done && m.s <= 11;
+    F.push({ lvl:'o', sec:'sec-exam', t:`BMI ${b}.`, a:`BMI נמוך (${b})`, p: mnaFlag ? null : 'הערכה תזונתית.' });
+  }
+  return F;
+});
+/* weight loss (replaces the MNA-only rule) */
+RULES.push(() => {
+  const w = weightLoss(); if (!w) return [];
+  const t = wlText(w);
+  return [{ lvl:'o', sec: w.src === 'mna' ? 'sec-nut' : 'sec-exam', t:`ירידה לא מכוונת במשקל${t ? ': ' + t : ''}.`,
+    a:`ירידה לא מכוונת במשקל${t ? ': ' + t : ''}`, p:'בירור הסיבה לירידה במשקל ומעקב שקילות.' }];
+});
+RULES.push(() => {
+  const F = [];
+  if (has('vtype','eol')){
+    const miss = [];
+    const gc = val('gocd'); if (gc !== 'now' && gc !== 'past') miss.push('שיחה על מטרות הטיפול');
+    const pod = val('pod'); if (!pod || pod === 'none') miss.push('מקום פטירה מועדף');
+    const code = vals('code'); if (!code.length || code.includes('na')) miss.push('החלטה על החייאה');
+    if (miss.length) F.push({ lvl:'o', sec:'sec-goals', t:`סוף החיים – חסר תיעוד של ${listHe(miss)}.`,
+      a:`סוף החיים – חסר תיעוד של ${listHe(miss)}`,
+      p:`שיחה עם ${g('המטופל','המטופלת','המטופל/ת')} ועם המשפחה על ${listHe(miss)}.` });
+  }
+  const ad = val('ad'), lpa = vals('lpa');
+  const noAd = ad === 'no' || ad === 'unk', noLpa = lpa.includes('no') || lpa.includes('unk');
+  if (noAd || noLpa){
+    const w = []; if (noAd) w.push('הנחיות רפואיות מקדימות'); if (noLpa) w.push('ייפוי כוח מתמשך');
+    F.push({ lvl:'b', sec:'sec-goals', t:`אין ${listHe(w)} (ידע כללי).`, p:`מסירת מידע על ${listHe(w)}.` });
+  }
+  if (val('rehosp') === 'yes') F.push({ lvl:'o', sec:'sec-svc', t:'אשפוזים חוזרים: לשקול מעקב רפואי בבית.',
+    a:'אשפוזים חוזרים בשנה האחרונה', p:'הפניה לטיפול רפואי בבית (המשך טיפול) להפחתת אשפוזים חוזרים.' });
+  return F;
+});
+
+/* --- note lines --- */
+NOTE.S.push(() => {
+  const L = [], parts = [];
+  const gc = val('gocd'); if (gc) parts.push({now:'שיחה על מטרות הטיפול התקיימה בביקור', past:'שיחה על מטרות הטיפול התקיימה בעבר', none:'לא התקיימה שיחה על מטרות הטיפול'}[gc]);
+  const fc = val('focus'); if (fc) parts.push('מוקד הטיפול: ' + {life:'הארכת חיים', func:'שמירה על תפקוד', comfort:'נוחות'}[fc]);
+  const code = vals('code'); if (code.length) parts.push(code.map(c => ({full:'החייאה מלאה', dnr:'לא להחיות', dni:'לא להנשים', na:'החלטה על החייאה טרם נקבעה'})[c]).join(', '));
+  const pod = val('pod'); if (pod && has('vtype','eol')) parts.push('מקום פטירה מועדף: ' + {home:'בבית', hosp:'בבית חולים', hospice:'בהוספיס', none:'לא נדון'}[pod]);
+  if (parts.length) L.push(parts.join('; ') + '.');
+  const d = [];
+  const ad = val('ad'); if (ad) d.push('הנחיות מקדימות: ' + {yes:'יש', no:'אין', unk:'לא ידוע'}[ad]);
+  const lpa = vals('lpa'); if (lpa.length) d.push('ייפוי כוח מתמשך: ' + (lpa.includes('no') ? 'אין' : lpa.includes('unk') ? 'לא ידוע' : listHe(lpa.map(x => x === 'med' ? 'רפואי' : 'כלכלי'))));
+  const gu = val('guard'); if (gu) d.push(gu === 'yes' ? 'מונה אפוטרופוס' : 'לא מונה אפוטרופוס');
+  const dc = val('docs'); if (dc) d.push(dc === 'yes' ? 'עותק בתיק' : 'התבקש עותק לתיק');
+  if (d.length) L.push(d.join('; ') + '.');
+  const sp = val('spir'), sn = val('spirnote');
+  if (sp || sn) L.push(`תמיכה דתית או קהילתית: ${sp === 'yes' ? 'יש' : sp === 'no' ? 'אין' : ''}${sn ? (sp ? '; ' : '') + sn : ''}.`);
+  const have = SVC.filter(v => svcHave(v.k)).map(v => v.q);
+  if (have.length) L.push(`שירותים קיימים: ${have.join(', ')}.`);
+  if (val('rehosp') === 'yes') L.push('אשפוזים חוזרים בשנה האחרונה.');
+  return L;
+});
+NOTE.O.push(() => {
+  const L = [], v = [];
+  const s = num('sbp'), d = num('dbp');
+  if (s !== null) v.push(`ל"ד ${s}${d !== null ? '/' + d : ''}`);
+  [['hr','דופק',''],['rr','נשימות',''],['spo2','סטורציה','%'],['temp','חום',''],['glu','סוכר','']].forEach(([n, lab, u]) => { const x = num(n); if (x !== null) v.push(`${lab} ${x}${u}`); });
+  if (v.length) L.push(`סימנים חיוניים: ${v.join(', ')}.`);
+  const w = num('wt'), h = num('ht'), b = bmi();
+  const wb = []; if (w !== null) wb.push(`משקל ${w} ק"ג`); if (h !== null) wb.push(`גובה ${h} ס"מ`); if (b !== null) wb.push(`BMI ${b}`);
+  if (wb.length) L.push(wb.join(', ') + '.');
+  const wl = weightLoss();
+  if (wl && wl.src === 'exam') L.push(`ירידה לא מכוונת במשקל${wlText(wl) ? ': ' + wlText(wl) : ''}.`);
+  if (val('wl') === 'no') L.push('ללא ירידה לא מכוונת במשקל.');
+  const gn = val('gen'); if (gn) L.push(`מצב כללי: ${{good:'טוב', fair:'סביר', poor:'ירוד'}[gn]}.`);
+  const ex = examLines(); if (ex.length) L.push('בדיקה גופנית:', ...ex);
+  return L;
+});
+/* recommended services go to the plan, after the flag lines */
+const PLAN_EXTRA = [];
+PLAN_EXTRA.push(() => { const r = SVC.filter(v => svcRec(v.k)).map(v => v.q); return r.length ? [`- שירותים והפניות: ${r.join(', ')}.`] : []; });
+
+/* ================= wiring ================= */
+let dirty = false;
+function setStatus(t, warn){ const s = $('#status'); s.textContent = t; s.classList.toggle('warn', !!warn); }
+
+function refresh(){
+  UPDATERS.forEach(f => { try { f(); } catch(e){ console.error(e); } });
+  applyGender();
+  const flags = computeFlags();
+  renderFlags(flags);
+  if (!dirty) $('#note').value = buildNote(flags);
+}
+
+$('#app').addEventListener('change', e => {
+  if (e.target.name === 'vtype') onTypeChange();
+  if (e.target.name === 'live') onLiveChange(e);
+  if (e.target.id !== 'note') refresh();
+});
+$('#app').addEventListener('input', e => {
+  if (e.target.id === 'note'){ dirty = true; setStatus('הסיכום נערך ידנית ולא יתעדכן אוטומטית. „בנה מחדש” ידרוס את העריכה.', true); return; }
+  if (e.target.matches('input[type=text], input[type=number], #examtpl')) refresh();
+});
+$('#rebuild').addEventListener('click', () => { dirty = false; setStatus(''); refresh(); });
+$('#copy').addEventListener('click', () => {
+  const t = $('#note');
+  const done = () => { setStatus('הועתק'); setTimeout(() => { if ($('#status').textContent === 'הועתק') setStatus(''); }, 2000); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(done, () => { t.select(); document.execCommand('copy'); done(); });
+  else { t.select(); document.execCommand('copy'); done(); }
+});
+
+/* flag panel toggle */
+$('#flagbtn').addEventListener('click', () => {
+  const bar = $('#flagbar'); const open = bar.classList.toggle('open');
+  $('#flagbtn').setAttribute('aria-expanded', open);
+});
+
+/* any in-page link to a module opens it */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#sec-"]'); if (!a) return;
+  const d = $(`${a.getAttribute('href')} details.mod`); if (d) d.open = true;
+  if (a.closest('#flaglist')){ $('#flagbar').classList.remove('open'); $('#flagbtn').setAttribute('aria-expanded', false); }
+});
+
+/* scroll spy */
+const navLinks = $$('.nav-in a');
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => { if (en.isIntersecting){
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + en.target.id));
+  }});
+}, { rootMargin: '-130px 0px -60% 0px' });
+$$('main section[id]').forEach(s => spy.observe(s));
+
+initCites();
+refresh();
+</script>
+</body>
+</html>
