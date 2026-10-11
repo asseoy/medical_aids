@@ -254,8 +254,8 @@ footer p{margin:4px 0;max-width:80ch}
 
 <script>
 /* ---------- source ---------- */
-const PDF_URL='https://www.aafp.org/pubs/afp/issues/2023/0700/fatigue-adults.html';  // online article (the PDF is not in the public repo)
-const afp=(p,l)=>`<a class="cite" href="${PDF_URL}" target="_blank" rel="noopener">AFP ${l||'עמ׳ '+p}</a>`;
+const PDF_URL='https://www.aafp.org/pubs/afp/issues/2023/0700/fatigue-adults.pdf';   // free AFP PDF; PDF page = journal page − 57
+const afp=(p,l)=>`<a class="cite" href="${PDF_URL}#page=${p-57}" target="_blank" rel="noopener">AFP ${l||'עמ׳ '+p}</a>`;
 const GEN='<span class="gen">ידע כללי</span>';
 /* keep numeric ranges (18–34, 0–2) reading left-to-right inside Hebrew text */
 const bd=x=>String(x).replace(/(\d+)\s*[–-]\s*(\d+)/g,'<span dir="ltr">$1–$2</span>');
@@ -625,7 +625,7 @@ function renderWorkup(){
     `בדיקות מעבדה ללא התוויה ספציפית אינן בעלות תפוקה גבוהה ומשנות את הטיפול בכ-5% מהמטופלים בלבד. ${afp(61,'עמ׳ 61')}`,
     `במבוגרים צעירים שפנו לראשונה בגלל עייפות, רק 27% קיבלו אבחנה שמסבירה אותה. השכיחות: אנמיה, חסר B12, זיהום, הריון ואבחנות פסיכיאטריות. ${afp(61,'עמ׳ 61')}`,
     `שנה לאחר הפנייה, רק 8% קיבלו אבחנה ברורה של מחלה, וכ-17% אבחנה פסיכולוגית. ${afp(61,'עמ׳ 61')}`,
-    `אין לבצע פוליסומנוגרפיה כבדיקת סקר שגרתית בעייפות כרונית או בנדודי שינה, בלי חשד ספציפי להפרעת שינה (Choosing Wisely). ${afp(62,'עמ׳ 62')}`,
+    `אין לבצע פוליסומנוגרפיה כבדיקת סקר שגרתית בעייפות כרונית או בנדודי שינה, בלי חשד ספציפי להפרעת שינה (Choosing Wisely). ${afp(58,'עמ׳ 58')}`,
     `בעייפות מתמשכת ללא אבחנה, עדיף מעקב והערכה חוזרת לאורך זמן על פני הרחבת הבירור. ${GEN}`]))}`;
 }
 
@@ -687,7 +687,7 @@ function renderSort(){
     ['בטיפול ב-ME/CFS, לכוון לתסמינים הקשים ביותר ולמחלות הנלוות.','C'],
     ['להדריך מטופלים עם ME/CFS בניהול אנרגיה (pacing), שעשוי למנוע החמרה לאחר מאמץ.','C']];
   el.innerHTML=`<h2>המלצות מפתח ורמת הראיות</h2>
-  <p class="lead">המלצות המאמר בדירוג SORT. ${afp(59,'המלצות מפתח')}</p>
+  <p class="lead">המלצות המאמר בדירוג SORT. ${afp(67,'המלצות מפתח, עמ׳ 67')}</p>
   <div class="panel">${rows.map(r=>`<div class="item"><span class="no">${r[1]}</span><span>${r[0]}</span><span></span></div>`).join('')}
   <p class="hint">A: ראיות עקביות ואיכותיות המכוונות למטופל. B: ראיות לא עקביות או באיכות מוגבלת. C: קונצנזוס, ראיות המכוונות למחלה, נוהג מקובל, דעת מומחים או סדרות מקרים.</p></div>`;
 }

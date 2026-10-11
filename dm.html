@@ -228,16 +228,16 @@ details.gloss[open] summary::after{content:"–"}
 /* ===== source config =====
    העלו את קובץ ההנחיות לצד הכלי בשם standards-of-care-2026.pdf כדי שהציטוטים ייפתחו בעמוד הנכון.
    מספרי העמודים הם עמודי S של כתב העת; היסט הקובץ הוא +6. */
-const PDF_URL='standards-of-care-2026.pdf', PDF_OFFSET=6;
+const PDF_URL='', PDF_OFFSET=6;   // the full ADA supplement PDF is not public; cites link the online issue (ADA_URL)
 const ADA_URL='https://diabetesjournals.org/care/issue/49/Supplement_1';
 function cite(ch,s){
   const label='ADA \u00B7 \u05e4\u05e8\u05e7 '+ch+' \u00B7 S'+s;
   return PDF_URL? `<a class="cite" target="_blank" rel="noopener" href="${PDF_URL}#page=${s+PDF_OFFSET}">${label}</a>`
-                : `<span class="cite">${label}</span>`;
+                : `<a class="cite" target="_blank" rel="noopener" href="${ADA_URL}">${label}</a>`;
 }
 const c2=s=>cite(2,s), c6=s=>cite(6,s), c9=s=>cite(9,s);
 /* Israeli MoH T2D guidance (13.01.2021) — page numbers are the PDF's own pages */
-const IL_PDF='t2d-israel-2021.pdf';
+const IL_PDF='https://www.health.gov.il/hozer/mr13_2021.pdf';  // MoH circular 13/2021 (same file, PDF pages)
 const IL_PAGE='https://www.health.gov.il/hozer/mr13_2021.pdf';
 const CLALIT='https://www.clalit.co.il/he/medical/pharmacy/Pages/medicines.aspx';
 function cCL(idd){const label='\u05de\u05d3\u05e8\u05d9\u05da \u05d4\u05ea\u05e8\u05d5\u05e4\u05d5\u05ea \u05db\u05dc\u05dc\u05d9\u05ea';return idd? `<a class="cite" target="_blank" rel="noopener" href="${CLALIT}?idd=${idd}">${label}</a>`:`<span class="cite">${label}</span>`;}

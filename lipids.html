@@ -440,11 +440,13 @@ summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--v800)}
 
 <script>
 /* ---------- citation targets ---------- */
-const PDFS = { il:'dyslipidemia-israel-2020.pdf', lpa:'lpa-israel-2024.pdf', us:'accaha-dyslipidemia-2026.pdf' };
+const PDFS = { il:'https://ima-contentfiles.s3.amazonaws.com/clinical_102_dislip.pdf',
+               lpa:'https://ima-contentfiles.s3.amazonaws.com/Ne240_Lipoprotein.pdf',
+               us:'https://www.ahajournals.org/doi/10.1161/CIR.0000000000001423' };  // US: journal page numbers, so no #page
 document.addEventListener('click', e=>{
   const a = e.target.closest('.cite'); if(!a) return;
   e.preventDefault();
-  window.open(PDFS[a.dataset.pdf] + '#page=' + a.dataset.page, '_blank');
+  window.open(PDFS[a.dataset.pdf] + (a.dataset.pdf==='us' ? '' : '#page=' + a.dataset.page), '_blank');
 });
 
 /* ---------- SCORE2 (validated against the published worked example) ---------- */
