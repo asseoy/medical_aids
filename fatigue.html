@@ -55,6 +55,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px 22px}
 @media (max-width:760px){.grid2{grid-template-columns:1fr}}
 .hidden{display:none!important}
+.wl{margin:4px 0 8px;padding-inline-start:20px}.wl li{margin:2px 0}
 .stepper{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
 .stepper button{font:inherit;font-size:1.15rem;font-weight:700;width:38px;border:0;background:var(--ind-s);color:var(--ind-d);cursor:pointer}
 .stepper button:hover{background:#D6DAF0}
@@ -238,11 +239,11 @@ footer p{margin:4px 0;max-width:80ch}
 </section>
 
 <!-- ======================= LATER STAGES ======================= -->
-<section class="blk" id="sec-workup"><h2>בירור</h2><div class="stub">ייבנה בשלב 2: בדיקות בסיס, בדיקות מכוונות לפי הממצאים, והערות על תפוקת הבירור.</div></section>
-<section class="blk" id="sec-class"><h2>סיווג העייפות</h2><div class="stub">ייבנה בשלב 2: עייפות פיזיולוגית / משנית / כרונית, בדיקת קריטריונים לתסמונת העייפות הכרונית, וסימני אזהרה.</div></section>
+<section class="blk" id="sec-workup"><h2>בירור</h2></section>
+<section class="blk" id="sec-class"><h2>סיווג העייפות</h2></section>
 <section class="blk" id="sec-tx"><h2>טיפול</h2><div class="stub">ייבנה בשלב 3.</div></section>
-<section class="blk" id="sec-sort"><h2>המלצות מפתח ורמת הראיות</h2><div class="stub">ייבנה בשלב 3.</div></section>
-<section class="blk" id="sec-soap"><h2>סיכום לרשומה</h2><div class="stub">ייבנה בשלב 3.</div></section>
+<section class="blk" id="sec-sort"><h2>המלצות מפתח ורמת הראיות</h2></section>
+<section class="blk" id="sec-soap"><h2>סיכום לרשומה</h2></section>
 
 <footer>
   <p><b>מקור.</b> Latimer KM, Gunther A, Kopec M. Fatigue in Adults: Evaluation and Management. Am Fam Physician 2023;108(1):58-69.</p>
@@ -253,8 +254,8 @@ footer p{margin:4px 0;max-width:80ch}
 
 <script>
 /* ---------- source ---------- */
-const PDF_URL='fatigue-afp-2023.pdf';          // PDF page = journal page − 57
-const afp=(p,l)=>`<a class="cite" href="${PDF_URL}#page=${p-57}" target="_blank" rel="noopener">AFP ${l||'עמ׳ '+p}</a>`;
+const PDF_URL='https://www.aafp.org/pubs/afp/issues/2023/0700/fatigue-adults.html';  // online article (the PDF is not in the public repo)
+const afp=(p,l)=>`<a class="cite" href="${PDF_URL}" target="_blank" rel="noopener">AFP ${l||'עמ׳ '+p}</a>`;
 const GEN='<span class="gen">ידע כללי</span>';
 /* keep numeric ranges (18–34, 0–2) reading left-to-right inside Hebrew text */
 const bd=x=>String(x).replace(/(\d+)\s*[–-]\s*(\d+)/g,'<span dir="ltr">$1–$2</span>');
@@ -551,12 +552,187 @@ function scoreAll(){
   window.SCORES=R;
 }
 
+/* ---------- stage 2-3: workup, classification, key recommendations, record summary ---------- */
+const lab=(k,arr)=>{const g=OPT[k];if(!g)return [];return [...(S[k]||[])].map(v=>{const o=g.o.find(x=>x[0]===v);return o?lbl(o[1]):v})};
+const has=(k,v)=>S[k] instanceof Set?S[k].has(v):S[k]===v;
+const anyOf=(k)=>S[k] instanceof Set&&S[k].size>0;
+const card=(title,body,cls)=>`<div class="panel"><h3>${title}</h3>${body}</div>`;
+const ul=a=>a.length?`<ul class="wl">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:'';
+
+/* targeted tests: Table 1 of the source, triggered by history/exam/background */
+function targeted(){
+  const T=[], R=window.SCORES||{};
+  const add=(why,tests)=>T.push({why,tests});
+  if(anyOf('cCard')||anyOf('eCard')||has('bg','hf')||has('bg','copd')){
+    const t=['אק״ג','צילום חזה'];
+    if(has('cCard','dysp')||has('eCard','crack')||has('eCard','edema')||has('eCard','murmur')||has('bg','hf')) t.push('אקו לב');
+    if(has('cCard','palp')||has('cCard','sync')||has('eCard','irreg')) t.push('הולטר');
+    if(has('cCard','dysp')||has('bg','copd')) t.push('תפקודי ריאות');
+    add('תסמינים או ממצאים לבביים־ריאתיים',t);
+  }
+  if(has('cEndo','poly')||has('bg','dm')) add('שתייה והשתנה מרובות / סוכרת',['HbA1c','גלוקוז ואלקטרוליטים','בדיקת שתן']);
+  if(has('cEndo','wtch')||has('cEndo','temp')||has('eOth','goitre')||has('bg','hypoT')) add('שינוי במשקל, רגישות לחום/קור או בלוטת תריס מוגדלת',['TSH','אולטרסאונד תריס אם יש הגדלה']);
+  if(has('eSkin','hyperpig')) add('היפרפיגמנטציה (חשד לאי ספיקת יותרת הכליה)',['קורטיזול בוקר','ACTH','אלקטרוליטים']);
+  if(anyOf('cGi')||has('eSkin','jaund')||has('bg','ibd')){
+    const t=['כימיה מלאה כולל תפקודי כבד','CRP ושקיעת דם'];
+    if(has('cGi','diar')) t.push('נוגדנים לצליאק (tTG, EMA)');
+    if(has('eSkin','jaund')) t.push('אולטרסאונד כבד');
+    if(has('cGi','abd')) t.push('CT בטן לפי החשד');
+    add('תסמינים או ממצאים ממערכת העיכול',t);
+  }
+  if(S.sex==='f'&&(S.preg==='yes'||has('cGyn','pelv'))){
+    const t=[]; if(S.preg==='yes') t.push('בדיקת הריון'); if(has('cGyn','pelv')) t.push('אולטרסאונד אגן');
+    add('גינקולוגי',t);
+  }
+  if(has('cHem','bleed')||has('eSkin','pallor')) add('דימום או חיוורון',['ספירת דם','פריטין ומאגרי ברזל','ויטמין B12','חומצה פולית']);
+  if(anyOf('cInf')||has('trig','ebv')){
+    if(has('cInf','fever')) add('חום',['ספירת דם עם מבדלת','CRP ושקיעת דם']);
+    if(has('cInf','tb')) add('חשיפה לשחפת',['QuantiFERON או מנטו','צילום חזה']);
+    if(has('cInf','tick')) add('עקיצת קרציה',['נוגדנים למחלת ליים']);
+    if(has('cInf','sex')) add('התנהגות מינית בסיכון',['HIV','HBsAg ונוגדנים להפטיטיס C','RPR ונוגדנים טרפונמליים']);
+    if(has('cInf','travel')) add('שהייה בחו״ל',['בדיקת צואה לטפילים וביצים']);
+    if(has('trig','ebv')) add('לאחר מחלת נשיקה',['נוגדנים ל-EBV / מונוספוט, אם האבחנה לא ודאית']);
+  }
+  if(has('cNeu','fatw')||has('cNeu','diplo')||has('eNeu','fatwEx')||has('bg','mg')) add('חולשה מתעייפת, ראייה כפולה או צניחת עפעף',['נוגדנים לקולטן אצטילכולין']);
+  if(has('cNeu','focal')||has('eNeu','focalEx')||has('bg','ms')) add('חסר נוירולוגי מוקדי',['MRI מוח / עמוד שדרה','ויטמין B12 וחומצה מתילמלונית']);
+  if(anyOf('cRh')||has('eSkin','rashEx')||has('bg','ra')){
+    const t=['CRP ושקיעת דם','ANA'];
+    if(has('cRh','joint')) t.push('RF ו-anti-CCP','צילומי מפרקים');
+    if(has('cRh','prox')) t.push('CPK');
+    add('תסמינים ראומטולוגיים',t);
+  }
+  const stop=R.stop, ess=R.ess;
+  if(has('cSlp','snore')||has('eOth','neck')||(stop&&stop.done&&stop.n>=3)||(ess&&ess.done&&ess.n>10))
+    add('חשד להפרעת שינה (נחירות, STOP-Bang 3 ומעלה או Epworth מעל 10)',['הפניה לבדיקת שינה (פוליסומנוגרפיה)']);
+  if(has('cOnc','wtloss')||has('cOnc','sweats')||has('eOth','lymph')||has('bg','ca')) add('ירידה במשקל, הזעות לילה או בלוטות מוגדלות',['ספירת דם עם מבדלת','הדמיה לפי החשד הקליני (CT / PET-CT, מיפוי עצמות)']);
+  if(has('cExp','metal')) add('חשיפה למתכות כבדות',['רמת עופרת']);
+  if(anyOf('sub')) add('שימוש בחומרים',['סקר שתן לסמים','בירור אלכוהול (AUDIT-C, התערבות קצרה)']);
+  if(anyOf('med')) add('תרופות שעלולות לגרום לעייפות',['רמות תרופה בדם, כשרלוונטי','שקילת הפחתה או החלפה']);
+  return T;
+}
+
+function renderWorkup(){
+  const el=document.getElementById('sec-workup'); if(!el) return;
+  const T=targeted();
+  const base=['ספירת דם','כימיה: גלוקוז, אלקטרוליטים, תפקודי כליה וכבד','TSH'];
+  if(S.sex==='f'&&S.preg==='yes') base.push('בדיקת הריון');
+  el.innerHTML=`<h2>בירור</h2>
+  <p class="lead">הבירור המעבדתי מכוון לפי האנמנזה, הבדיקה והגורמים השכיחים, ולא כסוללה קבועה. ${afp(61,'עמ׳ 61')}</p>
+  ${card('בדיקות בסיס',`<p class="hint">סט מצומצם המכסה את הגורמים השכיחים לעייפות: אנמיה, סוכרת, הפרעות אלקטרוליטים, מחלת כליות או כבד ותריס. ${GEN}</p>${ul(base)}`)}
+  ${card(`בדיקות מכוונות לפי הממצאים ${afp(60,'טבלה 1')}`,T.length?T.map(t=>`<div class="sublbl">${t.why}</div>${ul(t.tests)}`).join(''):
+    '<p class="hint">לא נבחרו תסמינים, ממצאים או מחלות רקע שמכוונים לבדיקות נוספות. סמן/י אותם באנמנזה ובבדיקה כדי לקבל הצעות.</p>')}
+  ${card('תפוקת הבירור',ul([
+    `בדיקות מעבדה ללא התוויה ספציפית אינן בעלות תפוקה גבוהה ומשנות את הטיפול בכ-5% מהמטופלים בלבד. ${afp(61,'עמ׳ 61')}`,
+    `במבוגרים צעירים שפנו לראשונה בגלל עייפות, רק 27% קיבלו אבחנה שמסבירה אותה. השכיחות: אנמיה, חסר B12, זיהום, הריון ואבחנות פסיכיאטריות. ${afp(61,'עמ׳ 61')}`,
+    `שנה לאחר הפנייה, רק 8% קיבלו אבחנה ברורה של מחלה, וכ-17% אבחנה פסיכולוגית. ${afp(61,'עמ׳ 61')}`,
+    `אין לבצע פוליסומנוגרפיה כבדיקת סקר שגרתית בעייפות כרונית או בנדודי שינה, בלי חשד ספציפי להפרעת שינה (Choosing Wisely). ${afp(62,'עמ׳ 62')}`,
+    `בעייפות מתמשכת ללא אבחנה, עדיף מעקב והערכה חוזרת לאורך זמן על פני הרחבת הבירור. ${GEN}`]))}`;
+}
+
+function renderClass(){
+  const el=document.getElementById('sec-class'); if(!el) return;
+  const R=window.SCORES||{};
+  const posScreen=['phq','gad','mdq','aud','stop','ess'].filter(id=>R[id]&&R[id].done&&R[id].b&&R[id].b.lv===2);
+  const secondary=[];
+  if(anyOf('bg')) secondary.push('מחלות רקע: '+lab('bg').join(', '));
+  if(anyOf('med')) secondary.push('תרופות: '+lab('med').join(', '));
+  if(anyOf('sub')) secondary.push('חומרים: '+lab('sub').join(', '));
+  CLUES.concat(EXAM).forEach(c=>{if(anyOf(c.k)) secondary.push(c.n+': '+lab(c.k).join(', '))});
+  if(posScreen.length) secondary.push('שאלוני סינון חיוביים: '+posScreen.map(id=>({phq:'דיכאון',gad:'חרדה',mdq:'דו-קוטבית',aud:'אלכוהול',stop:'דום נשימה',ess:'ישנוניות'})[id]).join(', '));
+  const physio=S.rest==='yes'||anyOf('hab');
+  // NAM 2015 criteria (Table 3)
+  const crit=[
+    ['ירידה משמעותית בתפקוד לעומת לפני המחלה, ונמשכת 6 חודשים ומעלה',S.decline==='yes'&&S.dur==='ge6'],
+    ['החמרה לאחר מאמץ (postexertional malaise)',anyOf('pem')],
+    ['שינה שאינה מרעננת',has('slp','slp2')],
+    ['התסמינים בעוצמה בינונית עד קשה, לפחות במחצית הזמן',S.half==='yes'],
+    ['ועוד אחד: פגיעה קוגניטיבית או אי סבילות לעמידה',anyOf('cog')||anyOf('ort')]];
+  const allMet=crit.every(c=>c[1]);
+  let verdict, cls;
+  if(S.type==='sleepy'){verdict='התלונה העיקרית היא ישנוניות (נטייה להירדם), ולא עייפות. הכיוון: הפרעות שינה, תרופות וחומרים.';cls='warn';}
+  else if(S.type==='weak'){verdict='התלונה העיקרית היא חולשת שרירים. נדרשת הערכה נוירולוגית או ראומטולוגית ולא בירור עייפות.';cls='warn';}
+  else if(S.dur==='ge6'&&allMet&&secondary.length){verdict='עונה על קריטריוני ME/CFS (NAM 2015), אך יש ממצאים שמכוונים לגורם משני. יש לברר ולטפל בהם לפני אבחנת ME/CFS';cls='warn';}
+  else if(S.dur==='ge6'&&allMet){verdict='עייפות כרונית העונה על קריטריוני ME/CFS (NAM 2015). האבחנה קלינית, ובתנאי שגורמים פיזיולוגיים ומשניים נשללו';cls='bad';}
+  else if(secondary.length){verdict='עייפות משנית אפשרית: יש ממצאים שמכוונים לגורם רקע. הטיפול מכוון לגורם.';cls='';}
+  else if(physio){verdict='עייפות פיזיולוגית אפשרית: חוסר איזון בין פעילות למנוחה, שינה או תזונה. יש להעריך אותה ראשונה.';cls='ok';}
+  else if(S.dur==='ge6'){verdict='עייפות כרונית (6 חודשים ומעלה) שאינה עונה על כל קריטריוני ME/CFS. רוב המטופלים עם עייפות ממושכת אינם עם ME/CFS.';cls='';}
+  else {verdict='בחר/י סוג תלונה, משך וממצאים כדי לקבל סיווג.';cls='';}
+  const flags=[];
+  if(has('cOnc','wtloss')) flags.push('ירידה לא מכוונת במשקל');
+  if(has('cOnc','sweats')) flags.push('הזעות לילה');
+  if(has('cInf','fever')) flags.push('חום');
+  if(has('eOth','lymph')) flags.push('הגדלת בלוטות לימפה');
+  if(has('cNeu','focal')||has('eNeu','focalEx')) flags.push('חסר נוירולוגי מוקדי');
+  if(has('cCard','cp')||has('cCard','sync')) flags.push('כאב בחזה או התעלפות');
+  if(has('cHem','bleed')) flags.push('דימום');
+  if(R.phq&&R.phq.item9) flags.push('מחשבות על מוות או פגיעה עצמית');
+  if(S.age!==null&&S.age>=50&&S.onset==='sudden') flags.push('הופעה פתאומית מעל גיל 50');
+  window.CLASS={verdict,allMet,crit,secondary,physio,flags};
+  el.innerHTML=`<h2>סיווג העייפות</h2>
+  <p class="lead">שלושה סוגים: פיזיולוגית (חוסר איזון בין פעילות למנוחה, חולפת במנוחה), משנית (תסמין של מחלה אחרת) וכרונית (6 חודשים ומעלה). יש להעריך גורמים פיזיולוגיים לפני בירור עייפות משנית או כרונית. ${afp(58,'עמ׳ 58')}</p>
+  <div class="alert ${cls}"><b>${verdict}</b></div>
+  ${secondary.length?card('ממצאים שמכוונים לעייפות משנית',ul(secondary)):''}
+  ${card(`קריטריוני ME/CFS לפי NAM 2015 ${afp(63,'טבלה 3')}`,`<p class="hint">כל הקריטריונים נדרשים. אין בדיקת מעבדה או ממצא בבדיקה לאבחנה; ההחמרה לאחר מאמץ היא המאפיין החשוב ביותר.</p>`+
+    crit.map(c=>`<div class="q">${c[1]?'✅':'⬜'} ${bd(c[0])}</div>`).join(''))}
+  ${card(`סימני אזהרה ${GEN}`,flags.length?`<div class="alert bad">${flags.join(' · ')}</div><p class="hint">מחייבים בירור מכוון ומהיר לפני ייחוס העייפות לגורם פיזיולוגי או כרוני.</p>`:
+    '<p class="hint">לא סומנו סימני אזהרה. במקור אין רשימה פורמלית של סימני אזהרה; הרשימה כאן היא ידע כללי.</p>')}`;
+}
+
+function renderSort(){
+  const el=document.getElementById('sec-sort'); if(!el) return;
+  const rows=[
+    ['יש להעריך גורמים פיזיולוגיים לעייפות לפני בירור עייפות משנית או כרונית.','C'],
+    ['פעילות גופנית והתערבות פסיכולוגית (בעיקר CBT) לעייפות הקשורה לסרטן, למחלות דלקתיות, למחלות נוירולוגיות ולפיברומיאלגיה, אך לא ב-ME/CFS.','B'],
+    ['יש להשתמש בקריטריונים של National Academy of Medicine לאבחנת ME/CFS.','C'],
+    ['בטיפול ב-ME/CFS, לכוון לתסמינים הקשים ביותר ולמחלות הנלוות.','C'],
+    ['להדריך מטופלים עם ME/CFS בניהול אנרגיה (pacing), שעשוי למנוע החמרה לאחר מאמץ.','C']];
+  el.innerHTML=`<h2>המלצות מפתח ורמת הראיות</h2>
+  <p class="lead">המלצות המאמר בדירוג SORT. ${afp(59,'המלצות מפתח')}</p>
+  <div class="panel">${rows.map(r=>`<div class="item"><span class="no">${r[1]}</span><span>${r[0]}</span><span></span></div>`).join('')}
+  <p class="hint">A: ראיות עקביות ואיכותיות המכוונות למטופל. B: ראיות לא עקביות או באיכות מוגבלת. C: קונצנזוס, ראיות המכוונות למחלה, נוהג מקובל, דעת מומחים או סדרות מקרים.</p></div>`;
+}
+
+function buildSoap(){
+  const el=document.getElementById('sec-soap'); if(!el) return;
+  const C=window.CLASS||{}, R=window.SCORES||{};
+  const typ={exh:'תשישות וחוסר אנרגיה',sleepy:'ישנוניות',weak:'חולשת שרירים'}[S.type]||'עייפות';
+  const dur={lt1:'פחות מחודש',m1to6:'חודש עד 6 חודשים',ge6:'6 חודשים ומעלה'}[S.dur]||'משך לא צוין';
+  const who=[S.age!==null?`בן/בת ${S.age}`.replace('בן/בת',G('בן','בת','בן/בת')):'',S.sex?G('גבר','אישה'):''].filter(Boolean).join(', ');
+  const s=[`${who?who+'. ':''}תלונה: ${typ}, ${dur}${S.onset?', הופעה '+(S.onset==='grad'?'הדרגתית':'פתאומית'):''}.`];
+  if(anyOf('trig')&&!has('trig','none')) s.push('הופיעה '+lab('trig').join(', ')+'.');
+  if(S.sev) s.push('עוצמה '+({mild:'קלה',mod:'בינונית',severe:'קשה'})[S.sev]+(S.decline==='yes'?', עם ירידה בתפקוד.':'.'));
+  if(S.rest) s.push(S.rest==='yes'?'משתפרת במנוחה.':'אינה משתפרת במנוחה.');
+  ['pem','slp','cog','ort','hab','med','sub','bg'].forEach(k=>{if(anyOf(k)) s.push(({pem:'החמרה לאחר מאמץ',slp:'שינה',cog:'קוגניטיבי',ort:'אורתוסטטי',hab:'הרגלים',med:'תרופות',sub:'חומרים',bg:'רקע'})[k]+': '+lab(k).join(', ')+'.')});
+  CLUES.forEach(c=>{if(anyOf(c.k)) s.push(c.n+': '+lab(c.k).join(', ')+'.')});
+  const o=[];
+  EXAM.forEach(c=>{if(anyOf(c.k)) o.push(c.n+': '+lab(c.k).join(', '))});
+  const sc=[['stop','STOP-Bang'],['ess','Epworth'],['phq','PHQ-9'],['gad','GAD-7'],['mdq','MDQ'],['aud','AUDIT-C']]
+    .filter(([id])=>R[id]&&R[id].done).map(([id,n])=>`${n} ${R[id].n} (${R[id].b.label})`);
+  if(sc.length) o.push('שאלונים: '+sc.join(', '));
+  const a=[(C.verdict||'לא סווג').replace(/[.\s]+$/,'')];
+  if(C.flags&&C.flags.length) a.push('סימני אזהרה: '+C.flags.join(', '));
+  const T=targeted();
+  const p=['בדיקות בסיס: ספירת דם, כימיה, TSH'+(S.sex==='f'&&S.preg==='yes'?', בדיקת הריון':'')+'.'];
+  if(T.length) p.push('בדיקות מכוונות: '+[...new Set(T.flatMap(t=>t.tests))].join(', ')+'.');
+  if(C.physio) p.push('הדרכה על היגיינת שינה, איזון פעילות ומנוחה ותזונה.');
+  if(C.allMet) p.push('הדרכה על ניהול אנרגיה (pacing); טיפול בתסמינים הקשים ביותר ובמחלות נלוות; ללא תוכנית אימונים מדורגת.');
+  p.push('מעקב חוזר להערכה ולהתאמת הטיפול.');
+  const txt=`S: ${s.join(' ')}\nO: ${o.length?o.join('; ')+'.':'ללא ממצאים חריגים שסומנו.'}\nA: ${a.join('. ')}.\nP: ${p.join(' ')}`;
+  el.innerHTML=`<h2>סיכום לרשומה</h2>
+  <p class="lead">טקסט להעתקה לרשומה, נבנה מהבחירות בדף. יש לעבור עליו ולהתאים לפני השימוש.</p>
+  <div class="panel"><pre id="soapTxt" style="white-space:pre-wrap;font-family:inherit;margin:0">${txt}</pre>
+  <p><button class="chip" type="button" id="soapCopy">העתקה</button> <span class="hint" id="soapMsg"></span></p></div>`;
+  document.getElementById('soapCopy').addEventListener('click',()=>{
+    navigator.clipboard.writeText(txt).then(()=>{document.getElementById('soapMsg').textContent='הועתק'},()=>{document.getElementById('soapMsg').textContent='ההעתקה נכשלה, סמן/י והעתק/י ידנית'});
+  });
+}
+
 /* ---------- global update ---------- */
 function update(){
   const d={lt1:'פחות מחודש',m1to6:'חודש עד 6 חודשים',ge6:'6 חודשים ומעלה'};
   document.getElementById('navDur').textContent='משך: '+(S.dur?d[S.dur]:'לא נבחר');
   scoreAll();
-  // later stages hook in here: renderWorkup(), renderClass(), renderTx(), buildSoap()
+  renderWorkup(); renderClass(); renderSort(); buildSoap();   // treatment (renderTx) still stage 3
 }
 
 /* ---------- static citations ---------- */
