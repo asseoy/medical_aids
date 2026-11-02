@@ -357,6 +357,16 @@ function renderCertDetail(i){
   buildCertDoc();
 }
 
+// short documentation text (all protocols): title, who, what was checked, outcome, what went to the patient and to the physician
+const WHO = "בוצע ע\"י סטודנט/ית לרפואה המסייע/ת לרופא/ה";
+const STU = t => String(t).replace(/\s*ע"י רפואן/g, "").replace(/רפואן/g, "סטודנט/ית לרפואה").replace(/ {2,}/g, " ");
+function checkedLine(items){
+  const ok = items.filter(x => x.ok).map(x => x.t), bad = items.filter(x => !x.ok).map(x => x.t);
+  const out = [];
+  if(ok.length) out.push("נבדק ותקין: " + ok.join(", ") + ".");
+  if(bad.length) out.push("לא תקין או חסר: " + bad.join("; ") + ".");
+  return out;
+}
 function buildCertDoc(){
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
   const d = DRUGS[current]; const req = ALL[d.p].kind === "req";
@@ -368,29 +378,21 @@ function buildCertDoc(){
   const contra = fails.filter(c => c.contra), clinic = fails.filter(c => c.clinic), other = fails.filter(c => !c.contra && !c.clinic);
   const out = detailEl.querySelector(".outcome").value;
   const note = detailEl.querySelector(".note").value.trim();
-  const lines = req
-    ? ["מענה לפנייה מקוונת ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
-       "רפואן (סטודנט לרפואה המסייע לרופא/ה) עונה רק על סוגי פניות שבפרוטוקול וכשהתנאים מתקיימים, בשם הרופא/ה ובהנחייתו/ה. אחרת: סירוב מנומק וזימון, או העברה לרופא/ה.",
-       "", "פנייה מקוונת: " + d.he + (note ? " | " + note : "")]
-    : ["אישור ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
-       "רפואן (סטודנט לרפואה המסייע לרופא/ה) מפיק אישור רק כשסוג האישור בפרוטוקול וכל התנאים מתקיימים, בשם הרופא/ה המטפל/ת ובהנחייתו/ה. אחרת: הכנה והעברה לרופא/ה.",
-       "", "סוג: " + d.he + (note ? " | פרטים: " + note : "")];
-  if(d.checks.length){
-    lines.push("", "מה נבדק (✓ מתקיים · ✗ לא מתקיים או לא נבדק):");
-    let n = 0;
-    d.checks.forEach(c => {
-      if(c.opt && ans(c.k) === "n") return;
-      const m = ok(c.k) ? "✓" : "✗";
-      lines.push((++n) + ". " + m + " " + (m === "✗" && c.bad ? c.bad : c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "") + " — " + c.crit);
-    });
-  } else if(d.only) lines.push("", "לפי הפרוטוקול: " + d.only);
   const o = outs().find(x => x[0] === out);
-  lines.push("", o ? o[2] : "");
-  const acts = [];
-  if(contra.length) acts.push("לרופא/ה: " + contra.map(c => c.bad || c.label).join(", ") + ".");
-  if(other.length && out !== "issue") acts.push("לבדיקת הרופא/ה: " + other.map(c => c.bad || c.label).join(", ") + ".");
-  if(clinic.length) acts.push("זימון: " + clinic.map(c => c.clinic).join("; ") + ".");
-  if(acts.length){ lines.push("פעולות:"); acts.forEach(x => lines.push("• " + x)); }
+  const lines = [(req ? "מענה לפנייה מקוונת" : "אישור") + " — פרוטוקול " + DATA.name, WHO,
+    (req ? "פנייה: " : "סוג: ") + d.he + (note ? " | " + note : "")];
+  if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
+    .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")}))));
+  lines.push(STU(o ? o[2] : ""));
+  const PAT = req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
+                  : {issue:"האישור הופק ונמסר", visit:"זימון למפגש עם רופא/ה"};
+  const toPat = [PAT[out]].concat(clinic.map(c => "זימון: " + c.clinic)).filter(Boolean);
+  const toDr = [];
+  if(contra.length) toDr.push(contra.map(c => c.bad || c.label).join(", "));
+  if(other.length && out !== "issue") toDr.push(other.map(c => c.bad || c.label).join(", "));
+  if(out === "doc" || out === "no") toDr.push(out === "no" ? "פנייה דחופה — עדכון מיידי" : "להחלטה ולאישור");
+  if(toPat.length) lines.push("הועבר למטופל/ת: " + toPat.join("; ") + ".");
+  if(toDr.length) lines.push("הועבר לרופא/ה: " + toDr.join("; ") + ".");
   ta.value = lines.join("\n");
   const mt = detailEl.querySelector(".msgtext");
   if(mt && !mt.dataset.edited){
@@ -453,23 +455,22 @@ function buildDoc(){
     if(toDoc.length) acts.push("הודעה לרופא/ה: לא תקין — " + toDoc.join(", ") + ". לבדיקה והחלטה לפני החידוש הבא.");
   }
   if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
-  const lines = ["חידוש מרשם כרוני ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
-    "רפואן (סטודנט לרפואה המסייע לרופא/ה) מחדש ל-3 חודשים רק כשכל התנאים שלהלן מתקיימים. חסרה מדידה, בדיקות או ביקורת שנתית: חידוש לחודש וזימון למרפאה. ערך חריג: חידוש לחודש והודעה לרופא/ה. התווית נגד או ערך חמור: לא מחדשים, הודעה לרופא/ה.",
-    "מקור: " + DATA.guide + ".", "",
-    "תרופה: " + name + " | קבוצה: " + d.cls + " | אורך חידוש מלא: " + (d.maxm === 1 ? "חודש אחד" : "3 חודשים"), "",
-    "מה נבדק לפני החידוש (✓ נבדק ותקין · ✗ לא נבדק או לא תקין):"];
-  let n = 0;
-  d.checks.forEach(c => {
-    if(c.opt && ans(c.k) === "n") return;
-    const box = boxes.find(x => x.dataset.k === c.k);
-    const mark = box && box.checked ? "✓" : "✗";
+  const lines = ["חידוש מרשם כרוני — פרוטוקול " + DATA.name, WHO, "תרופה: " + name];
+  lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n")).map(c => {
+    const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
-      : c.sev && !(box && box.checked) ? (sevAns(c.k) === "y" ? " — ערך חמור: " + c.sev : sevAns(c.k) === "n" ? " — לא חמור" : " — לא סומן אם חמור") : "";
-    lines.push((++n) + ". " + mark + " " + (mark === "✗" && c.bad ? c.bad : c.label) + extra + (c === renal ? " (" + renalTxt + ")" : "") + " — " + c.crit);
-  });
-  if(note){ lines.push("", "הערת הרפואן: " + note); }
-  lines.push("", outTxt);
-  if(acts.length){ lines.push("פעולות:"); acts.forEach(x => lines.push("• " + x)); }
+      : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
+    return {ok: okc, t: okc ? c.label : (c.bad || c.label) + extra};
+  })));
+  lines.push(STU({"3":"תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
+    "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד."}[out]));
+  if(clinic.length && out !== "0") lines.push("הועבר למטופל/ת: זימון למרפאה — " + clinic.join("; ") + ".");
+  const dr = [];
+  if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
+  else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
+  if(renal && out !== "3") dr.push(renalTxt);
+  if(dr.length) lines.push("הועבר לרופא/ה: " + dr.join(". ") + ".");
+  if(note) lines.push("הערה: " + note);
   ta.value = lines.join("\n");
   const w = detailEl.querySelector(".warnmsg");
   if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : " בחרו חידוש לחודש אחד."); }
