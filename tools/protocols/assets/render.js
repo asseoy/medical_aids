@@ -1,0 +1,3 @@
+const {chromium}=require('playwright');const path=require('path');(async()=>{const b=await chromium.launch();const A=path.resolve('assets');
+for(const n of [180,192,512]){const p=await b.newPage({viewport:{width:n,height:n}});await p.setContent(`<html><body style="margin:0"><img src="data:image/svg+xml;base64,${require("fs").readFileSync(A+"/protocols-icon.svg").toString("base64")}" width="${n}" height="${n}" style="display:block"></body></html>`);await p.waitForTimeout(150);await p.screenshot({path:`${A}/protocols-${n}.png`,omitBackground:true});await p.close();}
+const p=await b.newPage({viewport:{width:1200,height:630}});await p.goto('file://'+A+'/og.html');await p.waitForTimeout(200);await p.screenshot({path:A+'/protocols-og.png'});await b.close();})();
