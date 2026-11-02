@@ -46,7 +46,7 @@ def item_block(sec, n, d, kind=None):
     if d.get("only"):
         rows.append(("הנחיה", "<b>" + E(d["only"]) + "</b>"))
     body = "".join(f'<tr><th>{E(a)}</th><td>{b}</td></tr>' for a, b in rows)
-    out = f'<div class="item">{head}<table class="kv">{body}</table>'
+    out = f'<div class="item" id="d{sec}-{n}">{head}<table class="kv">{body}</table>'
     if d.get("checks"):
         cr = []
         for i, c in enumerate(d["checks"], 1):
@@ -100,6 +100,19 @@ def section(sec, k):
     h += f'<h2 class="pb">{sec}.ו פירוט מלא</h2>' + "".join(item_block(sec, i, d, kind) for i, d in enumerate(ds, 1))
     return h + "</section>"
 
+
+# cross-tab list: everything renewed by a physician only (each item also appears in its own chapter)
+only_rows = []
+for i, k in enumerate(drug_tabs, 1):
+    for j, d in enumerate(A[k]["drugs"], 1):
+        if d["suit"] == "לא":
+            names = " | ".join(b.get("he") or b["en"] for b in d["brands"][:12]) + (f" … (+{len(d['brands']) - 12})" if len(d["brands"]) > 12 else "")
+            only_rows.append((f'<a href="#d{i}-{j}">{i}.{j}</a>', E(A[k]["name"]), "<b>" + E(d["he"]) + "</b><br>" + f'<span class="ltr">{E(d["generic"])}</span>',
+                              E(names), E(d.get("only") or d.get("why", "")), "☐"))
+only_sec = f'''<section><h1 id="sonly">רשימה מרוכזת: תרופות שמחודשות ע"י רופא/ה בלבד ({len(only_rows)})</h1>
+<p>בתרופות אלה הכלי לא מציג רשימת בדיקות: מוצגת הודעה, והבקשה עוברת לרופא/ה (או למומחה/ית). הסיבות: סם מסוכן, תרופה טרטוגנית במעקב מומחה,
+טיפול שנקבע ומנוטר ע"י מרכז מומחה, או החלטה מקומית. כל פריט מופיע גם בפרק המערכת שלו (המספר בעמודה הראשונה).</p>
+{table(["#", "מערכת", "תרופה / קבוצה", "שמות מסחריים", "ההודעה בכלי", "אושר"], only_rows, "small")}</section>'''
 
 toc = "".join(f'<li><a href="#s{i}">{i}. {E(A[k]["name"])}</a> <span class="tn">({len(A[k]["drugs"])})</span></li>' for i, k in enumerate(A["order"], 1))
 general = f'''
@@ -164,9 +177,10 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
                   ("פרוטוקולים נוספים", " · ".join(A[k]["name"] + f' ({len(A[k]["drugs"])})' for k in kind_tabs)),
                   ("הופק", TODAY + " · מתוך הכלי שפורסם (asseoy.github.io/medical_aids/protocols-rofan.html)")])}
 <p>ד"ר יונתן אסיאו · asseo_y@mac.org.il</p></div>
-<div class="toc"><h1>תוכן העניינים</h1><ol><li><a href="#s0">0. עקרונות כלליים</a></li>{toc}</ol>
+<div class="toc"><h1>תוכן העניינים</h1><ol><li><a href="#s0">0. עקרונות כלליים</a></li><li><a href="#sonly">רשימה מרוכזת: רופא/ה בלבד</a> <span class="tn">({len(only_rows)})</span></li>{toc}</ol>
 <p class="meta">בכל פרק: א. כללים · ב. תוצאות (באישורים ובפניות) · ג. בדיקות משותפות · ד. החלטות · ה. רשימה לסימון · ו. פירוט מלא של כל פריט עם משבצת אישור.</p></div>
 {general}
+{only_sec}
 {"".join(section(i, k) for i, k in enumerate(A["order"], 1))}
 </body></html>'''
 
