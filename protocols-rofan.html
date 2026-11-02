@@ -66,6 +66,16 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .brand{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:.9rem}
 .brand small{color:var(--warn)}
 .src{color:var(--muted);font-size:.85rem}
+.doc{background:var(--accent-soft)}
+.doc-row{display:grid;gap:4px}
+.doc-row label{font-size:.9rem;font-weight:600}
+.doc select,.doc input,.doctext{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.doctext{resize:vertical;line-height:1.6}
+.doc-actions{display:flex;gap:10px;align-items:center}
+.copy{font:inherit;font-weight:600;background:var(--accent);color:var(--surface);border:0;border-radius:8px;padding:8px 18px;cursor:pointer}
+.copy:focus-visible,.doc select:focus-visible,.doc input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.warnmsg{margin:0;color:var(--bad);font-weight:600;font-size:.92rem}
+.copied{color:var(--ok);font-size:.9rem}
 .rules{background:var(--accent-soft);border-radius:12px;padding:14px 18px;display:grid;gap:6px}
 .rules h3{margin:0;font-size:1rem}
 .tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
@@ -164,7 +174,8 @@ function renderDetail(i){
   const b = matchedBrand(d, qEl.value);
   const [cls, label] = SUIT[d.suit];
   const pre = DATA.common.filter(c => c[0] === "לפני כל חידוש");
-  const checks = pre.map((c,k) => `<li><label><input type="checkbox" id="c-${i}-${k}"><span><b>${esc(c[1])}</b><br><span class="det">${esc(c[3])}</span></span></label></li>`).join("");
+  const OPT = ["גיל 80+","בדיקות אחרי שינוי"];
+  const checks = pre.map((c,k) => `<li><label><input type="checkbox" id="c-${i}-${k}" data-label="${esc(c[1])}"${OPT.includes(c[1])?' data-opt="1"':''}><span><b>${esc(c[1])}</b>${OPT.includes(c[1])?' <span class="det">(רק אם רלוונטי)</span>':''}<br><span class="det">${esc(c[3])}</span></span></label></li>`).join("");
   detailEl.innerHTML = `
   <article class="card">
     <div class="card-h">
@@ -175,7 +186,25 @@ function renderDetail(i){
     <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
     ${d.suit === "לא" ? `<div class="sec"><p style="margin:0">התרופה לא בפרוטוקול הרפואן. להעביר את הבקשה לרופא המטפל.</p></div>` : `
     <div class="sec"><h3>לבדוק לפני החידוש</h3><ul class="checks">${checks}
-      <li><label><input type="checkbox" id="c-${i}-lab"><span><b>בדיקות ייעודיות לתרופה</b><br><span class="det">${esc(d.labs)}</span></span></label></li></ul></div>`}
+      <li><label><input type="checkbox" id="c-${i}-lab" data-label="בדיקות ייעודיות לתרופה"><span><b>בדיקות ייעודיות לתרופה</b><br><span class="det">${esc(d.labs)}</span></span></label></li></ul></div>`}
+    ${d.suit === "לא" ? "" : `
+    <div class="sec doc"><h3>טקסט לתיעוד</h3>
+      <div class="doc-row">
+        <label for="o-${i}">תוצאה</label>
+        <select id="o-${i}" class="outcome">
+          <option value="3">חודש למשך 3 חודשים</option>
+          <option value="1">חודש לחודש אחד (בדיקות שנתיות באיחור, הופנה לבדיקות)</option>
+          <option value="0">לא חודש, הועבר לרופא</option>
+        </select>
+      </div>
+      <div class="doc-row">
+        <label for="n-${i}">הערה (לא חובה)</label>
+        <input id="n-${i}" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78, K 4.6">
+      </div>
+      <p class="warnmsg" role="status" hidden>יש בדיקות שלא סומנו. לפי הפרוטוקול לא מחדשים לפני שכולן נבדקו ותקינות.</p>
+      <textarea id="t-${i}" class="doctext" readonly rows="9" aria-label="טקסט לתיעוד להעתקה"></textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
+    </div>`}
     <div class="sec thr"><h3>ערכים שמחזירים לרופא</h3><ul>${d.thr.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
     <div class="sec"><h3>תלונות שמחזירות לרופא (החלפה או הפסקה)</h3><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} <span class="act">← ${esc(a)}</span></li>`).join("")}</ul></div>
     <div class="sec"><h3>מוציא מהפרוטוקול</h3><ul>${d.excl.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
@@ -183,7 +212,36 @@ function renderDetail(i){
       <div class="src">מקור: ${esc(DATA.guide)}, ${esc(d.src)}</div></div>
   </article>
   <div class="rules"><h3>כללי חידוש</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`;
+  buildDoc();
 }
+
+function buildDoc(){
+  const ta = detailEl.querySelector(".doctext"); if(!ta) return;
+  const d = DATA.drugs[current]; const b = matchedBrand(d, qEl.value);
+  const name = (b ? b.he + " (" + d.generic + ")" : d.he + " (" + d.generic + ")");
+  const boxes = [...detailEl.querySelectorAll(".checks input")];
+  const done = boxes.filter(x => x.checked).map(x => x.dataset.label);
+  const notDone = boxes.filter(x => !x.checked && !x.dataset.opt).map(x => x.dataset.label);
+  const out = detailEl.querySelector(".outcome").value;
+  const note = detailEl.querySelector(".note").value.trim();
+  const outTxt = {"3":"חודש המרשם ל-3 חודשים.","1":"חודש המרשם לחודש אחד; בדיקות שנתיות באיחור, הופנה לבדיקות.","0":"המרשם לא חודש; הבקשה הועברה לרופא/ה."}[out];
+  const lines = ["בקשה לחידוש מרשם כרוני: " + name + ".", "נבדק לפי פרוטוקול רפואן ליתר לחץ דם:"];
+  done.forEach(x => lines.push("✓ " + x));
+  if(notDone.length) lines.push("לא נבדק / לא תקין: " + notDone.join(", ") + ".");
+  if(note) lines.push("הערה: " + note);
+  lines.push(outTxt);
+  ta.value = lines.join("\n");
+  detailEl.querySelector(".warnmsg").hidden = !(notDone.length && out !== "0");
+}
+detailEl.addEventListener("change", buildDoc);
+detailEl.addEventListener("input", e => { if(e.target.classList.contains("note")) buildDoc(); });
+detailEl.addEventListener("click", async e => {
+  const btn = e.target.closest(".copy"); if(!btn) return;
+  const ta = document.getElementById(btn.dataset.t); const msg = btn.nextElementSibling;
+  try { await navigator.clipboard.writeText(ta.value); msg.textContent = "הועתק"; }
+  catch(_) { ta.focus(); ta.select(); msg.textContent = "הטקסט מסומן, העתיקו ידנית (Ctrl+C)"; }
+  setTimeout(() => msg.textContent = "", 2500);
+});
 
 hitsEl.addEventListener("click", e => { const t = e.target.closest(".hit"); if(!t) return; current = +t.dataset.i; renderHits(); });
 qEl.addEventListener("input", renderHits);
