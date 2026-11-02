@@ -83,7 +83,7 @@ def section(sec, k):
     P = A[k]; kind = P.get("kind")
     ds = P["drugs"]
     c = Counter(d["suit"] for d in ds)
-    h = f'<section class="tab"><h1 id="s{sec}">{sec}. {E(P["name"])}</h1>'
+    h = f'<section class="tab"><h1 id="s{sec}">{sec}. {E(P["name"])}<span class="mk">ZQ{sec}AZ</span></h1>'
     h += f'<p class="meta">{len(ds)} {"פריטים" if kind else "תרופות"} · ' + " · ".join(f"{SUIT.get(s, ('', s))[1]}: {n}" for s, n in c.items()) + f' · {E(P["version"])}</p>'
     h += f'<p class="meta">מקורות: {E(P["guide"])}</p>'
     h += f'<h2>{sec}.א כללים</h2>' + ul(P["rules"])
@@ -93,11 +93,11 @@ def section(sec, k):
         h += f'<h2>{sec}.ג בדיקות משותפות</h2>' + table(["שלב", "נושא", "מה בודקים", "קריטריון", "אם לא מתקיים", "מקור"], [tuple(E(x) for x in r) for r in P["common"]], "small")
     if P.get("decisions"):
         h += f'<h2>{sec}.ד החלטות</h2>' + table(["#", "נושא", "מה ההנחיה אומרת", "ההחלטה לפרוטוקול", "סוג", "מקור"], [tuple(E(x) for x in r) for r in P["decisions"]], "small")
-    h += f'<h2>{sec}.ה רשימת {KIND_TITLE.get(kind, "התרופות")} (לסימון)</h2>'
+    h += f'<h2>{sec}.ה רשימת {KIND_TITLE.get(kind, "התרופות")} (לסימון)<span class="mk">ZQ{sec}LZ</span></h2>'
     h += table(["#", "שם", "" if kind else "גנרי", "קבוצה", "התאמה", "אושר", "הערות"],
                [(f"{sec}.{i}", E(d["he"]), "" if kind else f'<span class="ltr">{E(d["generic"])}</span>', E(d["cls"]), pill(d["suit"]) + (" ⚗" if d.get("tdm") else ""), "☐", "")
                 for i, d in enumerate(ds, 1)], "list")
-    h += f'<h2 class="pb">{sec}.ו פירוט מלא</h2>' + "".join(item_block(sec, i, d, kind) for i, d in enumerate(ds, 1))
+    h += f'<h2 class="pb">{sec}.ו פירוט מלא<span class="mk">ZQ{sec}DZ</span></h2>' + "".join(item_block(sec, i, d, kind) for i, d in enumerate(ds, 1))
     return h + "</section>"
 
 
@@ -109,14 +109,21 @@ for i, k in enumerate(drug_tabs, 1):
             names = " | ".join(b.get("he") or b["en"] for b in d["brands"][:12]) + (f" … (+{len(d['brands']) - 12})" if len(d["brands"]) > 12 else "")
             only_rows.append((f'<a href="#d{i}-{j}">{i}.{j}</a>', E(A[k]["name"]), "<b>" + E(d["he"]) + "</b><br>" + f'<span class="ltr">{E(d["generic"])}</span>',
                               E(names), E(d.get("only") or d.get("why", "")), "☐"))
-only_sec = f'''<section><h1 id="sonly">רשימה מרוכזת: תרופות שמחודשות ע"י רופא/ה בלבד ({len(only_rows)})</h1>
+only_sec = f'''<section><h1 id="sonly">רשימה מרוכזת: תרופות שמחודשות ע"י רופא/ה בלבד ({len(only_rows)})<span class="mk">ZQOAZ</span></h1>
 <p>בתרופות אלה הכלי לא מציג רשימת בדיקות: מוצגת הודעה, והבקשה עוברת לרופא/ה (או למומחה/ית). הסיבות: סם מסוכן, תרופה טרטוגנית במעקב מומחה,
 טיפול שנקבע ומנוטר ע"י מרכז מומחה, או החלטה מקומית. כל פריט מופיע גם בפרק המערכת שלו (המספר בעמודה הראשונה).</p>
 {table(["#", "מערכת", "תרופה / קבוצה", "שמות מסחריים", "ההודעה בכלי", "אושר"], only_rows, "small")}</section>'''
 
-toc = "".join(f'<li><a href="#s{i}">{i}. {E(A[k]["name"])}</a> <span class="tn">({len(A[k]["drugs"])})</span></li>' for i, k in enumerate(A["order"], 1))
+def toc_html(PG):
+    g = lambda key: str(PG.get(key, "000"))
+    rows = [("0", '<a href="#s0">עקרונות כלליים</a>', "", g("0A"), "", ""),
+            ("", '<a href="#sonly">רשימה מרוכזת: רופא/ה בלבד</a>', str(len(only_rows)), g("OA"), "", "")]
+    for i, k in enumerate(A["order"], 1):
+        rows.append((str(i), f'<a href="#s{i}"><b>{E(A[k]["name"])}</b></a>', str(len(A[k]["drugs"])), g(f"{i}A"), g(f"{i}L"), g(f"{i}D")))
+    return ('<table class="tocT"><thead><tr><th>#</th><th>פרק</th><th>פריטים</th><th>עמוד פתיחה</th><th>רשימה לסימון</th><th>פירוט מלא</th></tr></thead><tbody>'
+            + "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows) + "</tbody></table>")
 general = f'''
-<section><h1 id="s0">0. עקרונות כלליים</h1>
+<section><h1 id="s0">0. עקרונות כלליים<span class="mk">ZQ0AZ</span></h1>
 <h2>מה הכלי עושה</h2>
 <p>סטודנט/ית לרפואה המסייע/ת לרופא/ה (רפואן) מחדש/ת מרשמים כרוניים, מפיק/ה אישורים ועונה לפניות מקוונות לפי רשימת בדיקות קבועה לכל פריט. אין שיחה עם המטופל/ת בחידוש מרשם; הבדיקה מתבססת על הרשומה, הבדיקות והרכישות. הרפואן לא משנה מינון ולא מחליף תרופה.</p>
 <h2>שלושה מסלולים בחידוש מרשם</h2>
@@ -166,6 +173,7 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
 .cover{{height:250mm;display:flex;flex-direction:column;justify-content:center;text-align:center}}
 .cover h1{{border:0;font-size:30pt;page-break-before:avoid}} .cover .sub{{font-size:14pt;color:#1F4E78}} .cover .draft{{margin:18px auto;padding:8px 14px;border:1px solid #d9a3a3;background:#fbecec;color:#8a1f1f;border-radius:6px;max-width:130mm}}
 .cover table{{max-width:120mm;margin:14px auto}}
+.mk{{font-size:1px;color:#fff;position:absolute}} .tocT{{font-size:11pt}} .tocT td{{padding:5px 8px}} .tocT td:nth-child(n+3){{text-align:center;width:13%;font-weight:700;color:#13233D}} .tocT a{{color:#13233D;text-decoration:none}} .tocT thead th{{text-align:center}}
 .toc h1{{page-break-before:always}} .toc ol{{list-style:none;padding:0;columns:1;font-size:12pt}} .toc li{{margin:6px 0}} .toc a{{color:#13233D;text-decoration:none}} .tn{{color:#5b6573;font-size:10pt}}
 </style></head><body>
 <div class="cover"><h1>פרוטוקולים לאישור</h1><div class="sub">חוברת בקרה — כל הפרוטוקולים, ההחלטות והתרופות</div>
@@ -177,7 +185,7 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
                   ("פרוטוקולים נוספים", " · ".join(A[k]["name"] + f' ({len(A[k]["drugs"])})' for k in kind_tabs)),
                   ("הופק", TODAY + " · מתוך הכלי שפורסם (asseoy.github.io/medical_aids/protocols-rofan.html)")])}
 <p>ד"ר יונתן אסיאו · asseo_y@mac.org.il</p></div>
-<div class="toc"><h1>תוכן העניינים</h1><ol><li><a href="#s0">0. עקרונות כלליים</a></li><li><a href="#sonly">רשימה מרוכזת: רופא/ה בלבד</a> <span class="tn">({len(only_rows)})</span></li>{toc}</ol>
+<div class="toc"><h1>תוכן העניינים</h1>__TOC__
 <p class="meta">בכל פרק: א. כללים · ב. תוצאות (באישורים ובפניות) · ג. בדיקות משותפות · ד. החלטות · ה. רשימה לסימון · ו. פירוט מלא של כל פריט עם משבצת אישור.</p></div>
 {general}
 {only_sec}
@@ -187,16 +195,29 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
 os.makedirs(OUT + "fonts", exist_ok=True)
 for f in os.listdir(S + "fonts"):
     shutil.copy(S + "fonts/" + f, OUT + "fonts/" + f)
-open(OUT + "booklet.html", "w").write(body)
-
 from playwright.sync_api import sync_playwright
-with sync_playwright() as p:
-    b = p.chromium.launch(); pg = b.new_page()
-    pg.goto("file://" + OUT + "booklet.html"); pg.wait_for_timeout(500)
-    pg.pdf(path=OUT + "booklet.pdf", format="A4", print_background=True, outline=True, tagged=True,
-           display_header_footer=True, margin=dict(top="16mm", bottom="16mm", left="14mm", right="14mm"),
-           header_template='<div style="font-size:7pt;color:#888;width:100%;text-align:center;font-family:sans-serif">Protocols for approval — review booklet (draft)</div>',
-           footer_template='<div style="font-size:8pt;color:#666;width:100%;text-align:center;font-family:sans-serif"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
-    b.close()
+import subprocess, re
 
+
+def render(PG):
+    open(OUT + "booklet.html", "w").write(body.replace("__TOC__", toc_html(PG)))
+    with sync_playwright() as p:
+        b = p.chromium.launch(); pg = b.new_page()
+        pg.goto("file://" + OUT + "booklet.html"); pg.wait_for_timeout(500)
+        pg.pdf(path=OUT + "booklet.pdf", format="A4", print_background=True, outline=True, tagged=True,
+               display_header_footer=True, margin=dict(top="16mm", bottom="16mm", left="14mm", right="14mm"),
+               header_template='<div style="font-size:7pt;color:#888;width:100%;text-align:center;font-family:sans-serif">Protocols for approval — review booklet (draft)</div>',
+               footer_template='<div style="font-size:8pt;color:#666;width:100%;text-align:center;font-family:sans-serif"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
+        b.close()
+    txt = subprocess.run(["pdftotext", OUT + "booklet.pdf", "-"], capture_output=True, text=True).stdout
+    found = {}
+    for n, page in enumerate(txt.split("\f"), 1):
+        for m in re.findall(r"ZQ(\w+?)Z", page):
+            found.setdefault(m, n)
+    return found
+
+
+PG = render({})          # pass 1: placeholder page numbers (same width), find where each chapter landed
+PG2 = render(PG)         # pass 2: real page numbers
+assert PG2 == PG, "page numbers moved between passes"
 print("booklet", os.path.getsize(OUT + "booklet.pdf") // 1024, "KB")
