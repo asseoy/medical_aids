@@ -140,8 +140,8 @@ const DATA = {"drugs": [{"cls": "מעכב ACE", "generic": "Enalapril", "he": "�
 const SUIT = {"כן":["v-yes","מתאים לרפואן"],"בתנאים":["v-cond","מתאים בתנאים"],"לא":["v-no","חידוש ע\"י רופא בלבד"]};
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm = s => String(s).toLowerCase().replace(/[\s\-\.\/'"״׳,]/g,"").replace(/ך/g,"כ").replace(/ם/g,"מ").replace(/ן/g,"נ").replace(/ף/g,"פ").replace(/ץ/g,"צ")
-  // common Hebrew spelling variants of drug names: ב/ו for V, double vav/yod, ת/ט, כ/ק
-  .replace(/ב/g,"ו").replace(/וו/g,"ו").replace(/יי/g,"י").replace(/ת/g,"ט").replace(/כ/g,"ק");
+  // common Hebrew spelling variants of drug names: optional א, ב/ו for V, double vav/yod, ת/ט, כ/ק
+  .replace(/א/g,"").replace(/ב/g,"ו").replace(/וו/g,"ו").replace(/יי/g,"י").replace(/ת/g,"ט").replace(/כ/g,"ק");
 
 const index = DATA.drugs.map((d,i) => {
   const names = [d.generic, d.he, ...d.brands.flatMap(b => [b.en, b.he])];
@@ -164,13 +164,24 @@ function near(k,n){
   for(const L of [n.length-1,n.length,n.length+1]){ if(L>0 && L<=k.length && lev1(k.slice(0,L),n)) return true; }
   return false;
 }
+// drop strength, form and salt words a user may copy from the box or the registry (e.g. "אדיזם CD 120", "ביסופרולול פומראט")
+const qclean = q => String(q).replace(/®/g," ").replace(/\d+([.,]\d+)?/g," ").replace(/\b(mg|mcg|sr|cd|xl|la|tablets?|film|coated)\b/gi," ")
+  .replace(/מ["״]?ג|טבליות|מצופות|פומראט|fumarate|maleate|מלאט/gi," ").replace(/\s+/g," ").trim();
 function search(q){
+  q = qclean(q);
+  let res = search1(q);
+  // nothing found: retry with fewer words ("ביסופרולול פומראט אינובמד" → "ביסופרולול")
+  const w = q.split(" ");
+  while(!res.length && w.length > 1){ w.pop(); res = search1(w.join(" ")); }
+  return res;
+}
+function search1(q){
   const n = norm(q);
   if(!n) return [];
   const out = [];
   for(const it of index){
     let score = 0;
-    for(const k of it.keys){ if(k.startsWith(n)) score = Math.max(score,3); else if(k.includes(n)) score = Math.max(score,2); else if(near(k,n)) score = Math.max(score,1.5); }
+    for(const k of it.keys){ if(k === n) score = Math.max(score,4); else if(k.startsWith(n)) score = Math.max(score,3); else if(k.includes(n)) score = Math.max(score,2); else if(near(k,n)) score = Math.max(score,1.5); }
     if(!score && n.length >= 4 && it.cls.includes(n)) score = 1;
     if(score) out.push([score,it.i]);
   }
@@ -178,7 +189,7 @@ function search(q){
 }
 
 function matchedBrand(d, q){
-  const n = norm(q);
+  const n = norm(qclean(q));
   if(norm(d.he).includes(n) || norm(d.generic).includes(n)) return null;
   return d.brands.find(b => norm(b.en).includes(n) || norm(b.he).includes(n)) || d.brands.find(b => near(norm(b.en),n) || near(norm(b.he),n));
 }
