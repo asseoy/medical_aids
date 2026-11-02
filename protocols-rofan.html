@@ -41,7 +41,9 @@
 html{direction:rtl}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
   padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 40px}
+[hidden]{display:none!important}
 .wrap{max-width:760px;margin:0 auto;display:grid;gap:16px}
+@media (min-width:1100px){.wrap{max-width:1180px}.body2{display:grid;grid-template-columns:1fr 1fr;align-items:start}.body2>.sec+.sec{border-inline-start:1px solid var(--line)}}
 header{display:grid;gap:4px}
 h1{font-family:var(--f-display);font-size:1.9rem;margin:0;text-wrap:balance}
 .sub{color:var(--muted);font-size:.9rem;margin:0}
@@ -245,6 +247,7 @@ function renderDetail(i){
       <div class="brands-h"><span class="bl">שמות מסחריים (${d.brands.length}):</span><div class="brand-list">${d.brands.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
     </div>
     <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
+    <div class="body2">
     ${d.suit === "לא" ? `<div class="sec"><p style="margin:0">התרופה לא בפרוטוקול הרפואן. להעביר את הבקשה לרופא המטפל.</p></div>` : `
     <div class="sec"><h3>לבדוק לפני החידוש</h3><ul class="checks">${checks}</ul></div>`}
     ${d.suit === "לא" ? "" : `
@@ -265,6 +268,7 @@ function renderDetail(i){
       <textarea id="t-${i}" class="doctext" readonly rows="22" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
     </div>`}
+    </div>
     ${d.comp.length?`<div class="sec"><h3>תלונות שמחייבות החלפה או הפסקה</h3><p class="src">לא שואלים את המטופל/ת; נבדק בביקורת השנתית. אם מופיעה בפנייה או ברשומה, להעביר לרופא/ה.</p><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} <span class="act">← ${esc(a)}</span></li>`).join("")}</ul></div>`:""}
     <div class="sec"><div class="src">מקור: ${esc(DATA.guide)}, ${esc(d.src)}</div></div>
   </article>`;
