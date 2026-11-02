@@ -1,0 +1,559 @@
+<title>פרוטוקולים לאישור</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* Layout: single column work surface — protocol tabs, search, one drug "label" card at a time */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#18232a; --muted:#5b6a72; --line:#d7dfdd;
+  --accent:#1d4f91; --accent-soft:#e3ebf6;
+  --ok:#1f7a45; --ok-bg:#e2f3e8; --warn:#8a5a00; --warn-bg:#fbf0d6; --bad:#a3262a; --bad-bg:#f9e1e1;
+  --f-display:"Frank Ruhl Libre", "David", Georgia, serif;
+  --f-body:"Assistant", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12181c; --surface:#1a2228; --ink:#e7ecee; --muted:#9aa8ae; --line:#2c373e;
+  --accent:#8db4ec; --accent-soft:#1f2d40;
+  --ok:#7fd3a0; --ok-bg:#16301f; --warn:#f0c46a; --warn-bg:#33280f; --bad:#f19a9c; --bad-bg:#3a1b1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12181c; --surface:#1a2228; --ink:#e7ecee; --muted:#9aa8ae; --line:#2c373e;
+  --accent:#8db4ec; --accent-soft:#1f2d40;
+  --ok:#7fd3a0; --ok-bg:#16301f; --warn:#f0c46a; --warn-bg:#33280f; --bad:#f19a9c; --bad-bg:#3a1b1c; color-scheme:dark}
+html{direction:rtl}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 40px}
+[hidden]{display:none!important}
+.wrap{max-width:760px;margin:0 auto;display:grid;gap:16px}
+@media (min-width:1100px){.wrap{max-width:1180px}.body2{display:grid;grid-template-columns:1fr 1fr;align-items:start}.body2>.sec+.sec{border-inline-start:1px solid var(--line)}}
+header{display:grid;gap:4px}
+h1{font-family:var(--f-display);font-size:1.9rem;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.9rem;margin:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabsel{display:none;width:100%;font:inherit;font-size:1rem;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);margin:0 0 12px}
+@media (max-width:600px){.tabs{display:none!important}.tabsel{display:block}}
+.tab{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.95rem;padding:6px 14px;border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.ptag{color:var(--muted);font-size:.8em;margin-inline-start:4px}
+.tab:focus-visible,input:focus-visible,.hit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.views{display:flex;gap:18px;border-bottom:1px solid var(--line)}
+.view{background:none;border:0;border-bottom:2px solid transparent;padding:8px 0;font:inherit;color:var(--muted);cursor:pointer}
+.view[aria-selected="true"]{color:var(--ink);border-color:var(--accent);font-weight:600}
+.search{display:grid;gap:8px}
+.search label{font-weight:600}
+#q{font:inherit;font-size:1.1rem;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.hits{display:flex;flex-wrap:wrap;gap:6px}
+.hit{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem;padding:4px 10px;border-radius:8px;cursor:pointer}
+.hit[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.empty{color:var(--muted);font-size:.95rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.card-h{padding:16px 18px;display:grid;gap:6px;border-bottom:1px solid var(--line)}
+.card-h h2{font-family:var(--f-display);font-size:1.5rem;margin:0;line-height:1.2}
+.gen{direction:ltr;text-align:right;color:var(--muted);font-size:.95rem}
+.cls{color:var(--muted);font-size:.9rem}
+.verdict{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 18px;font-weight:600}
+.pill{padding:3px 12px;border-radius:999px;font-size:.95rem;white-space:nowrap}
+.v-yes{background:var(--ok-bg);color:var(--ok)} .v-cond{background:var(--warn-bg);color:var(--warn)} .v-no{background:var(--bad-bg);color:var(--bad)}
+.verdict .why{font-weight:400}
+.sec{padding:14px 18px;border-top:1px solid var(--line);display:grid;gap:8px}
+.sec h3{margin:0;font-size:.8rem;letter-spacing:.06em;color:var(--muted);font-weight:700}
+ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
+.checks{list-style:none;padding:0}
+.checks label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.checks input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.checks .qrow{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between}
+.checks .yn{display:flex;gap:14px}
+.checks .yn label{gap:6px;align-items:center}
+.checks .yn input{margin-top:0}
+.checks .sub{margin:8px 28px 0 0}
+.checks .sub[hidden]{display:none}
+.checks .ctxq{margin:6px 28px 0 0;font-size:.92rem;display:flex;flex-direction:column;gap:4px;padding:6px 8px;border-inline-start:3px solid var(--bad);background:rgba(0,0,0,.03)}
+.checks .ctxq[hidden]{display:none}
+.checks .ctxq label.ctxl{display:flex;flex-direction:column;gap:3px}
+.checks .ctxq input[type=text]{font:inherit;padding:4px 6px;width:100%;box-sizing:border-box}
+.tdmb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--bad);color:#fff;vertical-align:middle}
+.checks .sevq{margin:6px 28px 0 0;font-size:.92rem;color:var(--bad);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.checks .optq .qrow b{font-weight:700}
+.checks .det{color:var(--muted);font-size:.92rem}
+.act{color:var(--bad);font-weight:600}
+.thr li{font-variant-numeric:tabular-nums}
+.brand-list{display:flex;flex-wrap:wrap;gap:6px}
+.brand{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:.9rem}
+.brands-h{display:grid;gap:6px;margin-top:4px}
+.brands-h .bl{font-size:.9rem;font-weight:600}
+.brand.hit-b{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.brand small{color:var(--warn)}
+.src{color:var(--muted);font-size:.85rem}
+.doc{background:var(--accent-soft)}
+.doc-row{display:grid;gap:4px}
+.doc-row label{font-size:.9rem;font-weight:600}
+.doc select,.doc input,.doctext{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
+.doctext{resize:vertical;line-height:1.6}
+.doc-actions{display:flex;gap:10px;align-items:center}
+.copy{font:inherit;font-weight:600;background:var(--accent);color:var(--surface);border:0;border-radius:8px;padding:8px 18px;cursor:pointer}
+.copy:focus-visible,.doc select:focus-visible,.doc input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.warnmsg{margin:0;color:var(--bad);font-weight:600;font-size:.92rem}
+.copied{color:var(--ok);font-size:.9rem}
+.fb{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
+#fb-send{white-space:nowrap}
+.fb-to{margin:0;font-weight:600}
+.fb-to a{color:var(--accent)}
+.fb h2{margin:0;font-size:1.2rem}
+.fb input,.fb textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.docs{margin:6px 0 0;font-size:.95rem}
+.docs a{color:var(--accent);font-weight:600}
+.draft{margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-size:.95rem}
+.rules{margin-bottom:14px;background:var(--accent-soft);border-radius:12px;padding:14px 18px;display:grid;gap:6px}
+.rules h3{margin:0;font-size:1rem}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{text-align:right;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-size:.8rem;color:var(--muted);letter-spacing:.04em}
+.grp td{background:var(--bg);font-weight:700}
+.kind{white-space:nowrap;font-size:.85rem;color:var(--accent)}
+footer{color:var(--muted);font-size:.85rem;display:grid;gap:4px}
+@media (prefers-reduced-motion: no-preference){.card{animation:in .18s ease-out}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>פרוטוקולים לאישור</h1>
+    <p class="sub">פרוטוקולי רפואן לחידוש מרשמים כרוניים, להפקת אישורים ולמענה לפניות מקוונות. כל חריגה עוברת לרופא.</p>
+    <p class="docs" id="docs"></p>
+    <div id="draft" class="draft" hidden><b>טיוטה לבדיקה.</b> טרם אושר ע"י הייעוץ המשפטי וניהול סיכונים. לא לשימוש בחידוש מרשמים או בהפקת אישורים בפועל. <a href="#fb" style="color:inherit;font-weight:600">שליחת הערות ↓</a></div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="פרוטוקול">
+  </div>
+
+  <div class="views" role="tablist" aria-label="תצוגה">
+    <button class="view" role="tab" aria-selected="true" data-v="drug" id="v-drug">חיפוש תרופה</button>
+    <button class="view" role="tab" aria-selected="false" data-v="common" id="v-common">בדיקות לכל חידוש</button>
+    <button class="view" role="tab" aria-selected="false" data-v="dec" id="v-dec">החלטות ומקורות</button>
+  </div>
+
+  <section id="drug" class="wrap">
+    <div class="search">
+      <label for="q">שם תרופה (מסחרי או גנרי, עברית או אנגלית)</label>
+      <input id="q" type="search" autocomplete="off" placeholder="לדוגמה: לוטן, גלוקומין, Jardiance" value="לוטן">
+      <div class="hits" id="hits"></div>
+    </div>
+    <div id="detail"></div>
+  </section>
+
+  <section id="common" class="wrap" hidden></section>
+  <section id="dec" class="wrap" hidden></section>
+
+  <section id="fb" class="fb" aria-labelledby="fb-h">
+    <h2 id="fb-h">הערות לבדיקה</h2>
+    <p class="fb-to">ד״ר יונתן אסיאו · <a href="mailto:asseo_y@mac.org.il" dir="ltr">asseo_y@mac.org.il</a> · <a href="mailto:asseoy@gmail.com" dir="ltr">asseoy@gmail.com</a></p>
+    <p class="src">ההערה נפתחת כמייל מוכן לשליחה לשתי הכתובות. התרופה והלשונית הפתוחות מצורפות אוטומטית.</p>
+    <label for="fb-who">שם ותפקיד (לא חובה)</label>
+    <input id="fb-who" type="text" autocomplete="name" placeholder="לדוגמה: ניהול סיכונים">
+    <label for="fb-txt">הערה</label>
+    <textarea id="fb-txt" rows="5" placeholder="מה לא ברור, מה חסר, מה לשנות"></textarea>
+    <div class="doc-actions"><button type="button" id="fb-send" class="copy">שליחה במייל</button><span id="fb-msg" class="copied" role="status"></span></div>
+  </section>
+
+  <footer>
+    <span id="foot-src"></span>
+    <span>כלי עזר לפי פרוטוקול מאושר. לא שומר נתונים ולא מזהה מטופלים.</span>
+  </footer>
+</div>
+
+<script>
+const ALL = __DATA__;
+let DATA = ALL[ALL.order[0]];
+// all protocols' drugs in one list; each remembers its protocol (p)
+const DRUGS = ALL.order.flatMap(p => ALL[p].drugs.map(d => Object.assign(d, {p})));
+const SUIT = {"כן":["v-yes","מתאים לרפואן"],"בתנאים":["v-cond","מתאים בתנאים"],"לא":["v-no","חידוש ע\"י רופא בלבד"]};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => String(s).toLowerCase().replace(/[\s\-\.\/'"״׳,]/g,"").replace(/ך/g,"כ").replace(/ם/g,"מ").replace(/ן/g,"נ").replace(/ף/g,"פ").replace(/ץ/g,"צ")
+  // common Hebrew spelling variants of drug names: optional א, ב/ו for V, double vav/yod, ת/ט, כ/ק
+  .replace(/א/g,"").replace(/ב/g,"ו").replace(/וו/g,"ו").replace(/יי/g,"י").replace(/ת/g,"ט").replace(/כ/g,"ק");
+
+// spelling kept as typed (only case, spaces and punctuation removed): breaks ties in favour of the literal spelling (אנורו → Anoro, not נורבסק)
+const light = s => String(s).toLowerCase().replace(/[\s\-\.\/'"״׳,]/g,"");
+const index = DRUGS.map((d,i) => {
+  const names = [d.generic, d.he, ...d.brands.flatMap(b => [b.en, b.he])];
+  return {i, keys: names.map(norm), raw: names.map(light), cls: norm(d.cls)};
+});
+
+// one-letter typo tolerance (e.g. פוסיד → פוזיד), for queries of 4+ characters
+function lev1(a,b){
+  if(Math.abs(a.length-b.length)>1) return false;
+  let i=0,j=0,e=0;
+  while(i<a.length && j<b.length){
+    if(a[i]===b[j]){i++;j++;continue}
+    if(++e>1) return false;
+    if(a.length>b.length) i++; else if(b.length>a.length) j++; else {i++;j++}
+  }
+  return e + (a.length-i) + (b.length-j) <= 1;
+}
+function near(k,n){
+  if(n.length<4) return false;
+  for(const L of [n.length-1,n.length,n.length+1]){ if(L>0 && L<=k.length && lev1(k.slice(0,L),n)) return true; }
+  return false;
+}
+// drop strength, form and salt words a user may copy from the box or the registry (e.g. "אדיזם CD 120", "ביסופרולול פומראט")
+const qclean = q => String(q).replace(/®/g," ").replace(/\d+([.,]\d+)?/g," ").replace(/\b(mg|mcg|sr|cd|xl|la|tablets?|film|coated)\b/gi," ")
+  .replace(/מ["״׳']ג|טבליות|מצופות|פומראט|fumarate|maleate|מלאט/gi," ").replace(/\s+/g," ").trim();
+function search(q){
+  q = qclean(q);
+  let res = search1(q);
+  // nothing found: retry with fewer words ("ביסופרולול פומראט אינובמד" → "ביסופרולול")
+  const w = q.split(" ");
+  while(!res.length && w.length > 1){ w.pop(); res = search1(w.join(" ")); }
+  return res;
+}
+function search1(q){
+  const n = norm(q);
+  if(!n) return [];
+  const out = [];
+  for(const it of index){
+    let score = 0;
+    for(const k of it.keys){ if(k === n) score = Math.max(score,4); else if(k.startsWith(n)) score = Math.max(score,3); else if(k.includes(n)) score = Math.max(score,2); else if(near(k,n)) score = Math.max(score,1.5); }
+    if(!score && n.length >= 4 && it.cls.includes(n)) score = 1;
+    const r = light(q); if(score && r && it.raw.some(k => k.startsWith(r))) score += 0.25;
+    if(score) out.push([score,it.i]);
+  }
+  return out.sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+}
+
+function matchedBrand(d, q){
+  const n = norm(qclean(q));
+  if(norm(d.he).includes(n) || norm(d.generic).includes(n)) return null;
+  return d.brands.find(b => norm(b.en).includes(n) || norm(b.he).includes(n)) || d.brands.find(b => near(norm(b.en),n) || near(norm(b.he),n));
+}
+
+let current = null, lastQ = null;
+const hitsEl = document.getElementById("hits"), detailEl = document.getElementById("detail"), qEl = document.getElementById("q");
+
+function renderHits(){
+  const res = search(qEl.value);
+  if(!qEl.value.trim()){ hitsEl.innerHTML = ""; detailEl.innerHTML = '<p class="empty">' + esc(ui().empty) + '</p>'; return; }
+  if(!res.length){ hitsEl.innerHTML = ""; detailEl.innerHTML = '<p class="empty">' + esc(ui().none) + '</p>'; return; }
+  if(qEl.value !== lastQ || !res.includes(current)) current = res[0];
+  lastQ = qEl.value;
+  const multi = new Set(res.slice(0,12).map(i => DRUGS[i].p)).size > 1;
+  hitsEl.innerHTML = res.length > 1 ? res.slice(0,12).map(i => {
+    const d = DRUGS[i]; const b = matchedBrand(d, qEl.value);
+    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
+  }).join("") : "";
+  renderDetail(current);
+}
+
+function renderDetail(i){
+  const d = DRUGS[i];
+  if(d.p !== DATA.key) setProto(d.p, false);
+  if(isCert(d)) return renderCertDetail(i);
+  const b = matchedBrand(d, qEl.value);
+  const [cls, label] = SUIT[d.suit];
+  const detH = t => String(t).split(" · ").map(part => part.split(/([A-Za-z][A-Za-z0-9.%/]*(?:\s?[≥≤<>]=?\s?[0-9.]+%?)?)/).map((x, k) => k % 2 ? "<bdi>" + esc(x) + "</bdi>" : esc(x)).join("")).join("<br>");
+  const checks = d.checks.map(c => c.opt
+    ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div>
+       <label class="sub" hidden><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}" data-opt="1"><span>תקין<br><span class="det">${esc(c.det)}</span></span></label></li>`
+    : `<li><label><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}"><span><b>${esc(c.label)}</b><br><span class="det">${detH(c.det)}</span></span></label>${c.sev ? `
+       <div class="sevq" data-for="${c.k}"><span>אם לא תקין — האם <bdi>${esc(c.sev)}</bdi>?</span> <span class="yn"><label><input type="radio" name="s-${i}-${c.k}" value="y" data-s="${c.k}"> כן</label><label><input type="radio" name="s-${i}-${c.k}" value="n" data-s="${c.k}"> לא</label></span></div>` : ""}${c.k === "lab_renal" ? `
+       <div class="ctxq" data-for="${c.k}"><span><b>אם לא תקין — פרטים לרופא/ה:</b></span>
+         <label class="ctxl">ערכי eGFR קודמים (ערך ותאריך) <input type="text" class="ctx-prev" placeholder="לדוגמה: 41 (3/2026), 44 (9/2025), 47 (3/2025)"></label>
+         <span>אבחנה של אי-ספיקת כליות כרונית ברשומה? <span class="yn"><label><input type="radio" name="ckd-${i}" value="y" data-ckd="1"> כן</label><label><input type="radio" name="ckd-${i}" value="n" data-ckd="1"> לא</label></span></span></div>` : ""}</li>`).join("");
+  detailEl.innerHTML = `
+  <div class="rules"><h3>כללי חידוש</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+  <article class="card">
+    <div class="card-h">
+      <h2>${esc(b ? b.he + " · " + b.en : d.he)}</h2>
+      <div class="gen">${esc(d.generic)}</div>
+      <div class="cls">${esc(d.cls)}${d.tdm ? ' <span class="tdmb">מעקב מעבדה צמוד</span>' : ""}</div>
+      <div class="brands-h"><span class="bl">שמות מסחריים (${d.brands.length}):</span><div class="brand-list">${d.brands.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
+    </div>
+    <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
+    <div class="body2">
+    ${d.suit === "לא" ? `<div class="sec"><p style="margin:0"><b>${esc(d.only || "התרופה לא בפרוטוקול הרפואן. להעביר את הבקשה לרופא המטפל.")}</b></p></div>` : `
+    <div class="sec"><h3>לבדוק לפני החידוש</h3><ul class="checks">${checks}</ul></div>`}
+    ${d.suit === "לא" ? "" : `
+    <div class="sec doc"><h3>טקסט לתיעוד</h3>
+      <div class="doc-row">
+        <label for="o-${i}">תוצאה</label>
+        <select id="o-${i}" class="outcome">
+          <option value="3">${d.maxm === 1 ? "חודש לחודש אחד (חידוש מלא לתרופה זו)" : "חודש למשך 3 חודשים"}</option>
+          <option value="1">חודש לחודש אחד (חסר או חריג, ללא התווית נגד)</option>
+          <option value="0">לא חודש: התווית נגד, הודעה לרופא/ה</option>
+        </select>
+      </div>
+      <div class="doc-row">
+        <label for="n-${i}">הערה (לא חובה)</label>
+        <input id="n-${i}" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78, K 4.6">
+      </div>
+      <p class="warnmsg" role="status" hidden>יש בדיקות שלא סומנו. לפי הפרוטוקול לא מחדשים לפני שכולן נבדקו ותקינות.</p>
+      <textarea id="t-${i}" class="doctext" readonly rows="22" aria-label="טקסט לתיעוד להעתקה"></textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
+    </div>`}
+    </div>
+    ${d.comp.length?`<div class="sec"><h3>תלונות שמחייבות החלפה או הפסקה</h3><p class="src">לא שואלים את המטופל/ת; נבדק בביקורת השנתית. אם מופיעה בפנייה או ברשומה, להעביר לרופא/ה.</p><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} <span class="act">← ${esc(a)}</span></li>`).join("")}</ul></div>`:""}
+    <div class="sec"><div class="src">מקור: ${esc(DATA.guide)}, ${esc(d.src)}</div></div>
+  </article>`;
+  buildDoc();
+}
+
+// ---------- non-drug protocols (kind "cert" = certificates, "req" = digital requests): same search and checks, own card and texts ----------
+SUIT["הכנה"] = ["v-cond","הרפואן מכין, הרופא/ה מאשר/ת"];
+const isCert = d => !!ALL[d.p].kind;
+const UI = {
+  cert:{search:"סוג אישור (לדוגמה: אישור מחלה, סיכום מידע, נשק)", ph:"לדוגמה: אישור מחלה, ילד חולה, סיכום רפואי", view:"חיפוש אישור", common:"בדיקות לכל אישור", rules:"כללי הנפקה", checks:"לבדוק לפני ההפקה", empty:"הקלידו סוג אישור כדי לראות את תנאי ההפקה.", none:"לא נמצא סוג אישור כזה. אישור שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
+  req:{search:"סוג הפנייה (לדוגמה: חידוש מרשם, תוצאות בדיקות, פריחה)", ph:"לדוגמה: תוצאות בדיקות, חום, הפניה לבדיקת דם", view:"חיפוש פנייה", common:"בדיקות לכל פנייה", rules:"כללי מענה מקוון", checks:"לבדוק לפני המענה", empty:"הקלידו סוג פנייה כדי לראות איך עונים.", none:"לא נמצא סוג פנייה כזה. פנייה שלא מופיעה כאן עוברת לרופא/ה.", noLabel:"לא במענה מקוון של רפואן"},
+  drug:{search:"שם תרופה (מסחרי או גנרי, עברית או אנגלית)", ph:"לדוגמה: לוטן, גלוקומין, Jardiance", view:"חיפוש תרופה", common:"בדיקות לכל חידוש", rules:"כללי חידוש", empty:"הקלידו שם תרופה כדי לראות את דרישות החידוש.", none:"לא נמצאה תרופה בשם הזה באף פרוטוקול. תרופה שלא מופיעה כאן עוברת לרופא."}
+};
+const CERT_OUT = [["issue","הופק ע\"י רפואן לפי הפרוטוקול","תוצאה: האישור הופק ע\"י רפואן לפי הפרוטוקול, בשם הרופא/ה המטפל/ת. נרשם ברשומה."],
+  ["doc","הוכן והועבר לאישור הרופא/ה","תוצאה: האישור הוכן ומחכה לאישור הרופא/ה לפני ההפקה."],
+  ["visit","לא הופק: נדרש מפגש עם רופא/ה","תוצאה: האישור לא הופק. נדרש מפגש עם רופא/ה (גם בווידאו, בטלפון או בהתכתבות)."],
+  ["no","לא הופק: מחוץ לפרוטוקול, הועבר לרופא/ה","תוצאה: האישור לא הופק ע\"י רפואן — מחוץ לפרוטוקול. הבקשה הועברה לרופא/ה."]];
+const ui = () => UI[DATA.kind || "drug"];
+const outs = () => DATA.out || CERT_OUT;
+
+function renderCertDetail(i){
+  const d = DRUGS[i]; const U = UI[ALL[d.p].kind]; const req = ALL[d.p].kind === "req";
+  const [cls, label0] = SUIT[d.suit];
+  const label = d.suit === "לא" ? U.noLabel : label0;
+  const checks = d.checks.map(c => c.opt
+    ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div>
+       <label class="sub" hidden><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}" data-opt="1"><span>מתקיים<br><span class="det">${esc(c.det)}</span></span></label></li>`
+    : `<li><label><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}"><span><b>${esc(c.label)}</b><br><span class="det">${esc(c.det)}</span></span></label></li>`).join("");
+  const def = d.suit === "כן" || d.suit === "בתנאים" ? "issue" : d.suit === "הכנה" ? "doc" : /דחופה/.test(d.he) ? "no" : req ? "visit" : "doc";
+  const showDoc = d.suit !== "לא" || req;
+  detailEl.innerHTML = `
+  <div class="rules"><h3>${esc(U.rules)}</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+  <article class="card">
+    <div class="card-h">
+      <h2>${esc(d.he)}</h2>
+      <div class="cls">${esc(d.cls)}</div>
+      <div class="brands-h"><span class="bl">נקרא גם:</span><div class="brand-list">${d.brands.map(x=>`<span class="brand">${esc(x.he || x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
+      ${d.see ? `<div><button type="button" class="hit see" data-see="${esc(d.see[0])}" data-sq="${esc(d.see[1])}">${esc(d.see[2])} ←</button></div>` : ""}
+    </div>
+    <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
+    <div class="body2">
+    ${d.suit === "לא" ? `<div class="sec"><p style="margin:0"><b>${esc(d.only || "לא בפרוטוקול הרפואן. להעביר לרופא/ה.")}</b></p></div>` : `
+    <div class="sec"><h3>${esc(U.checks)}</h3><ul class="checks">${checks}</ul></div>`}
+    ${showDoc ? `
+    <div class="sec doc"><h3>טקסט לתיעוד</h3>
+      <div class="doc-row">
+        <label for="o-${i}">תוצאה</label>
+        <select id="o-${i}" class="outcome">${outs().map(([v,l]) => `<option value="${v}"${v===def?" selected":""}>${esc(l)}</option>`).join("")}</select>
+      </div>
+      <div class="doc-row">
+        <label for="n-${i}">${req ? "פרטי הפנייה (מה התבקש, מה נעשה)" : "פרטי הבקשה (תאריכים, מטרה, הגורם המבקש)"}</label>
+        <input id="n-${i}" class="note" type="text" placeholder="${req ? "לדוגמה: מבקש חידוש לוטן; ל&quot;ד ביתי תקין" : "לדוגמה: 1.11–3.11.2026, 3 ימים"}">
+      </div>
+      <p class="warnmsg" role="status" hidden></p>
+      <textarea id="t-${i}" class="doctext" readonly rows="16" aria-label="טקסט לתיעוד להעתקה"></textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
+      ${req ? `<h3 style="margin-top:10px">הודעה למטופל/ת (לעריכה לפני שליחה)</h3>
+      <textarea id="m-${i}" class="doctext msgtext" rows="7" aria-label="הודעה למטופל להעתקה"></textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="m-${i}">העתקה</button><span class="copied" role="status"></span></div>` : ""}
+    </div>` : ""}
+    </div>
+    ${d.comp.length?`<div class="sec"><h3>בפנייה מופיע — לא עונים במקוון, מעבירים</h3><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} — <span class="act">${esc(a)}</span></li>`).join("")}</ul></div>`:""}
+    <div class="sec"><div class="src">מקור: ${esc(d.src)}</div></div>
+  </article>`;
+  buildCertDoc();
+}
+
+function buildCertDoc(){
+  const ta = detailEl.querySelector(".doctext"); if(!ta) return;
+  const d = DRUGS[current]; const req = ALL[d.p].kind === "req";
+  const boxes = [...detailEl.querySelectorAll(".checks input[type=checkbox]")];
+  const ans = k => { const r = detailEl.querySelector(`.checks input[data-q="${k}"]:checked`); return r ? r.value : null; };
+  const relevant = d.checks.filter(c => !(c.opt && ans(c.k) === "n"));
+  const ok = k => { const b = boxes.find(x => x.dataset.k === k); return !!(b && b.checked); };
+  const fails = relevant.filter(c => !ok(c.k));
+  const contra = fails.filter(c => c.contra), clinic = fails.filter(c => c.clinic), other = fails.filter(c => !c.contra && !c.clinic);
+  const out = detailEl.querySelector(".outcome").value;
+  const note = detailEl.querySelector(".note").value.trim();
+  const lines = req
+    ? ["מענה לפנייה מקוונת ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
+       "רפואן (סטודנט לרפואה המסייע לרופא/ה) עונה רק על סוגי פניות שבפרוטוקול וכשהתנאים מתקיימים, בשם הרופא/ה ובהנחייתו/ה. אחרת: סירוב מנומק וזימון, או העברה לרופא/ה.",
+       "", "פנייה מקוונת: " + d.he + (note ? " | " + note : "")]
+    : ["אישור ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
+       "רפואן (סטודנט לרפואה המסייע לרופא/ה) מפיק אישור רק כשסוג האישור בפרוטוקול וכל התנאים מתקיימים, בשם הרופא/ה המטפל/ת ובהנחייתו/ה. אחרת: הכנה והעברה לרופא/ה.",
+       "", "סוג: " + d.he + (note ? " | פרטים: " + note : "")];
+  if(d.checks.length){
+    lines.push("", "מה נבדק (✓ מתקיים · ✗ לא מתקיים או לא נבדק):");
+    let n = 0;
+    d.checks.forEach(c => {
+      if(c.opt && ans(c.k) === "n") return;
+      const m = ok(c.k) ? "✓" : "✗";
+      lines.push((++n) + ". " + m + " " + (m === "✗" && c.bad ? c.bad : c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "") + " — " + c.crit);
+    });
+  } else if(d.only) lines.push("", "לפי הפרוטוקול: " + d.only);
+  const o = outs().find(x => x[0] === out);
+  lines.push("", o ? o[2] : "");
+  const acts = [];
+  if(contra.length) acts.push("לרופא/ה: " + contra.map(c => c.bad || c.label).join(", ") + ".");
+  if(other.length && out !== "issue") acts.push("לבדיקת הרופא/ה: " + other.map(c => c.bad || c.label).join(", ") + ".");
+  if(clinic.length) acts.push("זימון: " + clinic.map(c => c.clinic).join("; ") + ".");
+  if(acts.length){ lines.push("פעולות:"); acts.forEach(x => lines.push("• " + x)); }
+  ta.value = lines.join("\n");
+  const mt = detailEl.querySelector(".msgtext");
+  if(mt && !mt.dataset.edited){
+    const own = d.msg && ((d.suit === "לא" && (out === "visit" || (out === "no" && /דחופה/.test(d.he)))) || (d.suit !== "לא" && out === "issue"));
+    mt.value = own ? d.msg : (DATA.msg[out] || "");
+  }
+  const w = detailEl.querySelector(".warnmsg"); let msg = "";
+  const unset = d.checks.filter(c => c.opt && !ans(c.k));
+  const what = req ? "לענות" : "להפיק";
+  if(out !== "no" && contra.some(c => c.k === "urg")) msg = "סימני דחיפות: בחרו \"" + outs()[3][1] + "\".";
+  else if(out === "issue" && d.suit === "הכנה") msg = "סוג זה מחייב אישור רופא/ה. בחרו \"" + outs()[1][1] + "\".";
+  else if(out === "issue" && d.suit === "לא") msg = "סוג זה לא במענה של רפואן. בחרו סירוב/זימון, העברה לרופא/ה או דחוף.";
+  else if(out === "issue" && unset.length) msg = "סמנו כן/לא בשאלות: " + unset.map(c => c.label).join(", ") + ".";
+  else if(out === "issue" && fails.length) msg = "יש תנאים שלא סומנו. אפשר " + what + " רק כשכולם מתקיימים.";
+  else if(out === "doc" && contra.length && !req) msg = "יש תנאי שמוציא מהפרוטוקול (" + contra.map(c => c.bad || c.label).join(", ") + "): בחרו \"מחוץ לפרוטוקול\".";
+  w.hidden = !msg; w.textContent = msg;
+}
+detailEl.addEventListener("input", e => { if(e.target.classList.contains("msgtext")) e.target.dataset.edited = "1"; });
+detailEl.addEventListener("change", e => { if(e.target.classList.contains("outcome")){ const m = detailEl.querySelector(".msgtext"); if(m) delete m.dataset.edited; } }, true);
+detailEl.addEventListener("click", e => {
+  const b = e.target.closest(".see"); if(!b) return;
+  setProto(b.dataset.see, !b.dataset.sq);
+  if(b.dataset.sq){ qEl.value = b.dataset.sq; renderHits(); }
+  window.scrollTo({top:0});
+});
+
+function buildDoc(){
+  if(current !== null && DRUGS[current] && isCert(DRUGS[current])) return buildCertDoc();
+  const ta = detailEl.querySelector(".doctext"); if(!ta) return;
+  const d = DRUGS[current]; const b = matchedBrand(d, qEl.value);
+  const name = (b ? b.he + " (" + d.generic + ")" : d.he + " (" + d.generic + ")");
+  const byK = Object.fromEntries(d.checks.map(c => [c.k, c]));
+  const boxes = [...detailEl.querySelectorAll(".checks input[type=checkbox]")];
+  const ans = k => { const r = detailEl.querySelector(`.checks input[data-q="${k}"]:checked`); return r ? r.value : null; };
+  const done = boxes.filter(x => x.checked).map(x => byK[x.dataset.k]);
+  const notDone = boxes.filter(x => !x.checked && (!x.dataset.opt || ans(x.dataset.k) !== "n")).map(x => byK[x.dataset.k]);
+  const out = detailEl.querySelector(".outcome").value;
+  const note = detailEl.querySelector(".note").value.trim();
+  // three separate paths: missing -> 1 month + clinic; deviation -> 1 month + message to physician; contraindication -> no renewal + message
+  const CLINIC = {bp:'השלמת מדידת ל"ד', a1c:"השלמת בדיקת HbA1c", annual:"השלמת בדיקות שנתיות", visit:"ביקורת שנתית אצל רופא/ת המשפחה"};
+  const clinic = notDone.filter(c => CLINIC[c.k] || c.clinic).map(c => CLINIC[c.k] || c.clinic);
+  const NEG = {excl:"מצב שמוציא מהפרוטוקול", severe:"ערך חמור"};
+  const sevAns = k => { const r = detailEl.querySelector(`.checks input[data-s="${k}"]:checked`); return r ? r.value : null; };
+  const sevHit = notDone.filter(c => c.sev && sevAns(c.k) === "y");
+  const contraItems = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad).concat(sevHit.length ? ["ערך חמור"] : []);
+  const contra = contraItems.length > 0;
+  const toDoc = notDone.filter(c => !CLINIC[c.k] && !c.clinic && c.k !== "excl" && c.k !== "severe" && !c.contra && !sevHit.includes(c)).map(c => c.bad || c.label);
+  // kidney function not normal: previous eGFR values and a CKD diagnosis, so the physician can judge the trend
+  const renal = notDone.find(c => c.k === "lab_renal");
+  const prevEl = detailEl.querySelector(".ctx-prev"); const prev = prevEl ? prevEl.value.trim() : "";
+  const ckdEl = detailEl.querySelector("input[data-ckd]:checked"); const ckd = ckdEl ? ckdEl.value : null;
+  const renalTxt = renal ? "ערכי eGFR קודמים: " + (prev || "לא צוינו") + "; אבחנת אי-ספיקת כליות כרונית ברשומה: " + (ckd === "y" ? "כן" : ckd === "n" ? "לא" : "לא צוין") : "";
+  const outTxt = {"3":"תוצאה: המרשם חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)" : "-3 חודשים") + ", כי כל התנאים הרלוונטיים נבדקו ונמצאו תקינים.",
+    "1":"תוצאה: המרשם חודש לחודש אחד בלבד (חידוש ביניים כדי לא להפסיק טיפול).",
+    "0":"תוצאה: המרשם לא חודש ע\"י רפואן בגלל התווית נגד."}[out];
+  const acts = [];
+  if(out === "0") acts.push("הודעה לרופא/ה: התווית נגד (" + (contraItems.join(", ") || "לא צוין") + "). ההחלטה על המשך הטיפול בידי הרופא/ה.");
+  else {
+    if(clinic.length) acts.push("זימון למרפאה: " + clinic.join("; ") + ". החידוש הבא רק לאחר מכן.");
+    if(toDoc.length) acts.push("הודעה לרופא/ה: לא תקין — " + toDoc.join(", ") + ". לבדיקה והחלטה לפני החידוש הבא.");
+  }
+  if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
+  const lines = ["חידוש מרשם כרוני ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
+    "רפואן (סטודנט לרפואה המסייע לרופא/ה) מחדש ל-3 חודשים רק כשכל התנאים שלהלן מתקיימים. חסרה מדידה, בדיקות או ביקורת שנתית: חידוש לחודש וזימון למרפאה. ערך חריג: חידוש לחודש והודעה לרופא/ה. התווית נגד או ערך חמור: לא מחדשים, הודעה לרופא/ה.",
+    "מקור: " + DATA.guide + ".", "",
+    "תרופה: " + name + " | קבוצה: " + d.cls + " | אורך חידוש מלא: " + (d.maxm === 1 ? "חודש אחד" : "3 חודשים"), "",
+    "מה נבדק לפני החידוש (✓ נבדק ותקין · ✗ לא נבדק או לא תקין):"];
+  let n = 0;
+  d.checks.forEach(c => {
+    if(c.opt && ans(c.k) === "n") return;
+    const box = boxes.find(x => x.dataset.k === c.k);
+    const mark = box && box.checked ? "✓" : "✗";
+    const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
+      : c.sev && !(box && box.checked) ? (sevAns(c.k) === "y" ? " — ערך חמור: " + c.sev : sevAns(c.k) === "n" ? " — לא חמור" : " — לא סומן אם חמור") : "";
+    lines.push((++n) + ". " + mark + " " + (mark === "✗" && c.bad ? c.bad : c.label) + extra + (c === renal ? " (" + renalTxt + ")" : "") + " — " + c.crit);
+  });
+  if(note){ lines.push("", "הערת הרפואן: " + note); }
+  lines.push("", outTxt);
+  if(acts.length){ lines.push("פעולות:"); acts.forEach(x => lines.push("• " + x)); }
+  ta.value = lines.join("\n");
+  const w = detailEl.querySelector(".warnmsg");
+  if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : " בחרו חידוש לחודש אחד."); }
+  else if(out === "1" && contra){ w.hidden = false; w.textContent = "יש " + contraItems.join(" / ") + ". כשיש התווית נגד לא מחדשים; בחרו \"לא חודש\"."; }
+  else if(notDone.some(c => c.sev && !sevAns(c.k))){ w.hidden = false; w.textContent = "סמנו אם הערך החריג הוא גם ערך חמור (כן/לא) — זה קובע אם מחדשים."; }
+  else if(renal && (!prev || !ckd)){ w.hidden = false; w.textContent = "תפקוד כליות לא תקין: רשמו ערכי eGFR קודמים וסמנו אם יש אבחנה של אי-ספיקת כליות כרונית — זה עוזר לרופא/ה להחליט."; }
+  else if(out === "0" && !contra){ w.hidden = false; w.textContent = "אין התווית נגד, לכן מחדשים לפחות לחודש אחד. בחרו חידוש לחודש אחד."; }
+  else w.hidden = true;
+}
+detailEl.addEventListener("change", e => {
+  const k = e.target.dataset && e.target.dataset.q;
+  if(e.target.type === "checkbox"){ e.target.closest("li").querySelectorAll(".sevq, .ctxq").forEach(q => { q.hidden = e.target.checked; if(q.hidden) q.querySelectorAll("input").forEach(r => { r.checked = false; if(r.type === "text") r.value = ""; }); }); }
+  if(k){ const li = e.target.closest(".optq"); const sub = li.querySelector(".sub"); sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; }
+  buildDoc();
+});
+detailEl.addEventListener("input", e => { if(e.target.classList.contains("note") || e.target.classList.contains("ctx-prev")) buildDoc(); });
+detailEl.addEventListener("click", async e => {
+  const btn = e.target.closest(".copy"); if(!btn) return;
+  const ta = document.getElementById(btn.dataset.t); const msg = btn.nextElementSibling;
+  try { await navigator.clipboard.writeText(ta.value); msg.textContent = "הועתק"; }
+  catch(_) { ta.focus(); ta.select(); msg.textContent = "הטקסט מסומן, העתיקו ידנית (Ctrl+C)"; }
+  setTimeout(() => msg.textContent = "", 2500);
+});
+
+hitsEl.addEventListener("click", e => { const t = e.target.closest(".hit"); if(!t) return; current = +t.dataset.i; renderHits(); });
+qEl.addEventListener("input", renderHits);
+
+function renderCommon(){
+  let html = "", cur = null;
+  for(const [sec, topic, check, rule, fail, src] of DATA.common){
+    if(sec !== cur){ html += `<tr class="grp"><td colspan="4">${esc(sec)}</td></tr>`; cur = sec; }
+    html += `<tr><td><b>${esc(topic)}</b><br><span class="src">${esc(check)}</span></td><td>${esc(rule)}</td><td class="act">${esc(fail)}</td><td class="src">${esc(src)}</td></tr>`;
+  }
+  document.getElementById("common").innerHTML = `<div class="rules"><h3>${esc(ui().rules)}</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+  <div class="tbl-wrap"><table><thead><tr><th>מה בודקים</th><th>קריטריון</th><th>אם לא מתקיים</th><th>מקור</th></tr></thead><tbody>${html}</tbody></table></div>`;
+}
+function renderDec(){
+  const rows = DATA.decisions.map(d => `<tr><td>${esc(d[1])}</td><td>${esc(d[2])}</td><td><b>${esc(d[3])}</b></td><td class="kind">${esc(d[4])}</td></tr>`).join("");
+  document.getElementById("dec").innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>נושא</th><th>מה ההנחיה אומרת</th><th>ההחלטה בפרוטוקול</th><th>סוג</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="src">"הכרעה" = פרקים בהנחיה סותרים ונבחרה אפשרות אחת. "החלטה מקומית" = ההנחיה לא נותנת ערך. מקור: ${esc(DATA.guide)}.</p>`;
+}
+
+document.querySelectorAll(".view").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll(".view").forEach(b => b.setAttribute("aria-selected", b === btn));
+  ["drug","common","dec"].forEach(id => document.getElementById(id).hidden = id !== btn.dataset.v);
+}));
+
+document.getElementById("draft").hidden = !ALL.draft;
+document.getElementById("fb-send").addEventListener("click", () => {
+  const txt = document.getElementById("fb-txt").value.trim(), who = document.getElementById("fb-who").value.trim();
+  const msg = document.getElementById("fb-msg");
+  if(!txt){ msg.textContent = "כתבו הערה לפני השליחה"; return; }
+  const tab = document.querySelector('.view[aria-selected="true"]');
+  const d = current !== null && qEl.value.trim() ? DRUGS[current] : null;
+  const body = [txt, "", "—", who ? "מאת: " + who : "", "לשונית: " + (tab ? tab.textContent.trim() : ""),
+    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
+  location.href = "mailto:asseo_y@mac.org.il,asseoy@gmail.com?subject=" + encodeURIComponent("הערות — פרוטוקולים לאישור (" + DATA.name + ")") + "&body=" + encodeURIComponent(body);
+  msg.textContent = "נפתח מייל. אם לא נפתח, אפשר לשלוח ידנית לאחת הכתובות למעלה.";
+});
+// protocol chips: switching changes rules, shared checks, decisions, links and the example search
+const tabsEl = document.querySelector(".tabs");
+tabsEl.innerHTML = ALL.order.map(p => `<button class="tab" role="tab" data-p="${p}" aria-selected="${p === DATA.key}">${esc(ALL[p].name)}</button>`).join("");
+// on a phone the 12 chips take half a screen: show the same choice as a dropdown
+const selEl = document.createElement("select"); selEl.className = "tabsel"; selEl.setAttribute("aria-label", "מערכת");
+selEl.innerHTML = ALL.order.map(p => `<option value="${p}">${esc(ALL[p].name)} (${ALL[p].drugs.length})</option>`).join("");
+tabsEl.after(selEl);
+selEl.addEventListener("change", () => setProto(selEl.value, true));
+function renderDocs(){
+  document.getElementById("docs").innerHTML = DATA.links.map(([label, items]) => esc(label) + ": " +
+    items.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join(" · ")).join("<br>");
+  document.getElementById("foot-src").textContent = DATA.guide + " · " + DATA.version;
+}
+function renderUI(){
+  const u = ui();
+  document.querySelector('label[for="q"]').textContent = u.search; qEl.placeholder = u.ph;
+  document.getElementById("v-drug").textContent = u.view; document.getElementById("v-common").textContent = u.common;
+}
+function setProto(p, resetQuery){
+  DATA = ALL[p];
+  tabsEl.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === p));
+  selEl.value = p;
+  renderDocs(); renderCommon(); renderDec(); renderUI();
+  if(resetQuery){ qEl.value = DATA.example; renderHits(); }
+}
+tabsEl.addEventListener("click", e => { const b = e.target.closest(".tab"); if(b) setProto(b.dataset.p, true); });
+renderDocs(); renderCommon(); renderDec(); renderHits();
+</script>
