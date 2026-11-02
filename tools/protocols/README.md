@@ -36,3 +36,8 @@ It needs Python 3 with `openpyxl`.
 - Certificates or digital requests: `kinds.json` (data) and the `kind` code in `template.html`.
 
 Publishing: commit on the `refuan` branch, merge to `main` (GitHub Pages serves `main`).
+
+## Review booklet (PDF)
+
+`python3 tools/protocols/booklet.py` (after `gen.py`) builds `out/booklet.pdf`: every tab's rules, shared checks, decisions,
+a tick-box list, and the full checklist of every item, from `out/data.json`. Needs Python Playwright (Chromium). Fonts: Heebo (OFL) in `fonts/`.
