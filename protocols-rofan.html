@@ -233,9 +233,7 @@ function renderDetail(i){
       <textarea id="t-${i}" class="doctext" readonly rows="22" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
     </div>`}
-    <div class="sec thr"><h3>ערכים שמחזירים לרופא</h3><ul>${d.thr.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
     ${d.comp.length?`<div class="sec"><h3>תלונות שמחייבות החלפה או הפסקה</h3><p class="src">לא שואלים את המטופל/ת; נבדק בביקורת השנתית. אם מופיעה בפנייה או ברשומה, להעביר לרופא/ה.</p><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} <span class="act">← ${esc(a)}</span></li>`).join("")}</ul></div>`:""}
-    <div class="sec"><h3>מוציא מהפרוטוקול</h3><ul>${d.excl.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
     <div class="sec"><h3>שמות מסחריים</h3><div class="brand-list">${d.brands.map(x=>`<span class="brand">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div>
       <div class="src">מקור: ${esc(DATA.guide)}, ${esc(d.src)}</div></div>
   </article>`;
