@@ -83,6 +83,10 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .checks .yn input{margin-top:0}
 .checks .sub{margin:8px 28px 0 0}
 .checks .sub[hidden]{display:none}
+.checks .ctxq{margin:6px 28px 0 0;font-size:.92rem;display:flex;flex-direction:column;gap:4px;padding:6px 8px;border-inline-start:3px solid var(--bad);background:rgba(0,0,0,.03)}
+.checks .ctxq[hidden]{display:none}
+.checks .ctxq label.ctxl{display:flex;flex-direction:column;gap:3px}
+.checks .ctxq input[type=text]{font:inherit;padding:4px 6px;width:100%;box-sizing:border-box}
 .checks .sevq{margin:6px 28px 0 0;font-size:.92rem;color:var(--bad);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
 .checks .optq .qrow b{font-weight:700}
 .checks .det{color:var(--muted);font-size:.92rem}
@@ -267,7 +271,10 @@ function renderDetail(i){
     ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div>
        <label class="sub" hidden><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}" data-opt="1"><span>תקין<br><span class="det">${esc(c.det)}</span></span></label></li>`
     : `<li><label><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}"><span><b>${esc(c.label)}</b><br><span class="det">${detH(c.det)}</span></span></label>${c.sev ? `
-       <div class="sevq" data-for="${c.k}"><span>אם לא תקין — האם <bdi>${esc(c.sev)}</bdi>?</span> <span class="yn"><label><input type="radio" name="s-${i}-${c.k}" value="y" data-s="${c.k}"> כן</label><label><input type="radio" name="s-${i}-${c.k}" value="n" data-s="${c.k}"> לא</label></span></div>` : ""}</li>`).join("");
+       <div class="sevq" data-for="${c.k}"><span>אם לא תקין — האם <bdi>${esc(c.sev)}</bdi>?</span> <span class="yn"><label><input type="radio" name="s-${i}-${c.k}" value="y" data-s="${c.k}"> כן</label><label><input type="radio" name="s-${i}-${c.k}" value="n" data-s="${c.k}"> לא</label></span></div>` : ""}${c.k === "lab_renal" ? `
+       <div class="ctxq" data-for="${c.k}"><span><b>אם לא תקין — פרטים לרופא/ה:</b></span>
+         <label class="ctxl">ערכי eGFR קודמים (ערך ותאריך) <input type="text" class="ctx-prev" placeholder="לדוגמה: 41 (3/2026), 44 (9/2025), 47 (3/2025)"></label>
+         <span>אבחנה של אי-ספיקת כליות כרונית ברשומה? <span class="yn"><label><input type="radio" name="ckd-${i}" value="y" data-ckd="1"> כן</label><label><input type="radio" name="ckd-${i}" value="n" data-ckd="1"> לא</label></span></span></div>` : ""}</li>`).join("");
   detailEl.innerHTML = `
   <div class="rules"><h3>כללי חידוש</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
   <article class="card">
@@ -326,6 +333,11 @@ function buildDoc(){
   const contraItems = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad).concat(sevHit.length ? ["ערך חמור"] : []);
   const contra = contraItems.length > 0;
   const toDoc = notDone.filter(c => !CLINIC[c.k] && !c.clinic && c.k !== "excl" && c.k !== "severe" && !c.contra && !sevHit.includes(c)).map(c => c.bad || c.label);
+  // kidney function not normal: previous eGFR values and a CKD diagnosis, so the physician can judge the trend
+  const renal = notDone.find(c => c.k === "lab_renal");
+  const prevEl = detailEl.querySelector(".ctx-prev"); const prev = prevEl ? prevEl.value.trim() : "";
+  const ckdEl = detailEl.querySelector("input[data-ckd]:checked"); const ckd = ckdEl ? ckdEl.value : null;
+  const renalTxt = renal ? "ערכי eGFR קודמים: " + (prev || "לא צוינו") + "; אבחנת אי-ספיקת כליות כרונית ברשומה: " + (ckd === "y" ? "כן" : ckd === "n" ? "לא" : "לא צוין") : "";
   const outTxt = {"3":"תוצאה: המרשם חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)" : "-3 חודשים") + ", כי כל התנאים הרלוונטיים נבדקו ונמצאו תקינים.",
     "1":"תוצאה: המרשם חודש לחודש אחד בלבד (חידוש ביניים כדי לא להפסיק טיפול).",
     "0":"תוצאה: המרשם לא חודש ע\"י רפואן בגלל התווית נגד."}[out];
@@ -335,6 +347,7 @@ function buildDoc(){
     if(clinic.length) acts.push("זימון למרפאה: " + clinic.join("; ") + ". החידוש הבא רק לאחר מכן.");
     if(toDoc.length) acts.push("הודעה לרופא/ה: לא תקין — " + toDoc.join(", ") + ". לבדיקה והחלטה לפני החידוש הבא.");
   }
+  if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
   const lines = ["חידוש מרשם כרוני ע\"י רפואן — פרוטוקול " + DATA.name + " (" + DATA.version + ")",
     "רפואן (סטודנט לרפואה המסייע לרופא/ה) מחדש ל-3 חודשים רק כשכל התנאים שלהלן מתקיימים. חסרה מדידה, בדיקות או ביקורת שנתית: חידוש לחודש וזימון למרפאה. ערך חריג: חידוש לחודש והודעה לרופא/ה. התווית נגד או ערך חמור: לא מחדשים, הודעה לרופא/ה.",
     "מקור: " + DATA.guide + ".", "",
@@ -347,7 +360,7 @@ function buildDoc(){
     const mark = box && box.checked ? "✓" : "✗";
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !(box && box.checked) ? (sevAns(c.k) === "y" ? " — ערך חמור: " + c.sev : sevAns(c.k) === "n" ? " — לא חמור" : " — לא סומן אם חמור") : "";
-    lines.push((++n) + ". " + mark + " " + (mark === "✗" && c.bad ? c.bad : c.label) + extra + " — " + c.crit);
+    lines.push((++n) + ". " + mark + " " + (mark === "✗" && c.bad ? c.bad : c.label) + extra + (c === renal ? " (" + renalTxt + ")" : "") + " — " + c.crit);
   });
   if(note){ lines.push("", "הערת הרפואן: " + note); }
   lines.push("", outTxt);
@@ -357,16 +370,17 @@ function buildDoc(){
   if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : " בחרו חידוש לחודש אחד."); }
   else if(out === "1" && contra){ w.hidden = false; w.textContent = "יש " + contraItems.join(" / ") + ". כשיש התווית נגד לא מחדשים; בחרו \"לא חודש\"."; }
   else if(notDone.some(c => c.sev && !sevAns(c.k))){ w.hidden = false; w.textContent = "סמנו אם הערך החריג הוא גם ערך חמור (כן/לא) — זה קובע אם מחדשים."; }
+  else if(renal && (!prev || !ckd)){ w.hidden = false; w.textContent = "תפקוד כליות לא תקין: רשמו ערכי eGFR קודמים וסמנו אם יש אבחנה של אי-ספיקת כליות כרונית — זה עוזר לרופא/ה להחליט."; }
   else if(out === "0" && !contra){ w.hidden = false; w.textContent = "אין התווית נגד, לכן מחדשים לפחות לחודש אחד. בחרו חידוש לחודש אחד."; }
   else w.hidden = true;
 }
 detailEl.addEventListener("change", e => {
   const k = e.target.dataset && e.target.dataset.q;
-  if(e.target.type === "checkbox"){ const q = e.target.closest("li").querySelector(".sevq"); if(q){ q.hidden = e.target.checked; if(q.hidden) q.querySelectorAll("input").forEach(r => r.checked = false); } }
+  if(e.target.type === "checkbox"){ e.target.closest("li").querySelectorAll(".sevq, .ctxq").forEach(q => { q.hidden = e.target.checked; if(q.hidden) q.querySelectorAll("input").forEach(r => { r.checked = false; if(r.type === "text") r.value = ""; }); }); }
   if(k){ const li = e.target.closest(".optq"); const sub = li.querySelector(".sub"); sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; }
   buildDoc();
 });
-detailEl.addEventListener("input", e => { if(e.target.classList.contains("note")) buildDoc(); });
+detailEl.addEventListener("input", e => { if(e.target.classList.contains("note") || e.target.classList.contains("ctx-prev")) buildDoc(); });
 detailEl.addEventListener("click", async e => {
   const btn = e.target.closest(".copy"); if(!btn) return;
   const ta = document.getElementById(btn.dataset.t); const msg = btn.nextElementSibling;
