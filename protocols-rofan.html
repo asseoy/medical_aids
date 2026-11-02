@@ -105,6 +105,8 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .copied{color:var(--ok);font-size:.9rem}
 .fb{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
 #fb-send{white-space:nowrap}
+.fb-to{margin:0;font-weight:600}
+.fb-to a{color:var(--accent)}
 .fb h2{margin:0;font-size:1.2rem}
 .fb input,.fb textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .draft{margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-size:.95rem}
@@ -154,7 +156,8 @@ footer{color:var(--muted);font-size:.85rem;display:grid;gap:4px}
 
   <section id="fb" class="fb" aria-labelledby="fb-h">
     <h2 id="fb-h">הערות לבדיקה</h2>
-    <p class="src">ההערה נפתחת כמייל מוכן לשליחה לד"ר יונתן אסיאו. התרופה והלשונית הפתוחות מצורפות אוטומטית.</p>
+    <p class="fb-to">ד״ר יונתן אסיאו · <a href="mailto:asseo_y@mac.org.il" dir="ltr">asseo_y@mac.org.il</a> · <a href="mailto:asseoy@gmail.com" dir="ltr">asseoy@gmail.com</a></p>
+    <p class="src">ההערה נפתחת כמייל מוכן לשליחה לשתי הכתובות. התרופה והלשונית הפתוחות מצורפות אוטומטית.</p>
     <label for="fb-who">שם ותפקיד (לא חובה)</label>
     <input id="fb-who" type="text" autocomplete="name" placeholder="לדוגמה: ניהול סיכונים">
     <label for="fb-txt">הערה</label>
@@ -371,8 +374,8 @@ document.getElementById("fb-send").addEventListener("click", () => {
   const d = current !== null && qEl.value.trim() ? DATA.drugs[current] : null;
   const body = [txt, "", "—", who ? "מאת: " + who : "", "לשונית: " + (tab ? tab.textContent.trim() : ""),
     d ? "תרופה: " + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
-  location.href = "mailto:asseoy@gmail.com?subject=" + encodeURIComponent("הערות — פרוטוקולים לאישור (יתר לחץ דם)") + "&body=" + encodeURIComponent(body);
-  msg.textContent = "נפתח מייל. אם לא נפתח, אפשר לשלוח ידנית ל-asseoy@gmail.com";
+  location.href = "mailto:asseo_y@mac.org.il,asseoy@gmail.com?subject=" + encodeURIComponent("הערות — פרוטוקולים לאישור (יתר לחץ דם)") + "&body=" + encodeURIComponent(body);
+  msg.textContent = "נפתח מייל. אם לא נפתח, אפשר לשלוח ידנית לאחת הכתובות למעלה.";
 });
 document.getElementById("foot-src").textContent = DATA.guide + " · " + DATA.version;
 renderCommon(); renderDec(); renderHits();
