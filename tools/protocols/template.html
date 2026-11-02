@@ -248,6 +248,8 @@ function renderDetail(i){
   if(isCert(d)) return renderCertDetail(i);
   const b = matchedBrand(d, qEl.value);
   const [cls, label] = SUIT[d.suit];
+  // group entry with several active ingredients: show only the trade names of the searched one
+  const shownB = d.mixed && b ? (b.ing ? d.brands.filter(x => x.ing === b.ing) : [b]) : d.brands;
   const detH = t => String(t).split(" · ").map(part => part.split(/([A-Za-z][A-Za-z0-9.%/]*(?:\s?[≥≤<>]=?\s?[0-9.]+%?)?)/).map((x, k) => k % 2 ? "<bdi>" + esc(x) + "</bdi>" : esc(x)).join("")).join("<br>");
   const checks = d.checks.map(c => c.opt
     ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div>
@@ -264,7 +266,7 @@ function renderDetail(i){
       <h2>${esc(b ? b.he + " · " + b.en : d.he)}</h2>
       <div class="gen">${esc(d.generic)}</div>
       <div class="cls">${esc(d.cls)}${d.tdm ? ' <span class="tdmb">מעקב מעבדה צמוד</span>' : ""}</div>
-      <div class="brands-h"><span class="bl">שמות מסחריים (${d.brands.length}):</span><div class="brand-list">${d.brands.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
+      <div class="brands-h"><span class="bl">שמות מסחריים (${shownB.length}):</span><div class="brand-list">${shownB.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
     </div>
     <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
     <div class="body2">

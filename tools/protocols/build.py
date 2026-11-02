@@ -141,7 +141,7 @@ def build(M, out, title):
 
 import os, copy, urllib.parse
 from nest import nest
-import regroup
+import regroup, ingredients
 OUT = S + "out/"
 os.makedirs(OUT, exist_ok=True)
 X = "https://asseoy.github.io/medical_aids/"
@@ -160,7 +160,7 @@ ALL = {"draft": HTN.DRAFT, "order": [k for k, *_ in regroup.CATS]}
 for k, C in CATS.items():
     build(C, OUT + "פרוטוקול_רפואן_" + C.xname + ".xlsx", C.NAME)
     drugs = copy.deepcopy(C.DRUGS)
-    for d in drugs: nest(d)
+    for d in drugs: nest(d); ingredients.annotate(d)
     f = "protocols-rofan-" + k + ".xlsx"
     links = [["הטבלה המסכמת (Excel)", [["צפייה", V(X + f)], ["הורדה", X + f]]]]
     g = [l for s in LINK_FOR.get(k, []) for l in SRC_LINKS[s]]
