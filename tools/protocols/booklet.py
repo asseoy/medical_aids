@@ -231,4 +231,5 @@ def render(PG):
 PG = render({})          # pass 1: placeholder page numbers (same width), find where each chapter landed
 PG2 = render(PG)         # pass 2: real page numbers
 assert PG2 == PG, "page numbers moved between passes"
+shutil.copy(OUT + "booklet.pdf", REPO + "protocols-rofan-booklet.pdf")   # linked from every tab of the tool
 print("booklet", os.path.getsize(OUT + "booklet.pdf") // 1024, "KB")

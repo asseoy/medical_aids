@@ -43,7 +43,8 @@ Publishing: commit on the `refuan` branch, merge to `main` (GitHub Pages serves 
 ## Review booklet (PDF)
 
 `python3 tools/protocols/booklet.py` (after `gen.py`) builds `out/booklet.pdf`: every tab's rules, shared checks, decisions,
-a tick-box list, and the full checklist of every item, from `out/data.json`. Needs Python Playwright (Chromium). Fonts: Heebo (OFL) in `fonts/`.
+a tick-box list, and the full checklist of every item, from `out/data.json`. It also copies the PDF to the repo root as
+`protocols-rofan-booklet.pdf`, which every tab of the page links to ("חוברת בקרה"). Rebuild and commit it after protocol changes. Needs Python Playwright (Chromium). Fonts: Heebo (OFL) in `fonts/`.
 
 ## Item fields used by the template
 
