@@ -486,7 +486,7 @@ function buildDoc(){
     if(toDoc.length) acts.push("הודעה לרופא/ה: לא תקין — " + toDoc.join(", ") + ". לבדיקה והחלטה לפני החידוש הבא.");
   }
   if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
-  const lines = ["חידוש מרשם כרוני — פרוטוקול " + DATA.name, who(), "תרופה: " + name];
+  const lines = [(d.doctitle || "חידוש מרשם כרוני") + " — פרוטוקול " + DATA.name, who(), "תרופה: " + name];
   const il = introLine("חידוש " + name); if(il) lines.push(il);
   lines.push(...checkedLine(d.checks.filter(c => !c.pat && !(c.opt && ans(c.k) === "n")).map(c => {
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
@@ -495,11 +495,12 @@ function buildDoc(){
     return {ok: okc, t: okc ? c.label : (c.bad || c.label) + extra};
   })));
   lines.push(STU({"3":"תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
-    "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w":"תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
+    "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
   const pl = [];
   if(clinic.length && out !== "0" && out !== "w") pl.push("זימון למרפאה — " + clinic.join("; "));
   pl.push(...pats);
   if(pl.length) lines.push("הועבר למטופל/ת: " + pl.join("; ") + ".");
+  if(d.patnote && out !== "0") lines.push("הוראה קבועה למטופל/ת עם המרשם (אחרי אישור הרופא/ה): " + d.patnote);
   const dr = [];
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));

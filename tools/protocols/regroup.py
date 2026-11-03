@@ -19,6 +19,7 @@ CATS = [  # key, tab name, example search, Excel name
     ("blood", "דם וויטמינים", "תרדיפרון", "דם_וויטמינים"),
     ("eyeskin", "עיניים ועור", "קסאלטן", "עיניים_ועור"),
     ("immune", "חיסון, זיהומים ומומחים", "חומירה", "חיסון_זיהומים_ומומחים"),
+    ("nonchronic", "תרופות שאינן כרוניות", "ארקוקסיה", "תרופות_שאינן_כרוניות"),
 ]
 
 # explicit placement of drugs from the mixed protocols (misc, tdm, neuro); htn/dm/resp go whole to one tab
@@ -42,12 +43,13 @@ G = {
     "women": """Estradiol (systemic)|Estradiol + dydrogesterone|Estradiol + norethisterone|Estradiol + drospirenone|Estradiol + norgestrel|
         Progesterone / progestogens (oral)|Estradiol (vaginal)|Combined hormonal contraception|Progestogen-only pill|Dienogest|Fezolinetant|Elinzanetant|
         Conjugated estrogens + bazedoxifene|Prasterone (vaginal)|Medroxyprogesterone (depot injection)""",
-    "msk": """Allopurinol|Febuxostat|Alendronate|Risedronate|Raloxifene|Opioids|NSAIDs (chronic)|Zoledronic acid (osteoporosis)|Paracetamol / dipyrone (chronic)|
+    "msk": """Allopurinol|Febuxostat|Alendronate|Risedronate|Raloxifene|Opioids|Zoledronic acid (osteoporosis)|Paracetamol / dipyrone (chronic)|
         Osteoanabolic (specialist)|Methotrexate (oral)|Leflunomide|Sulfasalazine|Tofacitinib|Baricitinib|Upadacitinib|Hydroxychloroquine|Colchicine (chronic)|
         Denosumab (osteoporosis)|Teriparatide|Apremilast""",
     "blood": """Iron (oral)|Vitamin B12|Folic acid|Calcium (oral)|Vitamin D|Haematology specialist drugs|Hydroxyurea""",
-    "eyeskin": """Terbinafine (oral)|Itraconazole|Isotretinoin|Acitretin|Prostaglandin analogue (eye drops)|Timolol (eye drops)|
+    "eyeskin": """Itraconazole|Isotretinoin|Acitretin|Prostaglandin analogue (eye drops)|Timolol (eye drops)|
         Carbonic anhydrase inhibitor (eye drops)|Brimonidine (eye drops)|Glaucoma combination with timolol|Doxycycline / minocycline (long course)""",
+    "nonchronic": """NSAIDs (strong, prescription)|Terbinafine (oral)|Drug not on the chronic list|Steroid eye drops|Topical steroids""",
     "immune": """Letrozole|Anastrozole|Exemestane|Tamoxifen|HIV antiretrovirals|Calcineurin inhibitors|Biologic drugs|Oral oncology and hormonal cancer therapy|
         Transplant immunosuppressants (mTOR)|Valaciclovir / aciclovir (suppression)|Rare metabolic / orphan drugs|Azathioprine|Mycophenolate""",
 }
@@ -113,6 +115,10 @@ EXTRA_RULES = {
     "eyeskin": ["טיפות לגלאוקומה: ביקורת שנתית אצל רופא/ת עיניים; טימולול: דופק ואסתמה",
                 "רואקוטן ואציטרטין: רופא/ת עור בלבד",
                 "נוגדי פטרת וטטרציקלינים: רק בתוך משך הקורס"],
+    "nonchronic": ["כל בקשה בלשונית זו מוכנה ע\"י הרפואן ומאושרת ע\"י הרופא/ה. לא מפיקים באופן עצמאי",
+                   "הסיכום לרופא/ה: איפה תועד, תאריך, שם הרופא/ה ותפקידו/ה, האבחנה וההמלצה",
+                   "נוגדי דלקת חזקים: לבדוק כיב קיבה בעבר ותפקוד כליות. טרבינפין: ALT לפני ואחרי חודש",
+                   "משחה סטרואידלית: לא לשימוש כרוני; כשמאושרת — ההוראה הקבועה נכנסת להודעה למטופל/ת"],
     "immune": ["רוב התרופות כאן מחודשות ע\"י רופא/ה או מומחה/ית בלבד",
                "חום או זיהום בתרופה מדכאת חיסון ← הודעה דחופה"],
 }
