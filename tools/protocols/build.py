@@ -173,5 +173,8 @@ for k, C in CATS.items():
 # non-drug protocols with a "kind" (cert = certificates, req = digital requests): kept as data in kinds.json
 for _k, _v in json.load(open(S + "kinds.json")).items():
     ALL[_k] = _v; ALL["order"].append(_k)
+for _k in ALL["order"]:          # review booklet of all protocols (built by booklet.py)
+    if not any(l[0].startswith("חוברת בקרה") for l in ALL[_k]["links"]):
+        ALL[_k]["links"] = ALL[_k]["links"] + [["חוברת בקרה של כל הפרוטוקולים (PDF)", [["פתיחה", X + "protocols-rofan-booklet.pdf"]]]]
 json.dump(ALL, open(OUT + "data.json", "w"), ensure_ascii=False)
 print("ok", {k: len(C.DRUGS) for k, C in CATS.items()})
