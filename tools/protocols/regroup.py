@@ -19,6 +19,7 @@ CATS = [  # key, tab name, example search, Excel name
     ("blood", "דם וויטמינים", "תרדיפרון", "דם_וויטמינים"),
     ("eyeskin", "עיניים ועור", "קסאלטן", "עיניים_ועור"),
     ("immune", "חיסון, זיהומים ומומחים", "חומירה", "חיסון_זיהומים_ומומחים"),
+    ("nonchronic", "תרופות שאינן כרוניות", "ארקוקסיה", "תרופות_שאינן_כרוניות"),
 ]
 
 # explicit placement of drugs from the mixed protocols (misc, tdm, neuro); htn/dm/resp go whole to one tab
@@ -30,8 +31,8 @@ G = {
     "endo": """Levothyroxine|Hydrocortisone (replacement)|Alfacalcidol|Cinacalcet|Cabergoline|Desmopressin|Growth hormone|Orlistat|Phentermine|
         Somatostatin analogues / pegvisomant|Methimazole|Propylthiouracil|Testosterone|Prednisone (chronic)|Methylprednisolone (chronic)""",
     "resp": """Antihistamines (2nd generation)|Pulmonary hypertension / IPF drugs|Cystic fibrosis modulators""",
-    "psych": """Escitalopram|Citalopram|Sertraline|Fluoxetine|Paroxetine|Venlafaxine|Duloxetine|Methylphenidate|Lisdexamfetamine|Benzodiazepines / Z-drugs|
-        Amphetamine salts / modafinil|Lithium carbonate|Clozapine|Mirtazapine|Trazodone|Bupropion|Vortioxetine|Fluvoxamine|Amitriptyline|Nortriptyline|
+    "psych": """Escitalopram|Citalopram|Sertraline|Fluoxetine|Paroxetine|Venlafaxine|Duloxetine|Methylphenidate (adults)|Methylphenidate (children)|Lisdexamfetamine (adults)|Lisdexamfetamine (children)|Benzodiazepines / Z-drugs|
+        Amphetamine salts (adults)|Amphetamine salts (children)|Modafinil / armodafinil|Lithium carbonate|Clozapine|Mirtazapine|Trazodone|Bupropion|Vortioxetine|Fluvoxamine|Amitriptyline|Nortriptyline|
         Clomipramine|Atomoxetine|Guanfacine|Varenicline|Melatonin|Mianserin|Maprotiline|Doxepin|Buspirone|Daridorexant|Lemborexant|Milnacipran|Reboxetine""",
     "neuro": """Gabapentin|Pregabalin|Multiple sclerosis drugs|Cinnarizine|Betahistine|Carbamazepine|Valproate""",
     "gi": """Omeprazole|Esomeprazole|Lansoprazole|Pantoprazole|Dexlansoprazole|Mesalazine (oral)|Budesonide (oral)|Ursodeoxycholic acid|Lactulose|Famotidine|
@@ -42,12 +43,13 @@ G = {
     "women": """Estradiol (systemic)|Estradiol + dydrogesterone|Estradiol + norethisterone|Estradiol + drospirenone|Estradiol + norgestrel|
         Progesterone / progestogens (oral)|Estradiol (vaginal)|Combined hormonal contraception|Progestogen-only pill|Dienogest|Fezolinetant|Elinzanetant|
         Conjugated estrogens + bazedoxifene|Prasterone (vaginal)|Medroxyprogesterone (depot injection)""",
-    "msk": """Allopurinol|Febuxostat|Alendronate|Risedronate|Raloxifene|Opioids|NSAIDs (chronic)|Zoledronic acid (osteoporosis)|Paracetamol / dipyrone (chronic)|
+    "msk": """Allopurinol|Febuxostat|Alendronate|Risedronate|Raloxifene|Opioids|Zoledronic acid (osteoporosis)|Paracetamol / dipyrone (chronic)|
         Osteoanabolic (specialist)|Methotrexate (oral)|Leflunomide|Sulfasalazine|Tofacitinib|Baricitinib|Upadacitinib|Hydroxychloroquine|Colchicine (chronic)|
         Denosumab (osteoporosis)|Teriparatide|Apremilast""",
     "blood": """Iron (oral)|Vitamin B12|Folic acid|Calcium (oral)|Vitamin D|Haematology specialist drugs|Hydroxyurea""",
-    "eyeskin": """Terbinafine (oral)|Itraconazole|Isotretinoin|Acitretin|Prostaglandin analogue (eye drops)|Timolol (eye drops)|
+    "eyeskin": """Itraconazole|Isotretinoin|Acitretin|Prostaglandin analogue (eye drops)|Timolol (eye drops)|
         Carbonic anhydrase inhibitor (eye drops)|Brimonidine (eye drops)|Glaucoma combination with timolol|Doxycycline / minocycline (long course)""",
+    "nonchronic": """NSAIDs (strong, prescription)|Terbinafine (oral)|Drug not on the chronic list|Steroid eye drops|Topical steroids""",
     "immune": """Letrozole|Anastrozole|Exemestane|Tamoxifen|HIV antiretrovirals|Calcineurin inhibitors|Biologic drugs|Oral oncology and hormonal cancer therapy|
         Transplant immunosuppressants (mTOR)|Valaciclovir / aciclovir (suppression)|Rare metabolic / orphan drugs|Azathioprine|Mycophenolate""",
 }
@@ -72,7 +74,7 @@ def place(src, d):
 BASE_RULES = [
     "חידוש רגיל: 3 חודשים",
     "ביקור במרפאה אצל רופא/ת המשפחה פעם בשנה",
-    "עד 4 חידושים רצופים, ואז ביקור רופא",
+    "עד 3 חידושים רצופים, ואז ביקור רופא",
     "אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד",
     "חסרה מדידה, בדיקה או ביקורת שנתית: חידוש לחודש אחד + זימון למרפאה",
     "חריגה מספי ההחזרה: חידוש לחודש אחד + הודעה לרופא/ה",
@@ -113,6 +115,10 @@ EXTRA_RULES = {
     "eyeskin": ["טיפות לגלאוקומה: ביקורת שנתית אצל רופא/ת עיניים; טימולול: דופק ואסתמה",
                 "רואקוטן ואציטרטין: רופא/ת עור בלבד",
                 "נוגדי פטרת וטטרציקלינים: רק בתוך משך הקורס"],
+    "nonchronic": ["כל בקשה בלשונית זו מוכנה ע\"י הרפואן ומאושרת ע\"י הרופא/ה. לא מפיקים באופן עצמאי",
+                   "הסיכום לרופא/ה: איפה תועד, תאריך, שם הרופא/ה ותפקידו/ה, האבחנה וההמלצה",
+                   "נוגדי דלקת חזקים: לבדוק כיב קיבה בעבר ותפקוד כליות. טרבינפין: ALT לפני ואחרי חודש",
+                   "משחה סטרואידלית: לא לשימוש כרוני; כשמאושרת — ההוראה הקבועה נכנסת להודעה למטופל/ת"],
     "immune": ["רוב התרופות כאן מחודשות ע\"י רופא/ה או מומחה/ית בלבד",
                "חום או זיהום בתרופה מדכאת חיסון ← הודעה דחופה"],
 }

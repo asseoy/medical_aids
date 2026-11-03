@@ -20,10 +20,13 @@ It needs Python 3 with `openpyxl`.
 | `dm.py` | Diabetes (ADA 2026 + Israeli guidance). |
 | `misc.py`, `tdm.py` | Other chronic drugs; close-lab-monitoring drugs. |
 | `extra.py` … `extra4.py` | Later batches; `extra2.py` also defines the respiratory and neuro source protocols. |
+| `handover.py` | Kiryat Ono handover-booklet decisions (3.11.2026) applied to every drug: 3 consecutive renewals + 3rd-renewal patient message, visit-missing also notifies the physician, quantity/units/frequency and interaction checks ("wait for the physician"), the results warning and the general-instructions panel (`GUIDE`). |
+| `stage_b.py` | Stimulants (child/adult entries, renewable when chronic), opioids and benzodiazepines (prepared for physician approval, suit `הכנה`), 3-month interval for addictive drugs. |
+| `stage_c.py` | Tab "תרופות שאינן כרוניות": drugs not on the chronic list, strong NSAIDs, terbinafine, steroid eye drops, topical steroids (fixed patient note `patnote`). |
 | `multi.py` | Drugs with several indications: generic checklist only. |
 | `nest.py` | Splits lab thresholds into one checklist item per parameter (K, Na, kidney, ALT…). |
 | `regroup.py` | Places every drug in one of the 12 body-system tabs; builds each tab's rules, shared checks and decisions. |
-| `kinds.json` | Non-drug protocols kept as data: `cert` (certificates) and `req` (digital requests), with their `out` and `msg` fields. Edit here, not in the page. |
+| `kinds.json` | Non-drug protocols kept as data: `cert` (certificates), `req` (digital requests) and `vac` (vaccines), with their `out` and `msg` fields. Edit here, not in the page. |
 | `regbrands.py` + `data/medicines-registry.txt` | Brand names from the Israeli registry export (Medicines.xlsx, 7.10.2026). |
 | `build.py` | Assembles all sources, writes the Excels and `out/data.json`. |
 | `gen.py` | Runs `build.py`, injects the data into `template.html`, writes the page and copies files. |
@@ -41,3 +44,10 @@ Publishing: commit on the `refuan` branch, merge to `main` (GitHub Pages serves 
 
 `python3 tools/protocols/booklet.py` (after `gen.py`) builds `out/booklet.pdf`: every tab's rules, shared checks, decisions,
 a tick-box list, and the full checklist of every item, from `out/data.json`. Needs Python Playwright (Chromium). Fonts: Heebo (OFL) in `fonts/`.
+
+## Item fields used by the template
+
+`suit`: כן / בתנאים / הכנה (assistant prepares, physician approves; outcome preset to "waiting") / לא (message only).
+Check fields: `opt` + `q` (yes/no question), `sev` (severe value asked when not ticked), `contra`, `clinic` (booking),
+`notify` (also message the physician), `wait` (renewal waits for the physician), `pat` (yes/no question that adds a patient message).
+Drug fields: `doctitle` (title of the copied text), `patnote` (fixed patient instruction), `defout` (default outcome in kind tabs).

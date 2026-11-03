@@ -101,6 +101,11 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .fb input,.fb textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .docs{margin:6px 0 0;font-size:.95rem}
 .docs a{color:var(--accent);font-weight:600}
+.warnbox{margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--bad);color:#fff;font-weight:600;font-size:.95rem}
+.guide{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface)}
+.guide summary{cursor:pointer;font-weight:700;color:var(--accent)} .guide h4{margin:10px 0 4px;font-size:.95rem} .guide ul{margin:0;padding-inline-start:20px}
+.stu{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.92rem} .stu input{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:8px;min-width:200px}
+.intro{margin:6px 0;border:1px dashed var(--line);border-radius:8px;padding:6px 10px} .intro summary{cursor:pointer;font-size:.92rem} .intro .ir{display:grid;gap:4px;margin-top:6px} .intro input{font:inherit;padding:4px 6px}
 .draft{margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-size:.95rem}
 .rules{margin-bottom:14px;background:var(--accent-soft);border-radius:12px;padding:14px 18px;display:grid;gap:6px}
 .rules h3{margin:0;font-size:1rem}
@@ -119,6 +124,9 @@ footer{color:var(--muted);font-size:.85rem;display:grid;gap:4px}
     <h1>פרוטוקולים לאישור</h1>
     <p class="sub">פרוטוקולי רפואן לחידוש מרשמים כרוניים, להפקת אישורים ולמענה לפניות מקוונות. כל חריגה עוברת לרופא.</p>
     <p class="docs" id="docs"></p>
+    <div id="warnbox" class="warnbox" role="note"></div>
+    <details class="guide" id="guide"><summary>הנחיות כלליות לעבודה</summary><div id="guide-body"></div></details>
+    <div class="stu"><label for="stu-name">שם הסטודנט/ית (נכנס לטקסט התיעוד)</label><input id="stu-name" type="text" autocomplete="name" placeholder="לדוגמה: נועה כהן"></div>
     <div id="draft" class="draft" hidden><b>טיוטה לבדיקה.</b> טרם אושר ע"י הייעוץ המשפטי וניהול סיכונים. לא לשימוש בחידוש מרשמים או בהפקת אישורים בפועל. <a href="#fb" style="color:inherit;font-weight:600">שליחת הערות ↓</a></div>
   </header>
 
@@ -251,7 +259,9 @@ function renderDetail(i){
   // group entry with several active ingredients: show only the trade names of the searched one
   const shownB = d.mixed && b ? (b.ing ? d.brands.filter(x => x.ing === b.ing) : [b]) : d.brands;
   const detH = t => String(t).split(" · ").map(part => part.split(/([A-Za-z][A-Za-z0-9.%/]*(?:\s?[≥≤<>]=?\s?[0-9.]+%?)?)/).map((x, k) => k % 2 ? "<bdi>" + esc(x) + "</bdi>" : esc(x)).join("")).join("<br>");
-  const checks = d.checks.map(c => c.opt
+  const checks = d.checks.map(c => c.pat
+    ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div><span class="det">${esc(c.det)}</span></li>`
+    : c.opt
     ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div>
        <label class="sub" hidden><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}" data-opt="1"><span>תקין<br><span class="det">${esc(c.det)}</span></span></label></li>`
     : `<li><label><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}"><span><b>${esc(c.label)}</b><br><span class="det">${detH(c.det)}</span></span></label>${c.sev ? `
@@ -280,8 +290,10 @@ function renderDetail(i){
           <option value="3">${d.maxm === 1 ? "חודש לחודש אחד (חידוש מלא לתרופה זו)" : "חודש למשך 3 חודשים"}</option>
           <option value="1">חודש לחודש אחד (חסר או חריג, ללא התווית נגד)</option>
           <option value="0">לא חודש: התווית נגד, הודעה לרופא/ה</option>
+          <option value="w"${d.suit === "הכנה" ? " selected" : ""}>לא חודש עדיין: ממתין לתשובת הרופא/ה</option>
         </select>
       </div>
+      ${introHTML(i)}
       <div class="doc-row">
         <label for="n-${i}">הערה (לא חובה)</label>
         <input id="n-${i}" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78, K 4.6">
@@ -302,6 +314,7 @@ SUIT["הכנה"] = ["v-cond","הרפואן מכין, הרופא/ה מאשר/ת"]
 const isCert = d => !!ALL[d.p].kind;
 const UI = {
   cert:{search:"סוג אישור (לדוגמה: אישור מחלה, סיכום מידע, נשק)", ph:"לדוגמה: אישור מחלה, ילד חולה, סיכום רפואי", view:"חיפוש אישור", common:"בדיקות לכל אישור", rules:"כללי הנפקה", checks:"לבדוק לפני ההפקה", empty:"הקלידו סוג אישור כדי לראות את תנאי ההפקה.", none:"לא נמצא סוג אישור כזה. אישור שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
+  vac:{search:"שם החיסון (לדוגמה: שינגריקס, פרבנר, שפעת)", ph:"לדוגמה: שינגריקס, גרדסיל, פרבנר 20", view:"חיפוש חיסון", common:"בדיקות לכל חיסון", rules:"כללי חיסונים", checks:"לבדוק לפני ההפקה", empty:"הקלידו שם חיסון כדי לראות את התנאים.", none:"לא נמצא חיסון כזה. חיסון שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
   req:{search:"סוג הפנייה (לדוגמה: חידוש מרשם, תוצאות בדיקות, פריחה)", ph:"לדוגמה: תוצאות בדיקות, חום, הפניה לבדיקת דם", view:"חיפוש פנייה", common:"בדיקות לכל פנייה", rules:"כללי מענה מקוון", checks:"לבדוק לפני המענה", empty:"הקלידו סוג פנייה כדי לראות איך עונים.", none:"לא נמצא סוג פנייה כזה. פנייה שלא מופיעה כאן עוברת לרופא/ה.", noLabel:"לא במענה מקוון של רפואן"},
   drug:{search:"שם תרופה (מסחרי או גנרי, עברית או אנגלית)", ph:"לדוגמה: לוטן, גלוקומין, Jardiance", view:"חיפוש תרופה", common:"בדיקות לכל חידוש", rules:"כללי חידוש", empty:"הקלידו שם תרופה כדי לראות את דרישות החידוש.", none:"לא נמצאה תרופה בשם הזה באף פרוטוקול. תרופה שלא מופיעה כאן עוברת לרופא."}
 };
@@ -313,14 +326,14 @@ const ui = () => UI[DATA.kind || "drug"];
 const outs = () => DATA.out || CERT_OUT;
 
 function renderCertDetail(i){
-  const d = DRUGS[i]; const U = UI[ALL[d.p].kind]; const req = ALL[d.p].kind === "req";
+  const d = DRUGS[i]; const U = UI[ALL[d.p].kind]; const req = ALL[d.p].kind === "req" || ALL[d.p].kind === "vac"; const vac = ALL[d.p].kind === "vac";
   const [cls, label0] = SUIT[d.suit];
   const label = d.suit === "לא" ? U.noLabel : label0;
   const checks = d.checks.map(c => c.opt
     ? `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q)}</span><span class="yn"><label><input type="radio" name="q-${i}-${c.k}" value="y" data-q="${c.k}"> כן</label><label><input type="radio" name="q-${i}-${c.k}" value="n" data-q="${c.k}"> לא</label></span></div>
        <label class="sub" hidden><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}" data-opt="1"><span>מתקיים<br><span class="det">${esc(c.det)}</span></span></label></li>`
     : `<li><label><input type="checkbox" id="c-${i}-${c.k}" data-k="${c.k}"><span><b>${esc(c.label)}</b><br><span class="det">${esc(c.det)}</span></span></label></li>`).join("");
-  const def = d.suit === "כן" || d.suit === "בתנאים" ? "issue" : d.suit === "הכנה" ? "doc" : /דחופה/.test(d.he) ? "no" : req ? "visit" : "doc";
+  const def = d.defout ? d.defout : d.suit === "כן" || d.suit === "בתנאים" ? "issue" : d.suit === "הכנה" ? "doc" : /דחופה/.test(d.he) ? "no" : req ? "visit" : "doc";
   const showDoc = d.suit !== "לא" || req;
   detailEl.innerHTML = `
   <div class="rules"><h3>${esc(U.rules)}</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
@@ -342,9 +355,10 @@ function renderCertDetail(i){
         <select id="o-${i}" class="outcome">${outs().map(([v,l]) => `<option value="${v}"${v===def?" selected":""}>${esc(l)}</option>`).join("")}</select>
       </div>
       <div class="doc-row">
-        <label for="n-${i}">${req ? "פרטי הפנייה (מה התבקש, מה נעשה)" : "פרטי הבקשה (תאריכים, מטרה, הגורם המבקש)"}</label>
+        <label for="n-${i}">${vac ? "פרטים (מנה, תאריך מנה קודמת, זכאות)" : req ? "פרטי הפנייה (מה התבקש, מה נעשה)" : "פרטי הבקשה (תאריכים, מטרה, הגורם המבקש)"}</label>
         <input id="n-${i}" class="note" type="text" placeholder="${req ? "לדוגמה: מבקש חידוש לוטן; ל&quot;ד ביתי תקין" : "לדוגמה: 1.11–3.11.2026, 3 ימים"}">
       </div>
+      ${introHTML(i)}
       <p class="warnmsg" role="status" hidden></p>
       <textarea id="t-${i}" class="doctext" readonly rows="16" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
@@ -360,7 +374,19 @@ function renderCertDetail(i){
 }
 
 // short documentation text (all protocols): title, who, what was checked, outcome, what went to the patient and to the physician
-const WHO = "בוצע ע\"י סטודנט/ית לרפואה המסייע/ת לרופא/ה";
+const WHO0 = "בוצע ע\"י סטודנט/ית לרפואה המסייע/ת לרופא/ה";
+const who = () => { const n = (document.getElementById("stu-name") || {}).value; return WHO0 + (n && n.trim() ? ": " + n.trim() : ""); };
+// optional one-line presentation for the physician (age, background, request, details)
+const introHTML = i => `<details class="intro"><summary>שורת הצגה לרופא/ה (לא חובה)</summary><div class="ir">
+  <label><input type="checkbox" class="intro-on"> להוסיף לטקסט</label>
+  <input type="text" class="intro-f" data-f="age" placeholder="גיל ומין (לדוגמה: בת 67)">
+  <input type="text" class="intro-f" data-f="bg" placeholder="רקע רלוונטי (לדוגמה: סוכרת ויל&quot;ד)">
+  <input type="text" class="intro-f" data-f="more" placeholder="פרטים נוספים (לדוגמה: TSH אחרון תקין ביוני)"></div></details>`;
+function introLine(what){
+  const on = detailEl.querySelector(".intro-on"); if(!on || !on.checked) return null;
+  const f = k => { const e = detailEl.querySelector(`.intro-f[data-f="${k}"]`); return e ? e.value.trim() : ""; };
+  return "שורת הצגה: מטופל/ת" + (f("age") ? " " + f("age") : "") + (f("bg") ? ", ברקע " + f("bg") : "") + ". מבקש/ת " + what + "." + (f("more") ? " " + f("more") + "." : "");
+}
 const STU = t => String(t).replace(/\s*ע"י רפואן/g, "").replace(/רפואן/g, "סטודנט/ית לרפואה").replace(/ {2,}/g, " ");
 function checkedLine(items){
   const ok = items.filter(x => x.ok).map(x => x.t), bad = items.filter(x => !x.ok).map(x => x.t);
@@ -371,7 +397,7 @@ function checkedLine(items){
 }
 function buildCertDoc(){
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
-  const d = DRUGS[current]; const req = ALL[d.p].kind === "req";
+  const d = DRUGS[current]; const vac = ALL[d.p].kind === "vac"; const req = ALL[d.p].kind === "req" || vac;
   const boxes = [...detailEl.querySelectorAll(".checks input[type=checkbox]")];
   const ans = k => { const r = detailEl.querySelector(`.checks input[data-q="${k}"]:checked`); return r ? r.value : null; };
   const relevant = d.checks.filter(c => !(c.opt && ans(c.k) === "n"));
@@ -381,18 +407,19 @@ function buildCertDoc(){
   const out = detailEl.querySelector(".outcome").value;
   const note = detailEl.querySelector(".note").value.trim();
   const o = outs().find(x => x[0] === out);
-  const lines = [(req ? "מענה לפנייה מקוונת" : "אישור") + " — פרוטוקול " + DATA.name, WHO,
-    (req ? "פנייה: " : "סוג: ") + d.he + (note ? " | " + note : "")];
+  const lines = [(vac ? "בקשה לחיסון" : req ? "מענה לפנייה מקוונת" : "אישור") + " — פרוטוקול " + DATA.name, who(),
+    (vac ? "חיסון: " : req ? "פנייה: " : "סוג: ") + d.he + (note ? " | " + note : "")];
+  const il = introLine(d.he); if(il) lines.push(il);
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
     .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")}))));
   lines.push(STU(o ? o[2] : ""));
-  const PAT = req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
+  const PAT = vac ? {issue:"הופקו מרשם או הפניה, והוסבר איך קובעים תור", doc:"נמסר שהבקשה הועברה לרופא/ה", visit:"הוסבר למה לא הופק", no:"הועבר מיד לרופא/ה"} : req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
                   : {issue:"האישור הופק ונמסר", visit:"זימון למפגש עם רופא/ה"};
   const toPat = [PAT[out]].concat(clinic.map(c => "זימון: " + c.clinic)).filter(Boolean);
   const toDr = [];
   if(contra.length) toDr.push(contra.map(c => c.bad || c.label).join(", "));
   if(other.length && out !== "issue") toDr.push(other.map(c => c.bad || c.label).join(", "));
-  if(out === "doc" || out === "no") toDr.push(out === "no" ? "פנייה דחופה — עדכון מיידי" : "להחלטה ולאישור");
+  if(out === "doc" || out === "no") toDr.push(out === "doc" ? "להחלטה ולאישור" : (req ? "פנייה דחופה — עדכון מיידי" : "מחוץ לפרוטוקול — להחלטת הרופא/ה"));
   if(toPat.length) lines.push("הועבר למטופל/ת: " + toPat.join("; ") + ".");
   if(toDr.length) lines.push("הועבר לרופא/ה: " + toDr.join("; ") + ".");
   ta.value = lines.join("\n");
@@ -441,7 +468,10 @@ function buildDoc(){
   const sevHit = notDone.filter(c => c.sev && sevAns(c.k) === "y");
   const contraItems = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad).concat(sevHit.length ? ["ערך חמור"] : []);
   const contra = contraItems.length > 0;
-  const toDoc = notDone.filter(c => !CLINIC[c.k] && !c.clinic && c.k !== "excl" && c.k !== "severe" && !c.contra && !sevHit.includes(c)).map(c => c.bad || c.label);
+  const toDoc = notDone.filter(c => !CLINIC[c.k] && !c.clinic && !c.wait && c.k !== "excl" && c.k !== "severe" && !c.contra && !sevHit.includes(c)).map(c => c.bad || c.label);
+  const waitItems = notDone.filter(c => c.wait).map(c => c.bad || c.label);       // interaction alert, quantity/units mismatch
+  const notify = notDone.filter(c => c.notify).map(c => c.notify);                 // e.g. no clinic visit in 12 months
+  const pats = d.checks.filter(c => c.pat && ans(c.k) === "y").map(c => c.pat);    // e.g. 3rd consecutive renewal
   // kidney function not normal: previous eGFR values and a CKD diagnosis, so the physician can judge the trend
   const renal = notDone.find(c => c.k === "lab_renal");
   const prevEl = detailEl.querySelector(".ctx-prev"); const prev = prevEl ? prevEl.value.trim() : "";
@@ -457,25 +487,36 @@ function buildDoc(){
     if(toDoc.length) acts.push("הודעה לרופא/ה: לא תקין — " + toDoc.join(", ") + ". לבדיקה והחלטה לפני החידוש הבא.");
   }
   if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
-  const lines = ["חידוש מרשם כרוני — פרוטוקול " + DATA.name, WHO, "תרופה: " + name];
-  lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n")).map(c => {
+  const lines = [(d.doctitle || "חידוש מרשם כרוני") + " — פרוטוקול " + DATA.name, who(), "תרופה: " + name];
+  const il = introLine("חידוש " + name); if(il) lines.push(il);
+  lines.push(...checkedLine(d.checks.filter(c => !c.pat && !(c.opt && ans(c.k) === "n")).map(c => {
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
     return {ok: okc, t: okc ? c.label : (c.bad || c.label) + extra};
   })));
   lines.push(STU({"3":"תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
-    "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד."}[out]));
-  if(clinic.length && out !== "0") lines.push("הועבר למטופל/ת: זימון למרפאה — " + clinic.join("; ") + ".");
+    "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
+  const pl = [];
+  if(clinic.length && out !== "0" && out !== "w") pl.push("זימון למרפאה — " + clinic.join("; "));
+  pl.push(...pats);
+  if(pl.length) lines.push("הועבר למטופל/ת: " + pl.join("; ") + ".");
+  if(d.patnote && out !== "0") lines.push("הוראה קבועה למטופל/ת עם המרשם (אחרי אישור הרופא/ה): " + d.patnote);
   const dr = [];
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
+  if(waitItems.length) dr.push("ממתין לתשובה לפני החידוש: " + waitItems.join(", "));
+  if(d.suit === "הכנה" && out === "w") dr.push("לאישור סופי של הרופא/ה");
+  if(notify.length) dr.push(notify.join(", "));
   if(renal && out !== "3") dr.push(renalTxt);
   if(dr.length) lines.push("הועבר לרופא/ה: " + dr.join(". ") + ".");
   if(note) lines.push("הערה: " + note);
   ta.value = lines.join("\n");
   const w = detailEl.querySelector(".warnmsg");
-  if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : " בחרו חידוש לחודש אחד."); }
+  if(d.suit === "הכנה" && out !== "w" && out !== "0"){ w.hidden = false; w.textContent = "בתרופה זו האישור הסופי בידי הרופא/ה: בחרו \"ממתין לתשובת הרופא/ה\"."; }
+  else if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : waitItems.length ? " יש " + waitItems.join(" / ") + ": בחרו \"ממתין לתשובת הרופא/ה\"." : " בחרו חידוש לחודש אחד."); }
+  else if(waitItems.length && !contra && out !== "w"){ w.hidden = false; w.textContent = "יש " + waitItems.join(" / ") + ": החידוש ממתין לתשובת הרופא/ה. בחרו \"ממתין לתשובת הרופא/ה\"."; }
+  else if(out === "w" && !waitItems.length && !contra && d.suit !== "הכנה"){ w.hidden = false; w.textContent = "\"ממתין\" מיועד להתראת אינטראקציה או לאי-התאמה בכמות, ביחידות או בתדירות."; }
   else if(out === "1" && contra){ w.hidden = false; w.textContent = "יש " + contraItems.join(" / ") + ". כשיש התווית נגד לא מחדשים; בחרו \"לא חודש\"."; }
   else if(notDone.some(c => c.sev && !sevAns(c.k))){ w.hidden = false; w.textContent = "סמנו אם הערך החריג הוא גם ערך חמור (כן/לא) — זה קובע אם מחדשים."; }
   else if(renal && (!prev || !ckd)){ w.hidden = false; w.textContent = "תפקוד כליות לא תקין: רשמו ערכי eGFR קודמים וסמנו אם יש אבחנה של אי-ספיקת כליות כרונית — זה עוזר לרופא/ה להחליט."; }
@@ -484,11 +525,11 @@ function buildDoc(){
 }
 detailEl.addEventListener("change", e => {
   const k = e.target.dataset && e.target.dataset.q;
-  if(e.target.type === "checkbox"){ e.target.closest("li").querySelectorAll(".sevq, .ctxq").forEach(q => { q.hidden = e.target.checked; if(q.hidden) q.querySelectorAll("input").forEach(r => { r.checked = false; if(r.type === "text") r.value = ""; }); }); }
-  if(k){ const li = e.target.closest(".optq"); const sub = li.querySelector(".sub"); sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; }
+  if(e.target.type === "checkbox" && e.target.closest("li")){ e.target.closest("li").querySelectorAll(".sevq, .ctxq").forEach(q => { q.hidden = e.target.checked; if(q.hidden) q.querySelectorAll("input").forEach(r => { r.checked = false; if(r.type === "text") r.value = ""; }); }); }
+  if(k){ const li = e.target.closest(".optq"); const sub = li && li.querySelector(".sub"); if(sub){ sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; } }
   buildDoc();
 });
-detailEl.addEventListener("input", e => { if(e.target.classList.contains("note") || e.target.classList.contains("ctx-prev")) buildDoc(); });
+detailEl.addEventListener("input", e => { if(e.target.classList.contains("note") || e.target.classList.contains("ctx-prev") || e.target.classList.contains("intro-f")) buildDoc(); });
 detailEl.addEventListener("click", async e => {
   const btn = e.target.closest(".copy"); if(!btn) return;
   const ta = document.getElementById(btn.dataset.t); const msg = btn.nextElementSibling;
@@ -521,6 +562,11 @@ document.querySelectorAll(".view").forEach(btn => btn.addEventListener("click", 
 }));
 
 document.getElementById("draft").hidden = !ALL.draft;
+document.getElementById("warnbox").textContent = "⚠ " + (ALL.warn || "");
+document.getElementById("guide-body").innerHTML = (ALL.guide || []).map(([h, items]) => `<h4>${esc(h)}</h4><ul>${items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`).join("");
+const stuEl = document.getElementById("stu-name");
+try { stuEl.value = localStorage.getItem("stu-name") || ""; } catch(_) {}
+stuEl.addEventListener("input", () => { try { localStorage.setItem("stu-name", stuEl.value); } catch(_) {} if(current !== null) buildDoc(); });
 document.getElementById("fb-send").addEventListener("click", () => {
   const txt = document.getElementById("fb-txt").value.trim(), who = document.getElementById("fb-who").value.trim();
   const msg = document.getElementById("fb-msg");
@@ -528,7 +574,7 @@ document.getElementById("fb-send").addEventListener("click", () => {
   const tab = document.querySelector('.view[aria-selected="true"]');
   const d = current !== null && qEl.value.trim() ? DRUGS[current] : null;
   const body = [txt, "", "—", who ? "מאת: " + who : "", "לשונית: " + (tab ? tab.textContent.trim() : ""),
-    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
+    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : ALL[d.p].kind === "vac" ? "חיסון: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
   location.href = "mailto:asseo_y@mac.org.il,asseoy@gmail.com?subject=" + encodeURIComponent("הערות — פרוטוקולים לאישור (" + DATA.name + ")") + "&body=" + encodeURIComponent(body);
   msg.textContent = "נפתח מייל. אם לא נפתח, אפשר לשלוח ידנית לאחת הכתובות למעלה.";
 });
