@@ -314,6 +314,7 @@ SUIT["הכנה"] = ["v-cond","הרפואן מכין, הרופא/ה מאשר/ת"]
 const isCert = d => !!ALL[d.p].kind;
 const UI = {
   cert:{search:"סוג אישור (לדוגמה: אישור מחלה, סיכום מידע, נשק)", ph:"לדוגמה: אישור מחלה, ילד חולה, סיכום רפואי", view:"חיפוש אישור", common:"בדיקות לכל אישור", rules:"כללי הנפקה", checks:"לבדוק לפני ההפקה", empty:"הקלידו סוג אישור כדי לראות את תנאי ההפקה.", none:"לא נמצא סוג אישור כזה. אישור שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
+  vac:{search:"שם החיסון (לדוגמה: שינגריקס, פרבנר, שפעת)", ph:"לדוגמה: שינגריקס, גרדסיל, פרבנר 20", view:"חיפוש חיסון", common:"בדיקות לכל חיסון", rules:"כללי חיסונים", checks:"לבדוק לפני ההפקה", empty:"הקלידו שם חיסון כדי לראות את התנאים.", none:"לא נמצא חיסון כזה. חיסון שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
   req:{search:"סוג הפנייה (לדוגמה: חידוש מרשם, תוצאות בדיקות, פריחה)", ph:"לדוגמה: תוצאות בדיקות, חום, הפניה לבדיקת דם", view:"חיפוש פנייה", common:"בדיקות לכל פנייה", rules:"כללי מענה מקוון", checks:"לבדוק לפני המענה", empty:"הקלידו סוג פנייה כדי לראות איך עונים.", none:"לא נמצא סוג פנייה כזה. פנייה שלא מופיעה כאן עוברת לרופא/ה.", noLabel:"לא במענה מקוון של רפואן"},
   drug:{search:"שם תרופה (מסחרי או גנרי, עברית או אנגלית)", ph:"לדוגמה: לוטן, גלוקומין, Jardiance", view:"חיפוש תרופה", common:"בדיקות לכל חידוש", rules:"כללי חידוש", empty:"הקלידו שם תרופה כדי לראות את דרישות החידוש.", none:"לא נמצאה תרופה בשם הזה באף פרוטוקול. תרופה שלא מופיעה כאן עוברת לרופא."}
 };
@@ -325,7 +326,7 @@ const ui = () => UI[DATA.kind || "drug"];
 const outs = () => DATA.out || CERT_OUT;
 
 function renderCertDetail(i){
-  const d = DRUGS[i]; const U = UI[ALL[d.p].kind]; const req = ALL[d.p].kind === "req";
+  const d = DRUGS[i]; const U = UI[ALL[d.p].kind]; const req = ALL[d.p].kind === "req" || ALL[d.p].kind === "vac"; const vac = ALL[d.p].kind === "vac";
   const [cls, label0] = SUIT[d.suit];
   const label = d.suit === "לא" ? U.noLabel : label0;
   const checks = d.checks.map(c => c.opt
@@ -354,7 +355,7 @@ function renderCertDetail(i){
         <select id="o-${i}" class="outcome">${outs().map(([v,l]) => `<option value="${v}"${v===def?" selected":""}>${esc(l)}</option>`).join("")}</select>
       </div>
       <div class="doc-row">
-        <label for="n-${i}">${req ? "פרטי הפנייה (מה התבקש, מה נעשה)" : "פרטי הבקשה (תאריכים, מטרה, הגורם המבקש)"}</label>
+        <label for="n-${i}">${vac ? "פרטים (מנה, תאריך מנה קודמת, זכאות)" : req ? "פרטי הפנייה (מה התבקש, מה נעשה)" : "פרטי הבקשה (תאריכים, מטרה, הגורם המבקש)"}</label>
         <input id="n-${i}" class="note" type="text" placeholder="${req ? "לדוגמה: מבקש חידוש לוטן; ל&quot;ד ביתי תקין" : "לדוגמה: 1.11–3.11.2026, 3 ימים"}">
       </div>
       ${introHTML(i)}
@@ -396,7 +397,7 @@ function checkedLine(items){
 }
 function buildCertDoc(){
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
-  const d = DRUGS[current]; const req = ALL[d.p].kind === "req";
+  const d = DRUGS[current]; const vac = ALL[d.p].kind === "vac"; const req = ALL[d.p].kind === "req" || vac;
   const boxes = [...detailEl.querySelectorAll(".checks input[type=checkbox]")];
   const ans = k => { const r = detailEl.querySelector(`.checks input[data-q="${k}"]:checked`); return r ? r.value : null; };
   const relevant = d.checks.filter(c => !(c.opt && ans(c.k) === "n"));
@@ -406,19 +407,19 @@ function buildCertDoc(){
   const out = detailEl.querySelector(".outcome").value;
   const note = detailEl.querySelector(".note").value.trim();
   const o = outs().find(x => x[0] === out);
-  const lines = [(req ? "מענה לפנייה מקוונת" : "אישור") + " — פרוטוקול " + DATA.name, who(),
-    (req ? "פנייה: " : "סוג: ") + d.he + (note ? " | " + note : "")];
+  const lines = [(vac ? "בקשה לחיסון" : req ? "מענה לפנייה מקוונת" : "אישור") + " — פרוטוקול " + DATA.name, who(),
+    (vac ? "חיסון: " : req ? "פנייה: " : "סוג: ") + d.he + (note ? " | " + note : "")];
   const il = introLine(d.he); if(il) lines.push(il);
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
     .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")}))));
   lines.push(STU(o ? o[2] : ""));
-  const PAT = req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
+  const PAT = vac ? {issue:"הופקו מרשם או הפניה, והוסבר איך קובעים תור", doc:"נמסר שהבקשה הועברה לרופא/ה", visit:"הוסבר למה לא הופק", no:"הועבר מיד לרופא/ה"} : req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
                   : {issue:"האישור הופק ונמסר", visit:"זימון למפגש עם רופא/ה"};
   const toPat = [PAT[out]].concat(clinic.map(c => "זימון: " + c.clinic)).filter(Boolean);
   const toDr = [];
   if(contra.length) toDr.push(contra.map(c => c.bad || c.label).join(", "));
   if(other.length && out !== "issue") toDr.push(other.map(c => c.bad || c.label).join(", "));
-  if(out === "doc" || out === "no") toDr.push(out === "no" ? "פנייה דחופה — עדכון מיידי" : "להחלטה ולאישור");
+  if(out === "doc" || out === "no") toDr.push(out === "doc" ? "להחלטה ולאישור" : (req ? "פנייה דחופה — עדכון מיידי" : "מחוץ לפרוטוקול — להחלטת הרופא/ה"));
   if(toPat.length) lines.push("הועבר למטופל/ת: " + toPat.join("; ") + ".");
   if(toDr.length) lines.push("הועבר לרופא/ה: " + toDr.join("; ") + ".");
   ta.value = lines.join("\n");
@@ -573,7 +574,7 @@ document.getElementById("fb-send").addEventListener("click", () => {
   const tab = document.querySelector('.view[aria-selected="true"]');
   const d = current !== null && qEl.value.trim() ? DRUGS[current] : null;
   const body = [txt, "", "—", who ? "מאת: " + who : "", "לשונית: " + (tab ? tab.textContent.trim() : ""),
-    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
+    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : ALL[d.p].kind === "vac" ? "חיסון: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
   location.href = "mailto:asseo_y@mac.org.il,asseoy@gmail.com?subject=" + encodeURIComponent("הערות — פרוטוקולים לאישור (" + DATA.name + ")") + "&body=" + encodeURIComponent(body);
   msg.textContent = "נפתח מייל. אם לא נפתח, אפשר לשלוח ידנית לאחת הכתובות למעלה.";
 });
