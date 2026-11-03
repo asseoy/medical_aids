@@ -30,8 +30,8 @@ G = {
     "endo": """Levothyroxine|Hydrocortisone (replacement)|Alfacalcidol|Cinacalcet|Cabergoline|Desmopressin|Growth hormone|Orlistat|Phentermine|
         Somatostatin analogues / pegvisomant|Methimazole|Propylthiouracil|Testosterone|Prednisone (chronic)|Methylprednisolone (chronic)""",
     "resp": """Antihistamines (2nd generation)|Pulmonary hypertension / IPF drugs|Cystic fibrosis modulators""",
-    "psych": """Escitalopram|Citalopram|Sertraline|Fluoxetine|Paroxetine|Venlafaxine|Duloxetine|Methylphenidate|Lisdexamfetamine|Benzodiazepines / Z-drugs|
-        Amphetamine salts / modafinil|Lithium carbonate|Clozapine|Mirtazapine|Trazodone|Bupropion|Vortioxetine|Fluvoxamine|Amitriptyline|Nortriptyline|
+    "psych": """Escitalopram|Citalopram|Sertraline|Fluoxetine|Paroxetine|Venlafaxine|Duloxetine|Methylphenidate (adults)|Methylphenidate (children)|Lisdexamfetamine (adults)|Lisdexamfetamine (children)|Benzodiazepines / Z-drugs|
+        Amphetamine salts (adults)|Amphetamine salts (children)|Modafinil / armodafinil|Lithium carbonate|Clozapine|Mirtazapine|Trazodone|Bupropion|Vortioxetine|Fluvoxamine|Amitriptyline|Nortriptyline|
         Clomipramine|Atomoxetine|Guanfacine|Varenicline|Melatonin|Mianserin|Maprotiline|Doxepin|Buspirone|Daridorexant|Lemborexant|Milnacipran|Reboxetine""",
     "neuro": """Gabapentin|Pregabalin|Multiple sclerosis drugs|Cinnarizine|Betahistine|Carbamazepine|Valproate""",
     "gi": """Omeprazole|Esomeprazole|Lansoprazole|Pantoprazole|Dexlansoprazole|Mesalazine (oral)|Budesonide (oral)|Ursodeoxycholic acid|Lactulose|Famotidine|

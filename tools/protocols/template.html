@@ -290,7 +290,7 @@ function renderDetail(i){
           <option value="3">${d.maxm === 1 ? "חודש לחודש אחד (חידוש מלא לתרופה זו)" : "חודש למשך 3 חודשים"}</option>
           <option value="1">חודש לחודש אחד (חסר או חריג, ללא התווית נגד)</option>
           <option value="0">לא חודש: התווית נגד, הודעה לרופא/ה</option>
-          <option value="w">לא חודש עדיין: ממתין לתשובת הרופא/ה</option>
+          <option value="w"${d.suit === "הכנה" ? " selected" : ""}>לא חודש עדיין: ממתין לתשובת הרופא/ה</option>
         </select>
       </div>
       ${introHTML(i)}
@@ -504,15 +504,17 @@ function buildDoc(){
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
   if(waitItems.length) dr.push("ממתין לתשובה לפני החידוש: " + waitItems.join(", "));
+  if(d.suit === "הכנה" && out === "w") dr.push("לאישור סופי של הרופא/ה");
   if(notify.length) dr.push(notify.join(", "));
   if(renal && out !== "3") dr.push(renalTxt);
   if(dr.length) lines.push("הועבר לרופא/ה: " + dr.join(". ") + ".");
   if(note) lines.push("הערה: " + note);
   ta.value = lines.join("\n");
   const w = detailEl.querySelector(".warnmsg");
-  if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : waitItems.length ? " יש " + waitItems.join(" / ") + ": בחרו \"ממתין לתשובת הרופא/ה\"." : " בחרו חידוש לחודש אחד."); }
+  if(d.suit === "הכנה" && out !== "w" && out !== "0"){ w.hidden = false; w.textContent = "בתרופה זו האישור הסופי בידי הרופא/ה: בחרו \"ממתין לתשובת הרופא/ה\"."; }
+  else if(out === "3" && notDone.length){ w.hidden = false; w.textContent = "יש בדיקות שלא סומנו. חידוש ל-3 חודשים רק כשכולן נבדקו ותקינות." + (contra ? " יש התווית נגד: בחרו \"לא חודש\"." : waitItems.length ? " יש " + waitItems.join(" / ") + ": בחרו \"ממתין לתשובת הרופא/ה\"." : " בחרו חידוש לחודש אחד."); }
   else if(waitItems.length && !contra && out !== "w"){ w.hidden = false; w.textContent = "יש " + waitItems.join(" / ") + ": החידוש ממתין לתשובת הרופא/ה. בחרו \"ממתין לתשובת הרופא/ה\"."; }
-  else if(out === "w" && !waitItems.length && !contra){ w.hidden = false; w.textContent = "\"ממתין\" מיועד להתראת אינטראקציה או לאי-התאמה בכמות, ביחידות או בתדירות."; }
+  else if(out === "w" && !waitItems.length && !contra && d.suit !== "הכנה"){ w.hidden = false; w.textContent = "\"ממתין\" מיועד להתראת אינטראקציה או לאי-התאמה בכמות, ביחידות או בתדירות."; }
   else if(out === "1" && contra){ w.hidden = false; w.textContent = "יש " + contraItems.join(" / ") + ". כשיש התווית נגד לא מחדשים; בחרו \"לא חודש\"."; }
   else if(notDone.some(c => c.sev && !sevAns(c.k))){ w.hidden = false; w.textContent = "סמנו אם הערך החריג הוא גם ערך חמור (כן/לא) — זה קובע אם מחדשים."; }
   else if(renal && (!prev || !ckd)){ w.hidden = false; w.textContent = "תפקוד כליות לא תקין: רשמו ערכי eGFR קודמים וסמנו אם יש אבחנה של אי-ספיקת כליות כרונית — זה עוזר לרופא/ה להחליט."; }
