@@ -49,3 +49,5 @@ for k, xn in regroup_names.NAMES:
     if os.path.exists(RECALC):     # caches formula values (optional; Excel recalculates on open anyway)
         subprocess.run([sys.executable, RECALC, f], check=True, capture_output=True)
     shutil.copy(f, REPO + f"protocols-rofan-{k}.xlsx")
+if os.path.exists(OUT + "protocols-rofan-vac.xlsx"):
+    shutil.copy(OUT + "protocols-rofan-vac.xlsx", REPO + "protocols-rofan-vac.xlsx")

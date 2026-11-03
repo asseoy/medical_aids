@@ -173,6 +173,47 @@ for k, C in CATS.items():
 # non-drug protocols with a "kind" (cert = certificates, req = digital requests): kept as data in kinds.json
 for _k, _v in json.load(open(S + "kinds.json")).items():
     ALL[_k] = _v; ALL["order"].append(_k)
+
+
+def build_vac(V, out):
+    """Excel for the vaccines tab (kind "vac"), same layout as the drug tabs: shared checks, per vaccine, decisions."""
+    wb = Workbook()
+    ws1 = wb.active; ws1.title = "לפני כל חיסון"
+    setup(ws1, ["תחום", "מה הרפואן בודק", "קריטריון", "אם לא מתקיים", "מקור"], [20, 34, 50, 44, 24])
+    r = 2
+    section(ws1, r, "כללים", 5); r += 1
+    for rule in V["rules"]:
+        ws1.merge_cells(start_row=r, start_column=1, end_row=r, end_column=5); add(ws1, r, [rule]); r += 1
+    section(ws1, r, "בדיקות משותפות", 5); r += 1
+    for sec, topic, check, rule, fail, src in V["common"]:
+        add(ws1, r, [topic, check, rule, fail, src]); r += 1
+    note(ws1, r + 1, f"מקור: {V['guide']}. {V['version']}", 5, 32)
+    ws2 = wb.create_sheet("לפי חיסון")
+    setup(ws2, ["חיסון", "שמות נוספים", "מתאים לרפואן", "הערות", "מה הרפואן בודק", "אם לא מתקיים ← לרופא/ה", "הודעה למטופל/ת", "מקור"],
+          [26, 24, 11, 36, 60, 44, 50, 26])
+    for i, d in enumerate(V["drugs"], start=2):
+        names = "; ".join(b["he"] + (f" ({b['en']})" if b["en"] else "") for b in d["brands"])
+        checks = "\n".join(f"• {c['label']}: {c['det']}" for c in d["checks"])
+        fails = "\n".join(f"• {c['crit']}" for c in d["checks"] if c.get("crit"))
+        add(ws2, i, [d["he"], names, d["suit"], d["why"], checks, fails, d.get("msg", ""), d["src"]])
+        ws2.cell(row=i, column=3).alignment = Alignment(horizontal="center", vertical="top")
+    last = 1 + len(V["drugs"])
+    for val, col in (("כן", "C6EFCE"), ("בתנאים", "FFEB9C"), ("לא", "FFC7CE")):
+        ws2.conditional_formatting.add(f"C2:C{last}", CellIsRule(operator="equal", formula=[f'"{val}"'], fill=PatternFill("solid", fgColor=col)))
+    ws2.auto_filter.ref = f"A1:H{last}"
+    ws3 = wb.create_sheet("החלטות")
+    setup(ws3, ["#", "נושא", "מה ההנחיה אומרת", "ההחלטה לפרוטוקול", "סוג", "מקור"], [5, 22, 40, 50, 22, 22])
+    for i, d in enumerate(V["decisions"], start=2):
+        add(ws3, i, list(d))
+    for ws in wb.worksheets:
+        ws.page_setup.orientation = "landscape"
+    wb.save(out)
+
+
+if "vac" in ALL:
+    build_vac(ALL["vac"], OUT + "protocols-rofan-vac.xlsx")
+    _f = X + "protocols-rofan-vac.xlsx"
+    ALL["vac"]["links"] = [["הטבלה המסכמת (Excel)", [["צפייה", V(_f)], ["הורדה", _f]]]] + ALL["vac"]["links"]
 for _k in ALL["order"]:          # review booklet of all protocols (built by booklet.py)
     if not any(l[0].startswith("חוברת בקרה") for l in ALL[_k]["links"]):
         ALL[_k]["links"] = ALL[_k]["links"] + [["חוברת בקרה של כל הפרוטוקולים (PDF)", [["פתיחה", X + "protocols-rofan-booklet.pdf"]]]]
