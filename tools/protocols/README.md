@@ -30,7 +30,7 @@ It needs Python 3 with `openpyxl`.
 | `regbrands.py` + `data/medicines-registry.txt` | Brand names from the Israeli registry export (Medicines.xlsx, 7.10.2026). |
 | `build.py` | Assembles all sources, writes the Excels and `out/data.json`. |
 | `gen.py` | Runs `build.py`, injects the data into `template.html`, writes the page and copies files. |
-| `assets/` | Icons, OG image, manifest-related images. |
+| `assets/` | Icons, OG image, manifest-related images; `protocols-rofan-yoman.xlsx`, the task-log template (edited by hand, linked from every tab for review). |
 
 ## Adding or changing
 
