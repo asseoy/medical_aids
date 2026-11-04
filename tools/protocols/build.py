@@ -217,5 +217,8 @@ if "vac" in ALL:
 for _k in ALL["order"]:          # review booklet of all protocols (built by booklet.py)
     if not any(l[0].startswith("חוברת בקרה") for l in ALL[_k]["links"]):
         ALL[_k]["links"] = ALL[_k]["links"] + [["חוברת בקרה של כל הפרוטוקולים (PDF)", [["פתיחה", X + "protocols-rofan-booklet.pdf"]]]]
+    _y = X + "protocols-rofan-yoman.xlsx"   # task-log template (static file in assets/), for review
+    if not any(l[0].startswith("יומן תיעוד") for l in ALL[_k]["links"]):
+        ALL[_k]["links"] = ALL[_k]["links"] + [["יומן תיעוד משימות (Excel)", [["צפייה", V(_y)], ["הורדה", _y]]]]
 json.dump(ALL, open(OUT + "data.json", "w"), ensure_ascii=False)
 print("ok", {k: len(C.DRUGS) for k, C in CATS.items()})
