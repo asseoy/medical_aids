@@ -158,6 +158,7 @@ LINK_FOR = {"cardio": ["htn", "misc"], "endo": ["dm"], "resp": ["resp"], "psych"
 import stage_b; stage_b.apply(MISC)
 import stage_c; stage_c.apply(MISC)
 import otc; MISC.DRUGS.extend(otc.NEW)
+import extra5; extra5.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])
 import handover; handover.apply(HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, MISC.DRUGS, TDM.DRUGS)
 CATS = regroup.regroup({"htn": HTN, "dm": DM, "resp": RESP, "neuro": NEURO, "misc": MISC, "tdm": TDM})
 ALL = {"draft": HTN.DRAFT, "order": [k for k, *_ in regroup.CATS], "warn": handover.RESULTS_WARNING, "guide": handover.GUIDE}
