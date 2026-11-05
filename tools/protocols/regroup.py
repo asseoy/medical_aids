@@ -60,6 +60,8 @@ WHOLE = {"htn": "cardio", "dm": "endo", "resp": "resp"}
 
 def place(src, d):
     g = d["generic"]
+    if d.get("tab"):
+        return d["tab"]
     if g in PLACE:
         return PLACE[g]
     if src in WHOLE:
@@ -116,6 +118,9 @@ EXTRA_RULES = {
                 "רואקוטן ואציטרטין: רופא/ת עור בלבד",
                 "נוגדי פטרת וטטרציקלינים: רק בתוך משך הקורס"],
     "nonchronic": ["כל בקשה בלשונית זו מוכנה ע\"י הרפואן ומאושרת ע\"י הרופא/ה. לא מפיקים באופן עצמאי",
+                   "מתחת לגיל 18 ← לרופא/ה (מינון לפי משקל)",
+                   "הרפואן לא שואל שאלות רפואיות חדשות: בודק רשומה ופנייה. סימן אזהרה בפנייה ← הודעה דחופה לרופא/ה",
+                   "תכשיר עם ריכוז אחר, אריזה גדולה או בקשה חוזרת תכופה ← לרופא/ה",
                    "בקשה להמרת מרשם שנכתב בכתב יד: מציגים לרופא/ה לפענוח. לא מפענחים ולא מקלידים לבד.",
                    "הסיכום לרופא/ה: איפה תועד, תאריך, שם הרופא/ה ותפקידו/ה, האבחנה וההמלצה",
                    "נוגדי דלקת חזקים: לבדוק כיב קיבה בעבר ותפקוד כליות. טרבינפין: ALT לפני ואחרי חודש",
@@ -146,7 +151,8 @@ def regroup(sources):
             if src not in cats[k].srcs:
                 cats[k].srcs.append(src)
     for k, C in cats.items():
-        C.RENEW_RULES = BASE_RULES + EXTRA_RULES.get(k, [])
+        # the non-chronic tab is not a renewal: chronic renewal rules and shared renewal rows do not apply
+        C.RENEW_RULES = EXTRA_RULES.get(k, []) if k == "nonchronic" else BASE_RULES + EXTRA_RULES.get(k, [])
         seen, C.COMMON = set(), []
         for s in C.srcs:
             for row in sources[s].COMMON:
@@ -168,7 +174,7 @@ def regroup(sources):
         keep, seen_t = [], set()
         for r in C.COMMON:
             if GEN.search(str(r[1])):
-                if r[1] in seen_t: continue
+                if r[1] in seen_t or k == "nonchronic": continue
                 seen_t.add(r[1]); keep.append(r)
             elif rel(" ".join(map(str, r[1:5]))) or r in whole_rows:
                 keep.append(r)
