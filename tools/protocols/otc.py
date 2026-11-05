@@ -9,7 +9,7 @@ SRC = "החלטה מקומית (5.11.2026); עלון לצרכן של התכשי�
 KIDS = r"KID|CHILD|PAEDIAT|PEDIAT|BABY|INFANT|ילדים|תינוק"
 
 
-def R(ings, include=None, exclude=RB.NONORAL, exact=True, drop=None, limit=14):
+def R(ings, include=None, exclude=RB.NONORAL, exact=True, drop=None, limit=100):
     ex = KIDS + ("|" + drop if drop else "")
     out = RB.brands(ings, include=include, exclude=exclude, exact=exact, extra_exclude=ex)
     return out[:limit]
@@ -117,7 +117,7 @@ A = [
                 "נוגד דיכאון סרוטונרגי, טרמדול או MAOI")]),
       "לפי ההוראות שבעלון, עד שבוע. לשתות הרבה. אם השיעול נמשך מעל 3 שבועות, יש דם בכיח, קוצר נשימה או חום מעל 3 ימים, יש לפנות לרופא."),
     O("Cold and flu combinations (decongestant)", "תכשירי צינון ושפעת משולבים (עם פסאודואפדרין)", cat("צינון ושפעת"),
-      with_partners(R(["PSEUDOEPHEDRINE"], exclude=None, exact=False, drop="BRONCHO|SYRUP|סירופ|LINCTUS|TIPTIPOT", limit=40), "פסאודואפדרין"),
+      with_partners(R(["PSEUDOEPHEDRINE"], exclude=None, exact=False, drop="BRONCHOLATE FORTE|LINCTUS|TIPTIPOT"), "פסאודואפדרין"),
       "כולם מכילים מכווץ כלי דם (פסאודואפדרין), שמעלה לחץ דם ודופק. הרכיבים הנוספים משתנים: אקמול צינון, דקסמול ופראמול — עם פרצטמול; "
       "אדויל קולד ונורופן צינון — עם איבופרופן; קלרינז — עם לורטדין; היסטפד ונוסידקס — עם אנטיהיסטמין מרדים; סינופד וקלסינוס — פסאודואפדרין בלבד. "
       "הרכיבים של כל תכשיר מופיעים ליד שמו.",

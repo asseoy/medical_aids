@@ -5,6 +5,7 @@ from extra import B, D, ONLY, dev, GEN, VISIT, RENEW, cond
 from otc import O, N, R, checks, cat, DOC
 
 BRANDS = {   # generic of an existing entry → registry brands to add
+    "Opioids": [dict(b, note="עם קודאין") for b in RB.brands(["CODEINE"], exclude=None, exact=False)],
     "Throat lozenges and sprays": R(["DICHLOROBENZYL ALCOHOL", "AMYLMETACRESOL"], exclude=None),
     "Topical NSAID gel": [B("Fastum Gel", "פאסטום ג'ל", "קטופרופן"), B("Ketospray 10 %", "קטוספריי", "קטופרופן")],
     "Aciclovir cream": [B("Fenlips", "פנליפס", "פנציקלוביר"), B("Fenlips Color", "פנליפס קולור", "פנציקלוביר")],
