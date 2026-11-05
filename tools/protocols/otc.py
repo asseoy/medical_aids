@@ -15,6 +15,22 @@ def R(ings, include=None, exclude=RB.NONORAL, exact=True, drop=None, limit=14):
     return out[:limit]
 
 
+HE_ING = {"PARACETAMOL": "פרצטמול", "IBUPROFEN": "איבופרופן", "LORATADINE": "לורטדין", "CHLORPHENIRAMINE": "כלורפנירמין",
+          "DEXCHLORPHENIRAMINE": "דקסכלורפנירמין", "TRIPROLIDINE": "טריפרולידין", "DIPHENHYDRAMINE": "דיפנהידרמין",
+          "DEXTROMETHORPHAN": "דקסטרומתורפן", "GUAIFENESIN": "גואיפנזין"}
+
+
+def with_partners(brands, main):
+    """Note on each brand which other active ingredients it contains (from the registry), e.g. "עם פרצטמול"."""
+    for b in brands:
+        ings = set()
+        for en, he, ing, _ in RB._ROWS:
+            if RB._base(en).lower() == b["en"].lower():
+                ings |= {w for w in HE_ING if w in ing.upper() and not ("DEXCHLORPHENIRAMINE" in ing.upper() and w == "CHLORPHENIRAMINE")}
+        b["note"] = ("עם " + ", ".join(HE_ING[w] for w in sorted(ings, key=list(HE_ING).index))) if ings else main + " בלבד"
+    return brands
+
+
 def N(k, label, det, bad, urgent=False):
     """One check of a non-chronic request: not met → the request goes to the physician with the finding."""
     return dict(k=k, label=label, det=det, doc=label + ".", bad=bad + (" — דחוף" if urgent else ""), opt=False,
@@ -101,14 +117,22 @@ A = [
                 "נוגד דיכאון סרוטונרגי, טרמדול או MAOI")]),
       "לפי ההוראות שבעלון, עד שבוע. לשתות הרבה. אם השיעול נמשך מעל 3 שבועות, יש דם בכיח, קוצר נשימה או חום מעל 3 ימים, יש לפנות לרופא."),
     O("Cold and flu combinations (decongestant)", "תכשירי צינון ושפעת משולבים (עם פסאודואפדרין)", cat("צינון ושפעת"),
-      R(["PSEUDOEPHEDRINE"], exclude=None, exact=False, drop="BRONCHO|SYRUP|סירופ"),
-      "מכילים מכווץ כלי דם (פסאודואפדרין) ולרוב גם פרצטמול: מעלים לחץ דם ודופק, ויש כפילות עם אקמול.",
+      with_partners(R(["PSEUDOEPHEDRINE"], exclude=None, exact=False, drop="BRONCHO|SYRUP|סירופ|LINCTUS|TIPTIPOT", limit=40), "פסאודואפדרין"),
+      "כולם מכילים מכווץ כלי דם (פסאודואפדרין), שמעלה לחץ דם ודופק. הרכיבים הנוספים משתנים: אקמול צינון, דקסמול ופראמול — עם פרצטמול; "
+      "אדויל קולד ונורופן צינון — עם איבופרופן; קלרינז — עם לורטדין; היסטפד ונוסידקס — עם אנטיהיסטמין מרדים; סינופד וקלסינוס — פסאודואפדרין בלבד. "
+      "הרכיבים של כל תכשיר מופיעים ליד שמו.",
       checks("עד 5 ימים", FEVER_FLAGS,
              [N("cvs", "אין יתר ל\"ד לא מאוזן או מחלת לב", "ל\"ד אחרון מאוזן; אין מחלת לב איסכמית, הפרעת קצב או אירוע מוחי", "יתר ל\"ד לא מאוזן או מחלת לב"),
               N("anticho", "אין גלאוקומה, הגדלת ערמונית או יתר פעילות של בלוטת התריס", "ברשומה אין גלאוקומה עם זווית סגורה, הגדלת ערמונית או יתר פעילות של בלוטת התריס",
                 "גלאוקומה, ערמונית או יתר פעילות של בלוטת התריס"),
-              N("dup", "אין פרצטמול נוסף", "לא נלקח במקביל תכשיר אחר עם פרצטמול (אקמול, דקסמול)", "כפילות פרצטמול")]),
-      "לפי ההוראות שבעלון, עד 5 ימים. לא לקחת במקביל אקמול או תכשיר אחר עם פרצטמול. "
+              N("dup", "אין כפילות רכיבים", "אם התכשיר מכיל פרצטמול — לא נלקח במקביל אקמול או תכשיר אחר עם פרצטמול; "
+                "אם מכיל איבופרופן — לא נלקח נוגד דלקת אחר", "כפילות פרצטמול או נוגד דלקת"),
+              N("nsaid_r", "בתכשיר עם איבופרופן: אין כיב, מחלת כליות או נוגדי קרישה", "אם התכשיר מכיל איבופרופן — ברשומה אין כיב או דימום, "
+                "אי-ספיקת כליות, אי-ספיקת לב, ואין נוגדי קרישה", "כיב, כליות, לב או נוגד קרישה עם איבופרופן"),
+              N("sero", "בתכשיר עם דקסטרומתורפן: אין SSRI, SNRI, טרמדול או MAOI", "אם התכשיר מכיל דקסטרומתורפן — בתרופות הקבועות אין נוגדי דיכאון סרוטונרגיים, טרמדול או MAOI",
+                "דקסטרומתורפן עם תרופה סרוטונרגית")]),
+      "לפי ההוראות שבעלון, עד 5 ימים. אם התכשיר מכיל פרצטמול (אקמול צינון, דקסמול, פראמול) — לא לקחת במקביל אקמול; "
+      "אם מכיל איבופרופן (אדויל, נורופן) — לא לקחת נוגד דלקת נוסף. "
       "אם מופיעים דפיקות לב, כאב ראש חזק, חום מעל 3 ימים או קוצר נשימה, יש לפנות לרופא."),
     O("Throat lozenges and sprays", "תכשירים לכאב גרון (לכסניות ותרסיסים)", cat("גרון"),
       R(["FLURBIPROFEN"], exclude=None, exact=False) + R(["BENZYDAMINE"], exclude=None, exact=False) + R(["CETYLPYRIDINIUM"], exclude=None, exact=False),
