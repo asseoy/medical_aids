@@ -70,6 +70,7 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .checks .ctxq[hidden]{display:none}
 .checks .ctxq label.ctxl{display:flex;flex-direction:column;gap:3px}
 .checks .ctxq input[type=text]{font:inherit;padding:4px 6px;width:100%;box-sizing:border-box}
+.tdmstrip{background:var(--bad);color:#fff;padding:8px 14px;border-radius:10px 10px 0 0;font-size:.92rem;line-height:1.45}
 .tdmb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--bad);color:#fff;vertical-align:middle}
 .checks .sevq{margin:6px 28px 0 0;font-size:.92rem;color:var(--bad);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
 .checks .optq .qrow b{font-weight:700}
@@ -256,7 +257,7 @@ function renderHits(){
   const multi = new Set(res.slice(0,12).map(i => DRUGS[i].p)).size > 1;
   hitsEl.innerHTML = res.length > 1 ? res.slice(0,12).map(i => {
     const d = DRUGS[i]; const b = matchedBrand(d, qEl.value);
-    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
+    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${d.tdm ? ' <small class="tdmb">מעקב צמוד</small>' : ""}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
   }).join("") : "";
   renderDetail(current);
 }
@@ -283,10 +284,11 @@ function renderDetail(i){
   detailEl.innerHTML = `
   <div class="rules"><h3>כללי חידוש</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
   <article class="card">
+    ${d.tdm ? `<div class="tdmstrip"><b>מעקב צמוד: לבדוק כל ערך בקפידה.</b> נדרש: ${detH(d.labs)}</div>` : ""}
     <div class="card-h">
       <h2>${esc(b ? b.he + " · " + b.en : d.he)}</h2>
       <div class="gen">${esc(d.generic)}</div>
-      <div class="cls">${esc(d.cls)}${d.tdm ? ' <span class="tdmb">מעקב מעבדה צמוד</span>' : ""}</div>
+      <div class="cls">${esc(d.cls)}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</div>
       <div class="brands-h"><span class="bl">שמות מסחריים (${shownB.length}):</span><div class="brand-list">${shownB.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
     </div>
     <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
@@ -327,7 +329,7 @@ const UI = {
   cert:{search:"סוג אישור (לדוגמה: אישור מחלה, סיכום מידע, נשק)", ph:"לדוגמה: אישור מחלה, ילד חולה, סיכום רפואי", view:"חיפוש אישור", common:"בדיקות לכל אישור", rules:"כללי הנפקה", checks:"לבדוק לפני ההפקה", empty:"הקלידו סוג אישור כדי לראות את תנאי ההפקה.", none:"לא נמצא סוג אישור כזה. אישור שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
   vac:{search:"שם החיסון (לדוגמה: שינגריקס, פרבנר, שפעת)", ph:"לדוגמה: שינגריקס, גרדסיל, פרבנר 20", view:"חיפוש חיסון", common:"בדיקות לכל חיסון", rules:"כללי חיסונים", checks:"לבדוק לפני ההפקה", empty:"הקלידו שם חיסון כדי לראות את התנאים.", none:"לא נמצא חיסון כזה. חיסון שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
   req:{search:"סוג הפנייה (לדוגמה: חידוש מרשם, תוצאות בדיקות, פריחה)", ph:"לדוגמה: תוצאות בדיקות, חום, הפניה לבדיקת דם", view:"חיפוש פנייה", common:"בדיקות לכל פנייה", rules:"כללי מענה מקוון", checks:"לבדוק לפני המענה", empty:"הקלידו סוג פנייה כדי לראות איך עונים.", none:"לא נמצא סוג פנייה כזה. פנייה שלא מופיעה כאן עוברת לרופא/ה.", noLabel:"לא במענה מקוון של רפואן"},
-  drug:{search:"שם תרופה (מסחרי או גנרי, עברית או אנגלית)", ph:"לדוגמה: לוטן, גלוקומין, Jardiance", view:"חיפוש תרופה", common:"בדיקות לכל חידוש", rules:"כללי חידוש", empty:"הקלידו שם תרופה כדי לראות את דרישות החידוש.", none:"לא נמצאה תרופה בשם הזה באף פרוטוקול. תרופה שלא מופיעה כאן עוברת לרופא."}
+  drug:{search:"שם תרופה (מסחרי או גנרי, עברית או אנגלית)", ph:"לדוגמה: לוטן, גלוקומין, Jardiance", view:"חיפוש תרופה", common:"בדיקות לכל חידוש", rules:"כללי חידוש", empty:"הקלידו שם תרופה כדי לראות את דרישות החידוש.", none:"לא נמצאה תרופה בשם הזה באף פרוטוקול. לחפש אותה ב-UpToDate: התוויות נגד ובדיקות מעקב, להשוות לתוצאות המטופל/ת ולהעביר סיכום קצר לרופא/ה. הרופא/ה מחליט/ה."}
 };
 const CERT_OUT = [["issue","הופק ע\"י רפואן לפי הפרוטוקול","תוצאה: האישור הופק ע\"י רפואן לפי הפרוטוקול, בשם הרופא/ה המטפל/ת. נרשם ברשומה."],
   ["doc","הוכן והועבר לאישור הרופא/ה","תוצאה: האישור הוכן ומחכה לאישור הרופא/ה לפני ההפקה."],

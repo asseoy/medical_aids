@@ -34,7 +34,7 @@ def table(head, rows, cls=""):
 
 
 def item_block(sec, n, d, kind=None):
-    tdm = ' <span class="pill tdm">מעקב מעבדה צמוד</span>' if d.get("tdm") else ""
+    tdm = ' <span class="pill tdm">מעקב צמוד</span>' if d.get("tdm") else ""
     head = (f'<div class="dh"><span class="num">{sec}.{n}</span> <b>{E(d["he"])}</b>'
             + (f' · <span class="ltr">{E(d["generic"])}</span>' if not kind else "") + f' {pill(d["suit"])}{tdm}</div>'
             + f'<div class="cls">{E(d["cls"])}</div>')
@@ -144,7 +144,7 @@ general = f'''
 <p>אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד, כדי לא להפסיק טיפול. ביקור במרפאה אצל רופא/ת המשפחה פעם בשנה (אין ביקור: חידוש לחודש, זימון והודעה לרופא/ה); עד 3 חידושים רצופים ואז ביקור רופא, ובחידוש השלישי הודעה למטופל/ת שמומלצת ביקורת שנתית; רכישות 80% מהימים ומעלה ב-6 החודשים האחרונים.</p>
 <h2>סימונים</h2>
 <p>{pill("כן")} מתאים לרפואן · {pill("בתנאים")} רק טיפול כרוני במינון קבוע (ותנאים נוספים לפי התרופה) · {pill("הכנה")} הרפואן בודק ומכין, הרופא/ה מאשר/ת (אופיואידים, בנזודיאזפינים, תרופות שאינן כרוניות) · {pill("לא")} חידוש ע"י רופא/ה בלבד — הכלי מציג הודעה ולא רשימת בדיקות ·
-<span class="pill tdm">מעקב מעבדה צמוד</span> (⚗) תרופה עם בדיקות תכופות.</p>
+<span class="pill tdm">מעקב צמוד</span> (⚗) תרופה עם מעקב תכוף (מעבדה, אק"ג, עיניים או צילום — לפי התרופה); בכלי מופיע פס אדום בראש הכרטיס עם המעקב הנדרש.</p>
 <h2>תרופות עם כמה התוויות</h2>
 <p>חוסמי בטא, מעכבי ACE ו-ARB בודדים, MRA, אנטרסטו, פוסיד, פורקסיגה, ג'רדיאנס, אוזמפיק/וגובי ומונג'רו: נבדקים רק תנאים משותפים לכל ההתוויות (טווח בטיחות ל"ד במקום יעד; בלי HbA1c). יעד הטיפול נבדק ע"י הרופא/ה בביקורת.</p>
 <h2>תפקוד כליות לא תקין</h2>
@@ -193,7 +193,7 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
 {table(["", ""], [("פרוטוקולי תרופות (מערכות)", str(len(drug_tabs))), ("פריטי תרופות", str(len(all_drugs))),
                   ("שמות מסחריים", str(len({b["en"].lower() for d in all_drugs for b in d["brands"]}))),
                   ("מתאים / בתנאים / הכנה לרופא/ה / רופא בלבד", f'{cnt["כן"]} / {cnt["בתנאים"]} / {cnt["הכנה"]} / {cnt["לא"]}'),
-                  ("מעקב מעבדה צמוד", str(sum(1 for d in all_drugs if d.get("tdm")))),
+                  ("מעקב צמוד", str(sum(1 for d in all_drugs if d.get("tdm")))),
                   ("פרוטוקולים נוספים", " · ".join(A[k]["name"] + f' ({len(A[k]["drugs"])})' for k in kind_tabs)),
                   ("הופק", TODAY + " · מתוך הכלי שפורסם (asseoy.github.io/medical_aids/protocols-rofan.html)")])}
 <p>ד"ר יונתן אסיאו · asseo_y@mac.org.il</p></div>
