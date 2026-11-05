@@ -314,6 +314,9 @@ function renderDetail(i){
       <p class="warnmsg" role="status" hidden>יש בדיקות שלא סומנו. לפי הפרוטוקול לא מחדשים לפני שכולן נבדקו ותקינות.</p>
       <textarea id="t-${i}" class="doctext" readonly rows="9" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
+      ${d.patnote ? `<h3 style="margin-top:10px">הוראות ואזהרות למטופל/ת (לשליחה עם המרשם, אחרי אישור הרופא/ה)</h3>
+      <textarea id="p-${i}" class="doctext" readonly rows="${Math.min(12, d.patnote.split("\n").length + 2)}" aria-label="הוראות למטופל להעתקה">${esc(d.patnote)}</textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="p-${i}">העתקה</button><span class="copied" role="status"></span></div>` : ""}
     </div>`}
     </div>
     ${d.comp.length?`<div class="sec"><h3>תלונות שמחייבות החלפה או הפסקה</h3><p class="src">לא שואלים את המטופל/ת; נבדק בביקורת השנתית. אם מופיעה בפנייה או ברשומה, להעביר לרופא/ה.</p><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} <span class="act">← ${esc(a)}</span></li>`).join("")}</ul></div>`:""}
@@ -532,7 +535,7 @@ function buildDoc(){
   if(clinic.length && out !== "0" && out !== "w") pl.push("זימון למרפאה — " + clinic.join("; "));
   pl.push(...pats);
   if(pl.length) lines.push("הועבר למטופל/ת: " + pl.join("; ") + ".");
-  if(d.patnote && out !== "0") lines.push("הוראה קבועה למטופל/ת עם המרשם (אחרי אישור הרופא/ה): " + d.patnote);
+  if(d.patnote && out !== "0") lines.push("הוראות שימוש ואזהרות יישלחו למטופל/ת עם המרשם, אחרי אישור הרופא/ה.");
   const dr = [];
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));

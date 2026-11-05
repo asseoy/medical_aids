@@ -71,6 +71,8 @@ def item_block(sec, n, d, kind=None):
         extra.append(("תלונות בפנייה או ברשומה", E("; ".join(f"{c} ← {a}" for c, a in d["comp"]))))
     if d.get("msg"):
         extra.append(("הודעה למטופל/ת", E(d["msg"]).replace("\n", "<br>")))
+    if d.get("patnote"):
+        extra.append(("הוראות ואזהרות למטופל/ת", E(d["patnote"]).replace("\n", "<br>")))
     if d.get("src"):
         extra.append(("מקור", E(d["src"])))
     if extra:
