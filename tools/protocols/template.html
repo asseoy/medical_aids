@@ -93,6 +93,7 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .copy:focus-visible,.doc select:focus-visible,.doc input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .warnmsg{margin:0;color:var(--bad);font-weight:600;font-size:.92rem}
 .copied{color:var(--ok);font-size:.9rem}
+.autoh{display:block;width:100%;font-size:.8rem;color:var(--muted,#666);margin-top:2px}.auto-reset{font:inherit;font-size:.8rem;background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer}
 .fb{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px}
 #fb-send{white-space:nowrap}
 .fb-to{margin:0;font-weight:600}
@@ -181,9 +182,11 @@ const norm = s => String(s).toLowerCase().replace(/[\s\-\.\/'"״׳,]/g,"").repla
 
 // spelling kept as typed (only case, spaces and punctuation removed): breaks ties in favour of the literal spelling (אנורו → Anoro, not נורבסק)
 const light = s => String(s).toLowerCase().replace(/[\s\-\.\/'"״׳,]/g,"");
+// each name also split into words, so a query matches from the start of a word ("פלוס" finds "ערמוניה פלוס", "סרטן" does not find "לוסרטן")
+const words = s => String(s).split(/[\s\-\/+(),·]+/).map(norm).filter(Boolean);
 const index = DRUGS.map((d,i) => {
-  const names = [d.generic, d.he, ...d.brands.flatMap(b => [b.en, b.he])];
-  return {i, keys: names.map(norm), raw: names.map(light), cls: norm(d.cls)};
+  const names = [d.generic, d.he, ...d.brands.flatMap(b => [b.en, b.he])].filter(Boolean);
+  return {i, keys: names.map(norm), words: names.flatMap(words), raw: names.map(light).concat(names.flatMap(x => String(x).split(/[\s\-\/+(),·]+/).map(light))), cls: norm(d.cls)};
 });
 
 // one-letter typo tolerance (e.g. פוסיד → פוזיד), for queries of 4+ characters
@@ -216,21 +219,29 @@ function search(q){
 function search1(q){
   const n = norm(q);
   if(!n) return [];
-  const out = [];
+  const r = light(q);
+  // tiers: exact or start of a name or word; then a one-letter typo at the start of a word; then inside a word (5+ letters); then the drug class.
+  // only the best tier that has hits is shown, so loose matches never crowd out real ones
+  const tiers = [[], [], [], []];
   for(const it of index){
     let score = 0;
-    for(const k of it.keys){ if(k === n) score = Math.max(score,4); else if(k.startsWith(n)) score = Math.max(score,3); else if(k.includes(n)) score = Math.max(score,2); else if(near(k,n)) score = Math.max(score,1.5); }
-    if(!score && n.length >= 4 && it.cls.includes(n)) score = 1;
-    const r = light(q); if(score && r && it.raw.some(k => k.startsWith(r))) score += 0.25;
-    if(score) out.push([score,it.i]);
+    for(const k of it.keys.concat(it.words)){ if(k === n) score = Math.max(score,4); else if(k.startsWith(n)) score = Math.max(score,3); }
+    if(score){ if(r && it.raw.some(k => k.startsWith(r))) score += 0.25; tiers[0].push([score,it.i]); continue; }
+    if(it.words.some(k => near(k,n))){ tiers[1].push([1,it.i]); continue; }
+    if(n.length >= 5 && it.keys.some(k => k.includes(n))){ tiers[2].push([1,it.i]); continue; }
+    if(n.length >= 4 && it.cls.includes(n)) tiers[3].push([1,it.i]);
   }
-  return out.sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+  // names spelled exactly as typed exist: drop the hits that only match after spelling normalisation (אנורו → Anoro, not נורווסק)
+  if(tiers[0].some(x => x[0] % 1)) tiers[0] = tiers[0].filter(x => x[0] % 1);
+  const t = tiers.find(x => x.length) || [];
+  return t.sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
 }
 
 function matchedBrand(d, q){
   const n = norm(qclean(q));
-  if(norm(d.he).includes(n) || norm(d.generic).includes(n)) return null;
-  return d.brands.find(b => norm(b.en).includes(n) || norm(b.he).includes(n)) || d.brands.find(b => near(norm(b.en),n) || near(norm(b.he),n));
+  if([d.he, d.generic].some(x => norm(x).startsWith(n) || words(x).some(w => w.startsWith(n)))) return null;
+  const st = b => [b.en, b.he].some(x => x && (norm(x).startsWith(n) || words(x).some(w => w.startsWith(n))));
+  return d.brands.find(st) || d.brands.find(b => norm(b.en).includes(n) || norm(b.he).includes(n)) || d.brands.find(b => near(norm(b.en),n) || near(norm(b.he),n));
 }
 
 let current = null, lastQ = null;
@@ -299,7 +310,7 @@ function renderDetail(i){
         <input id="n-${i}" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78, K 4.6">
       </div>
       <p class="warnmsg" role="status" hidden>יש בדיקות שלא סומנו. לפי הפרוטוקול לא מחדשים לפני שכולן נבדקו ותקינות.</p>
-      <textarea id="t-${i}" class="doctext" readonly rows="22" aria-label="טקסט לתיעוד להעתקה"></textarea>
+      <textarea id="t-${i}" class="doctext" readonly rows="9" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
     </div>`}
     </div>
@@ -360,7 +371,7 @@ function renderCertDetail(i){
       </div>
       ${introHTML(i)}
       <p class="warnmsg" role="status" hidden></p>
-      <textarea id="t-${i}" class="doctext" readonly rows="16" aria-label="טקסט לתיעוד להעתקה"></textarea>
+      <textarea id="t-${i}" class="doctext" readonly rows="9" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
       ${req ? `<h3 style="margin-top:10px">הודעה למטופל/ת (לעריכה לפני שליחה)</h3>
       <textarea id="m-${i}" class="doctext msgtext" rows="7" aria-label="הודעה למטופל להעתקה"></textarea>
@@ -388,12 +399,18 @@ function introLine(what){
   return "שורת הצגה: מטופל/ת" + (f("age") ? " " + f("age") : "") + (f("bg") ? ", ברקע " + f("bg") : "") + ". מבקש/ת " + what + "." + (f("more") ? " " + f("more") + "." : "");
 }
 const STU = t => String(t).replace(/\s*ע"י רפואן/g, "").replace(/רפואן/g, "סטודנט/ית לרפואה").replace(/ {2,}/g, " ");
+// the outcome is chosen automatically from the ticks; a hand change (override) is kept until the next drug is opened
+function autoHint(sel){
+  let h = sel.parentElement.querySelector(".autoh");
+  if(!h){ h = document.createElement("span"); h.className = "autoh"; sel.after(h); }
+  h.innerHTML = sel.dataset.manual ? 'נבחר ידנית · <button type="button" class="auto-reset">חזרה לבחירה אוטומטית</button>' : "נבחר אוטומטית לפי הסימונים · אפשר לשנות";
+}
+detailEl.addEventListener("change", e => { if(e.target.classList.contains("outcome")) e.target.dataset.manual = "1"; }, true);
+detailEl.addEventListener("click", e => { if(!e.target.closest(".auto-reset")) return; const sel = detailEl.querySelector(".outcome"); delete sel.dataset.manual; buildDoc(); });
 function checkedLine(items){
-  const ok = items.filter(x => x.ok).map(x => x.t), bad = items.filter(x => !x.ok).map(x => x.t);
-  const out = [];
-  if(ok.length) out.push("נבדק ותקין: " + ok.join(", ") + ".");
-  if(bad.length) out.push("לא תקין או חסר: " + bad.join("; ") + ".");
-  return out;
+  const bad = items.filter(x => !x.ok).map(x => x.t);
+  if(!items.length) return [];
+  return [bad.length ? "לא תקין או חסר: " + bad.join("; ") + ". שאר הבדיקות לפי הפרוטוקול תקינות." : "כל הבדיקות לפי הפרוטוקול תקינות."];
 }
 function buildCertDoc(){
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
@@ -404,11 +421,17 @@ function buildCertDoc(){
   const ok = k => { const b = boxes.find(x => x.dataset.k === k); return !!(b && b.checked); };
   const fails = relevant.filter(c => !ok(c.k));
   const contra = fails.filter(c => c.contra), clinic = fails.filter(c => c.clinic), other = fails.filter(c => !c.contra && !c.clinic);
-  const out = detailEl.querySelector(".outcome").value;
+  const sel = detailEl.querySelector(".outcome");
+  if(!sel.dataset.manual && d.suit !== "לא"){
+    const unset0 = d.checks.some(c => c.opt && !ans(c.k));
+    sel.value = contra.some(c => c.k === "urg") ? "no" : contra.length ? (req ? "doc" : "no") : clinic.length && !other.length ? "visit"
+      : d.suit === "הכנה" || fails.length || unset0 ? "doc" : "issue";
+  }
+  autoHint(sel);
+  const out = sel.value;
   const note = detailEl.querySelector(".note").value.trim();
   const o = outs().find(x => x[0] === out);
-  const lines = [(vac ? "בקשה לחיסון" : req ? "מענה לפנייה מקוונת" : "אישור") + " — פרוטוקול " + DATA.name, who(),
-    (vac ? "חיסון: " : req ? "פנייה: " : "סוג: ") + d.he + (note ? " | " + note : "")];
+  const lines = [(vac ? "בקשה לחיסון" : req ? "מענה לפנייה מקוונת" : "אישור") + ": " + d.he + (note ? " | " + note : ""), who()];
   const il = introLine(d.he); if(il) lines.push(il);
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
     .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")}))));
@@ -452,13 +475,12 @@ function buildDoc(){
   if(current !== null && DRUGS[current] && isCert(DRUGS[current])) return buildCertDoc();
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
   const d = DRUGS[current]; const b = matchedBrand(d, qEl.value);
-  const name = (b ? b.he + " (" + d.generic + ")" : d.he + " (" + d.generic + ")");
+  const name = b ? b.he : d.he;
   const byK = Object.fromEntries(d.checks.map(c => [c.k, c]));
   const boxes = [...detailEl.querySelectorAll(".checks input[type=checkbox]")];
   const ans = k => { const r = detailEl.querySelector(`.checks input[data-q="${k}"]:checked`); return r ? r.value : null; };
   const done = boxes.filter(x => x.checked).map(x => byK[x.dataset.k]);
   const notDone = boxes.filter(x => !x.checked && (!x.dataset.opt || ans(x.dataset.k) !== "n")).map(x => byK[x.dataset.k]);
-  const out = detailEl.querySelector(".outcome").value;
   const note = detailEl.querySelector(".note").value.trim();
   // three separate paths: missing -> 1 month + clinic; deviation -> 1 month + message to physician; contraindication -> no renewal + message
   const CLINIC = {bp:'השלמת מדידת ל"ד', a1c:"השלמת בדיקת HbA1c", annual:"השלמת בדיקות שנתיות", visit:"ביקורת שנתית אצל רופא/ת המשפחה"};
@@ -476,6 +498,13 @@ function buildDoc(){
   const renal = notDone.find(c => c.k === "lab_renal");
   const prevEl = detailEl.querySelector(".ctx-prev"); const prev = prevEl ? prevEl.value.trim() : "";
   const ckdEl = detailEl.querySelector("input[data-ckd]:checked"); const ckd = ckdEl ? ckdEl.value : null;
+  const sel = detailEl.querySelector(".outcome");
+  if(!sel.dataset.manual){
+    const sevOpen = notDone.some(c => c.sev && !sevAns(c.k));
+    sel.value = d.suit === "הכנה" ? "w" : contra ? "0" : waitItems.length ? "w" : notDone.length || sevOpen ? "1" : "3";
+  }
+  autoHint(sel);
+  const out = sel.value;
   const renalTxt = renal ? "ערכי eGFR קודמים: " + (prev || "לא צוינו") + "; אבחנת אי-ספיקת כליות כרונית ברשומה: " + (ckd === "y" ? "כן" : ckd === "n" ? "לא" : "לא צוין") : "";
   const outTxt = {"3":"תוצאה: המרשם חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)" : "-3 חודשים") + ", כי כל התנאים הרלוונטיים נבדקו ונמצאו תקינים.",
     "1":"תוצאה: המרשם חודש לחודש אחד בלבד (חידוש ביניים כדי לא להפסיק טיפול).",
@@ -487,13 +516,13 @@ function buildDoc(){
     if(toDoc.length) acts.push("הודעה לרופא/ה: לא תקין — " + toDoc.join(", ") + ". לבדיקה והחלטה לפני החידוש הבא.");
   }
   if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
-  const lines = [(d.doctitle || "חידוש מרשם כרוני") + " — פרוטוקול " + DATA.name, who(), "תרופה: " + name];
+  const lines = [(d.doctitle || "חידוש מרשם כרוני") + ": " + name + " (פרוטוקול " + DATA.name + ")", who()];
   const il = introLine("חידוש " + name); if(il) lines.push(il);
   lines.push(...checkedLine(d.checks.filter(c => !c.pat && !(c.opt && ans(c.k) === "n")).map(c => {
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
-    return {ok: okc, t: okc ? c.label : (c.bad || c.label) + extra};
+    return {ok: okc, t: okc ? c.label : (c.bad || NEG[c.k] || c.label) + extra};
   })));
   lines.push(STU({"3":"תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
     "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
@@ -505,7 +534,7 @@ function buildDoc(){
   const dr = [];
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
-  if(waitItems.length) dr.push("ממתין לתשובה לפני החידוש: " + waitItems.join(", "));
+  if(waitItems.length) dr.push(waitItems.join(", "));
   if(d.suit === "הכנה" && out === "w") dr.push("לאישור סופי של הרופא/ה");
   if(notify.length) dr.push(notify.join(", "));
   if(renal && out !== "3") dr.push(renalTxt);
