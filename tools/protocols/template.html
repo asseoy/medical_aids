@@ -282,7 +282,7 @@ function renderDetail(i){
          <label class="ctxl">ערכי eGFR קודמים (ערך ותאריך) <input type="text" class="ctx-prev" placeholder="לדוגמה: 41 (3/2026), 44 (9/2025), 47 (3/2025)"></label>
          <span>אבחנה של אי-ספיקת כליות כרונית ברשומה? <span class="yn"><label><input type="radio" name="ckd-${i}" value="y" data-ckd="1"> כן</label><label><input type="radio" name="ckd-${i}" value="n" data-ckd="1"> לא</label></span></span></div>` : ""}</li>`).join("");
   detailEl.innerHTML = `
-  <div class="rules"><h3>כללי חידוש</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+  <div class="rules"><h3>${DATA.drugs.every(x => x.suit === "הכנה" || x.suit === "לא") ? "כללי הלשונית" : "כללי חידוש"}</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
   <article class="card">
     ${d.tdm ? `<div class="tdmstrip"><b>מעקב צמוד: לבדוק כל ערך בקפידה.</b> נדרש: ${detH(d.labs)}</div>` : ""}
     <div class="card-h">
