@@ -7,7 +7,7 @@ the next rebuild overwrites hand edits. Change the sources here and run:
 python3 tools/protocols/gen.py
 ```
 
-This writes `protocols-rofan.html`, one Excel per drug tab (`protocols-rofan-<tab>.xlsx`) and the icons into the repo root,
+This writes `protocols-rofan.html`, one Excel per tab, including certificates, digital requests and vaccines (`protocols-rofan-<tab>.xlsx`) and the icons into the repo root,
 plus `tools/protocols/out/` (ignored by git): `data.json`, a body-only copy of the page, and the Excels under their Hebrew names.
 It needs Python 3 with `openpyxl`.
 

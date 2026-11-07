@@ -522,11 +522,12 @@ function buildDoc(){
   const CLINIC = {bp:'השלמת מדידת ל"ד', a1c:"השלמת בדיקת HbA1c", annual:"השלמת בדיקות שנתיות", visit:"ביקורת שנתית אצל רופא/ת המשפחה"};
   const clinic = notDone.filter(c => CLINIC[c.k] || c.clinic).map(c => CLINIC[c.k] || c.clinic);
   const NEG = {excl:"מצב שמוציא מהפרוטוקול", severe:"ערך חמור"};
+  const FAIL = {buy:"רכישות מתחת ל-80%", target:"ל\"ד לא ביעד", cond:"לא טיפול כרוני במינון קבוע"};   // older checks without a "bad" text
   const sevAns = k => { const r = detailEl.querySelector(`.checks input[data-s="${k}"]:checked`); return r ? r.value : null; };
   const sevHit = notDone.filter(c => c.sev && sevAns(c.k) === "y");
   const contraItems = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad).concat(sevHit.length ? ["ערך חמור"] : []);
   const contra = contraItems.length > 0;
-  const toDoc = notDone.filter(c => !CLINIC[c.k] && !c.clinic && !c.wait && c.k !== "excl" && c.k !== "severe" && !c.contra && !sevHit.includes(c)).map(c => c.bad || c.label);
+  const toDoc = notDone.filter(c => !CLINIC[c.k] && !c.clinic && !c.wait && c.k !== "excl" && c.k !== "severe" && !c.contra && !sevHit.includes(c)).map(c => c.bad || FAIL[c.k] || c.label);
   const waitItems = notDone.filter(c => c.wait).map(c => c.bad || c.label);       // interaction alert, quantity/units mismatch
   const notify = notDone.filter(c => c.notify).map(c => c.notify);                 // e.g. no clinic visit in 12 months
   const pats = d.checks.filter(c => c.pat && ans(c.k) === "y").map(c => c.pat);    // e.g. 3rd consecutive renewal
@@ -565,7 +566,7 @@ function buildDoc(){
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
-    return {ok: okc, t: okc ? c.label : (c.bad || NEG[c.k] || c.label) + extra};
+    return {ok: okc, t: okc ? c.label : (c.bad || NEG[c.k] || FAIL[c.k] || c.label) + extra};
   }), d.doctitle ? "לפני הכנת המרשם" : "לפני חידוש המרשם"));
   lines.push(STU({"3": d.once ? "תוצאה: המרשם הונפק לפי הפרוטוקול." : "תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
     "1": d.once ? "תוצאה: לא הונפק — חסר או חריג, הועבר לרופא/ה." : "תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));

@@ -50,5 +50,6 @@ for k, xn in regroup_names.NAMES:
         subprocess.run([sys.executable, RECALC, f], check=True, capture_output=True)
     shutil.copy(f, REPO + f"protocols-rofan-{k}.xlsx")
 import yoman; yoman.run()   # task-log template (assets/), synced with the drug lists and the two flag columns
-if os.path.exists(OUT + "protocols-rofan-vac.xlsx"):
-    shutil.copy(OUT + "protocols-rofan-vac.xlsx", REPO + "protocols-rofan-vac.xlsx")
+for _k in ("vac", "cert", "req"):   # kind tabs: generated from kinds.json, so they always match the tool
+    if os.path.exists(OUT + f"protocols-rofan-{_k}.xlsx"):
+        shutil.copy(OUT + f"protocols-rofan-{_k}.xlsx", REPO + f"protocols-rofan-{_k}.xlsx")

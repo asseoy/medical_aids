@@ -183,10 +183,15 @@ for _k, _v in json.load(open(S + "kinds.json")).items():
     ALL[_k] = _v; ALL["order"].append(_k)
 
 
-def build_vac(V, out):
-    """Excel for the vaccines tab (kind "vac"), same layout as the drug tabs: shared checks, per vaccine, decisions."""
+KIND_XL = {"vac": ("לפני כל חיסון", "לפי חיסון", "חיסון"), "cert": ("לכל אישור", "לפי סוג אישור", "סוג האישור"),
+           "req": ("לכל פנייה", "לפי סוג פנייה", "סוג הפנייה")}
+
+
+def build_vac(V, out, kind="vac"):
+    """Excel for a kind tab (vaccines, certificates, digital requests), same layout as the drug tabs: shared checks, per item, decisions."""
+    t1, t2, col = KIND_XL[kind]
     wb = Workbook()
-    ws1 = wb.active; ws1.title = "לפני כל חיסון"
+    ws1 = wb.active; ws1.title = t1
     setup(ws1, ["תחום", "מה הרפואן בודק", "קריטריון", "אם לא מתקיים", "מקור"], [20, 34, 50, 44, 24])
     r = 2
     section(ws1, r, "כללים", 5); r += 1
@@ -196,8 +201,8 @@ def build_vac(V, out):
     for sec, topic, check, rule, fail, src in V["common"]:
         add(ws1, r, [topic, check, rule, fail, src]); r += 1
     note(ws1, r + 1, f"מקור: {V['guide']}. {V['version']}", 5, 32)
-    ws2 = wb.create_sheet("לפי חיסון")
-    setup(ws2, ["חיסון", "שמות נוספים", "מתאים לרפואן", "הערות", "מה הרפואן בודק", "אם לא מתקיים ← לרופא/ה", "הודעה למטופל/ת", "מקור"],
+    ws2 = wb.create_sheet(t2)
+    setup(ws2, [col, "שמות נוספים", "מתאים לרפואן", "הערות", "מה הרפואן בודק", "אם לא מתקיים ← לרופא/ה", "הודעה למטופל/ת", "מקור"],
           [26, 24, 11, 36, 60, 44, 50, 26])
     for i, d in enumerate(V["drugs"], start=2):
         names = "; ".join(b["he"] + (f" ({b['en']})" if b["en"] else "") for b in d["brands"])
@@ -218,10 +223,12 @@ def build_vac(V, out):
     wb.save(out)
 
 
-if "vac" in ALL:
-    build_vac(ALL["vac"], OUT + "protocols-rofan-vac.xlsx")
-    _f = X + "protocols-rofan-vac.xlsx"
-    ALL["vac"]["links"] = [["הטבלה המסכמת (Excel)", [["צפייה", V(_f)], ["הורדה", _f]]]] + ALL["vac"]["links"]
+for _k in ("vac", "cert", "req"):
+    if _k in ALL:
+        build_vac(ALL[_k], OUT + f"protocols-rofan-{_k}.xlsx", _k)
+        _f = X + f"protocols-rofan-{_k}.xlsx"
+        if not any(l[0].startswith("הטבלה המסכמת") for l in ALL[_k]["links"]):
+            ALL[_k]["links"] = [["הטבלה המסכמת (Excel)", [["צפייה", V(_f)], ["הורדה", _f]]]] + ALL[_k]["links"]
 for _k in ALL["order"]:          # review booklet of all protocols (built by booklet.py)
     if not any(l[0].startswith("חוברת בקרה") for l in ALL[_k]["links"]):
         ALL[_k]["links"] = ALL[_k]["links"] + [["חוברת בקרה של כל הפרוטוקולים (PDF)", [["פתיחה", X + "protocols-rofan-booklet.pdf"]]]]
