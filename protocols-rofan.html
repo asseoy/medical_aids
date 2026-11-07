@@ -470,7 +470,8 @@ function buildCertDoc(){
   const before = vac ? "לפני הפקת המרשם לחיסון" : req ? "לפני המענה לפנייה" : "לפני הפקת האישור";
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
     .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")})), before));
-  lines.push(STU(o ? o[2] : ""));
+  const plain = !req && out === "issue" && !fails.length;   // certificate issued with everything normal: the review line is enough
+  if(!plain) lines.push(STU(o ? o[2] : ""));
   const PAT = vac ? {issue:"הופקו מרשם או הפניה, והוסבר איך קובעים תור", doc:"נמסר שהבקשה הועברה לרופא/ה", visit:"הוסבר למה לא הופק", no:"הועבר מיד לרופא/ה"} : req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
                   : {issue:"האישור הופק ונמסר", visit:"זימון למפגש עם רופא/ה"};
   const toPat = [PAT[out]].concat(clinic.map(c => "זימון: " + c.clinic)).filter(Boolean);
@@ -478,7 +479,7 @@ function buildCertDoc(){
   if(contra.length) toDr.push(contra.map(c => c.bad || c.label).join(", "));
   if(other.length && out !== "issue") toDr.push(other.map(c => c.bad || c.label).join(", "));
   if(out === "doc" || out === "no") toDr.push(out === "doc" ? "להחלטה ולאישור" : (req ? "פנייה דחופה — עדכון מיידי" : "מחוץ לפרוטוקול — להחלטת הרופא/ה"));
-  if(toPat.length) lines.push("הועבר למטופל/ת: " + toPat.join("; ") + ".");
+  if(toPat.length && !plain) lines.push("הועבר למטופל/ת: " + toPat.join("; ") + ".");
   if(toDr.length) lines.push("הועבר לרופא/ה: " + toDr.join("; ") + ".");
   ta.value = lines.join("\n");
   const mt = detailEl.querySelector(".msgtext");
