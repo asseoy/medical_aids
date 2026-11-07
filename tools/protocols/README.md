@@ -23,6 +23,7 @@ It needs Python 3 with `openpyxl`.
 | `handover.py` | Kiryat Ono handover-booklet decisions (3.11.2026) applied to every drug: 3 consecutive renewals + 3rd-renewal patient message, visit-missing also notifies the physician, quantity/units/frequency and interaction checks ("wait for the physician"), the results warning and the general-instructions panel (`GUIDE`). |
 | `stage_b.py` | Stimulants (child/adult entries, renewable when chronic), opioids and benzodiazepines (prepared for physician approval, suit `הכנה`), 3-month interval for addictive drugs. |
 | `stage_c.py` | Tab "תרופות שאינן כרוניות": drugs not on the chronic list, strong NSAIDs, terbinafine, steroid eye drops, topical steroids (fixed patient note `patnote`). |
+| `review1107.py` | One-by-one review of the 59 physician-only items (7.11.2026): each opened as regular (own checklist) or red flag (suit `הכנה` + `red`), three stay physician-only; splits MS (Copaxone), adds the strep exception, splits tetanus / anti-D (rabies removed); fixes the rule and decision texts that listed them. |
 | `multi.py` | Drugs with several indications: generic checklist only. |
 | `nest.py` | Splits lab thresholds into one checklist item per parameter (K, Na, kidney, ALT…). |
 | `regroup.py` | Places every drug in one of the 12 body-system tabs; builds each tab's rules, shared checks and decisions. |
@@ -51,4 +52,4 @@ a tick-box list, and the full checklist of every item, from `out/data.json`. It 
 `suit`: כן / בתנאים / הכנה (assistant prepares, physician approves; outcome preset to "waiting") / לא (message only).
 Check fields: `opt` + `q` (yes/no question), `sev` (severe value asked when not ticked), `contra`, `clinic` (booking),
 `notify` (also message the physician), `wait` (renewal waits for the physician), `pat` (yes/no question that adds a patient message).
-Drug fields: `doctitle` (title of the copied text), `patnote` (fixed patient instruction), `defout` (default outcome in kind tabs).
+Drug fields: `red` (red flag: the physician double-checks before approval; shown as a red badge, in the documentation text and in the booklet), `drnote` (fixed line to the physician in the documentation text), `doctitle` (title of the copied text), `patnote` (fixed patient instruction), `defout` (default outcome in kind tabs).

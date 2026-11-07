@@ -542,6 +542,7 @@ function buildDoc(){
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
   if(waitItems.length) dr.push(waitItems.join(", "));
   if(d.red) dr.push("דגל אדום — בדיקה כפולה מול הרופא/ה");
+  if(d.drnote && out !== "0") dr.push(d.drnote);
   if(d.suit === "הכנה" && out === "w") dr.push("לאישור סופי של הרופא/ה");
   if(notify.length) dr.push(notify.join(", "));
   if(renal && out !== "3") dr.push(renalTxt);

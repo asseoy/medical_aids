@@ -166,6 +166,7 @@ import extra8; extra8.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.D
 import review1107; review1107.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])
 import handover; handover.apply(HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, MISC.DRUGS, TDM.DRUGS)
 CATS = regroup.regroup({"htn": HTN, "dm": DM, "resp": RESP, "neuro": NEURO, "misc": MISC, "tdm": TDM})
+review1107.texts(CATS)
 ALL = {"draft": HTN.DRAFT, "order": [k for k, *_ in regroup.CATS], "warn": handover.RESULTS_WARNING, "guide": handover.GUIDE}
 for k, C in CATS.items():
     build(C, OUT + "פרוטוקול_רפואן_" + C.xname + ".xlsx", C.NAME)

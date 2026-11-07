@@ -17,11 +17,16 @@ drug_tabs = [k for k in A["order"] if not A[k].get("kind")]
 kind_tabs = [k for k in A["order"] if A[k].get("kind")]
 all_drugs = [d for k in drug_tabs for d in A[k]["drugs"]]
 cnt = Counter(d["suit"] for d in all_drugs)
+nred = sum(1 for d in all_drugs if d.get("red"))
 
 
 def pill(s):
     c, t = SUIT.get(s, ("cond", s))
     return f'<span class="pill {c}">{E(t)}</span>'
+
+
+def pillD(d):
+    return '<span class="pill red">דגל אדום</span>' if d.get("red") else pill(d["suit"])
 
 
 def ul(items):
@@ -36,7 +41,7 @@ def table(head, rows, cls=""):
 def item_block(sec, n, d, kind=None):
     tdm = ' <span class="pill tdm">מעקב צמוד</span>' if d.get("tdm") else ""
     head = (f'<div class="dh"><span class="num">{sec}.{n}</span> <b>{E(d["he"])}</b>'
-            + (f' · <span class="ltr">{E(d["generic"])}</span>' if not kind else "") + f' {pill(d["suit"])}{tdm}</div>'
+            + (f' · <span class="ltr">{E(d["generic"])}</span>' if not kind else "") + f' {pillD(d)}{tdm}</div>'
             + f'<div class="cls">{E(d["cls"])}</div>')
     br = [(b.get("he") or "") + (" · " + b["en"] if b.get("en") and not kind else "") + (f' ({b["note"]})' if b.get("note") else "") for b in d["brands"]]
     rows = []
@@ -97,7 +102,7 @@ def section(sec, k):
         h += f'<h2>{sec}.ד החלטות</h2>' + table(["#", "נושא", "מה ההנחיה אומרת", "ההחלטה לפרוטוקול", "סוג", "מקור"], [tuple(E(x) for x in r) for r in P["decisions"]], "small")
     h += f'<h2>{sec}.ה רשימת {KIND_TITLE.get(kind, "התרופות")} (לסימון)<span class="mk">ZQ{sec}LZ</span></h2>'
     h += table(["#", "שם", "" if kind else "גנרי", "קבוצה", "התאמה", "אושר", "הערות"],
-               [(f"{sec}.{i}", E(d["he"]), "" if kind else f'<span class="ltr">{E(d["generic"])}</span>', E(d["cls"]), pill(d["suit"]) + (" ⚗" if d.get("tdm") else ""), "☐", "")
+               [(f"{sec}.{i}", E(d["he"]), "" if kind else f'<span class="ltr">{E(d["generic"])}</span>', E(d["cls"]), pillD(d) + (" ⚗" if d.get("tdm") else ""), "☐", "")
                 for i, d in enumerate(ds, 1)], "list")
     h += f'<h2 class="pb">{sec}.ו פירוט מלא<span class="mk">ZQ{sec}DZ</span></h2>' + "".join(item_block(sec, i, d, kind) for i, d in enumerate(ds, 1))
     return h + "</section>"
@@ -112,12 +117,19 @@ for i, k in enumerate(drug_tabs, 1):
             only_rows.append((f'<a href="#d{i}-{j}">{i}.{j}</a>', E(A[k]["name"]), "<b>" + E(d["he"]) + "</b><br>" + f'<span class="ltr">{E(d["generic"])}</span>',
                               E(names), E(d.get("only") or d.get("why", "")), "☐"))
 only_sec = f'''<section><h1 id="sonly">רשימה מרוכזת: תרופות שמחודשות ע"י רופא/ה בלבד ({len(only_rows)})<span class="mk">ZQOAZ</span></h1>
-<p>בתרופות אלה הכלי לא מציג רשימת בדיקות: מוצגת הודעה, והבקשה עוברת לרופא/ה (או למומחה/ית). הסיבות: סם מסוכן, תרופה טרטוגנית במעקב מומחה,
-טיפול שנקבע ומנוטר ע"י מרכז מומחה, או החלטה מקומית. כל פריט מופיע גם בפרק המערכת שלו (המספר בעמודה הראשונה).</p>
+<p>בתרופות אלה הכלי לא מציג רשימת בדיקות: מוצגת הודעה, והבקשה עוברת לרופא/ה. אחרי סקירת הפריטים החסומים (7.11.2026) נשארו כאן רק
+רואקוטן (רופא/ת עור), אנטיביוטיקה לתסמין חדש ותרופות נגד שפעת. כל פריט מופיע גם בפרק המערכת שלו (המספר בעמודה הראשונה).</p>
 {table(["#", "מערכת", "תרופה / קבוצה", "שמות מסחריים", "ההודעה בכלי", "אושר"], only_rows, "small")}</section>'''
 
 prep_rows = [(f'<a href="#d{i}-{j}">{i}.{j}</a>', E(A[k]["name"]), "<b>" + E(d["he"]) + "</b>", E(d.get("why", "")), "☐")
-             for i, k in enumerate(drug_tabs, 1) for j, d in enumerate(A[k]["drugs"], 1) if d["suit"] == "הכנה"]
+             for i, k in enumerate(drug_tabs, 1) for j, d in enumerate(A[k]["drugs"], 1) if d["suit"] == "הכנה" and not d.get("red")]
+red_rows = [(f'<a href="#d{i}-{j}">{i}.{j}</a>', E(A[k]["name"]), "<b>" + E(d["he"]) + "</b>", E(d.get("why", "")),
+             E(" · ".join(c["label"] for c in d["checks"] if c["k"] not in ("buy", "visit", "cond", "qty", "inter", "renew", "third"))), "☐")
+            for i, k in enumerate(drug_tabs, 1) for j, d in enumerate(A[k]["drugs"], 1) if d.get("red")]
+only_sec += f'''<section><h2>רשימה מרוכזת: דגל אדום — בדיקה כפולה מול הרופא/ה ({len(red_rows)})</h2>
+<p>תרופות בסיכון גבוה יותר (סקירה 7.11.2026): הרפואן מכין לפי רשימת הבדיקות, והרופא/ה בודק/ת שוב לפני האישור — גם כשהכול תקין.
+חריגה מהפרוטוקול מסומנת בנפרד, ותרופה יכולה לשאת את שני הסימונים.</p>
+{table(["#", "מערכת", "תרופה / קבוצה", "נימוק", "בדיקות ייעודיות", "אושר"], red_rows, "small")}</section>'''
 only_sec += f'''<section><h2>רשימה מרוכזת: הרפואן מכין, הרופא/ה מאשר/ת ({len(prep_rows)})</h2>
 <p>בתרופות אלה יש רשימת בדיקות, אבל הרפואן לא מנפיק: מכין סיכום, והאישור הסופי בידי הרופא/ה.</p>
 {table(["#", "מערכת", "תרופה / קבוצה", "מה נבדק", "אושר"], prep_rows, "small")}</section>'''
@@ -145,7 +157,7 @@ general = f'''
 ])}
 <p>אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד, כדי לא להפסיק טיפול. ביקור במרפאה אצל רופא/ת המשפחה פעם בשנה (אין ביקור: חידוש לחודש, זימון והודעה לרופא/ה); עד 3 חידושים רצופים ואז ביקור רופא, ובחידוש השלישי הודעה למטופל/ת שמומלצת ביקורת שנתית; רכישות 80% מהימים ומעלה ב-6 החודשים האחרונים.</p>
 <h2>סימונים</h2>
-<p>{pill("כן")} מתאים לרפואן · {pill("בתנאים")} רק טיפול כרוני במינון קבוע (ותנאים נוספים לפי התרופה) · {pill("הכנה")} הרפואן בודק ומכין, הרופא/ה מאשר/ת (אופיואידים, בנזודיאזפינים, תרופות שאינן כרוניות) · {pill("לא")} חידוש ע"י רופא/ה בלבד — הכלי מציג הודעה ולא רשימת בדיקות ·
+<p>{pill("כן")} מתאים לרפואן · {pill("בתנאים")} רק טיפול כרוני במינון קבוע (ותנאים נוספים לפי התרופה) · {pill("הכנה")} הרפואן בודק ומכין, הרופא/ה מאשר/ת (אופיואידים, בנזודיאזפינים, תרופות שאינן כרוניות) · <span class="pill red">דגל אדום</span> הרפואן מכין, והרופא/ה בודק/ת שוב לפני האישור (סיכון גבוה יותר) · {pill("לא")} חידוש ע"י רופא/ה בלבד — הכלי מציג הודעה ולא רשימת בדיקות ·
 <span class="pill tdm">מעקב צמוד</span> (⚗) תרופה עם מעקב תכוף (מעבדה, אק"ג, עיניים או צילום — לפי התרופה); בכלי מופיע פס אדום בראש הכרטיס עם המעקב הנדרש.</p>
 <h2>תרופות עם כמה התוויות</h2>
 <p>חוסמי בטא, מעכבי ACE ו-ARB בודדים, MRA, אנטרסטו, פוסיד, פורקסיגה, ג'רדיאנס, אוזמפיק/וגובי ומונג'רו: נבדקים רק תנאים משותפים לכל ההתוויות (טווח בטיחות ל"ד במקום יעד; בלי HbA1c). יעד הטיפול נבדק ע"י הרופא/ה בביקורת.</p>
@@ -181,7 +193,7 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
 .q{{font-weight:400;color:#1F4E78;font-size:8pt}} .sev{{color:#a01c1c;font-weight:500}}
 .pill{{display:inline-block;border-radius:999px;padding:0 7px;font-size:8pt;font-weight:500;border:1px solid}}
 .pill.yes{{background:#e3f4e8;color:#1f6b35;border-color:#9fd3ae}} .pill.cond{{background:#fff4d6;color:#7a5600;border-color:#e8cf86}}
-.pill.no{{background:#eceef1;color:#444;border-color:#b9c0c8}} .pill.tdm{{background:#a01c1c;color:#fff;border-color:#a01c1c}}
+.pill.no{{background:#eceef1;color:#444;border-color:#b9c0c8}} .pill.red{{background:#a01c1c;color:#fff;border-color:#a01c1c}} .pill.tdm{{background:#a01c1c;color:#fff;border-color:#a01c1c}}
 .ltr{{direction:ltr;unicode-bidi:isolate}}
 .review{{margin-top:4px;font-size:8.4pt;color:#5b6573}}
 .cover{{height:250mm;display:flex;flex-direction:column;justify-content:center;text-align:center}}
@@ -194,7 +206,7 @@ table.checks{{font-size:8.6pt}} table.checks td:first-child{{width:16px;text-ali
 <div class="draft"><b>טיוטה לבדיקה.</b> טרם אושר ע"י הייעוץ המשפטי וניהול סיכונים. לא לשימוש בפועל.</div>
 {table(["", ""], [("פרוטוקולי תרופות (מערכות)", str(len(drug_tabs))), ("פריטי תרופות", str(len(all_drugs))),
                   ("שמות מסחריים", str(len({b["en"].lower() for d in all_drugs for b in d["brands"]}))),
-                  ("מתאים / בתנאים / הכנה לרופא/ה / רופא בלבד", f'{cnt["כן"]} / {cnt["בתנאים"]} / {cnt["הכנה"]} / {cnt["לא"]}'),
+                  ("מתאים / בתנאים / הכנה לרופא/ה / דגל אדום / רופא בלבד", f'{cnt["כן"]} / {cnt["בתנאים"]} / {cnt["הכנה"] - nred} / {nred} / {cnt["לא"]}'),
                   ("מעקב צמוד", str(sum(1 for d in all_drugs if d.get("tdm")))),
                   ("פרוטוקולים נוספים", " · ".join(A[k]["name"] + f' ({len(A[k]["drugs"])})' for k in kind_tabs)),
                   ("הופק", TODAY + " · מתוך הכלי שפורסם (asseoy.github.io/medical_aids/protocols-rofan.html)")])}
