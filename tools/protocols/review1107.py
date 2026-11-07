@@ -35,7 +35,7 @@ def regular(why, checks, labs="-"):
 
 def once(why, checks, labs="-"):
     """Not a chronic fixed-dose drug: the assistant issues it when the checklist is met (suit "כן")."""
-    return dict(suit="כן", red=False, why=why, checks=list(checks), labs=labs, src=SRC)
+    return dict(suit="כן", red=False, once=True, why=why, checks=list(checks), labs=labs, src=SRC, doctitle="הוצאת מרשם")
 
 
 # ---- batch 1: heart, endocrine, respiratory, neurology -------------------------------------------------------
@@ -298,16 +298,16 @@ DECISIONS.update({
 })
 
 STREP = dict(generic="Penicillin for positive strep test", he="מוקסיפן או רפאפן אחרי משטח גרון חיובי", cls="אנטיביוטיקה · דלקת גרון",
-             brands=[], suit="כן", red=False, labs="-", thr=["-"], severe=[], excl=[], comp=[("קושי בנשימה או בבליעה, ריור", "דחוף")],
+             brands=[], suit="כן", red=False, once=True, labs="-", thr=["-"], severe=[], excl=[], comp=[("קושי בנשימה או בבליעה, ריור", "דחוף")],
              src=SRC, tab="nonchronic", doctitle="מרשם לאנטיביוטיקה אחרי משטח גרון חיובי",
              why="חריג לאנטיביוטיקה לתסמין חדש: מוקסיפן או רפאפן אחרי משטח גרון חיובי. הצהרת המטופל/ת על בדיקה ביתית חיובית מספיקה.",
              checks=[N("strep", "משטח גרון חיובי", "תוצאה חיובית במרפאה, או הצהרת המטופל/ת שבדיקה ביתית יצאה חיובית", "אין בדיקה חיובית"),
                      N("allergy", "אין רגישות לפניצילין", "ברשומה אין רגישות לפניצילין או לצפלוספורינים", "רגישות לפניצילין")])
-TETANUS = dict(he="אימונוגלובולין לטטנוס (היפרטט)", generic="Tetanus immunoglobulin", suit="כן", red=False, mixed=None,
+TETANUS = dict(he="אימונוגלובולין לטטנוס (היפרטט)", generic="Tetanus immunoglobulin", suit="כן", red=False, once=True, mixed=None,
                why="אימונוגלובולין לטטנוס אחרי פצע מזוהם, כשהחיסון לא מלא. לבדוק את היסטוריית החיסונים ברשומה.",
                checks=[N("vax", "היסטוריית חיסונים", "לפי הרשומה: פחות מ-3 מנות חיסון לטטנוס, או היסטוריה לא ידועה", "חיסון מלא — אין צורך באימונוגלובולין"),
                        N("wound", "פצע מזוהם", "פצע מזוהם, דקירה או פצע עם רקמה פגועה", "פצע נקי וקטן")])
-ANTID = dict(he="Anti-D בהיריון (רופילאק, Rho-D)", generic="Anti-D immunoglobulin", suit="כן", red=False, mixed=None,
+ANTID = dict(he="Anti-D בהיריון (רופילאק, Rho-D)", generic="Anti-D immunoglobulin", suit="כן", red=False, once=True, mixed=None,
              why="Anti-D לאישה בהיריון עם Rh שלילי: בשבוע 28 או אחרי דימום, חבלה או פעולה (עדיף תוך 72 שעות).",
              checks=[N("rh", "סוג דם Rh שלילי", "סוג הדם של האם Rh שלילי, מתועד", "Rh לא ידוע או חיובי"),
                      N("coombs", "קומבס עקיף שלילי", "קומבס עקיף עדכני ללא נוגדני anti-D", "אין בדיקה עדכנית או נוגדנים קיימים"),

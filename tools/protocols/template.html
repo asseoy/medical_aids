@@ -302,8 +302,8 @@ function renderDetail(i){
       <div class="doc-row">
         <label for="o-${i}">תוצאה</label>
         <select id="o-${i}" class="outcome">
-          <option value="3">${d.maxm === 1 ? "חודש לחודש אחד (חידוש מלא לתרופה זו)" : "חודש למשך 3 חודשים"}</option>
-          <option value="1">חודש לחודש אחד (חסר או חריג, ללא התווית נגד)</option>
+          <option value="3">${d.once ? "הונפק מרשם לפי הפרוטוקול" : d.maxm === 1 ? "חודש לחודש אחד (חידוש מלא לתרופה זו)" : "חודש למשך 3 חודשים"}</option>
+          <option value="1">${d.once ? "לא הונפק: חסר או חריג, הועבר לרופא/ה" : "חודש לחודש אחד (חסר או חריג, ללא התווית נגד)"}</option>
           <option value="0">לא חודש: התווית נגד, הודעה לרופא/ה</option>
           <option value="w"${d.suit === "הכנה" ? " selected" : ""}>לא חודש עדיין: ממתין לתשובת הרופא/ה</option>
         </select>
@@ -419,10 +419,10 @@ function autoHint(sel){
 }
 detailEl.addEventListener("change", e => { if(e.target.classList.contains("outcome")) e.target.dataset.manual = "1"; }, true);
 detailEl.addEventListener("click", e => { if(!e.target.closest(".auto-reset")) return; const sel = detailEl.querySelector(".outcome"); delete sel.dataset.manual; buildDoc(); });
-function checkedLine(items){
+function checkedLine(items, before){
   const bad = items.filter(x => !x.ok).map(x => x.t);
   if(!items.length) return [];
-  return [bad.length ? "לא תקין או חסר: " + bad.join("; ") + ". שאר הבדיקות לפי הפרוטוקול תקינות." : "כל הבדיקות לפי הפרוטוקול תקינות."];
+  return [bad.length ? "לא תקין או חסר: " + bad.join("; ") + ". שאר הבדיקות לפי הפרוטוקול תקינות." : "הושלמה בדיקת התיק הרפואי לפי הפרוטוקול " + before + "."];
 }
 function buildCertDoc(){
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
@@ -445,8 +445,9 @@ function buildCertDoc(){
   const o = outs().find(x => x[0] === out);
   const lines = [(vac ? "בקשה לחיסון" : req ? "מענה לפנייה מקוונת" : "אישור") + ": " + d.he + (note ? " | " + note : ""), who()];
   const il = introLine(d.he); if(il) lines.push(il);
+  const before = vac ? "לפני הפקת המרשם לחיסון" : req ? "לפני המענה לפנייה" : "לפני הפקת האישור";
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
-    .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")}))));
+    .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")})), before));
   lines.push(STU(o ? o[2] : ""));
   const PAT = vac ? {issue:"הופקו מרשם או הפניה, והוסבר איך קובעים תור", doc:"נמסר שהבקשה הועברה לרופא/ה", visit:"הוסבר למה לא הופק", no:"הועבר מיד לרופא/ה"} : req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
                   : {issue:"האישור הופק ונמסר", visit:"זימון למפגש עם רופא/ה"};
@@ -518,7 +519,8 @@ function buildDoc(){
   autoHint(sel);
   const out = sel.value;
   const renalTxt = renal ? "ערכי eGFR קודמים: " + (prev || "לא צוינו") + "; אבחנת אי-ספיקת כליות כרונית ברשומה: " + (ckd === "y" ? "כן" : ckd === "n" ? "לא" : "לא צוין") : "";
-  const outTxt = {"3":"תוצאה: המרשם חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)" : "-3 חודשים") + ", כי כל התנאים הרלוונטיים נבדקו ונמצאו תקינים.",
+  const outTxt = d.once ? {"3":"תוצאה: המרשם הונפק, כי כל התנאים הרלוונטיים נבדקו ונמצאו תקינים.",
+    "1":"תוצאה: המרשם לא הונפק — חסר או חריג, הועבר לרופא/ה.", "0":"תוצאה: המרשם לא הונפק בגלל התווית נגד."}[out] : {"3":"תוצאה: המרשם חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)" : "-3 חודשים") + ", כי כל התנאים הרלוונטיים נבדקו ונמצאו תקינים.",
     "1":"תוצאה: המרשם חודש לחודש אחד בלבד (חידוש ביניים כדי לא להפסיק טיפול).",
     "0":"תוצאה: המרשם לא חודש ע\"י רפואן בגלל התווית נגד."}[out];
   const acts = [];
@@ -541,9 +543,9 @@ function buildDoc(){
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
     return {ok: okc, t: okc ? c.label : (c.bad || NEG[c.k] || c.label) + extra};
-  })));
-  lines.push(STU({"3":"תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
-    "1":"תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
+  }), d.doctitle ? "לפני הכנת המרשם" : "לפני חידוש המרשם"));
+  lines.push(STU({"3": d.once ? "תוצאה: המרשם הונפק לפי הפרוטוקול." : "תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
+    "1": d.once ? "תוצאה: לא הונפק — חסר או חריג, הועבר לרופא/ה." : "תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
   const pl = [];
   if(clinic.length && out !== "0" && out !== "w") pl.push("זימון למרפאה — " + clinic.join("; "));
   pl.push(...pats);
