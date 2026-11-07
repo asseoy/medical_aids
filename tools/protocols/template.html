@@ -128,7 +128,6 @@ footer{color:var(--muted);font-size:.85rem;display:grid;gap:4px}
     <h1>פרוטוקולים לאישור</h1>
     <p class="sub">פרוטוקולי רפואן לחידוש מרשמים כרוניים, להפקת אישורים ולמענה לפניות מקוונות. כל חריגה עוברת לרופא.</p>
     <p class="docs" id="docs"></p>
-    <div id="warnbox" class="warnbox" role="note"></div>
     <details class="guide" id="guide"><summary>הנחיות כלליות לעבודה</summary><div id="guide-body"></div></details>
     <div class="stu"><label for="stu-name">שם הסטודנט/ית (נכנס לטקסט התיעוד)</label><input id="stu-name" type="text" autocomplete="name" placeholder="לדוגמה: נועה כהן">
       <label for="doc-name">שם הרופא/ה המנחה</label><input id="doc-name" type="text" placeholder="לדוגמה: ישראלי"></div>
@@ -612,7 +611,6 @@ document.querySelectorAll(".view").forEach(btn => btn.addEventListener("click", 
 }));
 
 document.getElementById("draft").hidden = !ALL.draft;
-document.getElementById("warnbox").textContent = "⚠ " + (ALL.warn || "");
 document.getElementById("guide-body").innerHTML = (ALL.guide || []).map(([h, items]) => `<h4>${esc(h)}</h4><ul>${items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`).join("");
 const stuEl = document.getElementById("stu-name");
 try { stuEl.value = localStorage.getItem("stu-name") || ""; } catch(_) {}
