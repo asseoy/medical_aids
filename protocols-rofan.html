@@ -152,7 +152,8 @@ footer{color:var(--muted);font-size:.85rem;display:grid;gap:4px}
     <p class="docs" id="docs"></p>
     <div id="warnbox" class="warnbox" role="note"></div>
     <details class="guide" id="guide"><summary>הנחיות כלליות לעבודה</summary><div id="guide-body"></div></details>
-    <div class="stu"><label for="stu-name">שם הסטודנט/ית (נכנס לטקסט התיעוד)</label><input id="stu-name" type="text" autocomplete="name" placeholder="לדוגמה: נועה כהן"></div>
+    <div class="stu"><label for="stu-name">שם הסטודנט/ית (נכנס לטקסט התיעוד)</label><input id="stu-name" type="text" autocomplete="name" placeholder="לדוגמה: נועה כהן">
+      <label for="doc-name">שם הרופא/ה המנחה</label><input id="doc-name" type="text" placeholder="לדוגמה: ישראלי"></div>
     <div id="draft" class="draft" hidden><b>טיוטה לבדיקה.</b> טרם אושר ע"י הייעוץ המשפטי וניהול סיכונים. לא לשימוש בחידוש מרשמים או בהפקת אישורים בפועל. <a href="#fb" style="color:inherit;font-weight:600">שליחת הערות ↓</a></div>
   </header>
 
@@ -415,8 +416,12 @@ function renderCertDetail(i){
 }
 
 // short documentation text (all protocols): title, who, what was checked, outcome, what went to the patient and to the physician
-const WHO0 = "בוצע ע\"י סטודנט/ית לרפואה המסייע/ת לרופא/ה";
-const who = () => { const n = (document.getElementById("stu-name") || {}).value; return WHO0 + (n && n.trim() ? ": " + n.trim() : ""); };
+const WHO0 = "הוקלד ע\"י סטודנט/ית לרפואה המסייע/ת לרופא/ה";
+const who = () => {
+  const n = ((document.getElementById("stu-name") || {}).value || "").trim();
+  const dr = ((document.getElementById("doc-name") || {}).value || "").trim().replace(/^(ד["״']?ר|דר'?)\s*/, "");
+  return WHO0 + (n ? " " + n : "") + ", בהוראת ד\"ר " + (dr || "______");
+};
 // optional one-line presentation for the physician (age, background, request, details)
 const introHTML = i => `<details class="intro"><summary>שורת הצגה לרופא/ה (לא חובה)</summary><div class="ir">
   <label><input type="checkbox" class="intro-on"> להוסיף לטקסט</label>
@@ -634,6 +639,9 @@ document.getElementById("guide-body").innerHTML = (ALL.guide || []).map(([h, ite
 const stuEl = document.getElementById("stu-name");
 try { stuEl.value = localStorage.getItem("stu-name") || ""; } catch(_) {}
 stuEl.addEventListener("input", () => { try { localStorage.setItem("stu-name", stuEl.value); } catch(_) {} if(current !== null) buildDoc(); });
+const drEl = document.getElementById("doc-name");
+try { drEl.value = localStorage.getItem("doc-name") || ""; } catch(_) {}
+drEl.addEventListener("input", () => { try { localStorage.setItem("doc-name", drEl.value); } catch(_) {} if(current !== null) buildDoc(); });
 document.getElementById("fb-send").addEventListener("click", () => {
   const txt = document.getElementById("fb-txt").value.trim(), who = document.getElementById("fb-who").value.trim();
   const msg = document.getElementById("fb-msg");
