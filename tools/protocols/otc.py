@@ -45,7 +45,7 @@ def checks(dur, flags, extra=(), preg=True, preg_det="אין היריון או �
     c += list(extra)
     # interaction and quantity checks are added to every drug by handover.py
     c.append(N("dur", "משך וכמות בגבולות", dur, "בקשה לטיפול ארוך או לכמות גדולה יותר, או בקשות חוזרות תכופות"))
-    c.append(N("flags", "אין סימני אזהרה בפנייה", flags, "סימן אזהרה בפנייה", urgent=True))
+    c.append(N("flags", "לא מתוארים סימני אזהרה בפנייה", flags, "סימן אזהרה בפנייה", urgent=True))
     return c
 
 
