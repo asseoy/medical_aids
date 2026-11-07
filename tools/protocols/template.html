@@ -71,6 +71,7 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .checks .ctxq label.ctxl{display:flex;flex-direction:column;gap:3px}
 .checks .ctxq input[type=text]{font:inherit;padding:4px 6px;width:100%;box-sizing:border-box}
 .tdmstrip{background:var(--bad);color:#fff;padding:8px 14px;border-radius:10px 10px 0 0;font-size:.92rem;line-height:1.45}
+.v-red{background:var(--bad);color:#fff;font-weight:700} .redb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--bad);color:#fff;vertical-align:middle}
 .tdmb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--bad);color:#fff;vertical-align:middle}
 .checks .sevq{margin:6px 28px 0 0;font-size:.92rem;color:var(--bad);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
 .checks .optq .qrow b{font-weight:700}
@@ -257,7 +258,7 @@ function renderHits(){
   const multi = new Set(res.slice(0,12).map(i => DRUGS[i].p)).size > 1;
   hitsEl.innerHTML = res.length > 1 ? res.slice(0,12).map(i => {
     const d = DRUGS[i]; const b = matchedBrand(d, qEl.value);
-    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${d.tdm ? ' <small class="tdmb">מעקב צמוד</small>' : ""}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
+    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${d.red ? ' <small class="redb">דגל אדום</small>' : ""}${d.tdm ? ' <small class="tdmb">מעקב צמוד</small>' : ""}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
   }).join("") : "";
   renderDetail(current);
 }
@@ -267,7 +268,7 @@ function renderDetail(i){
   if(d.p !== DATA.key) setProto(d.p, false);
   if(isCert(d)) return renderCertDetail(i);
   const b = matchedBrand(d, qEl.value);
-  const [cls, label] = SUIT[d.suit];
+  const [cls, label] = d.red ? ["v-red", "דגל אדום: הרפואן מכין, בדיקה כפולה מול הרופא/ה"] : SUIT[d.suit];
   // group entry with several active ingredients: show only the trade names of the searched one
   const shownB = d.mixed && b ? (b.ing ? d.brands.filter(x => x.ing === b.ing) : [b]) : d.brands;
   const detH = t => String(t).split(" · ").map(part => part.split(/([A-Za-z][A-Za-z0-9.%/]*(?:\s?[≥≤<>]=?\s?[0-9.]+%?)?)/).map((x, k) => k % 2 ? "<bdi>" + esc(x) + "</bdi>" : esc(x)).join("")).join("<br>");
@@ -288,7 +289,7 @@ function renderDetail(i){
     <div class="card-h">
       <h2>${esc(b ? b.he + " · " + b.en : d.he)}</h2>
       <div class="gen">${esc(d.generic)}</div>
-      <div class="cls">${esc(d.cls)}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</div>
+      <div class="cls">${esc(d.cls)}${d.red ? ' <span class="redb">דגל אדום</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</div>
       <div class="brands-h"><span class="bl">שמות מסחריים (${shownB.length}):</span><div class="brand-list">${shownB.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
     </div>
     <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
@@ -540,6 +541,7 @@ function buildDoc(){
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
   if(waitItems.length) dr.push(waitItems.join(", "));
+  if(d.red) dr.push("דגל אדום — בדיקה כפולה מול הרופא/ה");
   if(d.suit === "הכנה" && out === "w") dr.push("לאישור סופי של הרופא/ה");
   if(notify.length) dr.push(notify.join(", "));
   if(renal && out !== "3") dr.push(renalTxt);
