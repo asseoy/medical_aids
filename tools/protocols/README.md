@@ -30,8 +30,9 @@ It needs Python 3 with `openpyxl`.
 | `kinds.json` | Non-drug protocols kept as data: `cert` (certificates), `req` (digital requests) and `vac` (vaccines), with their `out` and `msg` fields. Edit here, not in the page. |
 | `regbrands.py` + `data/medicines-registry.txt` | Brand names from the Israeli registry export (Medicines.xlsx, 7.10.2026). |
 | `build.py` | Assembles all sources, writes the Excels and `out/data.json`. |
+| `yoman.py` | Builds `protocols-rofan-yoman.xlsx` from the hand-made template in `assets/`: adds missing drugs to the item lists, keeps the red-flag list, and adds the two flag columns (orange deviation, red flag). Called by `gen.py`. |
 | `gen.py` | Runs `build.py`, injects the data into `template.html`, writes the page and copies files. |
-| `assets/` | Icons, OG image, manifest-related images; `protocols-rofan-yoman.xlsx`, the task-log template (edited by hand, linked from every tab for review). |
+| `assets/` | Icons, OG image, manifest-related images; `protocols-rofan-yoman.xlsx`, the task-log template (edited by hand; `yoman.py` syncs it on build). |
 
 ## Adding or changing
 

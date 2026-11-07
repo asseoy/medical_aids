@@ -71,6 +71,7 @@ ul{margin:0;padding-inline-start:20px;display:grid;gap:4px}
 .checks .ctxq label.ctxl{display:flex;flex-direction:column;gap:3px}
 .checks .ctxq input[type=text]{font:inherit;padding:4px 6px;width:100%;box-sizing:border-box}
 .tdmstrip{background:var(--bad);color:#fff;padding:8px 14px;border-radius:10px 10px 0 0;font-size:.92rem;line-height:1.45}
+.devb{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.85rem;font-weight:700;background:#c25a00;color:#fff} .flags{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px} .flags .redb{margin:0;font-size:.85rem;padding:2px 10px}
 .v-red{background:var(--bad);color:#fff;font-weight:700} .redb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--bad);color:#fff;vertical-align:middle}
 .tdmb{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;background:var(--bad);color:#fff;vertical-align:middle}
 .checks .sevq{margin:6px 28px 0 0;font-size:.92rem;color:var(--bad);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
@@ -313,6 +314,7 @@ function renderDetail(i){
         <input id="n-${i}" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78, K 4.6">
       </div>
       <p class="warnmsg" role="status" hidden>יש בדיקות שלא סומנו. לפי הפרוטוקול לא מחדשים לפני שכולן נבדקו ותקינות.</p>
+      <div class="flags" aria-live="polite"></div>
       <textarea id="t-${i}" class="doctext" readonly rows="9" aria-label="טקסט לתיעוד להעתקה"></textarea>
       <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
       ${d.patnote ? `<h3 style="margin-top:10px">הוראות ואזהרות למטופל/ת (לשליחה עם המרשם, אחרי אישור הרופא/ה)</h3>
@@ -523,6 +525,12 @@ function buildDoc(){
   }
   if(renal && out !== "3") acts.push("לרופא/ה — תפקוד כליות: " + renalTxt + ".");
   const lines = [(d.doctitle || "חידוש מרשם כרוני") + ": " + name + " (פרוטוקול " + DATA.name + ")", who()];
+  // two separate flags: orange = deviation from the protocol (the physician decides), red = high-risk drug (always double-checked)
+  const dev = contra || toDoc.length > 0 || waitItems.length > 0;
+  const fl = detailEl.querySelector(".flags");
+  if(fl) fl.innerHTML = (dev ? '<span class="devb">חריגה מהפרוטוקול</span>' : "") + (d.red ? '<span class="redb">דגל אדום</span>' : "");
+  const flagTxt = [dev ? "חריגה מהפרוטוקול" : "", d.red ? "דגל אדום" : ""].filter(Boolean);
+  if(flagTxt.length) lines.push("סימון: " + flagTxt.join(" + "));
   const il = introLine("חידוש " + name); if(il) lines.push(il);
   lines.push(...checkedLine(d.checks.filter(c => !c.pat && !(c.opt && ans(c.k) === "n")).map(c => {
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
