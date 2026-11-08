@@ -260,7 +260,7 @@ function renderHits(){
   const multi = new Set(res.slice(0,12).map(i => DRUGS[i].p)).size > 1;
   hitsEl.innerHTML = res.length > 1 ? res.slice(0,12).map(i => {
     const d = DRUGS[i]; const b = matchedBrand(d, qEl.value);
-    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${d.red ? ' <small class="redb">דגל אדום</small>' : ""}${d.tdm ? ' <small class="tdmb">מעקב צמוד</small>' : ""}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
+    return `<button class="hit" aria-pressed="${i===current}" data-i="${i}">${isCert(d) ? esc(d.he) : esc(b ? b.he : d.he) + " · " + esc(d.generic)}${d.red ? ' <small class="redb">דגל אדום</small>' : d.redwhen ? ' <small class="redb">דגל אדום ' + esc(d.redwhen) + '</small>' : ""}${d.tdm ? ' <small class="tdmb">מעקב צמוד</small>' : ""}${multi ? ` <small class="ptag">${esc(ALL[d.p].name)}</small>` : ""}</button>`;
   }).join("") : "";
   renderDetail(current);
 }
@@ -291,7 +291,7 @@ function renderDetail(i){
     <div class="card-h">
       <h2>${esc(b ? b.he + " · " + b.en : d.he)}</h2>
       <div class="gen">${esc(d.generic)}</div>
-      <div class="cls">${esc(d.cls)}${d.red ? ' <span class="redb">דגל אדום</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</div>
+      <div class="cls">${esc(d.cls)}${d.red ? ' <span class="redb">דגל אדום</span>' : d.redwhen ? ' <span class="redb">דגל אדום ' + esc(d.redwhen) + '</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</div>
       <div class="brands-h"><span class="bl">שמות מסחריים (${shownB.length}):</span><div class="brand-list">${shownB.map(x=>`<span class="brand${x===b?" hit-b":""}">${esc(x.he)} · ${esc(x.en)}${x.note?` <small>(${esc(x.note)})</small>`:""}</span>`).join("")}</div></div>
     </div>
     <div class="verdict ${cls}"><span class="pill ${cls}">${label}</span><span class="why">${esc(d.why)}</span></div>
@@ -574,9 +574,11 @@ function buildDoc(){
   const lines = [(d.doctitle || "חידוש מרשם כרוני") + ": " + name + " (פרוטוקול " + DATA.name + ")", who()];
   // two separate flags: orange = deviation from the protocol (the physician decides), red = high-risk drug (always double-checked)
   const dev = contra || toDoc.length > 0 || waitItems.length > 0;
+  // conditional red flag (valproate: woman of childbearing age, 8.11.2026)
+  const isRed = d.red || d.checks.some(c => c.redif && ans(c.k) === "y");
   const fl = detailEl.querySelector(".flags");
-  if(fl) fl.innerHTML = (dev ? '<span class="devb">חריגה מהפרוטוקול</span>' : "") + (d.red ? '<span class="redb">דגל אדום</span>' : "");
-  const flagTxt = [dev ? "חריגה מהפרוטוקול" : "", d.red ? "דגל אדום" : ""].filter(Boolean);
+  if(fl) fl.innerHTML = (dev ? '<span class="devb">חריגה מהפרוטוקול</span>' : "") + (isRed ? '<span class="redb">דגל אדום</span>' : "");
+  const flagTxt = [dev ? "חריגה מהפרוטוקול" : "", isRed ? "דגל אדום" : ""].filter(Boolean);
   if(flagTxt.length) lines.push("סימון: " + flagTxt.join(" + "));
   const il = introLine("חידוש " + name); if(il) lines.push(il);
   lines.push(...checkedLine(d.checks.filter(c => !c.pat && !(c.opt && ans(c.k) === "n")).map(c => {
@@ -596,7 +598,7 @@ function buildDoc(){
   if(out === "0") dr.push("התווית נגד: " + (contraItems.join(", ") || "לא צוין") + ". ההחלטה על המשך הטיפול בידי הרופא/ה");
   else if(toDoc.length) dr.push("חריגה: " + toDoc.join(", "));
   if(waitItems.length) dr.push(waitItems.join(", "));
-  if(d.red) dr.push("דגל אדום — בדיקה כפולה מול הרופא/ה");
+  if(isRed) dr.push("דגל אדום — בדיקה כפולה מול הרופא/ה");
   if(d.drnote && out !== "0") dr.push(d.drnote);
   if(d.suit === "הכנה" && out === "w") dr.push("לאישור סופי של הרופא/ה");
   if(notify.length) dr.push(notify.join(", "));
