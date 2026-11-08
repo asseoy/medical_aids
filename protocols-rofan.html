@@ -444,7 +444,10 @@ detailEl.addEventListener("click", e => { if(!e.target.closest(".auto-reset")) r
 function checkedLine(items, before){
   const bad = items.filter(x => !x.ok).map(x => x.t);
   if(!items.length) return [];
-  return [bad.length ? "לא תקין או חסר: " + bad.join("; ") + ". שאר הבדיקות לפי הפרוטוקול תקינות." : "הושלמה בדיקת התיק הרפואי לפי הפרוטוקול " + before + "."];
+  // all normal: name the checks (no values), so the record shows what was reviewed
+  const done = items.map(x => x.t).join("; ");
+  return [bad.length ? "לא תקין או חסר: " + bad.join("; ") + ". שאר הבדיקות לפי הפרוטוקול תקינות."
+                     : "הושלמה בדיקת התיק הרפואי לפי הפרוטוקול " + before + ". נבדקו ונמצאו תקינים: " + done + "."];
 }
 function buildCertDoc(){
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
