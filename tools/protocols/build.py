@@ -164,6 +164,7 @@ import extra7; extra7.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.D
 import extra9; extra9.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])
 import extra8; extra8.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])
 import review1107; review1107.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])
+import missing1108; missing1108.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])   # registry gaps (8.11.2026)
 import handover; handover.apply(HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, MISC.DRUGS, TDM.DRUGS)
 CATS = regroup.regroup({"htn": HTN, "dm": DM, "resp": RESP, "neuro": NEURO, "misc": MISC, "tdm": TDM})
 review1107.texts(CATS)
