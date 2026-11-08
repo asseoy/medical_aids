@@ -237,7 +237,8 @@ function search1(q){
   // names spelled exactly as typed exist: drop the hits that only match after spelling normalisation (אנורו → Anoro, not נורווסק)
   if(tiers[0].some(x => x[0] % 1)) tiers[0] = tiers[0].filter(x => x[0] % 1);
   const t = tiers.find(x => x.length) || [];
-  return t.sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+  // equal scores: the open tab first (יל"ד in "סיכום רפואי" → יתר לחץ דם, not "מחלת ילד/ה" in אישורים)
+  return t.sort((a,b)=>b[0]-a[0] || (DRUGS[b[1]].p===DATA.key) - (DRUGS[a[1]].p===DATA.key)).map(x=>x[1]);
 }
 
 function matchedBrand(d, q){
@@ -334,6 +335,7 @@ const isCert = d => !!ALL[d.p].kind;
 const UI = {
   cert:{search:"סוג אישור (לדוגמה: אישור מחלה, סיכום מידע, נשק)", ph:"לדוגמה: אישור מחלה, ילד חולה, סיכום רפואי", view:"חיפוש אישור", common:"בדיקות לכל אישור", rules:"כללי הנפקה", checks:"לבדוק לפני ההפקה", empty:"הקלידו סוג אישור כדי לראות את תנאי ההפקה.", none:"לא נמצא סוג אישור כזה. אישור שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
   vac:{search:"שם החיסון (לדוגמה: שינגריקס, פרבנר, שפעת)", ph:"לדוגמה: שינגריקס, גרדסיל, פרבנר 20", view:"חיפוש חיסון", common:"בדיקות לכל חיסון", rules:"כללי חיסונים", checks:"לבדוק לפני ההפקה", empty:"הקלידו שם חיסון כדי לראות את התנאים.", none:"לא נמצא חיסון כזה. חיסון שלא מופיע כאן עובר לרופא/ה.", noLabel:"רופא/ה בלבד"},
+  sum:{search:"מחלת רקע (לדוגמה: סוכרת, יל\"ד, פרפור פרוזדורים)", ph:"לדוגמה: סוכרת, אי ספיקת לב, פתיח", view:"חיפוש מחלה", common:"מבנה הסיכום", rules:"הנחיות לכתיבת סיכום רפואי", empty:"הקלידו מחלת רקע כדי לראות מה לכלול בסיכום.", none:"לא נמצאה מחלה בשם הזה. אפשר לחפש \"מחלת רקע אחרת\"."},
   req:{search:"סוג הפנייה (לדוגמה: חידוש מרשם, תוצאות בדיקות, פריחה)", ph:"לדוגמה: תוצאות בדיקות, חום, הפניה לבדיקת דם", view:"חיפוש פנייה", common:"בדיקות לכל פנייה", rules:"כללי מענה מקוון", checks:"לבדוק לפני המענה", empty:"הקלידו סוג פנייה כדי לראות איך עונים.", none:"לא נמצא סוג פנייה כזה. פנייה שלא מופיעה כאן עוברת לרופא/ה.", noLabel:"לא במענה מקוון של רפואן"},
   drug:{search:"שם תרופה (מסחרי או גנרי, עברית או אנגלית)", ph:"לדוגמה: לוטן, גלוקומין, Jardiance", view:"חיפוש תרופה", common:"בדיקות לכל חידוש", rules:"כללי חידוש", empty:"הקלידו שם תרופה כדי לראות את דרישות החידוש.", none:"לא נמצאה תרופה בשם הזה באף פרוטוקול. לחפש אותה ב-UpToDate: התוויות נגד ובדיקות מעקב, להשוות לתוצאות המטופל/ת ולהעביר סיכום קצר לרופא/ה. הרופא/ה מחליט/ה."}
 };
@@ -344,7 +346,40 @@ const CERT_OUT = [["issue","הופק לפי הנחיית הרופא/ה והפר�
 const ui = () => UI[DATA.kind || "drug"];
 const outs = () => DATA.out || CERT_OUT;
 
+// "סיכום רפואי" tab: what to include for a background disease, and a skeleton to fill from the record
+function renderSumDetail(i){
+  const d = DRUGS[i];
+  const parts = d.parts.map((p, j) => `<li><label><input type="checkbox" checked data-j="${j}"><span>${esc(p)}</span></label></li>`).join("");
+  detailEl.innerHTML = `
+  <div class="rules"><h3>${esc(UI.sum.rules)}</h3><ul>${ALL[d.p].rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+  <article class="card">
+    <div class="card-h"><h2>${esc(d.he)}</h2><div class="cls">${esc(d.cls)}</div>
+      <div class="brands-h"><span class="bl">נקרא גם:</span><div class="brand-list">${d.brands.map(x=>`<span class="brand">${esc(x.he)}</span>`).join("")}</div></div></div>
+    <div class="verdict v-cond"><span class="pill v-cond">${esc(SUIT["הכנה"][1])}</span><span class="why">${esc(d.why)}</span></div>
+    <div class="body2">
+    <div class="sec"><h3>מה לכלול (להוריד סימון ממה שלא רלוונטי לגורם שאליו מפנים)</h3><ul class="checks sumparts">${parts}</ul></div>
+    <div class="sec doc"><h3>שלד לסיכום (להשלים מהתיק; כל ערך עם תאריך)</h3>
+      <textarea id="t-${i}" class="doctext sumtext" rows="9" aria-label="שלד לסיכום להעתקה"></textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="t-${i}">העתקה</button><span class="copied" role="status"></span></div>
+      <h3 style="margin-top:10px">שורת תיעוד ברשומה</h3>
+      <textarea id="w-${i}" class="doctext sumwho" readonly rows="3" aria-label="שורת תיעוד להעתקה"></textarea>
+      <div class="doc-actions"><button type="button" class="copy" data-t="w-${i}">העתקה</button><span class="copied" role="status"></span></div>
+    </div></div>
+    <div class="sec"><div class="src">מקור: ${esc(d.src)}</div></div>
+  </article>`;
+  buildSumDoc();
+}
+function buildSumDoc(){
+  const d = DRUGS[current]; const ta = detailEl.querySelector(".sumtext"); if(!ta) return;
+  const on = [...detailEl.querySelectorAll(".sumparts input")].filter(x => x.checked).map(x => d.parts[+x.dataset.j]);
+  if(!ta.dataset.edited) ta.value = [d.head].concat(on.map(p => "• " + p + ": ____")).join("\n");
+  detailEl.querySelector(".sumwho").value = who() + "\nהוכן סיכום רפואי (" + d.he + ") והועבר לאישור הרופא/ה.";
+}
+detailEl.addEventListener("input", e => { if(e.target.classList.contains("sumtext")) e.target.dataset.edited = "1"; });
+detailEl.addEventListener("change", e => { if(e.target.closest(".sumparts")) buildSumDoc(); });
+
 function renderCertDetail(i){
+  if(ALL[DRUGS[i].p].kind === "sum") return renderSumDetail(i);
   const d = DRUGS[i]; const U = UI[ALL[d.p].kind]; const req = ALL[d.p].kind === "req" || ALL[d.p].kind === "vac"; const vac = ALL[d.p].kind === "vac";
   const [cls, label0] = SUIT[d.suit];
   const label = d.suit === "לא" ? U.noLabel : label0;
@@ -428,6 +463,7 @@ function checkedLine(items, before){
                      : "הושלמה בדיקת התיק הרפואי לפי הפרוטוקול " + before + ". נבדקו ונמצאו תקינים: " + done + "."];
 }
 function buildCertDoc(){
+  if(ALL[DRUGS[current].p].kind === "sum") return buildSumDoc();
   const ta = detailEl.querySelector(".doctext"); if(!ta) return;
   const d = DRUGS[current]; const vac = ALL[d.p].kind === "vac"; const req = ALL[d.p].kind === "req" || vac;
   const boxes = [...detailEl.querySelectorAll(".checks input[type=checkbox]")];
@@ -598,6 +634,11 @@ hitsEl.addEventListener("click", e => { const t = e.target.closest(".hit"); if(!
 qEl.addEventListener("input", renderHits);
 
 function renderCommon(){
+  if(DATA.kind === "sum"){
+    document.getElementById("common").innerHTML = `<div class="rules"><h3>${esc(ui().rules)}</h3><ul>${DATA.rules.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+    <div class="tbl-wrap"><table><thead><tr><th>חלק</th><th>מה כותבים</th></tr></thead><tbody>${DATA.common.map(([a,b]) => `<tr><td><b>${esc(a)}</b></td><td>${esc(b)}</td></tr>`).join("")}</tbody></table></div>`;
+    return;
+  }
   let html = "", cur = null;
   for(const [sec, topic, check, rule, fail, src] of DATA.common){
     if(sec !== cur){ html += `<tr class="grp"><td colspan="4">${esc(sec)}</td></tr>`; cur = sec; }
@@ -632,7 +673,7 @@ document.getElementById("fb-send").addEventListener("click", () => {
   const tab = document.querySelector('.view[aria-selected="true"]');
   const d = current !== null && qEl.value.trim() ? DRUGS[current] : null;
   const body = [txt, "", "—", who ? "מאת: " + who : "", "לשונית: " + (tab ? tab.textContent.trim() : ""),
-    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : ALL[d.p].kind === "vac" ? "חיסון: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
+    d ? (isCert(d) ? (ALL[d.p].kind === "req" ? "פנייה: " : ALL[d.p].kind === "vac" ? "חיסון: " : ALL[d.p].kind === "sum" ? "סיכום: " : "אישור: ") : "תרופה: ") + d.he + " (" + d.generic + ")" : "", DATA.version].filter(Boolean).join("\n");
   location.href = "mailto:asseo_y@mac.org.il,asseoy@gmail.com?subject=" + encodeURIComponent("הערות — פרוטוקולים לאישור (" + DATA.name + ")") + "&body=" + encodeURIComponent(body);
   msg.textContent = "נפתח מייל. אם לא נפתח, אפשר לשלוח ידנית לאחת הכתובות למעלה.";
 });
@@ -659,6 +700,8 @@ function setProto(p, resetQuery){
   tabsEl.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.p === p));
   selEl.value = p;
   renderDocs(); renderCommon(); renderDec(); renderUI();
+  const vdec = document.getElementById("v-dec"); vdec.hidden = !DATA.decisions.length;
+  if(vdec.hidden && vdec.getAttribute("aria-selected") === "true") document.getElementById("v-drug").click();
   if(resetQuery){ qEl.value = DATA.example; renderHits(); }
 }
 tabsEl.addEventListener("click", e => { const b = e.target.closest(".tab"); if(b) setProto(b.dataset.p, true); });

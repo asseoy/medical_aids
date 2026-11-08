@@ -181,6 +181,8 @@ for k, C in CATS.items():
 # non-drug protocols with a "kind" (cert = certificates, req = digital requests): kept as data in kinds.json
 for _k, _v in json.load(open(S + "kinds.json")).items():
     ALL[_k] = _v; ALL["order"].append(_k)
+import summary   # "סיכום רפואי" tab: what to include per background disease (8.11.2026)
+ALL["sum"] = summary.TAB; ALL["order"].append("sum")
 
 
 KIND_XL = {"vac": ("לפני כל חיסון", "לפי חיסון", "חיסון"), "cert": ("לכל אישור", "לפי סוג אישור", "סוג האישור"),

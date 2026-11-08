@@ -14,7 +14,7 @@ KIND_TITLE = {"cert": "סוגי אישורים", "req": "סוגי פניות", "
 TODAY = datetime.date.today().strftime("%d.%m.%Y")
 
 drug_tabs = [k for k in A["order"] if not A[k].get("kind")]
-kind_tabs = [k for k in A["order"] if A[k].get("kind")]
+kind_tabs = [k for k in A["order"] if A[k].get("kind") and A[k]["kind"] != "sum"]
 all_drugs = [d for k in drug_tabs for d in A[k]["drugs"]]
 cnt = Counter(d["suit"] for d in all_drugs)
 nred = sum(1 for d in all_drugs if d.get("red"))
