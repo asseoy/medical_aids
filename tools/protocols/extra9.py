@@ -76,6 +76,19 @@ BRANDS = {
     "Antipruritic lotion": RG("MEDI-DENE GEL", "TINDEN GEL", "ZINC LOTION", "BALNEUM PLUS"),
 }
 
+# Batch 10 (8.11.2026, "תוסיף את השמות המסחריים החסרים"): registry brands still missing for drugs already in the tool.
+BRANDS10 = {
+    "Nitrofurantoin (prophylaxis)": RG("MACROBID"),
+    "Levothyroxine": RG("L-THYROXINE SERB", note="טיפות"),
+    "Progesterone (fertility, pregnancy)": [B("Utrogestan", "אוטרוגסטן", "שימוש נרתיקי")] + RG("PROLUTEX", note="זריקה תת-עורית"),
+    "Simethicone": RG("TIPTIPOT SIMICOL", note="טיפות לתינוקות"),
+    "Denosumab (osteoporosis)": RG("DENOMAX", "DENOSUMAB TEVA", "EVFRAXY", "RESYNIV", note="ביוסימילר של פרוליה"),
+    "Antibiotic eye and ear drops": RG("CETRAXAL", note="טיפות אוזניים: ציפרופלוקסצין + פלואוצינולון"),
+    "Olanzapine": [B("Olanzapine ODT Teva", "אולנזפין ODT טבע", "טבליה מסיסה")],
+}
+for _g, _b in BRANDS10.items():
+    BRANDS[_g] = BRANDS.get(_g, []) + _b
+
 RENAME = {"Antipruritic lotion": "תכשירים לגרד מקומי (קלמין, פניסטיל ג'ל, צינק)",
           "Ivermectin cream (rosacea)": "טיפול מקומי ברוזציאה (סולנטרה, רוזקס)",
           "Minoxidil (hair loss)": "טיפול בנשירת שיער (מינוקסידיל, פרופסיה)",
