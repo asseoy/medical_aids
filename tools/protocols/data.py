@@ -517,12 +517,15 @@ for _d in DRUGS:
 
 # ---- severe values = contraindication (not renewed, message to the physician); ordinary deviations stay as thresholds
 _MRA = {"Spironolactone", "Eplerenone", "Finerenone"}
+_THZ = {"Hydrochlorothiazide", "Indapamide"}   # 8.11.2026: thiazide alone with eGFR <30 -> one month + message, not a stop
 for _d in DRUGS:
     _ks = {c["k"] for c in _d["checks"]}
     _sev = []
     if "labs" in _ks:
         _sev.append("K ≥5.0" if _d["generic"] == "Spironolactone" else "K ≥5.5")
-        if _d["generic"] in _MRA or any("eGFR" in t for t in _d["thr"]):
+        if _d["generic"] in _THZ:
+            _d["thr"] = list(dict.fromkeys(_d["thr"] + ["eGFR <30"]))
+        elif _d["generic"] in _MRA or any("eGFR" in t for t in _d["thr"]):
             _sev.append("eGFR <30")
     if "pulse" in _ks:
         _sev.append("דופק במנוחה <50")
@@ -569,8 +572,9 @@ RENEW_RULES[:] = [
     "אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד",
     "חסרה מדידת ל\"ד, בדיקות שנתיות או ביקורת שנתית: חידוש לחודש אחד + זימון למרפאה",
     "חריגה מספי ההחזרה: חידוש לחודש אחד + הודעה לרופא/ה",
-    "התווית נגד או ערך חמור (K ≥5.5; באלדקטון K ≥5.0; eGFR <30 ב-ACEi, ARB, תיאזיד ו-MRA; דופק <50): לא מחדשים, הודעה לרופא/ה"]
+    "התווית נגד או ערך חמור (K ≥5.5; באלדקטון K ≥5.0; eGFR <30 ב-ACEi, ARB ו-MRA; דופק <50 בתרופות מאטות דופק): לא מחדשים, הודעה לרופא/ה",
+    "תיאזיד בלבד עם eGFR <30: חידוש לחודש אחד + הודעה לרופא/ה (לא ערך חמור)"]
 DECISIONS[-1] = DECISIONS[-1][:3] + ("אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד. חסר (מדידה, בדיקות, ביקורת שנתית) ← חידוש לחודש + זימון למרפאה. חריגה מספי ההחזרה ← חידוש לחודש + הודעה לרופא/ה. התווית נגד ← לא מחדשים, הודעה לרופא/ה.",) + DECISIONS[-1][4:]
 DECISIONS.append((len(DECISIONS) + 1, "ערכים חמורים", "לא מופיע בהנחיות",
-                  "ערך חמור נחשב התווית נגד: K ≥5.5 (באלדקטון K ≥5.0); eGFR <30 ב-ACEi, ARB, תיאזיד ו-MRA; דופק במנוחה <50 בחוסם בטא או בחוסם תעלות סידן לא דיהידרופירידיני. לא מחדשים, הודעה לרופא/ה.",
+                  "ערך חמור נחשב התווית נגד: K ≥5.5 (באלדקטון K ≥5.0); eGFR <30 ב-ACEi, ARB ו-MRA; דופק במנוחה <50 בתרופות מאטות דופק (חוסמי בטא, ורפמיל, דילטיאזם, דיגוקסין, אמיודרון). לא מחדשים, הודעה לרופא/ה. תיאזיד בלבד עם eGFR <30: חידוש לחודש + הודעה (עודכן 8.11.2026).",
                   "החלטה מקומית", "-"))
