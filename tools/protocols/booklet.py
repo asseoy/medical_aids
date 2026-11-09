@@ -79,7 +79,7 @@ def item_block(sec, n, d, kind=None):
     if d.get("patnote"):
         extra.append(("הוראות ואזהרות למטופל/ת", E(d["patnote"]).replace("\n", "<br>")))
     if d.get("src"):
-        extra.append(("מקור", E(d["src"])))
+        extra.append(("מקור", E(d["src"]) + "".join(f' · <a href="{E(r["u"])}">{E(r["t"])}</a>' for r in d.get("refs", []))))
     if extra:
         out += '<table class="kv">' + "".join(f'<tr><th>{E(a)}</th><td>{b}</td></tr>' for a, b in extra) + "</table>"
     out += '<div class="review">אושר ☐ &nbsp; לתיקון ☐ &nbsp; הערות: ______________________________________________</div></div>'

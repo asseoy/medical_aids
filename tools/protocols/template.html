@@ -324,7 +324,7 @@ function renderDetail(i){
     </div>`}
     </div>
     ${d.comp.length?`<div class="sec"><h3>תלונות שמחייבות החלפה או הפסקה</h3><p class="src">לא שואלים את המטופל/ת; נבדק בביקורת השנתית. אם מופיעה בפנייה או ברשומה, להעביר לרופא/ה.</p><ul>${d.comp.map(([c,a])=>`<li>${esc(c)} <span class="act">← ${esc(a)}</span></li>`).join("")}</ul></div>`:""}
-    <div class="sec"><div class="src">מקור: ${esc(DATA.guide)}, ${esc(d.src)}</div></div>
+    <div class="sec"><div class="src">מקור: ${esc(DATA.guide)}, ${esc(d.src)}${(d.refs||[]).map(r=>` · <a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.t)}</a>`).join("")}</div></div>
   </article>`;
   buildDoc();
 }
