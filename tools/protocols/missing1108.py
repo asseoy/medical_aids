@@ -101,6 +101,14 @@ BRANDS = {
 }
 
 
+CLASS_SRC = {
+    "Bezafibrate": "הנחיות הטיפול בדיסליפידמיה (ישראל, 2020) — שיוך לפי קבוצת התרופות (פיברטים), אושר 9.11.2026",
+    "Ciprofibrate": "הנחיות הטיפול בדיסליפידמיה (ישראל, 2020) — שיוך לפי קבוצת התרופות (פיברטים), אושר 9.11.2026",
+    "Tibolone": "NAMS 2022; נייר העמדה הישראלי לטיפול הורמונלי במנופאוזה (Ne174) — שיוך לפי קבוצה, אושר 9.11.2026",
+    "Mebeverine": "נייר העמדה של ההסתדרות הרפואית על IBS (Ne194, 2022) — שיוך לפי קבוצה (נוגדי עוויתות), אושר 9.11.2026",
+}
+
+
 def apply(lists):
     allp = [d for L in lists for d in L]
     by = {d["generic"]: d for d in allp}
@@ -123,3 +131,7 @@ def apply(lists):
         if d["suit"] == "בתנאים" and "cond" not in d:
             d["cond"] = "טיפול כרוני במינון קבוע"
     lists[-1].extend(new)
+    # guideline sources by drug class (approved 9.11.2026 after the "unsourced drugs" report)
+    by = {d["generic"]: d for L in lists for d in L}
+    for g, src in CLASS_SRC.items():
+        by[g]["src"] = src
