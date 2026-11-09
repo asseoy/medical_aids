@@ -17,7 +17,9 @@ def apply(lists):
             d["refs"] = r
             kinds = []
             if any(x["t"].startswith("SPS") for x in r): kinds.append("SPS Medicines Monitoring (NHS)")
-            if any(not x["t"].startswith("SPS") for x in r): kinds.append("עלון ה-FDA (DailyMed)")
+            if any(x["t"].startswith("עלון FDA") for x in r): kinds.append("עלון ה-FDA (DailyMed)")
+            if any(x["t"].startswith("עלון לרופא") for x in r): kinds.append("העלון לרופא (משרד הבריאות)")
+            if any(x["t"].startswith(("EMA", "FSRH")) for x in r): kinds.append(" ו".join(x["t"].split(" —")[0] for x in r if x["t"].startswith(("EMA", "FSRH"))))
             tag = "מעקב: " + " ו".join(kinds)
             src = (d.get("src") or "").strip()
             d["src"] = tag if (not src or src == NO_SRC) else src + "; " + tag

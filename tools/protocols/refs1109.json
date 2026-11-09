@@ -2410,5 +2410,121 @@
 "t": "עלון FDA (DailyMed)",
 "u": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=10f411d3-a81e-074a-e063-6294a90ab547"
 }
+],
+"Allergen immunotherapy": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Acarizax",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum02_2_276574026.pdf"
+}
+],
+"Biperiden": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Dekinet",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_4_864368222.pdf"
+}
+],
+"Procyclidine": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Kemadrin (רישום בוטל)",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_8_211995923.pdf"
+}
+],
+"Cinnarizine": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Stunarone (רישום בוטל)",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_24_296792225.pdf"
+}
+],
+"Betahistine": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Agiserc 16",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_10_497703223.pdf"
+}
+],
+"Melatonin": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Circadin",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_12_571696023.pdf"
+}
+],
+"Mianserin": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Bonserin",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_17_260945924.pdf"
+}
+],
+"Reboxetine": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Edronax",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum02_3_338605926.pdf"
+}
+],
+"Nalmefene": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Selincro",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum02_5_507706226.pdf"
+}
+],
+"Amisulpride": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Pride",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_17_266361124.pdf"
+}
+],
+"Sulpiride": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Modal",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_9_276042223.pdf"
+}
+],
+"Zuclopenthixol": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Clopixol",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum02_3_365574726.pdf"
+}
+],
+"Clotiapine": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Entumin",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_19_715466224.pdf"
+}
+],
+"Levomepromazine": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Nozinan 2014 (רישום בוטל, זמני)",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/ArcRishum01_11_171435216.pdf"
+}
+],
+"Sertindole": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Serdolect",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_28_131480026.pdf"
+}
+],
+"Domperidone": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Motilium",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum02_2_295155226.pdf"
+},
+{
+"t": "EMA 2014 — דומפרידון",
+"u": "https://www.ema.europa.eu/en/medicines/human/referrals/domperidone-containing-medicines"
+}
+],
+"Progestogen-only pill": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Cerazette",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum01_21_80549325.pdf"
+},
+{
+"t": "FSRH POP 2022",
+"u": "https://www.cosrh.org/Common/Uploaded%20files/documents/fsrh-ceu-clinical-guideline-progestogen-only-pills-aug22-amended-11july-2023-.pdf"
+}
+],
+"Dienogest": [
+{
+"t": "עלון לרופא (משרד הבריאות) — Visabelle",
+"u": "https://pharmaceuticalreg.health.gov.il/api/pharmaregistration/IsraelDrugs/Rishum_20_481445321.pdf"
+}
 ]
 }
