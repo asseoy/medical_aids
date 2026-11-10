@@ -167,6 +167,7 @@ import review1107; review1107.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUG
 import missing1108; missing1108.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS])   # registry gaps (8.11.2026)
 import refs1109; print("refs:", refs1109.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS]))   # monitoring source links (9.11.2026)
 import srcgaps1109; print("src gaps:", srcgaps1109.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS]))   # source-based gap fixes (9.11.2026)
+import align1110; print("align:", align1110.apply([HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, TDM.DRUGS, MISC.DRUGS]))   # follow the guideline where stricter (10.11.2026)
 import handover; handover.apply(HTN.DRUGS, DM.DRUGS, RESP.DRUGS, NEURO.DRUGS, MISC.DRUGS, TDM.DRUGS)
 CATS = regroup.regroup({"htn": HTN, "dm": DM, "resp": RESP, "neuro": NEURO, "misc": MISC, "tdm": TDM})
 review1107.texts(CATS)

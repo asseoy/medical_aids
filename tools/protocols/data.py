@@ -522,11 +522,13 @@ for _d in DRUGS:
     _ks = {c["k"] for c in _d["checks"]}
     _sev = []
     if "labs" in _ks:
-        _sev.append("K ≥5.0" if _d["generic"] == "Spironolactone" else "K ≥5.5")
-        if _d["generic"] in _THZ:
-            _d["thr"] = list(dict.fromkeys(_d["thr"] + ["eGFR <30"]))
-        elif _d["generic"] in _MRA or any("eGFR" in t for t in _d["thr"]):
+        # 10.11.2026 (follow the guideline): NICE NG203 — ACEi/ARB stopped at K ≥6.0; eGFR fall ≥25% / creatinine rise ≥30% -> investigate.
+        # MRA keep K ≥5.0 (spironolactone; ESC HF 2021 caution >5.0) / ≥5.5 (eplerenone, finerenone label) and eGFR <30 as severe.
+        _sev.append("K ≥5.0" if _d["generic"] == "Spironolactone" else ("K ≥5.5" if _d["generic"] in _MRA else "K ≥6.0"))
+        if _d["generic"] in _MRA:
             _sev.append("eGFR <30")
+        elif _d["generic"] in _THZ or any("eGFR" in t for t in _d["thr"]):
+            _d["thr"] = list(dict.fromkeys(_d["thr"] + ["eGFR <30", "eGFR ירד ב-25% ומעלה לעומת הקודם"]))
     if "pulse" in _ks:
         _sev.append("דופק במנוחה <50")
     if not _sev:
@@ -572,9 +574,9 @@ RENEW_RULES[:] = [
     "אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד",
     "חסרה מדידת ל\"ד, בדיקות שנתיות או ביקורת שנתית: חידוש לחודש אחד + זימון למרפאה",
     "חריגה מספי ההחזרה: חידוש לחודש אחד + הודעה לרופא/ה",
-    "התווית נגד או ערך חמור (K ≥5.5; באלדקטון K ≥5.0; eGFR <30 ב-ACEi, ARB ו-MRA; דופק <50 בתרופות מאטות דופק): לא מחדשים, הודעה לרופא/ה",
-    "תיאזיד בלבד עם eGFR <30: חידוש לחודש אחד + הודעה לרופא/ה (לא ערך חמור)"]
+    "התווית נגד או ערך חמור (K ≥6.0; ב-MRA: אלדקטון K ≥5.0, אינספרה וקרנדיה K ≥5.5, ו-eGFR <30; דופק <50 בתרופות מאטות דופק): לא מחדשים, הודעה לרופא/ה",
+    "eGFR <30 או ירידת eGFR ב-25% ומעלה ב-ACEi, ARB ותיאזיד: חידוש לחודש אחד + הודעה לרופא/ה (לא ערך חמור; NICE NG203)"]
 DECISIONS[-1] = DECISIONS[-1][:3] + ("אין התווית נגד ← תמיד מחדשים לפחות לחודש אחד. חסר (מדידה, בדיקות, ביקורת שנתית) ← חידוש לחודש + זימון למרפאה. חריגה מספי ההחזרה ← חידוש לחודש + הודעה לרופא/ה. התווית נגד ← לא מחדשים, הודעה לרופא/ה.",) + DECISIONS[-1][4:]
 DECISIONS.append((len(DECISIONS) + 1, "ערכים חמורים", "לא מופיע בהנחיות",
-                  "ערך חמור נחשב התווית נגד: K ≥5.5 (באלדקטון K ≥5.0); eGFR <30 ב-ACEi, ARB ו-MRA; דופק במנוחה <50 בתרופות מאטות דופק (חוסמי בטא, ורפמיל, דילטיאזם, דיגוקסין, אמיודרון). לא מחדשים, הודעה לרופא/ה. תיאזיד בלבד עם eGFR <30: חידוש לחודש + הודעה (עודכן 8.11.2026).",
+                  "ערך חמור נחשב התווית נגד: K ≥6.0 (ב-MRA: אלדקטון K ≥5.0, אינספרה וקרנדיה K ≥5.5, ו-eGFR <30); דופק במנוחה <50 בתרופות מאטות דופק (חוסמי בטא, ורפמיל, דילטיאזם, דיגוקסין, אמיודרון). לא מחדשים, הודעה לרופא/ה. ACEi, ARB ותיאזיד עם eGFR <30 או ירידת eGFR ≥25%: חידוש לחודש + הודעה (עודכן 10.11.2026 לפי NICE NG203).",
                   "החלטה מקומית", "-"))
