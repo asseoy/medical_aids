@@ -756,6 +756,51 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
 </style>
 <script>
 (() => {
+  // ---------- shorter checklist (voice decisions 10.11.2026, v2 only): drop reminders, merge checks done together ----------
+  const DROP = {drug:["third","buy"], req:["scan","docc"], cert:["nodx"], vac:[]};
+  const sevOf = c => c.sev || (c.contra ? ((String(c.det).match(/חמור: ([^←]+)/) || [])[1] || "").trim() : "");
+  function merge(list, keys, make){
+    const parts = keys.map(k => list.find(c => c.k === k)).filter(Boolean);
+    if(parts.length < 2) return list;
+    const m = make(parts); m.doc = m.label + ": " + m.det + "."; m.crit = parts.map(p => p.crit).filter(Boolean).join(" ");
+    const at = list.indexOf(parts[0]);
+    const out = list.filter(c => !parts.includes(c)); out.splice(Math.min(at, out.length), 0, m); return out;
+  }
+  const joinDet = ps => ps.map(p => p.label + ": " + p.det).join(" · ");
+  const joinBad = ps => ps.map(p => p.bad || p.label).join(" / ");
+  DRUGS.forEach(d => {
+    const kind = ALL[d.p].kind || "drug"; if(kind === "sum") return;
+    let L = d.checks.filter(c => !(DROP[kind] || []).includes(c.k));
+    if(kind === "drug"){
+      L = merge(L, ["qty", "inter"], ps => ({k:"rx", label:"בהפקת המרשם: כמות תואמת ואין התראה", det:joinDet(ps), wait:true, bad:"התראת אינטראקציה או אי-התאמה בכמות, ביחידות או בתדירות"}));
+      L = merge(L, ["visit", "renew"], ps => ({k:"visit", label:"ביקור רופא ב-12 החודשים האחרונים, ופחות מ-3 חידושים מאז", det:joinDet(ps), notify:"אין ביקור רופא ב-12 החודשים האחרונים, או 3 חידושים רצופים בלי ביקור"}));
+      // "documented" + "within target" pairs: missing or abnormal -> one month, booking the test and a message to the physician
+      [["bp", ["target", "bp_safe"], 'השלמת מדידת ל"ד', 'ל"ד מתועד ובטווח'], ["a1c", ["target"], "השלמת בדיקת HbA1c", "HbA1c מתועד ויציב"], ["ldl", ["ldl_ok"], "השלמת פרופיל שומנים", "LDL מתועד ויציב"]].forEach(([a, bs, clinic, label]) => {
+        const b = bs.find(k => L.some(c => c.k === k)); if(!b || !L.some(c => c.k === a)) return;
+        L = merge(L, [a, b], ps => ({k:a + "2", label, det:joinDet(ps), clinic, notify:(ps[1].bad || label + " — לא תקין") + " (או חסר)"}));
+      });
+      const labs = L.filter(c => /^lab_/.test(c.k));
+      if(labs.length > 1){
+        const sev = labs.map(sevOf).filter(Boolean).join("; ");
+        L = merge(L, labs.map(c => c.k), ps => Object.assign({k:"labs1", label:"בדיקות המעבדה תקינות", det:joinDet(ps), bad:"ערך מעבדה חריג (לפרט בהערה: איזה ערך)"}, sev ? {sev} : {}));
+      }
+    }
+    if(kind === "cert"){
+      L = merge(L, ["nofut", "len4", "win7"].filter(k => L.some(c => c.k === k)), ps => ({k:"dates", label:"התאריכים בגבולות", det:joinDet(ps), contra:true, bad:joinBad(ps)}));
+      L = merge(L, ["hist", "pattern"], ps => ({k:"hist", label:"בהיסטוריית האישורים: אין כפילות ואין דפוס חוזר", det:joinDet(ps), contra:true, bad:joinBad(ps)}));
+    }
+    if(kind === "vac") L = merge(L, ["rec", "dose"], ps => ({k:"rec", label:"לפי הפנקס: המנה הזו נדרשת ובמרווח הנכון", det:joinDet(ps), bad:joinBad(ps)}));
+    d.checks = L;
+  });
+  // the page may already show a card built from the old checks: rebuild it
+  if(typeof current === "number" && DRUGS[current] && detailEl.querySelector(".card")) setTimeout(() => renderDetail(current), 0);
+  // long contraindication lists open on tap (the check itself stays)
+  const foldExcl = () => detailEl.querySelectorAll('input[data-k="excl"], input[data-excl="1"]').forEach(inp => {
+    const det = inp.closest("label") && inp.closest("label").querySelector(".det");
+    if(!det || det.closest("details") || det.textContent.length < 60) return;
+    const w = document.createElement("details"); w.innerHTML = "<summary>הרשימה המלאה</summary>"; det.replaceWith(w); w.appendChild(det);
+  });
+
   // ---------- task timer: start/stop per task; durations kept in this browser only (no patient details), CSV export ----------
   const LOGK = "rofan-v2-times";
   const load = () => { try { return JSON.parse(localStorage.getItem(LOGK) || "[]"); } catch(_) { return []; } };
@@ -819,7 +864,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
   function syncBtn(){ const b = detailEl.querySelector(".v2add"); if(b){ const on = BASKET.includes(current); b.setAttribute("aria-pressed", on); b.textContent = on ? "✓ בבקשה המשולבת (לחיצה להסרה)" : "+ הוספה לבקשה משולבת (תרופות, אישור, פנייה, חיסון)"; } }
   const _rd = renderDetail;
   renderDetail = function(i){
-    _rd(i);
+    _rd(i); foldExcl();
     const d = DRUGS[i];
     if(canAdd(d)){
       const h = detailEl.querySelector(".card-h");
@@ -864,7 +909,8 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
       const c = g.c, forTxt = `<span class="for">${g.ds.length > 1 ? "משותף ל: " + g.ds.map(x => esc(drugs[x].he)).join(", ") : ""}</span>`;
       if(c.pat || c.opt) return `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q || "")}</span><span class="yn"><label><input type="radio" name="v2q-${g.id}" value="y" data-g="${g.id}" data-a="q"> כן</label><label><input type="radio" name="v2q-${g.id}" value="n" data-g="${g.id}" data-a="q"> לא</label></span></div>
         ${c.pat ? "" : `<label class="sub" hidden><input type="checkbox" data-g="${g.id}"><span>תקין<br><span class="det">${esc(c.det)}</span></span></label>`} ${forTxt}</li>`;
-      return `<li><label><input type="checkbox" data-g="${g.id}"><span><b>${esc(c.label)}</b><br><span class="det">${esc(c.det)}</span></span></label>${forTxt}</li>`;
+      return `<li><label><input type="checkbox" data-g="${g.id}"${c.k === "excl" ? ' data-excl="1"' : ""}><span><b>${esc(c.label)}</b><br><span class="det">${c.det.split(" · ").map(esc).join("<br>")}</span></span></label>${c.sev ? `
+        <div class="sevq"><span>אם לא תקין — האם <bdi>${esc(c.sev)}</bdi>?</span> <span class="yn"><label><input type="radio" name="v2s-${g.id}" value="y" data-g="${g.id}" data-a="s"> כן</label><label><input type="radio" name="v2s-${g.id}" value="n" data-g="${g.id}" data-a="s"> לא</label></span></div>` : ""}${forTxt}</li>`;
     };
     const perDrug = drugs.map((d, di) => { const gs = own.filter(g => g.ds[0] === di); return gs.length ? `<div class="grp"><h3>${esc(d.he)}${d.red ? ' <span class="redb">דגל אדום</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</h3><ul class="checks">${gs.map(li).join("")}</ul></div>` : ""; }).join("");
     const before = GROUPS.reduce((a, g) => a + g.ds.length, 0), shown = GROUPS.filter(g => !g.derived).length;
@@ -894,6 +940,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
       </div></div></article>`;
     detailEl.querySelectorAll(".v2out").forEach(s => s.addEventListener("change", () => { s.dataset.manual = "1"; buildMulti(); }));
     document.getElementById("v2back").onclick = () => { renderHits(); };
+    foldExcl();
     start(currentName());
     buildMulti();
   }
@@ -936,10 +983,11 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
                 clinic: clinic.map(c => c.clinic), red: false, pats: [], notify: [], dr, msg};
       }
       const notDone = mine.filter(s => !s.ok).map(s => s.c);
-      const contra = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad);
+      const sevYes = mine.filter(s => !s.ok && s.c.sev && (detailEl.querySelector(`input[data-g="${s.g.id}"][data-a="s"]:checked`) || {}).value === "y").map(s => s.c);
+      const contra = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad).concat(sevYes.map(c => "ערך חמור (" + c.sev + ")"));
       const wait = notDone.filter(c => c.wait).map(c => c.bad || c.label);
       const clinic = notDone.filter(c => CLINIC[c.k] || c.clinic).map(c => CLINIC[c.k] || c.clinic);
-      const dev = notDone.filter(c => !CLINIC[c.k] && !c.clinic && !c.wait && !NEG[c.k] && !c.contra).map(c => c.bad || FAIL[c.k] || c.label);
+      const dev = notDone.filter(c => !CLINIC[c.k] && !c.clinic && !c.wait && !NEG[c.k] && !c.contra && !sevYes.includes(c)).map(c => c.bad || FAIL[c.k] || c.label);
       const red = d.red || mine.some(s => s.c.redif && s.yes);
       const pats = mine.filter(s => s.c.pat && s.yes).map(s => s.c.pat);
       const sel = detailEl.querySelector(`.v2out[data-d="${di}"]`);
