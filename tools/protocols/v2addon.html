@@ -1,0 +1,201 @@
+<style>
+/* v2 (10.11.2026): several drugs in one request + task timer. Injected into a copy of the page; the original page is unchanged */
+.v2tag{display:inline-block;background:var(--warn-bg);color:var(--warn);border-radius:6px;padding:0 8px;font-size:.8rem;font-weight:700;margin-inline-start:6px}
+.v2add{margin-top:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:6px 12px;font:inherit;font-weight:600;cursor:pointer}
+.v2add[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.v2hitadd{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:6px;padding:0 6px;margin-inline-start:6px;font:inherit;font-size:.8rem;cursor:pointer}
+#v2bar{position:sticky;bottom:0;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,.08)}
+#v2bar .chip{background:var(--accent-soft);border-radius:999px;padding:2px 10px;font-size:.9rem}
+#v2bar .chip button{border:0;background:none;color:var(--muted);cursor:pointer;font:inherit;padding:0 0 0 4px}
+#v2bar .go{margin-inline-start:auto;border:0;background:var(--accent);color:var(--surface);border-radius:8px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
+#v2bar .clr{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:6px 10px;font:inherit;cursor:pointer}
+#v2timer{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+#v2timer .t{font-variant-numeric:tabular-nums;font-size:1.3rem;font-weight:700;min-width:4.5ch;direction:ltr}
+#v2timer button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 10px;font:inherit;cursor:pointer}
+#v2timer button.on{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+#v2timer .lg{color:var(--muted);font-size:.85rem}
+.v2multi .grp{border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+.v2multi .for{color:var(--muted);font-size:.85rem}
+.v2multi .drow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.v2multi select{font:inherit;padding:4px}
+.v2doctext{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box;resize:vertical;line-height:1.6}
+.v2log table{width:100%;border-collapse:collapse;font-size:.9rem}.v2log td,.v2log th{border-bottom:1px solid var(--line);padding:4px;text-align:start}
+</style>
+<script>
+(() => {
+  // ---------- task timer: start/stop per task; durations kept in this browser only (no patient details), CSV export ----------
+  const LOGK = "rofan-v2-times";
+  const load = () => { try { return JSON.parse(localStorage.getItem(LOGK) || "[]"); } catch(_) { return []; } };
+  const save = a => { try { localStorage.setItem(LOGK, JSON.stringify(a)); } catch(_) {} };
+  let LOG = load(), t0 = null, tick = null, taskName = "";
+  const timerEl = document.createElement("div"); timerEl.id = "v2timer";
+  timerEl.innerHTML = `<b>טיימר משימה</b><span class="t" id="v2t">00:00</span>
+    <button type="button" id="v2start">התחלה</button><button type="button" id="v2stop">סיום ושמירה</button><button type="button" id="v2reset">איפוס</button>
+    <span class="lg" id="v2lg"></span><button type="button" id="v2show">זמנים שנשמרו</button>`;
+  const searchSec = document.getElementById("detail").parentElement;
+  searchSec.insertBefore(timerEl, searchSec.firstChild);
+  const fmt = s => String(Math.floor(s/60)).padStart(2,"0") + ":" + String(Math.floor(s%60)).padStart(2,"0");
+  const upd = () => { document.getElementById("v2t").textContent = fmt(t0 ? (Date.now()-t0)/1000 : 0); };
+  const start = name => { if(t0) return; t0 = Date.now(); taskName = name || taskName; tick = setInterval(upd, 500); document.getElementById("v2start").classList.add("on"); };
+  const stop = () => {
+    if(!t0) return; const sec = Math.round((Date.now()-t0)/1000);
+    LOG.push({date: new Date().toISOString().slice(0,16).replace("T"," "), task: taskName || "משימה", items: BASKET.length || 1, sec}); save(LOG);
+    clearInterval(tick); t0 = null; upd(); document.getElementById("v2start").classList.remove("on");
+    document.getElementById("v2lg").textContent = "נשמר: " + fmt(sec) + " · סה\"כ " + LOG.length + " משימות";
+  };
+  window.V2START = start;
+  document.getElementById("v2start").onclick = () => start(currentName());
+  document.getElementById("v2stop").onclick = stop;
+  document.getElementById("v2reset").onclick = () => { clearInterval(tick); t0 = null; upd(); document.getElementById("v2start").classList.remove("on"); };
+  document.getElementById("v2show").onclick = () => {
+    const rows = LOG.map(r => `<tr><td>${esc(r.date)}</td><td>${esc(r.task)}</td><td>${r.items}</td><td dir="ltr">${fmt(r.sec)}</td></tr>`).join("");
+    const avg = LOG.length ? fmt(LOG.reduce((a,r)=>a+r.sec,0)/LOG.length) : "—";
+    detailEl.innerHTML = `<article class="card v2log"><div class="sec"><h3>זמני משימות (נשמרים רק בדפדפן הזה, בלי פרטי מטופל)</h3>
+      <p>${LOG.length} משימות · ממוצע ${avg}</p>
+      <table><thead><tr><th>תאריך</th><th>משימה</th><th>פריטים</th><th>זמן</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="doc-actions"><button type="button" class="copy" id="v2csv">הורדת CSV</button><button type="button" class="clr" id="v2clear">מחיקת הרשימה</button></div></div></article>`;
+    document.getElementById("v2csv").onclick = () => {
+      const csv = "﻿date,task,items,seconds\n" + LOG.map(r => [r.date, '"' + r.task.replace(/"/g,'""') + '"', r.items, r.sec].join(",")).join("\n");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"})); a.download = "rofan-task-times.csv"; a.click();
+    };
+    document.getElementById("v2clear").onclick = () => { LOG = []; save(LOG); document.getElementById("v2show").click(); };
+  };
+  // copying the documentation text ends the task
+  document.addEventListener("click", e => { if(e.target.closest(".copy[data-t]") && t0) setTimeout(stop, 50); }, true);
+
+  // ---------- basket: several drugs, one pass over the record ----------
+  const BASKET = [];
+  const currentName = () => BASKET.length > 1 ? "חידוש " + BASKET.length + " תרופות" : (current !== null && DRUGS[current] ? DRUGS[current].he : "");
+  const bar = document.createElement("div"); bar.id = "v2bar"; bar.hidden = true;
+  searchSec.appendChild(bar);
+  const canAdd = d => d && !isCert(d) && d.suit !== "לא";
+  function renderBar(){
+    bar.hidden = !BASKET.length;
+    bar.innerHTML = `<b>בקשה מרובת תרופות:</b>` + BASKET.map((i,n) => `<span class="chip">${esc(DRUGS[i].he)}<button type="button" data-rm="${n}" aria-label="הסרה">×</button></span>`).join("")
+      + `<button type="button" class="clr" id="v2clr">ניקוי</button><button type="button" class="go" id="v2go">מעבר לבדיקת התיק (${BASKET.length})</button>`;
+  }
+  bar.addEventListener("click", e => {
+    const rm = e.target.closest("[data-rm]"); if(rm){ BASKET.splice(+rm.dataset.rm, 1); renderBar(); syncBtn(); return; }
+    if(e.target.id === "v2clr"){ BASKET.length = 0; renderBar(); syncBtn(); return; }
+    if(e.target.id === "v2go") renderMulti();
+  });
+  function toggle(i){ const n = BASKET.indexOf(i); if(n >= 0) BASKET.splice(n,1); else BASKET.push(i); renderBar(); syncBtn(); }
+  function syncBtn(){ const b = detailEl.querySelector(".v2add"); if(b){ const on = BASKET.includes(current); b.setAttribute("aria-pressed", on); b.textContent = on ? "✓ בבקשה (לחיצה להסרה)" : "+ הוספה לבקשה מרובת תרופות"; } }
+  const _rd = renderDetail;
+  renderDetail = function(i){
+    _rd(i);
+    const d = DRUGS[i];
+    if(canAdd(d)){
+      const h = detailEl.querySelector(".card-h");
+      if(h){ const b = document.createElement("button"); b.type = "button"; b.className = "v2add"; h.appendChild(b); b.onclick = () => toggle(i); syncBtn(); }
+    }
+  };
+  detailEl.addEventListener("change", e => { if(!t0 && e.target.matches("input")) start(currentName()); }, true);
+
+  // ---------- combined checklist ----------
+  const NEG = {excl:"מצב שמוציא מהפרוטוקול", severe:"ערך חמור"};
+  const FAIL = {buy:"רכישות מתחת ל-80%", target:"ל\"ד לא ביעד", cond:"לא טיפול כרוני במינון קבוע"};
+  const CLINIC = {bp:'השלמת מדידת ל"ד', a1c:"השלמת בדיקת HbA1c", annual:"השלמת בדיקות שנתיות", visit:"ביקורת שנתית אצל רופא/ת המשפחה"};
+  let GROUPS = [];
+  function renderMulti(){
+    if(!BASKET.length) return;
+    hitsEl.innerHTML = "";
+    const drugs = BASKET.map(i => DRUGS[i]);
+    // a check shown once when its text is identical in several drugs; otherwise once per drug
+    const map = new Map();
+    drugs.forEach((d, di) => d.checks.forEach(c => {
+      const key = c.k + "|" + (c.q || "") + "|" + c.det;
+      if(!map.has(key)) map.set(key, {key, c, ds: []});
+      map.get(key).ds.push(di);
+    }));
+    GROUPS = [...map.values()].map((g, gi) => Object.assign(g, {id: "g" + gi}));
+    const shared = GROUPS.filter(g => g.ds.length > 1), own = GROUPS.filter(g => g.ds.length === 1);
+    const li = g => {
+      const c = g.c, forTxt = `<span class="for">${g.ds.length > 1 ? "לכל התרופות: " + g.ds.map(x => esc(drugs[x].he)).join(", ") : ""}</span>`;
+      if(c.pat || c.opt) return `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q || "")}</span><span class="yn"><label><input type="radio" name="v2q-${g.id}" value="y" data-g="${g.id}" data-a="q"> כן</label><label><input type="radio" name="v2q-${g.id}" value="n" data-g="${g.id}" data-a="q"> לא</label></span></div>
+        ${c.pat ? "" : `<label class="sub" hidden><input type="checkbox" data-g="${g.id}"><span>תקין<br><span class="det">${esc(c.det)}</span></span></label>`} ${forTxt}</li>`;
+      return `<li><label><input type="checkbox" data-g="${g.id}"><span><b>${esc(c.label)}</b><br><span class="det">${esc(c.det)}</span></span></label>${forTxt}</li>`;
+    };
+    const perDrug = drugs.map((d, di) => { const gs = own.filter(g => g.ds[0] === di); return gs.length ? `<div class="grp"><h3>${esc(d.he)}${d.red ? ' <span class="redb">דגל אדום</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</h3><ul class="checks">${gs.map(li).join("")}</ul></div>` : ""; }).join("");
+    const before = GROUPS.reduce((a, g) => a + g.ds.length, 0);
+    detailEl.innerHTML = `<article class="card v2multi">
+      <div class="card-h"><h2>בקשה מרובת תרופות <span class="v2tag">גרסה 2 · ניסיון</span></h2>
+        <div class="gen">${drugs.map(d => esc(d.he)).join(" · ")}</div>
+        <div class="cls">${GROUPS.length} סימונים במקום ${before} (בדיקה זהה לכמה תרופות מופיעה פעם אחת)</div></div>
+      <div class="body2">
+      <div class="sec"><h3>בדיקות משותפות (פעם אחת לבקשה)</h3><ul class="checks">${shared.map(li).join("") || "<li>אין</li>"}</ul>${perDrug}</div>
+      <div class="sec doc"><h3>תוצאה לכל תרופה</h3>
+        ${drugs.map((d, di) => `<div class="drow"><span><b>${esc(d.he)}</b> <span class="pill ${(d.red ? ["v-red"] : SUIT[d.suit])[0]}">${d.red ? "דגל אדום" : esc(SUIT[d.suit][1])}</span></span>
+          <select class="v2out" data-d="${di}"><option value="3">${d.maxm === 1 ? "חודש לחודש (מלא)" : "חודש ל-3 חודשים"}</option><option value="1">חודש לחודש אחד</option><option value="0">לא חודש: התווית נגד</option><option value="w">ממתין לרופא/ה</option></select></div>`).join("")}
+        <p class="src">נבחר אוטומטית לפי הסימונים; אפשר לשנות.</p>
+        <div class="doc-row"><label for="v2note">הערה (לא חובה)</label><input id="v2note" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78"></div>
+        <div class="flags" aria-live="polite"></div>
+        <textarea id="v2text" class="v2doctext" readonly rows="12" aria-label="טקסט לתיעוד להעתקה"></textarea>
+        <div class="doc-actions"><button type="button" class="copy" data-t="v2text">העתקה</button><span class="copied" role="status"></span>
+          <button type="button" class="clr" id="v2back">חזרה לחיפוש</button></div>
+      </div></div></article>`;
+    detailEl.querySelectorAll(".v2out").forEach(s => s.addEventListener("change", () => { s.dataset.manual = "1"; buildMulti(); }));
+    document.getElementById("v2back").onclick = () => { renderHits(); };
+    start(currentName());
+    buildMulti();
+  }
+  function buildMulti(){
+    const ta = document.getElementById("v2text"); if(!ta) return;
+    const drugs = BASKET.map(i => DRUGS[i]);
+    const ans = id => { const r = detailEl.querySelector(`input[data-g="${id}"][data-a="q"]:checked`); return r ? r.value : null; };
+    const ok = id => { const b = detailEl.querySelector(`input[type=checkbox][data-g="${id}"]`); return !!(b && b.checked); };
+    const st = GROUPS.map(g => {
+      const c = g.c, a = ans(g.id);
+      const na = (c.opt && a === "n") || c.pat;          // not relevant / a question only
+      return {g, c, na, ok: na ? true : ok(g.id), open: c.opt && !a, yes: a === "y"};
+    });
+    const res = drugs.map((d, di) => {
+      const mine = st.filter(s => s.g.ds.includes(di));
+      const notDone = mine.filter(s => !s.ok).map(s => s.c);
+      const contra = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad);
+      const wait = notDone.filter(c => c.wait).map(c => c.bad || c.label);
+      const clinic = notDone.filter(c => CLINIC[c.k] || c.clinic).map(c => CLINIC[c.k] || c.clinic);
+      const dev = notDone.filter(c => !CLINIC[c.k] && !c.clinic && !c.wait && !NEG[c.k] && !c.contra).map(c => c.bad || FAIL[c.k] || c.label);
+      const red = d.red || mine.some(s => s.c.redif && s.yes);
+      const pats = mine.filter(s => s.c.pat && s.yes).map(s => s.c.pat);
+      const sel = detailEl.querySelector(`.v2out[data-d="${di}"]`);
+      if(!sel.dataset.manual) sel.value = d.suit === "הכנה" ? "w" : contra.length ? "0" : wait.length ? "w" : notDone.length ? "1" : "3";
+      return {d, out: sel.value, contra, wait, clinic, dev, red, pats, notify: notDone.filter(c => c.notify).map(c => c.notify)};
+    });
+    const anyDev = res.some(r => r.contra.length || r.dev.length || r.wait.length), anyRed = res.some(r => r.red);
+    detailEl.querySelector(".flags").innerHTML = (anyDev ? '<span class="devb">חריגה מהפרוטוקול</span>' : "") + (anyRed ? '<span class="redb">דגל אדום</span>' : "");
+    const lines = ["חידוש מרשמים כרוניים: " + drugs.map(d => d.he).join(", "), who()];
+    const fl = [anyDev ? "חריגה מהפרוטוקול" : "", anyRed ? "דגל אדום" : ""].filter(Boolean);
+    if(fl.length) lines.push("סימון: " + fl.join(" + "));
+    const items = st.filter(s => !s.na).map(s => ({ok: s.ok, t: (s.ok ? s.c.label : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
+    lines.push(...checkedLine(items, "לפני חידוש המרשמים"));
+    const OUT = {"3": r => r.d.maxm === 1 ? "חודש לחודש אחד (החידוש המלא לתרופה זו)" : "חודש ל-3 חודשים", "1": () => "חודש לחודש אחד בלבד", "0": () => "לא חודש — התווית נגד", "w": () => "לא חודש עדיין — ממתין לתשובת הרופא/ה"};
+    lines.push("תוצאה: " + res.map(r => r.d.he + " — " + OUT[r.out](r)).join("; ") + ".");
+    const clinic = [...new Set(res.filter(r => r.out !== "0" && r.out !== "w").flatMap(r => r.clinic))];
+    const pl = clinic.length ? ["זימון למרפאה — " + clinic.join("; ")] : [];
+    pl.push(...new Set(res.flatMap(r => r.pats)));
+    if(pl.length) lines.push("הועבר למטופל/ת: " + pl.join("; ") + ".");
+    const dr = res.flatMap(r => {
+      const x = [];
+      if(r.out === "0") x.push("התווית נגד (" + (r.contra.join(", ") || "לא צוין") + ")");
+      else if(r.dev.length) x.push("חריגה: " + r.dev.join(", "));
+      if(r.wait.length) x.push(r.wait.join(", "));
+      if(r.red) x.push("דגל אדום — בדיקה כפולה");
+      if(r.d.suit === "הכנה" && r.out === "w") x.push("לאישור סופי");
+      if(r.notify.length) x.push(r.notify.join(", "));
+      return x.length ? [r.d.he + ": " + x.join(", ")] : [];
+    });
+    if(dr.length) lines.push("הועבר לרופא/ה: " + dr.join(". ") + ".");
+    const note = (document.getElementById("v2note") || {}).value; if(note && note.trim()) lines.push("הערה: " + note.trim());
+    ta.value = lines.join("\n");
+  }
+  detailEl.addEventListener("change", e => {
+    if(!detailEl.querySelector(".v2multi")) return;
+    if(e.target.dataset.a === "q"){ const sub = e.target.closest(".optq").querySelector(".sub"); if(sub){ sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; } }
+    buildMulti();
+  });
+  detailEl.addEventListener("input", e => { if(e.target.id === "v2note") buildMulti(); });
+  // mark the page as the trial version
+  const h1 = document.querySelector("h1"); if(h1) h1.insertAdjacentHTML("beforeend", ' <span class="v2tag">גרסה 2 · ניסיון</span>');
+})();
+</script>

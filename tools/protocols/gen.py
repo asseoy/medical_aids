@@ -53,3 +53,9 @@ import yoman; yoman.run()   # task-log template (assets/), synced with the drug 
 for _k in ("vac", "cert", "req"):   # kind tabs: generated from kinds.json, so they always match the tool
     if os.path.exists(OUT + f"protocols-rofan-{_k}.xlsx"):
         shutil.copy(OUT + f"protocols-rofan-{_k}.xlsx", REPO + f"protocols-rofan-{_k}.xlsx")
+
+# v2 trial page (10.11.2026): same data and page + several drugs per request and a task timer; the original page is untouched
+_add = open(S + "v2addon.html").read()
+_v2 = page.replace("</body>", _add + "\n</body>", 1).replace("<title>פרוטוקולים לאישור</title>", "<title>פרוטוקולים לאישור · גרסה 2</title>", 1)
+_v2 = _v2.replace('<link rel="manifest" href="manifest-protocols.json">\n', "").replace(U + "protocols-rofan.html", U + "protocols-rofan-v2.html")
+open(REPO + "protocols-rofan-v2.html", "w").write(_v2)
