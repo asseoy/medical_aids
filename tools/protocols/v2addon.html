@@ -65,13 +65,16 @@
 
   // ---------- basket: several drugs, one pass over the record ----------
   const BASKET = [];
-  const currentName = () => BASKET.length > 1 ? "חידוש " + BASKET.length + " תרופות" : (current !== null && DRUGS[current] ? DRUGS[current].he : "");
+  const currentName = () => BASKET.length > 1 ? "בקשה משולבת: " + BASKET.length + " פריטים" : (current !== null && DRUGS[current] ? DRUGS[current].he : "");
   const bar = document.createElement("div"); bar.id = "v2bar"; bar.hidden = true;
   searchSec.appendChild(bar);
-  const canAdd = d => d && !isCert(d) && d.suit !== "לא";
+  const canAdd = d => d && ALL[d.p].kind !== "sum" && d.suit !== "לא";
+  const kindOf = d => ALL[d.p].kind || "drug";
+  const outsOf = d => ALL[d.p].out || CERT_OUT;
+  const KTITLE = {drug:"חידוש מרשמים כרוניים", cert:"אישור", req:"מענה לפנייה מקוונת", vac:"בקשה לחיסון"};
   function renderBar(){
     bar.hidden = !BASKET.length;
-    bar.innerHTML = `<b>בקשה מרובת תרופות:</b>` + BASKET.map((i,n) => `<span class="chip">${esc(DRUGS[i].he)}<button type="button" data-rm="${n}" aria-label="הסרה">×</button></span>`).join("")
+    bar.innerHTML = `<b>בקשה משולבת:</b>` + BASKET.map((i,n) => `<span class="chip">${esc(DRUGS[i].he)}<button type="button" data-rm="${n}" aria-label="הסרה">×</button></span>`).join("")
       + `<button type="button" class="clr" id="v2clr">ניקוי</button><button type="button" class="go" id="v2go">מעבר לבדיקת התיק (${BASKET.length})</button>`;
   }
   bar.addEventListener("click", e => {
@@ -80,7 +83,7 @@
     if(e.target.id === "v2go") renderMulti();
   });
   function toggle(i){ const n = BASKET.indexOf(i); if(n >= 0) BASKET.splice(n,1); else BASKET.push(i); renderBar(); syncBtn(); }
-  function syncBtn(){ const b = detailEl.querySelector(".v2add"); if(b){ const on = BASKET.includes(current); b.setAttribute("aria-pressed", on); b.textContent = on ? "✓ בבקשה (לחיצה להסרה)" : "+ הוספה לבקשה מרובת תרופות"; } }
+  function syncBtn(){ const b = detailEl.querySelector(".v2add"); if(b){ const on = BASKET.includes(current); b.setAttribute("aria-pressed", on); b.textContent = on ? "✓ בבקשה המשולבת (לחיצה להסרה)" : "+ הוספה לבקשה משולבת (תרופות, אישור, פנייה, חיסון)"; } }
   const _rd = renderDetail;
   renderDetail = function(i){
     _rd(i);
@@ -111,7 +114,7 @@
     GROUPS = [...map.values()].map((g, gi) => Object.assign(g, {id: "g" + gi}));
     const shared = GROUPS.filter(g => g.ds.length > 1), own = GROUPS.filter(g => g.ds.length === 1);
     const li = g => {
-      const c = g.c, forTxt = `<span class="for">${g.ds.length > 1 ? "לכל התרופות: " + g.ds.map(x => esc(drugs[x].he)).join(", ") : ""}</span>`;
+      const c = g.c, forTxt = `<span class="for">${g.ds.length > 1 ? "משותף ל: " + g.ds.map(x => esc(drugs[x].he)).join(", ") : ""}</span>`;
       if(c.pat || c.opt) return `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q || "")}</span><span class="yn"><label><input type="radio" name="v2q-${g.id}" value="y" data-g="${g.id}" data-a="q"> כן</label><label><input type="radio" name="v2q-${g.id}" value="n" data-g="${g.id}" data-a="q"> לא</label></span></div>
         ${c.pat ? "" : `<label class="sub" hidden><input type="checkbox" data-g="${g.id}"><span>תקין<br><span class="det">${esc(c.det)}</span></span></label>`} ${forTxt}</li>`;
       return `<li><label><input type="checkbox" data-g="${g.id}"><span><b>${esc(c.label)}</b><br><span class="det">${esc(c.det)}</span></span></label>${forTxt}</li>`;
@@ -119,20 +122,23 @@
     const perDrug = drugs.map((d, di) => { const gs = own.filter(g => g.ds[0] === di); return gs.length ? `<div class="grp"><h3>${esc(d.he)}${d.red ? ' <span class="redb">דגל אדום</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</h3><ul class="checks">${gs.map(li).join("")}</ul></div>` : ""; }).join("");
     const before = GROUPS.reduce((a, g) => a + g.ds.length, 0);
     detailEl.innerHTML = `<article class="card v2multi">
-      <div class="card-h"><h2>בקשה מרובת תרופות <span class="v2tag">גרסה 2 · ניסיון</span></h2>
+      <div class="card-h"><h2>בקשה משולבת <span class="v2tag">גרסה 2 · ניסיון</span></h2>
         <div class="gen">${drugs.map(d => esc(d.he)).join(" · ")}</div>
-        <div class="cls">${GROUPS.length} סימונים במקום ${before} (בדיקה זהה לכמה תרופות מופיעה פעם אחת)</div></div>
+        <div class="cls">${GROUPS.length} סימונים במקום ${before} (בדיקה זהה לכמה פריטים מופיעה פעם אחת)</div></div>
       <div class="body2">
       <div class="sec"><h3>בדיקות משותפות (פעם אחת לבקשה)</h3><ul class="checks">${shared.map(li).join("") || "<li>אין</li>"}</ul>${perDrug}</div>
-      <div class="sec doc"><h3>תוצאה לכל תרופה</h3>
+      <div class="sec doc"><h3>תוצאה לכל פריט</h3>
         ${drugs.map((d, di) => `<div class="drow"><span><b>${esc(d.he)}</b> <span class="pill ${(d.red ? ["v-red"] : SUIT[d.suit])[0]}">${d.red ? "דגל אדום" : esc(SUIT[d.suit][1])}</span></span>
-          <select class="v2out" data-d="${di}"><option value="3">${d.maxm === 1 ? "חודש לחודש (מלא)" : "חודש ל-3 חודשים"}</option><option value="1">חודש לחודש אחד</option><option value="0">לא חודש: התווית נגד</option><option value="w">ממתין לרופא/ה</option></select></div>`).join("")}
+          <select class="v2out" data-d="${di}">${kindOf(d) === "drug" ? `<option value="3">${d.maxm === 1 ? "חודש לחודש (מלא)" : "חודש ל-3 חודשים"}</option><option value="1">חודש לחודש אחד</option><option value="0">לא חודש: התווית נגד</option><option value="w">ממתין לרופא/ה</option>` : outsOf(d).map(o => `<option value="${o[0]}">${esc(o[1])}</option>`).join("")}</select></div>`).join("")}
         <p class="src">נבחר אוטומטית לפי הסימונים; אפשר לשנות.</p>
         <div class="doc-row"><label for="v2note">הערה (לא חובה)</label><input id="v2note" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78"></div>
         <div class="flags" aria-live="polite"></div>
         <textarea id="v2text" class="v2doctext" readonly rows="12" aria-label="טקסט לתיעוד להעתקה"></textarea>
         <div class="doc-actions"><button type="button" class="copy" data-t="v2text">העתקה</button><span class="copied" role="status"></span>
           <button type="button" class="clr" id="v2back">חזרה לחיפוש</button></div>
+        <div id="v2msgw" hidden><h3 style="margin-top:10px">הודעה למטופל/ת (מענה מקוון)</h3>
+        <textarea id="v2msg" class="v2doctext" rows="6" aria-label="הודעה למטופל להעתקה"></textarea>
+        <div class="doc-actions"><button type="button" class="copy" data-t="v2msg">העתקה</button><span class="copied" role="status"></span></div></div>
       </div></div></article>`;
     detailEl.querySelectorAll(".v2out").forEach(s => s.addEventListener("change", () => { s.dataset.manual = "1"; buildMulti(); }));
     document.getElementById("v2back").onclick = () => { renderHits(); };
@@ -149,8 +155,27 @@
       const na = (c.opt && a === "n") || c.pat;          // not relevant / a question only
       return {g, c, na, ok: na ? true : ok(g.id), open: c.opt && !a, yes: a === "y"};
     });
+    // urgency signs in any part of the request stop the whole request: everything goes to the physician
+    const urgent = st.some(s => s.c.k === "urg" && !s.ok);
     const res = drugs.map((d, di) => {
       const mine = st.filter(s => s.g.ds.includes(di));
+      if(kindOf(d) !== "drug"){
+        const req = kindOf(d) === "req" || kindOf(d) === "vac";
+        const fails = mine.filter(s => !s.ok).map(s => s.c);
+        const contra = fails.filter(c => c.contra), clinic = fails.filter(c => c.clinic), other = fails.filter(c => !c.contra && !c.clinic);
+        const sel = detailEl.querySelector(`.v2out[data-d="${di}"]`);
+        if(!sel.dataset.manual) sel.value = contra.some(c => c.k === "urg") ? "no" : urgent ? "doc" : contra.length ? (req ? "doc" : "no") : clinic.length && !other.length ? "visit"
+          : d.suit === "הכנה" || fails.length || mine.some(s => s.open) ? "doc" : "issue";
+        const o = outsOf(d).find(x => x[0] === sel.value) || ["", "", ""];
+        const dr = [];
+        if(contra.length) dr.push(contra.map(c => c.bad || c.label).join(", "));
+        if(other.length && sel.value !== "issue") dr.push(other.map(c => c.bad || c.label).join(", "));
+        if(sel.value === "doc") dr.push("להחלטה ולאישור");
+        if(sel.value === "no") dr.push(req ? "פנייה דחופה — עדכון מיידי" : "מחוץ לפרוטוקול — להחלטת הרופא/ה");
+        const msg = kindOf(d) === "req" ? ((d.msg && d.suit !== "לא" && sel.value === "issue") ? d.msg : (ALL[d.p].msg || {})[sel.value] || "") : "";
+        return {d, nd: true, out: sel.value, label: o[1], contra: contra.map(c => c.bad || c.label), wait: [], dev: other.length && sel.value !== "issue" ? other.map(c => c.bad || c.label) : [],
+                clinic: clinic.map(c => c.clinic), red: false, pats: [], notify: [], dr, msg};
+      }
       const notDone = mine.filter(s => !s.ok).map(s => s.c);
       const contra = notDone.filter(c => NEG[c.k] || c.contra).map(c => NEG[c.k] || c.bad);
       const wait = notDone.filter(c => c.wait).map(c => c.bad || c.label);
@@ -159,23 +184,25 @@
       const red = d.red || mine.some(s => s.c.redif && s.yes);
       const pats = mine.filter(s => s.c.pat && s.yes).map(s => s.c.pat);
       const sel = detailEl.querySelector(`.v2out[data-d="${di}"]`);
-      if(!sel.dataset.manual) sel.value = d.suit === "הכנה" ? "w" : contra.length ? "0" : wait.length ? "w" : notDone.length ? "1" : "3";
+      if(!sel.dataset.manual) sel.value = urgent || d.suit === "הכנה" ? "w" : contra.length ? "0" : wait.length ? "w" : notDone.length ? "1" : "3";
       return {d, out: sel.value, contra, wait, clinic, dev, red, pats, notify: notDone.filter(c => c.notify).map(c => c.notify)};
     });
     const anyDev = res.some(r => r.contra.length || r.dev.length || r.wait.length), anyRed = res.some(r => r.red);
     detailEl.querySelector(".flags").innerHTML = (anyDev ? '<span class="devb">חריגה מהפרוטוקול</span>' : "") + (anyRed ? '<span class="redb">דגל אדום</span>' : "");
-    const lines = ["חידוש מרשמים כרוניים: " + drugs.map(d => d.he).join(", "), who()];
+    const kinds = [...new Set(drugs.map(kindOf))];
+    const lines = [kinds.map(k => KTITLE[k] + ": " + drugs.filter(d => kindOf(d) === k).map(d => d.he).join(", ")).join(" | "), who()];
     const fl = [anyDev ? "חריגה מהפרוטוקול" : "", anyRed ? "דגל אדום" : ""].filter(Boolean);
     if(fl.length) lines.push("סימון: " + fl.join(" + "));
     const items = st.filter(s => !s.na).map(s => ({ok: s.ok, t: (s.ok ? s.c.label : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
-    lines.push(...checkedLine(items, "לפני חידוש המרשמים"));
+    lines.push(...checkedLine(items, kinds.length === 1 && kinds[0] === "drug" ? "לפני חידוש המרשמים" : "לפני ביצוע הבקשה"));
     const OUT = {"3": r => r.d.maxm === 1 ? "חודש לחודש אחד (החידוש המלא לתרופה זו)" : "חודש ל-3 חודשים", "1": () => "חודש לחודש אחד בלבד", "0": () => "לא חודש — התווית נגד", "w": () => "לא חודש עדיין — ממתין לתשובת הרופא/ה"};
-    lines.push("תוצאה: " + res.map(r => r.d.he + " — " + OUT[r.out](r)).join("; ") + ".");
+    lines.push("תוצאה: " + res.map(r => r.d.he + " — " + (r.nd ? r.label : OUT[r.out](r))).join("; ") + ".");
     const clinic = [...new Set(res.filter(r => r.out !== "0" && r.out !== "w").flatMap(r => r.clinic))];
     const pl = clinic.length ? ["זימון למרפאה — " + clinic.join("; ")] : [];
     pl.push(...new Set(res.flatMap(r => r.pats)));
     if(pl.length) lines.push("הועבר למטופל/ת: " + pl.join("; ") + ".");
     const dr = res.flatMap(r => {
+      if(r.nd) return r.dr.length ? [r.d.he + ": " + r.dr.join(", ")] : [];
       const x = [];
       if(r.out === "0") x.push("התווית נגד (" + (r.contra.join(", ") || "לא צוין") + ")");
       else if(r.dev.length) x.push("חריגה: " + r.dev.join(", "));
@@ -188,13 +215,16 @@
     if(dr.length) lines.push("הועבר לרופא/ה: " + dr.join(". ") + ".");
     const note = (document.getElementById("v2note") || {}).value; if(note && note.trim()) lines.push("הערה: " + note.trim());
     ta.value = lines.join("\n");
+    const msgs = [...new Set(res.filter(r => r.msg).map(r => r.msg))];
+    const mw = document.getElementById("v2msgw"), mt = document.getElementById("v2msg");
+    if(mw){ mw.hidden = !msgs.length; if(!mt.dataset.edited) mt.value = msgs.join("\n\n"); }
   }
   detailEl.addEventListener("change", e => {
     if(!detailEl.querySelector(".v2multi")) return;
     if(e.target.dataset.a === "q"){ const sub = e.target.closest(".optq").querySelector(".sub"); if(sub){ sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; } }
     buildMulti();
   });
-  detailEl.addEventListener("input", e => { if(e.target.id === "v2note") buildMulti(); });
+  detailEl.addEventListener("input", e => { if(e.target.id === "v2note") buildMulti(); if(e.target.id === "v2msg") e.target.dataset.edited = "1"; });
   // mark the page as the trial version
   const h1 = document.querySelector("h1"); if(h1) h1.insertAdjacentHTML("beforeend", ' <span class="v2tag">גרסה 2 · ניסיון</span>');
 })();
