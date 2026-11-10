@@ -752,6 +752,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
 .v2multi .drow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
 .v2multi select{font:inherit;padding:4px}
 .v2doctext{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box;resize:vertical;line-height:1.6}
+.v2rules{margin-bottom:12px}.v2rules>.rules{margin-top:8px}
 .v2log table{width:100%;border-collapse:collapse;font-size:.9rem}.v2log td,.v2log th{border-bottom:1px solid var(--line);padding:4px;text-align:start}
 </style>
 <script>
@@ -794,6 +795,12 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
   });
   // the page may already show a card built from the old checks: rebuild it
   if(typeof current === "number" && DRUGS[current] && detailEl.querySelector(".card")) setTimeout(() => renderDetail(current), 0);
+  // tab rules (כללי חידוש etc.) collapse like "הנחיות כלליות לעבודה"
+  const foldRules = () => detailEl.querySelectorAll(":scope > .rules").forEach(r => {
+    const h = r.querySelector("h3"); const d = document.createElement("details"); d.className = "guide v2rules";
+    d.innerHTML = "<summary>" + (h ? h.textContent : "כללים") + "</summary>"; if(h) h.remove();
+    d.appendChild(r); detailEl.prepend(d);
+  });
   // long contraindication lists open on tap (the check itself stays)
   const foldExcl = () => detailEl.querySelectorAll('input[data-k="excl"], input[data-excl="1"]').forEach(inp => {
     const det = inp.closest("label") && inp.closest("label").querySelector(".det");
@@ -864,7 +871,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
   function syncBtn(){ const b = detailEl.querySelector(".v2add"); if(b){ const on = BASKET.includes(current); b.setAttribute("aria-pressed", on); b.textContent = on ? "✓ בבקשה המשולבת (לחיצה להסרה)" : "+ הוספה לבקשה משולבת (תרופות, אישור, פנייה, חיסון)"; } }
   const _rd = renderDetail;
   renderDetail = function(i){
-    _rd(i); foldExcl();
+    _rd(i); foldExcl(); foldRules();
     const d = DRUGS[i];
     if(canAdd(d)){
       const h = detailEl.querySelector(".card-h");
