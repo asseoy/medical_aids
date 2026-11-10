@@ -801,10 +801,10 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
   const currentName = () => BASKET.length > 1 ? "בקשה משולבת: " + BASKET.length + " פריטים" : (current !== null && DRUGS[current] ? DRUGS[current].he : "");
   const bar = document.createElement("div"); bar.id = "v2bar"; bar.hidden = true;
   searchSec.appendChild(bar);
-  const canAdd = d => d && ALL[d.p].kind !== "sum" && d.suit !== "לא";
+  const canAdd = d => d && d.suit !== "לא";
   const kindOf = d => ALL[d.p].kind || "drug";
   const outsOf = d => ALL[d.p].out || CERT_OUT;
-  const KTITLE = {drug:"חידוש מרשמים כרוניים", cert:"אישור", req:"מענה לפנייה מקוונת", vac:"בקשה לחיסון"};
+  const KTITLE = {sum:"סיכום רפואי", drug:"חידוש מרשמים כרוניים", cert:"אישור", req:"מענה לפנייה מקוונת", vac:"בקשה לחיסון"};
   function renderBar(){
     bar.hidden = !BASKET.length;
     bar.innerHTML = `<b>בקשה משולבת:</b>` + BASKET.map((i,n) => `<span class="chip">${esc(DRUGS[i].he)}<button type="button" data-rm="${n}" aria-label="הסרה">×</button></span>`).join("")
@@ -839,13 +839,27 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
     const drugs = BASKET.map(i => DRUGS[i]);
     // a check shown once when its text is identical in several drugs; otherwise once per drug
     const map = new Map();
+    const hasDrug = drugs.some(d => kindOf(d) === "drug");
+    // unified wording across tabs (v2): urgency / warning signs are one request-level check; in the digital renewal request,
+    // "stable by the drug protocol" is answered by the drug checks themselves when the drugs are in the same request
+    const canon = (d, c) => {
+      const k = kindOf(d);
+      if(((k === "req" || k === "vac") && c.k === "urg") || (k === "cert" && c.k === "flags")) return "URG";
+      if(k === "req" && c.k === "stable" && hasDrug) return "STABLE";
+      return null;
+    };
     drugs.forEach((d, di) => d.checks.forEach(c => {
-      const key = c.k + "|" + (c.q || "") + "|" + c.det;
-      if(!map.has(key)) map.set(key, {key, c, ds: []});
-      map.get(key).ds.push(di);
+      const cn = canon(d, c);
+      const key = cn || c.k + "|" + (c.q || "") + "|" + c.det;
+      if(!map.has(key)) map.set(key, {key, c, ds: [], dets: []});
+      const g = map.get(key); g.ds.push(di); if(!g.dets.includes(c.det)) g.dets.push(c.det);
     }));
     GROUPS = [...map.values()].map((g, gi) => Object.assign(g, {id: "g" + gi}));
-    const shared = GROUPS.filter(g => g.ds.length > 1), own = GROUPS.filter(g => g.ds.length === 1);
+    GROUPS.forEach(g => {
+      if(g.key === "URG") g.c = {k:"urg", contra:true, label:"אין סימני דחיפות, אזהרה או תסמין חדש בפנייה", det:g.dets.join(" · "), bad:"סימני דחיפות או אזהרה בפנייה"};
+      if(g.key === "STABLE") g.derived = true;
+    });
+    const shared = GROUPS.filter(g => !g.derived && g.ds.length > 1), own = GROUPS.filter(g => !g.derived && g.ds.length === 1);
     const li = g => {
       const c = g.c, forTxt = `<span class="for">${g.ds.length > 1 ? "משותף ל: " + g.ds.map(x => esc(drugs[x].he)).join(", ") : ""}</span>`;
       if(c.pat || c.opt) return `<li class="optq"><div class="qrow"><span><b>${esc(c.label)}</b> · ${esc(c.q || "")}</span><span class="yn"><label><input type="radio" name="v2q-${g.id}" value="y" data-g="${g.id}" data-a="q"> כן</label><label><input type="radio" name="v2q-${g.id}" value="n" data-g="${g.id}" data-a="q"> לא</label></span></div>
@@ -853,22 +867,27 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
       return `<li><label><input type="checkbox" data-g="${g.id}"><span><b>${esc(c.label)}</b><br><span class="det">${esc(c.det)}</span></span></label>${forTxt}</li>`;
     };
     const perDrug = drugs.map((d, di) => { const gs = own.filter(g => g.ds[0] === di); return gs.length ? `<div class="grp"><h3>${esc(d.he)}${d.red ? ' <span class="redb">דגל אדום</span>' : ""}${d.tdm ? ' <span class="tdmb">מעקב צמוד</span>' : ""}</h3><ul class="checks">${gs.map(li).join("")}</ul></div>` : ""; }).join("");
-    const before = GROUPS.reduce((a, g) => a + g.ds.length, 0);
+    const before = GROUPS.reduce((a, g) => a + g.ds.length, 0), shown = GROUPS.filter(g => !g.derived).length;
+    const sums = drugs.map((d, di) => [d, di]).filter(([d]) => kindOf(d) === "sum").sort((a, b) => (b[0].cls === "מבנה") - (a[0].cls === "מבנה"));
+    const sumHTML = sums.length ? `<div class="grp"><h3>סיכום רפואי — מה לכלול</h3>${sums.map(([d, di]) => `<p style="margin:6px 0 2px"><b>${esc(d.he)}</b></p><ul class="checks">${d.parts.map((p, j) => `<li><label><input type="checkbox" checked data-sd="${di}" data-j="${j}"><span>${esc(p)}</span></label></li>`).join("")}</ul>`).join("")}</div>` : "";
     detailEl.innerHTML = `<article class="card v2multi">
       <div class="card-h"><h2>בקשה משולבת <span class="v2tag">גרסה 2 · ניסיון</span></h2>
         <div class="gen">${drugs.map(d => esc(d.he)).join(" · ")}</div>
-        <div class="cls">${GROUPS.length} סימונים במקום ${before} (בדיקה זהה לכמה פריטים מופיעה פעם אחת)</div></div>
+        <div class="cls">${shown} סימונים במקום ${before} (בדיקה זהה לכמה פריטים מופיעה פעם אחת)</div></div>
       <div class="body2">
-      <div class="sec"><h3>בדיקות משותפות (פעם אחת לבקשה)</h3><ul class="checks">${shared.map(li).join("") || "<li>אין</li>"}</ul>${perDrug}</div>
+      <div class="sec"><h3>בדיקות משותפות (פעם אחת לבקשה)</h3><ul class="checks">${shared.map(li).join("") || "<li>אין</li>"}</ul>${perDrug}${sumHTML}</div>
       <div class="sec doc"><h3>תוצאה לכל פריט</h3>
         ${drugs.map((d, di) => `<div class="drow"><span><b>${esc(d.he)}</b> <span class="pill ${(d.red ? ["v-red"] : SUIT[d.suit])[0]}">${d.red ? "דגל אדום" : esc(SUIT[d.suit][1])}</span></span>
-          <select class="v2out" data-d="${di}">${kindOf(d) === "drug" ? `<option value="3">${d.maxm === 1 ? "חודש לחודש (מלא)" : "חודש ל-3 חודשים"}</option><option value="1">חודש לחודש אחד</option><option value="0">לא חודש: התווית נגד</option><option value="w">ממתין לרופא/ה</option>` : outsOf(d).map(o => `<option value="${o[0]}">${esc(o[1])}</option>`).join("")}</select></div>`).join("")}
+          <select class="v2out" data-d="${di}">${kindOf(d) === "sum" ? `<option value="doc">הוכן והועבר לאישור הרופא/ה</option>` : kindOf(d) === "drug" ? `<option value="3">${d.maxm === 1 ? "חודש לחודש (מלא)" : "חודש ל-3 חודשים"}</option><option value="1">חודש לחודש אחד</option><option value="0">לא חודש: התווית נגד</option><option value="w">ממתין לרופא/ה</option>` : outsOf(d).map(o => `<option value="${o[0]}">${esc(o[1])}</option>`).join("")}</select></div>`).join("")}
         <p class="src">נבחר אוטומטית לפי הסימונים; אפשר לשנות.</p>
         <div class="doc-row"><label for="v2note">הערה (לא חובה)</label><input id="v2note" class="note" type="text" placeholder="לדוגמה: ל&quot;ד ביתי 126/78"></div>
         <div class="flags" aria-live="polite"></div>
         <textarea id="v2text" class="v2doctext" readonly rows="12" aria-label="טקסט לתיעוד להעתקה"></textarea>
         <div class="doc-actions"><button type="button" class="copy" data-t="v2text">העתקה</button><span class="copied" role="status"></span>
           <button type="button" class="clr" id="v2back">חזרה לחיפוש</button></div>
+        <div id="v2sumw" hidden><h3 style="margin-top:10px">שלד לסיכום רפואי (להשלים מהתיק; כל ערך עם תאריך)</h3>
+        <textarea id="v2sum" class="v2doctext" rows="10" aria-label="שלד לסיכום להעתקה"></textarea>
+        <div class="doc-actions"><button type="button" class="copy" data-t="v2sum">העתקה</button><span class="copied" role="status"></span></div></div>
         <div id="v2msgw" hidden><h3 style="margin-top:10px">הודעה למטופל/ת (מענה מקוון)</h3>
         <textarea id="v2msg" class="v2doctext" rows="6" aria-label="הודעה למטופל להעתקה"></textarea>
         <div class="doc-actions"><button type="button" class="copy" data-t="v2msg">העתקה</button><span class="copied" role="status"></span></div></div>
@@ -888,10 +907,17 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
       const na = (c.opt && a === "n") || c.pat;          // not relevant / a question only
       return {g, c, na, ok: na ? true : ok(g.id), open: c.opt && !a, yes: a === "y"};
     });
+    // derived check: the renewal request is "stable" only if every drug check in the request is fine
+    // a missing test still renews for one month, so only a contraindication / interaction / quantity issue holds the request
+    st.filter(s => s.g.derived).forEach(s => {
+      s.c = {k:"stable", label:s.g.c.label, det:s.g.c.det, bad:"חלק מהתרופות לא חודשו — ראו פירוט"};
+      s.ok = st.filter(x => !x.g.derived && x.g.ds.some(di => kindOf(drugs[di]) === "drug")).every(x => x.ok || !(x.c.contra || x.c.wait || NEG[x.c.k]));
+    });
     // urgency signs in any part of the request stop the whole request: everything goes to the physician
     const urgent = st.some(s => s.c.k === "urg" && !s.ok);
     const res = drugs.map((d, di) => {
       const mine = st.filter(s => s.g.ds.includes(di));
+      if(kindOf(d) === "sum") return {d, nd: true, out: "doc", label: "הוכן סיכום רפואי והועבר לאישור הרופא/ה", contra: [], wait: [], dev: [], clinic: [], red: false, pats: [], notify: [], dr: ["סיכום רפואי לאישור"], msg: ""};
       if(kindOf(d) !== "drug"){
         const req = kindOf(d) === "req" || kindOf(d) === "vac";
         const fails = mine.filter(s => !s.ok).map(s => s.c);
@@ -926,7 +952,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
     const lines = [kinds.map(k => KTITLE[k] + ": " + drugs.filter(d => kindOf(d) === k).map(d => d.he).join(", ")).join(" | "), who()];
     const fl = [anyDev ? "חריגה מהפרוטוקול" : "", anyRed ? "דגל אדום" : ""].filter(Boolean);
     if(fl.length) lines.push("סימון: " + fl.join(" + "));
-    const items = st.filter(s => !s.na).map(s => ({ok: s.ok, t: (s.ok ? s.c.label : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
+    const items = st.filter(s => !s.na && !s.g.derived).map(s => ({ok: s.ok, t: (s.ok ? s.c.label : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
     lines.push(...checkedLine(items, kinds.length === 1 && kinds[0] === "drug" ? "לפני חידוש המרשמים" : "לפני ביצוע הבקשה"));
     const OUT = {"3": r => r.d.maxm === 1 ? "חודש לחודש אחד (החידוש המלא לתרופה זו)" : "חודש ל-3 חודשים", "1": () => "חודש לחודש אחד בלבד", "0": () => "לא חודש — התווית נגד", "w": () => "לא חודש עדיין — ממתין לתשובת הרופא/ה"};
     lines.push("תוצאה: " + res.map(r => r.d.he + " — " + (r.nd ? r.label : OUT[r.out](r))).join("; ") + ".");
@@ -948,6 +974,9 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
     if(dr.length) lines.push("הועבר לרופא/ה: " + dr.join(". ") + ".");
     const note = (document.getElementById("v2note") || {}).value; if(note && note.trim()) lines.push("הערה: " + note.trim());
     ta.value = lines.join("\n");
+    const sw = document.getElementById("v2sumw"), stx = document.getElementById("v2sum");
+    const sumDs = drugs.map((d, di) => [d, di]).filter(([d]) => kindOf(d) === "sum").sort((a, b) => (b[0].cls === "מבנה") - (a[0].cls === "מבנה"));
+    if(sw){ sw.hidden = !sumDs.length; if(!stx.dataset.edited) stx.value = sumDs.map(([d, di]) => [d.head].concat([...detailEl.querySelectorAll(`input[data-sd="${di}"]`)].filter(x => x.checked).map(x => "• " + d.parts[+x.dataset.j] + ": ____")).join("\n")).join("\n\n"); }
     const msgs = [...new Set(res.filter(r => r.msg).map(r => r.msg))];
     const mw = document.getElementById("v2msgw"), mt = document.getElementById("v2msg");
     if(mw){ mw.hidden = !msgs.length; if(!mt.dataset.edited) mt.value = msgs.join("\n\n"); }
@@ -957,7 +986,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
     if(e.target.dataset.a === "q"){ const sub = e.target.closest(".optq").querySelector(".sub"); if(sub){ sub.hidden = e.target.value !== "y"; if(sub.hidden) sub.querySelector("input").checked = false; } }
     buildMulti();
   });
-  detailEl.addEventListener("input", e => { if(e.target.id === "v2note") buildMulti(); if(e.target.id === "v2msg") e.target.dataset.edited = "1"; });
+  detailEl.addEventListener("input", e => { if(e.target.id === "v2note") buildMulti(); if(e.target.id === "v2msg" || e.target.id === "v2sum") e.target.dataset.edited = "1"; });
   // mark the page as the trial version
   const h1 = document.querySelector("h1"); if(h1) h1.insertAdjacentHTML("beforeend", ' <span class="v2tag">גרסה 2 · ניסיון</span>');
 })();
