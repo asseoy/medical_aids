@@ -240,5 +240,6 @@ for _k in ALL["order"]:          # review booklet of all protocols (built by boo
     _y = X + "protocols-rofan-yoman.xlsx"   # task-log template (static file in assets/), for review
     if not any(l[0].startswith("יומן תיעוד") for l in ALL[_k]["links"]):
         ALL[_k]["links"] = ALL[_k]["links"] + [["יומן תיעוד משימות (Excel)", [["צפייה", V(_y)], ["הורדה", _y]]]]
+import dec1110; print("dec guide:", dec1110.apply(ALL), dec1110.apply_drugs(ALL))   # fill "מה ההנחיה אומרת" (10.11.2026)
 json.dump(ALL, open(OUT + "data.json", "w"), ensure_ascii=False)
 print("ok", {k: len(C.DRUGS) for k, C in CATS.items()})
