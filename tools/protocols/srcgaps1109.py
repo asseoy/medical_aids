@@ -42,14 +42,12 @@ ADD = {
     "Sertindole": [C("sert_heart", "אין מחלת לב משמעותית",
                      "אין ברשומה מחלת לב משמעותית, אי ספיקת לב, היפרטרופיה של הלב, הפרעת קצב, או דופק מתחת ל-50", "מחלת לב / דופק מתחת ל-50", IL),
                    M("sert_kmg", "אשלגן ומגנזיום", "אשלגן ומגנזיום בטווח, מ-3 החודשים האחרונים (ובכל הקאות, שלשולים או משתנים מורידי אשלגן)", "בדיקת דם: אשלגן ומגנזיום", IL),
-                   C("sert_combo", "אין תרופה אסורה בשילוב",
-                     "ברשימת התרופות אין תרופה מאריכת QT ואין מעכב CYP3A חזק (אזולים, מקרולידים, דילטיאזם, ורפמיל, צימטידין)", "שילוב אסור", IL),
                    SEVLIVER(IL)],
-    "Amisulpride": [CRCL_DOSE(IL), PRL(IL), LDOPA(IL), FEVER_CBC(IL)],
-    "Sulpiride": [CRCL_DOSE(IL), PRL(IL), LDOPA(IL), FEVER_CBC(IL),
+    "Amisulpride": [CRCL_DOSE(IL), PRL(IL), FEVER_CBC(IL)],
+    "Sulpiride": [CRCL_DOSE(IL), PRL(IL), FEVER_CBC(IL),
                   V("sulp_bp", "לחץ דם בשנה האחרונה", "לחץ דם מתועד בשנה האחרונה; ביתר לחץ דם — מאוזן", "יתר לחץ דם לא מאוזן", IL)],
     "Clotiapine": [C("clot_seiz", "אין אפילפסיה או סיכון לפרכוס",
-                     "אין ברשומה אפילפסיה, פגיעה מוחית, או נוגד פסיכוזה נוסף ברשימת התרופות", "אפילפסיה / גורם סיכון לפרכוס", IL),
+                     "אין ברשומה אפילפסיה או פגיעה מוחית", "אפילפסיה / גורם סיכון לפרכוס", IL),
                    C("clot_glauc", "אין גלאוקומה של זווית סגורה", "אין ברשומה גלאוקומה של זווית סגורה", "גלאוקומה של זווית סגורה", IL),
                    V("clot_bp65", "לחץ דם (גיל 65 ומעלה)", "בגיל 65 ומעלה: לחץ דם מתועד ב-6 החודשים האחרונים", "אין מדידת לחץ דם בגיל 65+", IL),
                    FEVER_CBC(IL)],
@@ -67,8 +65,6 @@ ADD = {
     "Procyclidine": [C("antichol_ci", "אין התווית נגד אנטי-כולינרגית",
                        "אין ברשומה גלאוקומה של זווית סגורה או חסימה במערכת העיכול", "התווית נגד", IL)],
     "Betahistine": [C("phaeo", "אין פאוכרומוציטומה", "אין ברשומה פאוכרומוציטומה", "פאוכרומוציטומה", IL)],
-    "Melatonin": [V("mel_dur", "משך הטיפול", "לפי העלון: עד 13 שבועות; מעבר לזה — החלטת רופא/ה מתועדת", "טיפול מעל 13 שבועות בלי החלטה", IL),
-                  C("mel_liver", "אין פגיעה כבדית", "אין ברשומה מחלת כבד", "פגיעה כבדית", IL)],
     "Mianserin": [SEVLIVER(IL), V("mian_mania", "אין היפומאניה", "בפנייה או ברשומה אין סימני היפומאניה או מאניה", "היפומאניה — הפסקת טיפול", IL, urgent=True)],
     "Reboxetine": [V("rebox_age", "לא בקשישים", "לפי העלון לא מומלץ בקשישים; בגיל 65 ומעלה — החלטת רופא/ה מתועדת", "גיל 65+ בלי החלטה", IL)],
     "Progestogen-only pill": [C("pop_ci", "אין התווית נגד",
@@ -89,7 +85,7 @@ ADD = {
                     M("drone_lft", "תפקודי כבד ואלקטרוליטים", "תפקודי כבד, אשלגן, מגנזיום וקריאטינין מ-6 החודשים האחרונים", "בדיקת דם: תפקודי כבד, אלקטרוליטים", SPS)],
     "Digoxin": [M("dig_camg", "סידן ומגנזיום", "סידן ומגנזיום מהשנה האחרונה", "בדיקת דם: סידן ומגנזיום", SPS)],
     "Lithium carbonate": [V("li_freq", "תדירות בדיקות בקבוצת סיכון",
-                            "בגיל 65 ומעלה, עם תרופה באינטראקציה, רמה 0.8 ומעלה, או פגיעה בכליות או בבלוטת התריס: רמה, כליות ונתרן מ-3 החודשים האחרונים",
+                            "בגיל 65 ומעלה, רמה 0.8 ומעלה, או פגיעה בכליות או בבלוטת התריס: רמה, כליות ונתרן מ-3 החודשים האחרונים",
                             "קבוצת סיכון בלי בדיקה ב-3 חודשים", SPS),
                           M("li_wt", "משקל", "משקל מתועד בשנה האחרונה", "שקילה", SPS)],
     "Valproate": [M("vpa_wt", "משקל", "משקל מתועד בשנה האחרונה", "שקילה", SPS)],
@@ -101,14 +97,13 @@ ADD = {
     "Rivastigmine": [M("ache_pulse", "דופק", "דופק מתועד ב-6 החודשים האחרונים", "מדידת דופק", SPS)],
     "Furosemide": [M("furo_6m", "אלקטרוליטים וקריאטינין", "מ-6 החודשים האחרונים", "בדיקת דם: אלקטרוליטים וקריאטינין", SPS)],
     "Alfacalcidol": [M("alfa_ca", "סידן ופוספט", "סידן ופוספט מ-3 החודשים האחרונים", "בדיקת דם: סידן ופוספט", SPS)],
-    "Theophylline": [M("theo_lvl", "רמת תאופילין", "רמה מ-12 החודשים האחרונים (ומיידית בשינוי עישון או תרופה מקיימת אינטראקציה)", "רמת תאופילין", SPS)],
+    "Theophylline": [M("theo_lvl", "רמת תאופילין", "רמה מ-12 החודשים האחרונים", "רמת תאופילין", SPS)],
 
     # ---- openFDA (18) ----
     "Citalopram": [V("cit_ecg", "אק\"ג בסיכון לבבי", "במחלת לב, הפרעת קצב או אלקטרוליטים: אק\"ג מהשנה האחרונה", "סיכון לבבי בלי אק\"ג", FDA), QT500(FDA)],
     "Ziprasidone": [QT500(FDA)],
     "Thioridazine": [QT500(FDA)],
     "Methylphenidate (adults)": None, "Lisdexamfetamine (adults)": None, "Amphetamine salts (adults)": None,
-    "Quetiapine": [V("quet_lens", "בדיקת עדשה", "בדיקת עיניים (מנורת סדק) ב-6 החודשים האחרונים", "אין בדיקת עדשה", FDA)],
     "Clozapine": [M("cloz_metab", "משקל, סוכר ושומנים", "משקל, סוכר או HbA1c ושומנים מהשנה האחרונה", "בדיקת דם: סוכר ושומנים; שקילה", FDA),
                   V("cloz_anc", "תדירות ספירה", "חודשים 1–6: שבועית; 7–12: כל שבועיים; משנה שנייה: חודשית", "ספירה לא בתדירות הנדרשת", FDA)],
     "Primidone": [M("prim_lab", "ספירת דם וכימיה", "ספירת דם וכימיה מ-6 החודשים האחרונים", "בדיקת דם: ספירה וכימיה", FDA)],
@@ -138,7 +133,7 @@ STER = [V("ster_eye", "בדיקת עיניים", "בדיקת עיניים ב-12 
         M("ster_lab", "HbA1c, אשלגן וטריגליצרידים", "HbA1c מ-3 החודשים האחרונים; אשלגן וטריגליצרידים מהשנה האחרונה", "בדיקת דם: HbA1c, אשלגן, טריגליצרידים", SPS)]
 PSA = [V("psa", "PSA במעקב", "PSA אחרי 6 חודשי טיפול (בסיס חדש) ומהשנה האחרונה; כל עלייה מהשפל על הטיפול ← לרופא/ה (הערך על הטיפול הוא כחצי)",
          "אין PSA / עלייה ב-PSA", SPS)]
-STIM = [M("stim_bp", "לחץ דם ודופק", "לחץ דם ודופק מתועדים ב-6 החודשים האחרונים", "מדידת לחץ דם ודופק", FDA)]
+STIM = [M("stim_bp", "לחץ דם ודופק", "לחץ דם ודופק מתועדים בשנה האחרונה", "מדידת לחץ דם ודופק", FDA)]
 for g in ("Apixaban", "Rivaroxaban", "Dabigatran"): ADD[g] = DOAC
 for g in ("Prednisone (chronic)", "Methylprednisolone (chronic)"): ADD[g] = STER
 for g in ("Finasteride", "Dutasteride", "Dutasteride + Tamsulosin"): ADD[g] = PSA
@@ -193,4 +188,22 @@ def apply(lists):
     for d in by.values():
         if any(c.get("src") in (SPS, FDA) or str(c.get("src", "")).startswith((IL, EMA, FSRH)) for c in d["checks"]):
             d["why"] = (d.get("why") or "") + f" בדיקות שנוספו לפי מקור (SPS / עלון FDA / עלון לרופא) — אושר {D}."
+    # no drug-combination checks anywhere in the tool (decision 10.11.2026): the clinic system's interaction alert covers them.
+    # The general "no interaction alert in the system" check (k="inter", added by handover) stays.
+    COMBO_K = {"combo"}
+    def is_combo(t):
+        t = t.strip()
+        return t.startswith("שילוב") or t.startswith("NSAIDs באופן קבוע") or t.startswith("תרופה חדשה ברשימה (אינטראקציות")
+    for d in by.values():
+        d["checks"] = [c for c in d["checks"] if c["k"] not in COMBO_K]
+        for f in ("excl", "excl_x"):
+            if isinstance(d.get(f), list):
+                d[f] = [x for x in d[f] if not (isinstance(x, str) and is_combo(x))]
+        for c in d["checks"]:
+            if c["k"] == "excl" and isinstance(c.get("det"), str):
+                parts = [x for x in c["det"].split("; ") if not is_combo(x)]
+                c["det"] = "; ".join(parts)
+                if isinstance(c.get("crit"), str) and parts:
+                    c["crit"] = c["det"] + c["crit"][c["crit"].find(". "):] if ". " in c["crit"] else c["crit"]
+        d["checks"] = [c for c in d["checks"] if not (c["k"] == "excl" and not c.get("det"))]
     return n
