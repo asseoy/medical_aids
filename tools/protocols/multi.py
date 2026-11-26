@@ -17,7 +17,7 @@ INCRETIN = {"Semaglutide": "סוכרת (אוזמפיק), השמנה (וגובי)
 BP_SAFE = dev("bp_safe", "ל\"ד בטווח בטיחות", "ל\"ד אחרון: סיסטולי 90 ומעלה ומתחת ל-160/100, בלי סחרחורת או עילפון מתועדים",
               "ל\"ד נמוך מ-90, 160/100 ומעלה, או סחרחורת / עילפון")
 WEIGHT = mon("weight", "משקל מתועד", "מדידת משקל מ-12 החודשים האחרונים", "מדידת משקל")
-# Tirzepatide only (26.11.2026): low-weight guard. The label has no lower BMI limit; BMI 18.5 is the review-for-discontinuation
+# Tirzepatide and injectable semaglutide (26.11.2026): low-weight guard. The label has no lower BMI limit; BMI 18.5 is the review-for-discontinuation
 # point and BMI 22 the dose-reduction point in the SURMOUNT-1 protocol (sections 7.1, 6.6.3). Not met -> one month + message to the physician.
 WEIGHT_LOW = dev("weight_low", "המשקל אינו נמוך מדי",
                  "BMI אחרון 18.5 ומעלה (בגיל 65 ומעלה: 22 ומעלה)",
@@ -48,6 +48,7 @@ def apply(htn, dm):
             d["thr"] = ["eGFR <25"]                         # common threshold for all indications (was <45 for diabetes)
         if g in INCRETIN:
             d["checks"].insert(0, dict(WEIGHT))
-        if g == "Tirzepatide":
+        if g in ("Tirzepatide", "Semaglutide"):             # injectable semaglutide = Ozempic and Wegovy (one entry)
             _ins(d["checks"], "weight", WEIGHT_LOW)
-            d["why"] += "; משקל נמוך: בעלון אין סף תחתון, הסף (BMI 18.5; 22 בגיל 65 ומעלה) לפי פרוטוקול מחקר SURMOUNT-1 והחלטת הרופא (26.11.2026)"
+            d["why"] += ("; משקל נמוך: בעלון אין סף תחתון, הסף (BMI 18.5; 22 בגיל 65 ומעלה) לפי פרוטוקול מחקר SURMOUNT-1 והחלטת הרופא (26.11.2026)"
+                         if g == "Tirzepatide" else "; משקל נמוך: אותו סף כמו במאונג'רו (BMI 18.5; 22 בגיל 65 ומעלה), החלטת הרופא (26.11.2026)")
