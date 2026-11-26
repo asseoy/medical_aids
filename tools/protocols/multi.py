@@ -20,9 +20,9 @@ WEIGHT = mon("weight", "משקל מתועד", "מדידת משקל מ-12 החו�
 # Tirzepatide only (26.11.2026): low-weight guard. The label has no lower BMI limit; BMI 18.5 is the review-for-discontinuation
 # point and BMI 22 the dose-reduction point in the SURMOUNT-1 protocol (sections 7.1, 6.6.3). Not met -> one month + message to the physician.
 WEIGHT_LOW = dev("weight_low", "המשקל אינו נמוך מדי",
-                 "BMI אחרון 18.5 ומעלה (בגיל 65 ומעלה: 22 ומעלה), ואין ירידה של יותר מ-1 ק\"ג בשבוע בממוצע לעומת המדידה הקודמת",
-                 "BMI נמוך מ-18.5 (בגיל 65 ומעלה: נמוך מ-22) או ירידה מהירה במשקל")
-WEIGHT_LOW["sumt"] = "המשקל אינו נמוך מדי (BMI 18.5 ומעלה, ובגיל 65 ומעלה 22 ומעלה; אין ירידה של יותר מ-1 ק\"ג בשבוע בממוצע מאז המדידה הקודמת)"
+                 "BMI אחרון 18.5 ומעלה (בגיל 65 ומעלה: 22 ומעלה)",
+                 "BMI נמוך מ-18.5 (בגיל 65 ומעלה: נמוך מ-22)")
+WEIGHT_LOW["sumt"] = "המשקל אינו נמוך מדי (BMI 18.5 ומעלה, ובגיל 65 ומעלה 22 ומעלה)"
 
 
 def _ins(checks, after_k, item):
