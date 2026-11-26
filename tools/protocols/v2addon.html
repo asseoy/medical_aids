@@ -41,7 +41,7 @@
     let L = d.checks.filter(c => !(DROP[kind] || []).includes(c.k));
     if(kind === "drug"){
       L = merge(L, ["qty", "inter"], ps => ({k:"rx", label:"בהפקת המרשם: כמות תואמת ואין התראה", det:joinDet(ps), wait:true, bad:"התראת אינטראקציה או אי-התאמה בכמות, ביחידות או בתדירות"}));
-      L = merge(L, ["visit", "renew"], ps => ({k:"visit", label:"ביקור רופא ב-12 החודשים האחרונים, ופחות מ-3 חידושים מאז", det:joinDet(ps), notify:"אין ביקור רופא ב-12 החודשים האחרונים, או 3 חידושים רצופים בלי ביקור"}));
+      L = merge(L, ["visit", "renew"], ps => ({k:"visit", label:"ביקור רופא ב-12 החודשים האחרונים, ופחות מ-3 חידושים מאז", sumt:"ביקור אצל הרופא ב-12 החודשים האחרונים; מאז הביקור האחרון חודש המרשם פחות מ-3 פעמים ללא ביקור", det:joinDet(ps), notify:"אין ביקור רופא ב-12 החודשים האחרונים, או 3 חידושים רצופים בלי ביקור"}));
       // "documented" + "within target" pairs: missing or abnormal -> one month, booking the test and a message to the physician
       [["bp", ["target", "bp_safe"], 'השלמת מדידת ל"ד', 'ל"ד מתועד ובטווח'], ["a1c", ["target"], "השלמת בדיקת HbA1c", "HbA1c מתועד ויציב"], ["ldl", ["ldl_ok"], "השלמת פרופיל שומנים", "LDL מתועד ויציב"]].forEach(([a, bs, clinic, label]) => {
         const b = bs.find(k => L.some(c => c.k === k)); if(!b || !L.some(c => c.k === a)) return;
@@ -274,7 +274,7 @@
     const lines = [kinds.map(k => KTITLE[k] + ": " + drugs.filter(d => kindOf(d) === k).map(d => d.he).join(", ")).join(" | "), who()];
     const fl = [anyDev ? "חריגה מהפרוטוקול" : "", anyRed ? "דגל אדום" : ""].filter(Boolean);
     if(fl.length) lines.push("סימון: " + fl.join(" + "));
-    const items = st.filter(s => !s.na && !s.g.derived).map(s => ({ok: s.ok, t: (s.ok ? s.c.label : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
+    const items = st.filter(s => !s.na && !s.g.derived).map(s => ({ok: s.ok, t: (s.ok ? okText(s.c) : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
     lines.push(...checkedLine(items, kinds.length === 1 && kinds[0] === "drug" ? "לפני חידוש המרשמים" : "לפני ביצוע הבקשה"));
     const OUT = {"3": r => r.d.maxm === 1 ? "חודש לחודש אחד (החידוש המלא לתרופה זו)" : "חודש ל-3 חודשים", "1": () => "חודש לחודש אחד בלבד", "0": () => "לא חודש — התווית נגד", "w": () => "לא חודש עדיין — ממתין לתשובת הרופא/ה"};
     lines.push("תוצאה: " + res.map(r => r.d.he + " — " + (r.nd ? r.label : OUT[r.out](r))).join("; ") + ".");

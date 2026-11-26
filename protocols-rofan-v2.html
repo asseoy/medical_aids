@@ -475,6 +475,8 @@ function autoHint(sel){
 }
 detailEl.addEventListener("change", e => { if(e.target.classList.contains("outcome")) e.target.dataset.manual = "1"; }, true);
 detailEl.addEventListener("click", e => { if(!e.target.closest(".auto-reset")) return; const sel = detailEl.querySelector(".outcome"); delete sel.dataset.manual; buildDoc(); });
+// text of a check that was found normal, as written in the documentation: fuller than the on-screen label where the label alone is unclear
+const okText = c => c.sumt || (c.k === "annual" && c.det ? "בדיקות המעקב בוצעו (" + c.det + ")" : c.label);
 function checkedLine(items, before){
   const bad = items.filter(x => !x.ok).map(x => x.t);
   if(!items.length) return [];
@@ -507,7 +509,7 @@ function buildCertDoc(){
   const il = introLine(d.he); if(il) lines.push(il);
   const before = vac ? "לפני הפקת המרשם לחיסון" : req ? "לפני המענה לפנייה" : "לפני הפקת האישור";
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
-    .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")})), before));
+    .map(c => ({ok: ok(c.k), t: ok(c.k) ? okText(c) : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")})), before));
   const plain = !req && out === "issue" && !fails.length;   // certificate issued with everything normal: the review line is enough
   if(!plain) lines.push(STU(o ? o[2] : ""));
   const PAT = vac ? {issue:"הופקו מרשם או הפניה, והוסבר איך קובעים תור", doc:"נמסר שהבקשה הועברה לרופא/ה", visit:"הוסבר למה לא הופק", no:"הועבר מיד לרופא/ה"} : req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
@@ -606,7 +608,7 @@ function buildDoc(){
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
-    return {ok: okc, t: okc ? c.label : (c.bad || NEG[c.k] || FAIL[c.k] || c.label) + extra};
+    return {ok: okc, t: okc ? okText(c) : (c.bad || NEG[c.k] || FAIL[c.k] || c.label) + extra};
   }), d.doctitle ? "לפני הכנת המרשם" : "לפני חידוש המרשם"));
   lines.push(STU({"3": d.once ? "תוצאה: המרשם הונפק לפי הפרוטוקול." : "תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
     "1": d.once ? "תוצאה: לא הונפק — חסר או חריג, הועבר לרופא/ה." : "תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
@@ -774,7 +776,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
     let L = d.checks.filter(c => !(DROP[kind] || []).includes(c.k));
     if(kind === "drug"){
       L = merge(L, ["qty", "inter"], ps => ({k:"rx", label:"בהפקת המרשם: כמות תואמת ואין התראה", det:joinDet(ps), wait:true, bad:"התראת אינטראקציה או אי-התאמה בכמות, ביחידות או בתדירות"}));
-      L = merge(L, ["visit", "renew"], ps => ({k:"visit", label:"ביקור רופא ב-12 החודשים האחרונים, ופחות מ-3 חידושים מאז", det:joinDet(ps), notify:"אין ביקור רופא ב-12 החודשים האחרונים, או 3 חידושים רצופים בלי ביקור"}));
+      L = merge(L, ["visit", "renew"], ps => ({k:"visit", label:"ביקור רופא ב-12 החודשים האחרונים, ופחות מ-3 חידושים מאז", sumt:"ביקור אצל הרופא ב-12 החודשים האחרונים; מאז הביקור האחרון חודש המרשם פחות מ-3 פעמים ללא ביקור", det:joinDet(ps), notify:"אין ביקור רופא ב-12 החודשים האחרונים, או 3 חידושים רצופים בלי ביקור"}));
       // "documented" + "within target" pairs: missing or abnormal -> one month, booking the test and a message to the physician
       [["bp", ["target", "bp_safe"], 'השלמת מדידת ל"ד', 'ל"ד מתועד ובטווח'], ["a1c", ["target"], "השלמת בדיקת HbA1c", "HbA1c מתועד ויציב"], ["ldl", ["ldl_ok"], "השלמת פרופיל שומנים", "LDL מתועד ויציב"]].forEach(([a, bs, clinic, label]) => {
         const b = bs.find(k => L.some(c => c.k === k)); if(!b || !L.some(c => c.k === a)) return;
@@ -1007,7 +1009,7 @@ renderDocs(); renderCommon(); renderDec(); renderHits();
     const lines = [kinds.map(k => KTITLE[k] + ": " + drugs.filter(d => kindOf(d) === k).map(d => d.he).join(", ")).join(" | "), who()];
     const fl = [anyDev ? "חריגה מהפרוטוקול" : "", anyRed ? "דגל אדום" : ""].filter(Boolean);
     if(fl.length) lines.push("סימון: " + fl.join(" + "));
-    const items = st.filter(s => !s.na && !s.g.derived).map(s => ({ok: s.ok, t: (s.ok ? s.c.label : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
+    const items = st.filter(s => !s.na && !s.g.derived).map(s => ({ok: s.ok, t: (s.ok ? okText(s.c) : (s.c.bad || NEG[s.c.k] || FAIL[s.c.k] || s.c.label)) + (s.g.ds.length < drugs.length ? " (" + s.g.ds.map(x => drugs[x].he).join(", ") + ")" : "") + (s.open ? " (לא סומן אם רלוונטי)" : "")}));
     lines.push(...checkedLine(items, kinds.length === 1 && kinds[0] === "drug" ? "לפני חידוש המרשמים" : "לפני ביצוע הבקשה"));
     const OUT = {"3": r => r.d.maxm === 1 ? "חודש לחודש אחד (החידוש המלא לתרופה זו)" : "חודש ל-3 חודשים", "1": () => "חודש לחודש אחד בלבד", "0": () => "לא חודש — התווית נגד", "w": () => "לא חודש עדיין — ממתין לתשובת הרופא/ה"};
     lines.push("תוצאה: " + res.map(r => r.d.he + " — " + (r.nd ? r.label : OUT[r.out](r))).join("; ") + ".");

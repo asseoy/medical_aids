@@ -454,6 +454,8 @@ function autoHint(sel){
 }
 detailEl.addEventListener("change", e => { if(e.target.classList.contains("outcome")) e.target.dataset.manual = "1"; }, true);
 detailEl.addEventListener("click", e => { if(!e.target.closest(".auto-reset")) return; const sel = detailEl.querySelector(".outcome"); delete sel.dataset.manual; buildDoc(); });
+// text of a check that was found normal, as written in the documentation: fuller than the on-screen label where the label alone is unclear
+const okText = c => c.sumt || (c.k === "annual" && c.det ? "בדיקות המעקב בוצעו (" + c.det + ")" : c.label);
 function checkedLine(items, before){
   const bad = items.filter(x => !x.ok).map(x => x.t);
   if(!items.length) return [];
@@ -486,7 +488,7 @@ function buildCertDoc(){
   const il = introLine(d.he); if(il) lines.push(il);
   const before = vac ? "לפני הפקת המרשם לחיסון" : req ? "לפני המענה לפנייה" : "לפני הפקת האישור";
   if(d.checks.length) lines.push(...checkedLine(d.checks.filter(c => !(c.opt && ans(c.k) === "n"))
-    .map(c => ({ok: ok(c.k), t: ok(c.k) ? c.label : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")})), before));
+    .map(c => ({ok: ok(c.k), t: ok(c.k) ? okText(c) : (c.bad || c.label) + (c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)" : "")})), before));
   const plain = !req && out === "issue" && !fails.length;   // certificate issued with everything normal: the review line is enough
   if(!plain) lines.push(STU(o ? o[2] : ""));
   const PAT = vac ? {issue:"הופקו מרשם או הפניה, והוסבר איך קובעים תור", doc:"נמסר שהבקשה הועברה לרופא/ה", visit:"הוסבר למה לא הופק", no:"הועבר מיד לרופא/ה"} : req ? {issue:"נשלחה תשובה במענה המקוון", doc:"נמסר שהפנייה הועברה לרופא/ה", visit:"סירוב מנומק והזמנה לביקור או לשיחה", no:"הונחה לפנות מיד למוקד/מיון"}
@@ -585,7 +587,7 @@ function buildDoc(){
     const box = boxes.find(x => x.dataset.k === c.k); const okc = !!(box && box.checked);
     const extra = c.opt && !ans(c.k) ? " (לא סומן אם רלוונטי)"
       : c.sev && !okc ? (sevAns(c.k) === "y" ? " — ערך חמור" : sevAns(c.k) === "n" ? "" : " — לא סומן אם חמור") : "";
-    return {ok: okc, t: okc ? c.label : (c.bad || NEG[c.k] || FAIL[c.k] || c.label) + extra};
+    return {ok: okc, t: okc ? okText(c) : (c.bad || NEG[c.k] || FAIL[c.k] || c.label) + extra};
   }), d.doctitle ? "לפני הכנת המרשם" : "לפני חידוש המרשם"));
   lines.push(STU({"3": d.once ? "תוצאה: המרשם הונפק לפי הפרוטוקול." : "תוצאה: חודש ל" + (d.maxm === 1 ? "חודש אחד (החידוש המלא לתרופה זו)." : "-3 חודשים."),
     "1": d.once ? "תוצאה: לא הונפק — חסר או חריג, הועבר לרופא/ה." : "תוצאה: חודש לחודש אחד בלבד.", "0":"תוצאה: לא חודש — התווית נגד.", "w": d.doctitle ? "תוצאה: לא הונפק — הוכן לאישור הרופא/ה." : "תוצאה: לא חודש עדיין — ממתין לתשובת הרופא/ה."}[out]));
